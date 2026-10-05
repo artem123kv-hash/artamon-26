@@ -1854,20 +1854,20 @@ var PROFILE = (function(){
   var data = Object.assign({}, DEFAULT);
   var AVATARS_BASE = ["👤","😎","🤖","👽","🐱","🐶","🦊","🐻","🐼","🐨","🦁","🐯","🐸","🐵","🦉","🦄","🐲","👾","🎭","🎨","🎮","🎧","⚡","🔥","💎","🌙","⭐","☀️","🌈","🍀"];
   var AVATARS_REWARD = {
-    "🏆":{rarity:"rare",desc:"За топ-1 рейтинга"},
-    "👑":{rarity:"legendary",desc:"За 30 дней стрика"},
-    "🎁":{rarity:"epic",desc:"За 7 дней стрика"},
-    "🌌":{rarity:"epic",desc:"За 5 дней стрика"},
-    "💜":{rarity:"rare",desc:"За 3 дня стрика"},
-    "✨":{rarity:"rare",desc:"За топ-10 рейтинга"},
-    "🦸":{rarity:"epic",desc:"За 50 комментариев"},
-    "🧙":{rarity:"epic",desc:"За 100 оценок"},
-    "🐉":{rarity:"legendary",desc:"За все достижения"},
-    "🎃":{rarity:"rare",desc:"Хэллоуин"},
-    "🎄":{rarity:"rare",desc:"Новый год"},
-    "❤️":{rarity:"rare",desc:"День Святого Валентина"},
-    "☠️":{rarity:"legendary",desc:"Скрытое"}
-  };
+  "trophy":{icon:"🏆",rarity:"rare",desc:"За топ-1 рейтинга"},
+  "crown":{icon:"👑",rarity:"legendary",desc:"За 30 дней стрика"},
+  "gift":{icon:"🎁",rarity:"epic",desc:"За 7 дней стрика"},
+  "galaxy":{icon:"🌌",rarity:"epic",desc:"За 5 дней стрика"},
+  "purple":{icon:"💜",rarity:"rare",desc:"За 3 дня стрика"},
+  "sparkles":{icon:"✨",rarity:"rare",desc:"За топ-10 рейтинга"},
+  "hero":{icon:"🦸",rarity:"epic",desc:"За 50 комментариев"},
+  "wizard":{icon:"🧙",rarity:"epic",desc:"За 100 оценок"},
+  "dragon":{icon:"🐉",rarity:"legendary",desc:"За все достижения"},
+  "pumpkin":{icon:"🎃",rarity:"rare",desc:"Хэллоуин"},
+  "tree":{icon:"🎄",rarity:"rare",desc:"Новый год"},
+  "heart":{icon:"❤",rarity:"rare",desc:"День Святого Валентина"},
+  "skull":{icon:"☠",rarity:"legendary",desc:"Скрытое"}
+};
   var COLORS = ["#d4af37","#f6e6a8","#4ade80","#60a5fa","#a78bfa","#f472b6","#fb923c","#f87171","#22d3ee","#e8e6e1"];
 
   function load(){
@@ -2151,18 +2151,16 @@ var ACHIEVEMENTS = {
   daily_streak_3:{icon:"🔥",name:"3 дня подряд",desc:"Стрик 3 дня",rarity:"rare"},
   daily_streak_7:{icon:"💎",name:"Неделя",desc:"Стрик 7 дней",rarity:"epic"},
   daily_streak_30:{icon:"👑",name:"Месяц",desc:"Стрик 30 дней",rarity:"legendary"},
-  got_avatar_🏆:{icon:"🏆",name:"Топ-1",desc:"Открыта аватарка 🏆",rarity:"epic"},
-  got_avatar_👑:{icon:"👑",name:"Корона",desc:"Открыта аватарка 👑",rarity:"legendary"},
-  got_avatar_🎁:{icon:"🎁",name:"Подарок",desc:"Открыта аватарка 🎁",rarity:"epic"},
-  got_avatar_🌌:{icon:"🌌",name:"Космос",desc:"Открыта аватарка 🌌",rarity:"epic"},
-  got_avatar_💜:{icon:"💜",name:"Фиолет",desc:"Открыта аватарка 💜",rarity:"rare"},
-  got_avatar_✨:{icon:"✨",name:"Искры",desc:"Открыта аватарка ✨",rarity:"rare"},
-  got_avatar_🦸:{icon:"🦸",name:"Герой",desc:"Открыта аватарка 🦸",rarity:"epic"},
-  got_avatar_🧙:{icon:"🧙",name:"Маг",desc:"Открыта аватарка 🧙",rarity:"epic"},
-  got_avatar_🐉:{icon:"🐉",name:"Дракон",desc:"Открыта аватарка 🐉",rarity:"legendary"},
-  got_avatar_☠️:{icon:"☠️",name:"Череп",desc:"Открыта скрытая аватарка",rarity:"legendary"},
-  admin_entered:{icon:"🔐",name:"Админ",desc:"Вошёл в админ-панель",rarity:"rare"},
-  owner_entered:{icon:"👑",name:"Владелец",desc:"Вошёл в панель владельца",rarity:"legendary"}
+  got_avatar_trophy:{icon:"🏆",name:"Топ-1",desc:"Открыта аватарка 🏆",rarity:"epic"},
+got_avatar_crown:{icon:"👑",name:"Корона",desc:"Открыта аватарка 👑",rarity:"legendary"},
+got_avatar_gift:{icon:"🎁",name:"Подарок",desc:"Открыта аватарка 🎁",rarity:"epic"},
+got_avatar_galaxy:{icon:"🌌",name:"Космос",desc:"Открыта аватарка 🌌",rarity:"epic"},
+got_avatar_purple:{icon:"💜",name:"Фиолет",desc:"Открыта аватарка 💜",rarity:"rare"},
+got_avatar_sparkles:{icon:"✨",name:"Искры",desc:"Открыта аватарка ✨",rarity:"rare"},
+got_avatar_hero:{icon:"🦸",name:"Герой",desc:"Открыта аватарка 🦸",rarity:"epic"},
+got_avatar_wizard:{icon:"🧙",name:"Маг",desc:"Открыта аватарка 🧙",rarity:"epic"},
+got_avatar_dragon:{icon:"🐉",name:"Дракон",desc:"Открыта аватарка 🐉",rarity:"legendary"},
+got_avatar_skull:{icon:"☠",name:"Череп",desc:"Открыта скрытая аватарка",rarity:"legendary"}
 };
 var RARITY_NAMES = { common:"Обычное", rare:"Редкое", epic:"Эпическое", legendary:"Легендарное" };
 var RARITY_SOUNDS = { common:"achCommon", rare:"achRare", epic:"achEpic", legendary:"achLegendary" };
