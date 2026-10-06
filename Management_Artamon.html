@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚡ Artamon Admin Panel</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  background: radial-gradient(circle at 50% 0%, #0f0f0f 0%, #050505 60%);
+  color: #e8e6e1;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+.hidden { display: none !important; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ═══ ЭКРАН ВХОДА ═══ */
+#loginScreen {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  background: radial-gradient(circle at 50% 50%, #0a0a0a 0%, #000 70%);
+}
+.login-box {
+  max-width: 420px; width: 100%;
+  background: linear-gradient(180deg, rgba(23,23,23,.95), rgba(15,15,15,.95));
+  border: 2px solid rgba(212,175,55,.5);
+  border-radius: 20px; padding: 32px 26px; text-align: center;
+}
+.login-icon { font-size: 4rem; margin-bottom: 12px; }
+.login-title {
+  font-size: 1.5rem; font-weight: 900; letter-spacing: .1em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #f6e6a8, #d4af37 45%, #8f6f1a);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  margin-bottom: 8px;
+}
+.login-sub {
+  color: #8a8a8a; font-size: .78rem; letter-spacing: .1em;
+  text-transform: uppercase; margin-bottom: 24px;
+}
+.login-input {
+  width: 100%; background: #0d0d0d; border: 1px solid #2a2a2a;
+  color: #d4af37; padding: 14px; border-radius: 10px;
+  font-family: ui-monospace, monospace; font-size: 1rem;
+  text-align: center; outline: none; letter-spacing: .06em;
+  margin-bottom: 12px;
+}
+.login-input:focus { border-color: #d4af37; box-shadow: 0 0 0 3px rgba(212,175,55,.15); }
+.login-btn {
+  width: 100%; border: 1.5px solid #d4af37;
+  background: rgba(212,175,55,.15); color: #d4af37;
+  padding: 14px; border-radius: 11px;
+  font-size: .88rem; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; transition: .2s;
+}
+.login-btn:hover { background: rgba(212,175,55,.28); }
+.login-error {
+  background: rgba(248,113,113,.15); border: 1px solid rgba(248,113,113,.4);
+  color: #f87171; border-radius: 10px; padding: 10px 14px;
+  font-size: .82rem; margin-bottom: 12px;
+}
+
+/* ═══ ПАНЕЛЬ ═══ */
+#panel { max-width: 1200px; margin: 0 auto; padding: 16px; }
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 12px; padding: 16px 18px;
+  background: linear-gradient(180deg, rgba(30,25,10,.95), rgba(15,12,5,.95));
+  border: 2px solid rgba(212,175,55,.5);
+  border-radius: 16px; margin-bottom: 16px;
+  position: sticky; top: 0; z-index: 5;
+  backdrop-filter: blur(10px);
+}
+.header h1 {
+  font-size: 1.1rem; font-weight: 900; letter-spacing: .14em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #f6e6a8, #d4af37);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.header-actions { display: flex; gap: 8px; }
+.header-btn {
+  background: transparent; border: 1px solid rgba(212,175,55,.5);
+  color: #d4af37; padding: 8px 14px; border-radius: 9px;
+  font-size: .72rem; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; transition: .15s;
+}
+.header-btn:hover { background: rgba(212,175,55,.15); }
+.header-btn.danger { border-color: #e06a6a; color: #e06a6a; }
+.header-btn.danger:hover { background: rgba(224,106,106,.15); }
+
+/* ═══ СТАТИСТИКА ═══ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px; margin-bottom: 16px;
+}
+.stat-card {
+  background: linear-gradient(180deg, rgba(23,23,23,.95), rgba(15,15,15,.95));
+  border: 1px solid rgba(212,175,55,.3);
+  border-radius: 14px; padding: 16px; text-align: center;
+}
+.stat-card .num {
+  font-size: 1.8rem; font-weight: 900; color: #d4af37;
+  line-height: 1; margin-bottom: 6px;
+}
+.stat-card .lbl {
+  font-size: .68rem; color: #8a8a8a; letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+/* ═══ ТАБЫ ═══ */
+.tabs {
+  display: flex; gap: 6px; margin-bottom: 16px;
+  flex-wrap: wrap; justify-content: center;
+}
+.tab {
+  background: transparent; border: 1px solid #2a2a2a;
+  color: #8a8a8a; padding: 10px 18px; border-radius: 20px;
+  font-size: .74rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; transition: .15s;
+}
+.tab.active {
+  background: rgba(212,175,55,.15); border-color: #d4af37; color: #d4af37;
+}
+
+/* ═══ СЕКЦИИ ═══ */
+.section {
+  background: linear-gradient(180deg, rgba(23,23,23,.95), rgba(15,15,15,.95));
+  border: 1px solid #2a2a2a; border-radius: 14px;
+  padding: 18px; margin-bottom: 16px;
+}
+.section h2 {
+  font-size: .85rem; letter-spacing: .16em; text-transform: uppercase;
+  color: #d4af37; margin-bottom: 14px; font-weight: 800;
+  display: flex; align-items: center; gap: 8px;
+}
+.section h2 .num {
+  display: inline-grid; place-items: center;
+  width: 22px; height: 22px;
+  background: rgba(212,175,55,.15);
+  border: 1px solid rgba(212,175,55,.4);
+  border-radius: 6px; font-size: .68rem;
+}
+
+/* ═══ ПОИСК ═══ */
+.search-row {
+  display: flex; gap: 8px; margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.search-input {
+  flex: 1; min-width: 200px;
+  background: #0d0d0d; border: 1px solid #2a2a2a;
+  color: #e8e6e1; padding: 11px 14px; border-radius: 10px;
+  font-family: inherit; font-size: .88rem; outline: none;
+}
+.search-input:focus { border-color: #d4af37; }
+.btn {
+  background: rgba(212,175,55,.12); border: 1.5px solid #d4af37;
+  color: #d4af37; padding: 11px 18px; border-radius: 10px;
+  font-size: .76rem; font-weight: 800; letter-spacing: .08em;
+  text-transform: uppercase; transition: .15s;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: rgba(212,175,55,.25); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.danger { border-color: #e06a6a; color: #e06a6a; background: rgba(224,106,106,.12); }
+.btn.danger:hover:not(:disabled) { background: rgba(224,106,106,.25); }
+.btn.success { border-color: #4ade80; color: #4ade80; background: rgba(74,222,128,.12); }
+.btn.success:hover:not(:disabled) { background: rgba(74,222,128,.25); }
+.btn.ghost { background: transparent; border-color: #2a2a2a; color: #8a8a8a; }
+.btn.ghost:hover:not(:disabled) { border-color: #d4af37; color: #d4af37; }
+.btn.sm { padding: 7px 12px; font-size: .68rem; }
+
+/* ═══ ТАБЛИЦА ═══ */
+.table-wrap { overflow-x: auto; margin-top: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+th {
+  text-align: left; padding: 10px 12px;
+  color: #8a8a8a; font-size: .68rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  border-bottom: 1px solid #2a2a2a;
+  white-space: nowrap;
+}
+td {
+  padding: 10px 12px; border-bottom: 1px solid #1a1a1a;
+  color: #e8e6e1; vertical-align: middle;
+}
+tr:hover td { background: rgba(212,175,55,.04); }
+td.actions { white-space: nowrap; display: flex; gap: 4px; }
+.badge {
+  display: inline-block; font-size: .6rem;
+  font-weight: 800; letter-spacing: .08em;
+  text-transform: uppercase; padding: 2px 8px;
+  border-radius: 8px;
+}
+.badge.ok { background: rgba(74,222,128,.15); color: #4ade80; border: 1px solid rgba(74,222,128,.4); }
+.badge.err { background: rgba(248,113,113,.15); color: #f87171; border: 1px solid rgba(248,113,113,.4); }
+.badge.warn { background: rgba(251,191,36,.15); color: #fbbf24; border: 1px solid rgba(251,191,36,.4); }
+.badge.info { background: rgba(96,165,250,.15); color: #60a5fa; border: 1px solid rgba(96,165,250,.4); }
+.empty { text-align: center; padding: 40px 20px; color: #5c5c5c; font-style: italic; }
+
+/* ═══ МОДАЛКА ═══ */
+.modal {
+  position: fixed; inset: 0; z-index: 200;
+  display: none; align-items: center; justify-content: center;
+  padding: 20px; background: rgba(0,0,0,.85);
+  backdrop-filter: blur(8px);
+}
+.modal.on { display: flex; }
+.modal-box {
+  max-width: 500px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  background: linear-gradient(180deg, rgba(23,23,23,.98), rgba(15,15,15,.98));
+  border: 2px solid rgba(212,175,55,.5);
+  border-radius: 18px; padding: 24px;
+  position: relative;
+}
+.modal-close {
+  position: absolute; top: 14px; right: 14px;
+  background: transparent; border: 1px solid #2a2a2a;
+  color: #8a8a8a; width: 34px; height: 34px;
+  border-radius: 8px; font-size: 1.1rem;
+}
+.modal-title {
+  font-size: 1.2rem; font-weight: 900; letter-spacing: .08em;
+  text-transform: uppercase; color: #d4af37; margin-bottom: 16px;
+}
+.form-group { margin-bottom: 12px; }
+.form-label {
+  display: block; font-size: .72rem; color: #8a8a8a;
+  letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px;
+}
+.form-input {
+  width: 100%; background: #0d0d0d; border: 1px solid #2a2a2a;
+  color: #e8e6e1; padding: 11px 14px; border-radius: 10px;
+  font-family: inherit; font-size: .88rem; outline: none;
+}
+.form-input:focus { border-color: #d4af37; }
+.form-actions { display: flex; gap: 8px; margin-top: 18px; justify-content: flex-end; }
+
+/* ═══ ЛОГ ═══ */
+#log {
+  background: #000; border: 1px solid #1a1a1a;
+  border-radius: 10px; padding: 12px;
+  font-family: ui-monospace, monospace; font-size: .74rem;
+  line-height: 1.6; color: #d4d4d4;
+  white-space: pre-wrap; word-break: break-word;
+  max-height: 300px; overflow-y: auto;
+  min-height: 80px;
+}
+#log .ok { color: #4ade80; font-weight: 700; }
+#log .err { color: #f87171; font-weight: 700; }
+#log .info { color: #60a5fa; }
+#log .dim { color: #5c5c5c; }
+#log .ts { color: #5c5c5c; margin-right: 6px; }
+
+/* ═══ TOAST ═══ */
+#toast {
+  position: fixed; bottom: 20px; left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  background: #1a1608; border: 1.5px solid #d4af37;
+  color: #d4af37; padding: 12px 22px; border-radius: 12px;
+  font-size: .85rem; font-weight: 700;
+  opacity: 0; pointer-events: none; transition: .3s;
+  z-index: 9999; max-width: 90vw;
+}
+#toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.err { border-color: #f87171; color: #f87171; background: #1a0808; }
+#toast.ok { border-color: #4ade80; color: #4ade80; background: #081a0a; }
+
+/* ═══ АДАПТИВ ═══ */
+@media (max-width: 600px) {
+  #panel { padding: 10px; }
+  .header { padding: 12px 14px; flex-wrap: wrap; }
+  .header h1 { font-size: .95rem; }
+  .stat-card .num { font-size: 1.4rem; }
+  td, th { padding: 8px 8px; font-size: .76rem; }
+  .btn.sm { padding: 6px 9px; font-size: .62rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ ЭКРАН ВХОДА ═══ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-icon">⚡</div>
+    <div class="login-title">Artamon Admin</div>
+    <div class="login-sub">Введите секретный пароль</div>
+    <div class="login-error" id="loginError"></div>
+    <input type="password" class="login-input" id="loginInput" placeholder="••••••••••••" autocomplete="off">
+    <button class="login-btn" id="loginBtn">🔓 Войти</button>
+  </div>
+</div>
+
+<!-- ═══ ПАНЕЛЬ ═══ -->
+<div id="panel" class="hidden">
+
+  <div class="header">
+    <h1>⚡ Artamon Admin Panel <span style="font-size:.65rem;color:#8a8a8a;">v2.6.5</span></h1>
+    <div class="header-actions">
+      <button class="header-btn" id="refreshBtn">🔄 Обновить</button>
+      <button class="header-btn danger" id="logoutBtn">🚪 Выйти</button>
+    </div>
+  </div>
+
+  <!-- СТАТИСТИКА -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="num" id="statUsers">—</div><div class="lbl">Пользователей</div></div>
+    <div class="stat-card"><div class="num" id="statPosts">—</div><div class="lbl">Постов</div></div>
+    <div class="stat-card"><div class="num" id="statRatings">—</div><div class="lbl">Оценок</div></div>
+    <div class="stat-card"><div class="num" id="statComments">—</div><div class="lbl">Комментариев</div></div>
+    <div class="stat-card"><div class="num" id="statBans">—</div><div class="lbl">В бане</div></div>
+    <div class="stat-card"><div class="num" id="statCoins">—</div><div class="lbl">Всего монет</div></div>
+  </div>
+
+  <!-- ТАБЫ -->
+  <div class="tabs">
+    <button class="tab active" data-tab="users">👥 Пользователи</button>
+    <button class="tab" data-tab="bans">🚫 Баны</button>
+    <button class="tab" data-tab="posts">📰 Посты</button>
+    <button class="tab" data-tab="tools">🛠 Инструменты</button>
+    <button class="tab" data-tab="log">📋 Лог</button>
+  </div>
+
+  <!-- ═══ ПОЛЬЗОВАТЕЛИ ═══ -->
+  <div class="section" id="tab-users">
+    <h2><span class="num">1</span> 👥 Управление пользователями</h2>
+    <div class="search-row">
+      <input type="text" class="search-input" id="userSearch" placeholder="Поиск по нику...">
+      <button class="btn" id="usersReload">🔄 Обновить</button>
+    </div>
+    <div class="table-wrap">
+      <table id="usersTable">
+        <thead>
+          <tr>
+            <th>Ник</th>
+            <th>Дата</th>
+            <th>Монет</th>
+            <th>WIP</th>
+            <th>Оценок</th>
+            <th>Коммент.</th>
+            <th>Статус</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody id="usersBody">
+          <tr><td colspan="8" class="empty">Загрузка...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ БАНЫ ═══ -->
+  <div class="section hidden" id="tab-bans">
+    <h2><span class="num">2</span> 🚫 Список забаненных</h2>
+    <div class="search-row">
+      <input type="text" class="search-input" id="banNick" placeholder="Ник для бана">
+      <input type="text" class="search-input" id="banReason" placeholder="Причина">
+      <button class="btn danger" id="banBtn">🚫 Забанить</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ник</th>
+            <th>Причина</th>
+            <th>Когда</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody id="bansBody">
+          <tr><td colspan="4" class="empty">Загрузка...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ ПОСТЫ ═══ -->
+  <div class="section hidden" id="tab-posts">
+    <h2><span class="num">3</span> 📰 Управление постами</h2>
+    <div class="search-row">
+      <button class="btn" id="postCreateBtn">➕ Создать пост</button>
+      <button class="btn ghost" id="postsReload">🔄 Обновить</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Заголовок</th>
+            <th>Автор</th>
+            <th>Дата</th>
+            <th>⭐</th>
+            <th>💬</th>
+            <th>Статус</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody id="postsBody">
+          <tr><td colspan="7" class="empty">Загрузка...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ ИНСТРУМЕНТЫ ═══ -->
+  <div class="section hidden" id="tab-tools">
+    <h2><span class="num">4</span> 🛠 Инструменты</h2>
+    <div class="search-row">
+      <button class="btn" id="kvDumpBtn">📦 Дамп KV</button>
+      <button class="btn ghost" id="apiTestBtn">🌐 Проверить API</button>
+    </div>
+    <pre id="toolsOut" style="background:#000;padding:12px;border-radius:10px;color:#a3a3a3;font-family:ui-monospace,monospace;font-size:.74rem;max-height:400px;overflow-y:auto;white-space:pre-wrap;">Нажми кнопку для результата.</pre>
+  </div>
+
+  <!-- ═══ ЛОГ ═══ -->
+  <div class="section hidden" id="tab-log">
+    <h2><span class="num">5</span> 📋 Лог действий</h2>
+    <div class="search-row">
+      <button class="btn ghost" id="logClear">🗑 Очистить</button>
+      <button class="btn ghost" id="logCopy">📋 Скопировать</button>
+    </div>
+    <div id="log"></div>
+  </div>
+
+</div>
+
+<!-- ═══ МОДАЛКА ═══ -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">×</button>
+    <div class="modal-title" id="modalTitle">—</div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- JS вставим в Части 2 -->
+</body>
+</html>
+<script>
+/* ============================================================
+   ARTAMON ADMIN PANEL — JS
+   ============================================================ */
+
+const API = "https://artamon-api.artem123kv.workers.dev";
+const ADMIN_SECRET = "artamon-admin-2026";
+
+/* ═══════════════════════════════════════════════════════
+   СОСТОЯНИЕ
+   ═══════════════════════════════════════════════════════ */
+const state = {
+  password: "",
+  users: [],
+  bans: [],
+  posts: [],
+  currentTab: "users"
+};
+
+/* ═══════════════════════════════════════════════════════
+   УТИЛИТЫ
+   ═══════════════════════════════════════════════════════ */
+const $ = (id) => document.getElementById(id);
+
+function toast(msg, type) {
+  const el = $("toast");
+  el.textContent = msg;
+  el.className = type || "";
+  el.classList.add("on");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove("on"), 3000);
+}
+
+function log(msg, cls) {
+  const el = $("log");
+  if (!el) return;
+  const line = document.createElement("div");
+  const ts = new Date().toTimeString().slice(0, 8);
+  line.innerHTML = '<span class="ts">' + ts + '</span><span class="' + (cls || "") + '">' + msg + '</span>';
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+function fmtDate(ts) {
+  if (!ts) return "—";
+  const d = new Date(ts);
+  return d.toLocaleDateString("ru-RU") + " " + d.toTimeString().slice(0, 5);
+}
+
+async function api(path, body) {
+  try {
+    const r = await fetch(API + path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(Object.assign({ password: state.password }, body || {}))
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || "HTTP " + r.status);
+    return data;
+  } catch (e) {
+    log("❌ " + path + ": " + e.message, "err");
+    throw e;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   ВХОД / ВЫХОД
+   ═══════════════════════════════════════════════════════ */
+async function tryLogin() {
+  const input = $("loginInput");
+  const err = $("loginError");
+  const pass = input.value.trim();
+  if (!pass) return;
+
+  err.style.display = "none";
+
+  try {
+    const r = await fetch(API + "/api/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: pass })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || "Неверный пароль");
+
+    state.password = pass;
+    try { localStorage.setItem("artamon_admin_pass", pass); } catch(e) {}
+
+    $("loginScreen").classList.add("hidden");
+    $("panel").classList.remove("hidden");
+
+    log("✅ Вход выполнен", "ok");
+    toast("Добро пожаловать, Админ!", "ok");
+    refreshAll();
+  } catch (e) {
+    err.textContent = "❌ " + e.message;
+    err.style.display = "block";
+    input.value = "";
+  }
+}
+
+function logout() {
+  try { localStorage.removeItem("artamon_admin_pass"); } catch(e) {}
+  state.password = "";
+  state.users = [];
+  state.bans = [];
+  state.posts = [];
+  $("loginScreen").classList.remove("hidden");
+  $("panel").classList.add("hidden");
+  $("loginInput").value = "";
+  log("🚪 Выход", "info");
+}
+
+/* ═══════════════════════════════════════════════════════
+   ЗАГРУЗКА ДАННЫХ
+   ═══════════════════════════════════════════════════════ */
+async function loadStats() {
+  try {
+    const r = await api("/api/admin/stats");
+    const s = r.stats;
+    $("statUsers").textContent = s.usersCount;
+    $("statPosts").textContent = s.postsCount;
+    $("statRatings").textContent = s.ratingsCount;
+    $("statComments").textContent = s.commentsCount;
+    $("statBans").textContent = s.bansCount;
+    $("statCoins").textContent = s.totalCoins.toLocaleString("ru-RU");
+    log("📊 Статистика загружена", "ok");
+  } catch (e) {
+    log("❌ Ошибка статистики: " + e.message, "err");
+  }
+}
+
+async function loadUsers() {
+  const tbody = $("usersBody");
+  tbody.innerHTML = '<tr><td colspan="8" class="empty">Загрузка...</td></tr>';
+  try {
+    const r = await api("/api/admin/users");
+    state.users = r.users;
+    renderUsers();
+    log("👥 Загружено пользователей: " + r.users.length, "ok");
+  } catch (e) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty">❌ Ошибка загрузки</td></tr>';
+  }
+}
+
+function renderUsers() {
+  const tbody = $("usersBody");
+  const search = ($("userSearch") ? $("userSearch").value : "").toLowerCase().trim();
+  let list = state.users;
+  if (search) list = list.filter(u => u.nick.toLowerCase().includes(search));
+
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty">Нет пользователей</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = "";
+  list.forEach(u => {
+    const tr = document.createElement("tr");
+
+    const wipActive = u.wip && u.wip.active && u.wip.until > Date.now();
+    const wipDays = wipActive ? Math.ceil((u.wip.until - Date.now()) / 86400000) : 0;
+    const wipBadge = wipActive
+      ? '<span class="badge ok">💎 ' + wipDays + 'д</span>'
+      : '<span class="badge" style="color:#5c5c5c;">—</span>';
+
+    const statusBadge = u.banned
+      ? '<span class="badge err">🚫 БАН</span>'
+      : '<span class="badge ok">✅ OK</span>';
+
+    tr.innerHTML =
+      '<td><b>' + escapeHtml(u.nick) + '</b></td>' +
+      '<td style="font-size:.72rem;color:#8a8a8a;">' + fmtDate(u.createdAt) + '</td>' +
+      '<td>🪙 ' + (u.coins || 0) + '</td>' +
+      '<td>' + wipBadge + '</td>' +
+      '<td>⭐ ' + (u.ratings || 0) + '</td>' +
+      '<td>💬 ' + (u.comments || 0) + '</td>' +
+      '<td>' + statusBadge + '</td>' +
+      '<td class="actions">' +
+        '<button class="btn sm" data-action="manage" data-nick="' + escapeHtml(u.nick) + '">⚙️</button>' +
+        (u.banned
+          ? '<button class="btn sm success" data-action="unban" data-nick="' + escapeHtml(u.nick) + '">✅</button>'
+          : '<button class="btn sm danger" data-action="ban" data-nick="' + escapeHtml(u.nick) + '">🚫</button>') +
+      '</td>';
+
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll("[data-action]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const action = btn.getAttribute("data-action");
+      const nick = btn.getAttribute("data-nick");
+      if (action === "manage") openManageUser(nick);
+      else if (action === "ban") quickBan(nick);
+      else if (action === "unban") quickUnban(nick);
+    });
+  });
+}
+
+async function loadBans() {
+  const tbody = $("bansBody");
+  tbody.innerHTML = '<tr><td colspan="4" class="empty">Загрузка...</td></tr>';
+  try {
+    const r = await api("/api/admin/bans");
+    state.bans = r.bans;
+    if (!r.bans.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty">Список пуст</td></tr>';
+      return;
+    }
+    tbody.innerHTML = "";
+    r.bans.forEach(b => {
+      const tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td><b>' + escapeHtml(b.nick) + '</b></td>' +
+        '<td style="color:#f87171;">' + escapeHtml(b.reason) + '</td>' +
+        '<td style="font-size:.72rem;color:#8a8a8a;">' + fmtDate(b.bannedAt) + '</td>' +
+        '<td class="actions"><button class="btn sm success" data-unban="' + escapeHtml(b.nick) + '">✅ Разбанить</button></td>';
+      tbody.appendChild(tr);
+    });
+    tbody.querySelectorAll("[data-unban]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const nick = btn.getAttribute("data-unban");
+        if (!confirm("Разбанить " + nick + "?")) return;
+        await api("/api/admin/unban", { nick });
+        toast("✅ " + nick + " разбанен", "ok");
+        log("✅ Разбанен: " + nick, "ok");
+        loadBans(); loadUsers(); loadStats();
+      });
+    });
+  } catch (e) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty">❌ Ошибка</td></tr>';
+  }
+}
+
+async function loadPosts() {
+  const tbody = $("postsBody");
+  tbody.innerHTML = '<tr><td colspan="7" class="empty">Загрузка...</td></tr>';
+  try {
+    const r = await api("/api/admin/posts");
+    state.posts = r.posts;
+    if (!r.posts.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty">Постов нет</td></tr>';
+      return;
+    }
+    tbody.innerHTML = "";
+    r.posts.forEach(p => {
+      const ratingsCount = p.ratings ? Object.keys(p.ratings).filter(k => k.indexOf("__") === -1).length : 0;
+      const commentsCount = (p.comments || []).length;
+      let avg = 0;
+      if (ratingsCount) {
+        let sum = 0;
+        Object.keys(p.ratings).filter(k => k.indexOf("__") === -1).forEach(k => sum += p.ratings[k]);
+        avg = (sum / ratingsCount).toFixed(1);
+      }
+      const statuses = [];
+      if (p.pinned) statuses.push('<span class="badge warn">📌</span>');
+      if (p.hidden) statuses.push('<span class="badge err">🙈</span>');
+      if (p.closed) statuses.push('<span class="badge err">🔒</span>');
+      if (!statuses.length) statuses.push('<span class="badge ok">OK</span>');
+
+      const tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td><b>' + escapeHtml(p.title) + '</b></td>' +
+        '<td>' + escapeHtml(p.author || "—") + '</td>' +
+        '<td style="font-size:.72rem;color:#8a8a8a;">' + fmtDate(p.date) + '</td>' +
+        '<td>' + (ratingsCount ? avg + ' ⭐ (' + ratingsCount + ')' : '—') + '</td>' +
+        '<td>💬 ' + commentsCount + '</td>' +
+        '<td>' + statuses.join(" ") + '</td>' +
+        '<td class="actions">' +
+          '<button class="btn sm" data-pin="' + p.id + '">' + (p.pinned ? "📍" : "📌") + '</button>' +
+          '<button class="btn sm" data-hide="' + p.id + '">' + (p.hidden ? "👁" : "🙈") + '</button>' +
+          '<button class="btn sm" data-comments="' + p.id + '">💬</button>' +
+          '<button class="btn sm danger" data-del="' + p.id + '">🗑</button>' +
+        '</td>';
+      tbody.appendChild(tr);
+    });
+
+    tbody.querySelectorAll("[data-pin]").forEach(b => b.addEventListener("click", async () => {
+      await api("/api/admin/post-toggle", { id: b.getAttribute("data-pin"), field: "pinned" });
+      toast("📌 Изменено", "ok");
+      loadPosts();
+    }));
+    tbody.querySelectorAll("[data-hide]").forEach(b => b.addEventListener("click", async () => {
+      await api("/api/admin/post-toggle", { id: b.getAttribute("data-hide"), field: "hidden" });
+      toast("🙈 Изменено", "ok");
+      loadPosts();
+    }));
+    tbody.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", async () => {
+      if (!confirm("Удалить пост?")) return;
+      await api("/api/admin/post-delete", { id: b.getAttribute("data-del") });
+      toast("🗑 Пост удалён", "ok");
+      log("🗑 Удалён пост: " + b.getAttribute("data-del"), "info");
+      loadPosts(); loadStats();
+    }));
+    tbody.querySelectorAll("[data-comments]").forEach(b => b.addEventListener("click", () => {
+      const id = b.getAttribute("data-comments");
+      const post = state.posts.find(p => p.id === id);
+      if (post) openComments(post);
+    }));
+  } catch (e) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">❌ Ошибка</td></tr>';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   МОДАЛКА — Управление пользователем
+   ═══════════════════════════════════════════════════════ */
+function openModal(title, html) {
+  $("modalTitle").textContent = title;
+  $("modalBody").innerHTML = html;
+  $("modal").classList.add("on");
+}
+function closeModal() {
+  $("modal").classList.remove("on");
+}
+
+async function openManageUser(nick) {
+  try {
+    const r = await api("/api/admin/user-detail", { nick });
+    const u = r.user;
+    const wipActive = u.wip && u.wip.active && u.wip.until > Date.now();
+    const wipDays = wipActive ? Math.ceil((u.wip.until - Date.now()) / 86400000) : 0;
+    const ownedAvatars = (u.owned && u.owned.avatars) || [];
+
+    openModal("⚙️ " + u.nick,
+      '<div style="font-size:.82rem;color:#8a8a8a;margin-bottom:14px;">' +
+        'Создан: ' + fmtDate(u.createdAt) + '<br>' +
+        'Монет: <b style="color:#d4af37;">🪙 ' + (u.coins || 0) + '</b><br>' +
+        'WIP: <b style="color:' + (wipActive ? '#4ade80' : '#8a8a8a') + ';">' + (wipActive ? '💎 ' + wipDays + ' дн.' : 'нет') + '</b><br>' +
+        'Аватарок куплено: <b style="color:#d4af37;">' + ownedAvatars.length + '</b>' +
+      '</div>' +
+
+      '<div class="form-group">' +
+        '<label class="form-label">🪙 Монеты</label>' +
+        '<input type="number" class="form-input" id="mCoins" value="0" placeholder="Сколько">' +
+        '<div style="display:flex;gap:6px;margin-top:6px;">' +
+          '<button class="btn sm success" data-coin="add">➕ Выдать</button>' +
+          '<button class="btn sm danger" data-coin="take">➖ Забрать</button>' +
+          '<button class="btn sm ghost" data-coin="set">= Установить</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="form-group">' +
+        '<label class="form-label">💎 WIP-подписка</label>' +
+        '<input type="number" class="form-input" id="mWipDays" value="30" placeholder="Дней">' +
+        '<div style="display:flex;gap:6px;margin-top:6px;">' +
+          '<button class="btn sm success" data-wip="give">➕ Выдать WIP</button>' +
+          '<button class="btn sm danger" data-wip="remove">➖ Забрать WIP</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="form-group">' +
+        '<label class="form-label">🎁 Выдать аватарку</label>' +
+        '<input type="text" class="form-input" id="mAvatar" placeholder="Например: 👑 или 🏆" maxlength="4">' +
+        '<div style="display:flex;gap:6px;margin-top:6px;">' +
+          '<button class="btn sm success" data-avatar="give">➕ Выдать</button>' +
+          '<button class="btn sm danger" data-avatar="remove">➖ Забрать</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="form-actions">' +
+        '<button class="btn ghost" onclick="closeModal()">Закрыть</button>' +
+      '</div>'
+    );
+
+    $("modalBody").querySelectorAll("[data-coin]").forEach(b => b.addEventListener("click", async () => {
+      const amount = parseInt($("mCoins").value, 10) || 0;
+      const mode = b.getAttribute("data-coin");
+      if (amount <= 0) return toast("Введи число", "err");
+      try {
+        const rr = await api("/api/admin/give-coins", { nick: u.nick, amount, mode });
+        toast("🪙 Монет: " + rr.coins, "ok");
+        log("🪙 " + u.nick + ": " + mode + " " + amount + " → " + rr.coins, "ok");
+        openManageUser(nick);
+        loadUsers(); loadStats();
+      } catch (e) { toast("❌ Ошибка", "err"); }
+    }));
+
+    $("modalBody").querySelectorAll("[data-wip]").forEach(b => b.addEventListener("click", async () => {
+      const mode = b.getAttribute("data-wip");
+      try {
+        if (mode === "give") {
+          const days = parseInt($("mWipDays").value, 10) || 30;
+          await api("/api/admin/give-wip", { nick: u.nick, days });
+          toast("💎 WIP выдан на " + days + " дней", "ok");
+          log("💎 " + u.nick + ": WIP на " + days + " дней", "ok");
+        } else {
+          await api("/api/admin/remove-wip", { nick: u.nick });
+          toast("💎 WIP снят", "ok");
+          log("💎 " + u.nick + ": WIP снят", "info");
+        }
+        openManageUser(nick);
+        loadUsers();
+      } catch (e) { toast("❌ Ошибка", "err"); }
+    }));
+
+    $("modalBody").querySelectorAll("[data-avatar]").forEach(b => b.addEventListener("click", async () => {
+      const avatar = $("mAvatar").value.trim();
+      if (!avatar) return toast("Введи аватарку", "err");
+      const mode = b.getAttribute("data-avatar");
+      try {
+        const path = mode === "give" ? "/api/admin/give-avatar" : "/api/admin/remove-avatar";
+        await api(path, { nick: u.nick, avatar });
+        toast("🎁 " + (mode === "give" ? "Выдано" : "Забрано") + ": " + avatar, "ok");
+        log("🎁 " + u.nick + ": " + mode + " " + avatar, "ok");
+        openManageUser(nick);
+        loadUsers();
+      } catch (e) { toast("❌ Ошибка", "err"); }
+    }));
+  } catch (e) {
+    toast("❌ Не удалось загрузить", "err");
+  }
+}
+
+async function quickBan(nick) {
+  const reason = prompt("Причина бана для " + nick + ":", "Нарушение правил");
+  if (reason === null) return;
+  try {
+    await api("/api/admin/ban", { nick, reason });
+    toast("🚫 " + nick + " забанен", "ok");
+    log("🚫 Забанен: " + nick + " — " + reason, "err");
+    loadUsers(); loadBans(); loadStats();
+  } catch (e) { toast("❌ Ошибка", "err"); }
+}
+
+async function quickUnban(nick) {
+  if (!confirm("Разбанить " + nick + "?")) return;
+  try {
+    await api("/api/admin/unban", { nick });
+    toast("✅ " + nick + " разбанен", "ok");
+    log("✅ Разбанен: " + nick, "ok");
+    loadUsers(); loadBans(); loadStats();
+  } catch (e) { toast("❌ Ошибка", "err"); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   МОДАЛКА — Комментарии поста
+   ═══════════════════════════════════════════════════════ */
+function openComments(post) {
+  const comments = post.comments || [];
+  let html = '<div style="font-size:.82rem;color:#8a8a8a;margin-bottom:12px;">Пост: <b style="color:#d4af37;">' + escapeHtml(post.title) + '</b></div>';
+  if (!comments.length) {
+    html += '<div class="empty">Комментариев нет</div>';
+  } else {
+    html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+    comments.forEach(c => {
+      html +=
+        '<div style="background:rgba(0,0,0,.4);border:1px solid #2a2a2a;border-radius:10px;padding:10px 12px;">' +
+          '<div style="display:flex;justify-content:space-between;margin-bottom:5px;">' +
+            '<b style="color:#d4af37;font-size:.82rem;">' + escapeHtml(c.nick) + '</b>' +
+            '<span style="font-size:.66rem;color:#5c5c5c;">' + fmtDate(c.time) + '</span>' +
+          '</div>' +
+          '<div style="font-size:.84rem;margin-bottom:6px;">' + escapeHtml(c.text) + '</div>' +
+          '<button class="btn sm danger" data-delcomment="' + c.id + '">🗑 Удалить</button>' +
+        '</div>';
+    });
+    html += '</div>';
+  }
+  html += '<div class="form-actions"><button class="btn ghost" onclick="closeModal()">Закрыть</button></div>';
+
+  openModal("💬 Комментарии", html);
+
+  $("modalBody").querySelectorAll("[data-delcomment]").forEach(b => b.addEventListener("click", async () => {
+    const commentId = b.getAttribute("data-delcomment");
+    if (!confirm("Удалить комментарий?")) return;
+    try {
+      await api("/api/admin/comment-delete", { postId: post.id, commentId });
+      toast("🗑 Удалён", "ok");
+      log("🗑 Удалён комментарий", "info");
+      const r = await api("/api/admin/posts");
+      const updated = r.posts.find(p => p.id === post.id);
+      if (updated) openComments(updated);
+      loadPosts();
+    } catch (e) { toast("❌ Ошибка", "err"); }
+  }));
+}
+
+/* ═══════════════════════════════════════════════════════
+   СОЗДАНИЕ ПОСТА
+   ═══════════════════════════════════════════════════════ */
+function openCreatePost() {
+  openModal("➕ Новый пост",
+    '<div class="form-group">' +
+      '<label class="form-label">Заголовок *</label>' +
+      '<input type="text" class="form-input" id="npTitle" maxlength="200">' +
+    '</div>' +
+    '<div class="form-group">' +
+      '<label class="form-label">Текст</label>' +
+      '<textarea class="form-input" id="npBody" rows="5" style="resize:vertical;"></textarea>' +
+    '</div>' +
+    '<div class="form-group">' +
+      '<label class="form-label">URL картинки (необязательно)</label>' +
+      '<input type="text" class="form-input" id="npImg" placeholder="https://...">' +
+    '</div>' +
+    '<div class="form-group">' +
+      '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;">' +
+        '<input type="checkbox" id="npPinned"> <span style="font-size:.85rem;">📌 Закрепить</span>' +
+      '</label>' +
+    '</div>' +
+    '<div class="form-actions">' +
+      '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
+      '<button class="btn success" id="npCreate">✅ Создать</button>' +
+    '</div>'
+  );
+
+  $("npCreate").addEventListener("click", async () => {
+    const title = $("npTitle").value.trim();
+    if (!title) return toast("Введи заголовок", "err");
+    try {
+      await api("/api/admin/post-create", {
+        title,
+        body: $("npBody").value.trim(),
+        img: $("npImg").value.trim(),
+        pinned: $("npPinned").checked
+      });
+      toast("✅ Пост создан", "ok");
+      log("✅ Создан пост: " + title, "ok");
+      closeModal();
+      loadPosts(); loadStats();
+    } catch (e) { toast("❌ Ошибка", "err"); }
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   ИНСТРУМЕНТЫ
+   ═══════════════════════════════════════════════════════ */
+async function kvDump() {
+  const out = $("toolsOut");
+  out.textContent = "Загрузка...";
+  try {
+    const r = await api("/api/admin/kv-dump");
+    out.textContent = JSON.stringify(r.dump, null, 2);
+    log("📦 KV дамп получен", "ok");
+  } catch (e) {
+    out.textContent = "❌ " + e.message;
+  }
+}
+
+async function apiTest() {
+  const out = $("toolsOut");
+  out.textContent = "Проверка API...";
+  try {
+    const r = await fetch(API + "/");
+    const data = await r.json();
+    out.textContent = "✅ API работает\n\n" + JSON.stringify(data, null, 2);
+    log("🌐 API отвечает: " + r.status, "ok");
+  } catch (e) {
+    out.textContent = "❌ Ошибка: " + e.message;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   ТАБЫ
+   ═══════════════════════════════════════════════════════ */
+function switchTab(tab) {
+  state.currentTab = tab;
+  document.querySelectorAll(".tab").forEach(t => {
+    t.classList.toggle("active", t.getAttribute("data-tab") === tab);
+  });
+  ["users", "bans", "posts", "tools", "log"].forEach(t => {
+    const el = $("tab-" + t);
+    if (el) el.classList.toggle("hidden", t !== tab);
+  });
+  if (tab === "bans") loadBans();
+  else if (tab === "posts") loadPosts();
+}
+
+/* ═══════════════════════════════════════════════════════
+   ОБНОВЛЕНИЕ ВСЕГО
+   ═══════════════════════════════════════════════════════ */
+function refreshAll() {
+  loadStats();
+  loadUsers();
+  if (state.currentTab === "bans") loadBans();
+  if (state.currentTab === "posts") loadPosts();
+}
+
+/* ═══════════════════════════════════════════════════════
+   ИНИЦИАЛИЗАЦИЯ
+   ═══════════════════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", () => {
+  /* Вход */
+  $("loginBtn").addEventListener("click", tryLogin);
+  $("loginInput").addEventListener("keydown", e => {
+    if (e.key === "Enter") tryLogin();
+  });
+
+  /* Выход / обновить */
+  $("logoutBtn").addEventListener("click", logout);
+  $("refreshBtn").addEventListener("click", () => {
+    refreshAll();
+    toast("🔄 Обновлено", "ok");
+  });
+
+  /* Табы */
+  document.querySelectorAll(".tab").forEach(t => {
+    t.addEventListener("click", () => switchTab(t.getAttribute("data-tab")));
+  });
+
+  /* Пользователи */
+  $("usersReload").addEventListener("click", loadUsers);
+  $("userSearch").addEventListener("input", renderUsers);
+
+  /* Баны */
+  $("banBtn").addEventListener("click", async () => {
+    const nick = $("banNick").value.trim();
+    const reason = $("banReason").value.trim() || "Без причины";
+    if (!nick) return toast("Введи ник", "err");
+    try {
+      await api("/api/admin/ban", { nick, reason });
+      toast("🚫 " + nick + " забанен", "ok");
+      log("🚫 Забанен: " + nick + " — " + reason, "err");
+      $("banNick").value = "";
+      $("banReason").value = "";
+      loadBans(); loadUsers(); loadStats();
+    } catch (e) { toast("❌ Ошибка", "err"); }
+  });
+
+  /* Посты */
+  $("postCreateBtn").addEventListener("click", openCreatePost);
+  $("postsReload").addEventListener("click", loadPosts);
+
+  /* Инструменты */
+  $("kvDumpBtn").addEventListener("click", kvDump);
+  $("apiTestBtn").addEventListener("click", apiTest);
+
+  /* Лог */
+  $("logClear").addEventListener("click", () => { $("log").innerHTML = ""; });
+  $("logCopy").addEventListener("click", () => {
+    navigator.clipboard.writeText($("log").innerText).then(() => toast("📋 Скопировано", "ok"));
+  });
+
+  /* Модалка */
+  $("modalClose").addEventListener("click", closeModal);
+  $("modal").addEventListener("click", e => {
+    if (e.target === $("modal")) closeModal();
+  });
+
+  /* Автовход, если пароль сохранён */
+  try {
+    const saved = localStorage.getItem("artamon_admin_pass");
+    if (saved) {
+      $("loginInput").value = saved;
+      tryLogin();
+    }
+  } catch(e) {}
+});
+
+/* Сделаем функции доступными из HTML-атрибутов */
+window.closeModal = closeModal;
+</script>
