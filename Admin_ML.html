@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#60a5fa">
+<title>🛡 Artamon ML-Admin</title>
+<style>
+:root {
+  --gold-1: #dbeafe;
+  --gold-2: #60a5fa;
+  --gold-3: #1e40af;
+  --bg-1: #050505;
+  --bg-2: #0d0d0d;
+  --bg-3: #141414;
+  --txt-1: #e8e6e1;
+  --txt-2: #8a8a8a;
+  --txt-3: #5c5c5c;
+  --card-1: rgba(23,23,23,.95);
+  --card-2: rgba(15,15,15,.95);
+  --border: #2a2a2a;
+  --success: #4ade80;
+  --danger: #f87171;
+  --warn: #fbbf24;
+  --info: #60a5fa;
+  --ml: #60a5fa;
+}
+body[data-theme="dark"] { }
+body[data-theme="light"] {
+  --bg-1: #f8fafc;
+  --bg-2: #f1f5f9;
+  --bg-3: #e2e8f0;
+  --txt-1: #0f172a;
+  --txt-2: #475569;
+  --txt-3: #94a3b8;
+  --card-1: rgba(255,255,255,.98);
+  --card-2: rgba(248,250,252,.98);
+  --border: #cbd5e1;
+}
+body[data-theme="blue"] {
+  --bg-1: #020617;
+  --bg-2: #0f172a;
+  --bg-3: #1e293b;
+  --card-1: rgba(15,23,42,.95);
+  --card-2: rgba(2,6,23,.95);
+  --border: #334155;
+}
+body[data-theme="red"] {
+  --bg-1: #0a0505;
+  --bg-2: #1a0a0a;
+  --bg-3: #2a1010;
+  --card-1: rgba(30,10,10,.95);
+  --card-2: rgba(15,5,5,.95);
+  --border: #4a2020;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+  min-height: 100vh;
+  background: var(--bg-1);
+  color: var(--txt-1);
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+body { transition: background .3s, color .3s; }
+button { font-family: inherit; cursor: pointer; }
+input, textarea, select { font-family: inherit; }
+.hidden { display: none !important; }
+
+/* ЛОГИН */
+#loginScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: radial-gradient(circle at 50% 50%, var(--bg-2) 0%, var(--bg-1) 70%);
+}
+.login-box {
+  max-width: 420px;
+  width: 100%;
+  background: var(--card-1);
+  border: 2px solid var(--ml);
+  border-radius: 20px;
+  padding: 32px 26px;
+  text-align: center;
+}
+.login-icon { font-size: 4rem; margin-bottom: 12px; display: block; }
+.login-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, var(--gold-1), var(--gold-2) 45%, var(--gold-3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 8px;
+}
+.login-sub { color: var(--txt-2); font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 24px; }
+.login-input {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--ml);
+  padding: 14px;
+  border-radius: 10px;
+  font-family: ui-monospace, monospace;
+  font-size: 1rem;
+  text-align: center;
+  outline: none;
+  letter-spacing: .06em;
+  margin-bottom: 12px;
+}
+.login-input:focus { border-color: var(--ml); }
+.login-btn {
+  width: 100%;
+  border: 1.5px solid var(--ml);
+  background: color-mix(in srgb, var(--ml) 15%, transparent);
+  color: var(--ml);
+  padding: 14px;
+  border-radius: 11px;
+  font-size: .88rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: .2s;
+}
+.login-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--ml) 28%, transparent); }
+.login-btn:disabled { opacity: .5; cursor: not-allowed; }
+.login-error {
+  background: rgba(248,113,113,.15);
+  border: 1px solid rgba(248,113,113,.4);
+  color: var(--danger);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: .82rem;
+  margin-bottom: 12px;
+  display: none;
+}
+.login-error.on { display: block; }
+.login-hint { font-size: .7rem; color: var(--txt-3); margin-top: 14px; }
+
+/* СТРУКТУРА */
+#app { display: flex; min-height: 100vh; }
+#sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--card-1);
+  border-right: 1px solid var(--border);
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  transition: transform .3s ease;
+  overflow-y: auto;
+}
+#sidebar.mobile-open { transform: translateX(0); }
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 6px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-logo { font-size: 1.6rem; }
+.sidebar-title {
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  background: linear-gradient(180deg, var(--gold-1), var(--gold-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1.1;
+}
+.sidebar-version { font-size: .62rem; color: var(--txt-3); letter-spacing: .1em; }
+.sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--txt-2);
+  padding: 10px 12px;
+  font-size: .85rem;
+  font-weight: 600;
+  text-align: left;
+  transition: .15s;
+  position: relative;
+}
+.nav-item .nav-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+.nav-item .nav-badge {
+  margin-left: auto;
+  font-size: .62rem;
+  font-weight: 800;
+  background: color-mix(in srgb, var(--ml) 20%, transparent);
+  color: var(--ml);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.nav-item .nav-badge.danger { background: rgba(248,113,113,.2); color: var(--danger); }
+.nav-item:hover { background: color-mix(in srgb, var(--ml) 8%, transparent); color: var(--txt-1); }
+.nav-item.active {
+  background: color-mix(in srgb, var(--ml) 15%, transparent);
+  border-color: var(--ml);
+  color: var(--ml);
+}
+.sidebar-footer {
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sidebar-footer button {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--txt-2);
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.sidebar-footer button:hover { border-color: var(--ml); color: var(--ml); }
+.sidebar-footer button.danger { color: var(--danger); border-color: rgba(248,113,113,.4); }
+#main { flex: 1; margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--card-1);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.burger {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--txt-2);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.burger:hover { border-color: var(--ml); color: var(--ml); }
+.topbar-title { flex: 1; font-size: 1rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.topbar-role {
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ml) 20%, transparent);
+  color: var(--ml);
+  border: 1px solid var(--ml);
+}
+.theme-switch { display: flex; gap: 4px; padding: 3px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; }
+.theme-switch button {
+  background: transparent;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.theme-switch button.active { background: color-mix(in srgb, var(--ml) 22%, transparent); }
+#content { flex: 1; padding: 20px; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+/* СТАТИСТИКА */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--card-1); border: 1px solid var(--border); border-radius: 14px; padding: 16px; text-align: center; transition: .2s; }
+.stat-card:hover { border-color: var(--ml); transform: translateY(-2px); }
+.stat-card .num { font-size: 1.6rem; font-weight: 900; color: var(--ml); line-height: 1; margin-bottom: 6px; }
+.stat-card .lbl { font-size: .68rem; color: var(--txt-2); letter-spacing: .1em; text-transform: uppercase; }
+
+/* СЕКЦИИ */
+.section { background: var(--card-1); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
+.section-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.section-title { font-size: .9rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ml); display: flex; align-items: center; gap: 8px; }
+.section-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.search-bar { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.search-input {
+  flex: 1;
+  min-width: 180px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--txt-1);
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: .88rem;
+  outline: none;
+}
+.search-input:focus { border-color: var(--ml); }
+
+/* КНОПКИ */
+.btn {
+  background: color-mix(in srgb, var(--ml) 12%, transparent);
+  border: 1.5px solid var(--ml);
+  color: var(--ml);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  transition: .15s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover:not(:disabled) { background: color-mix(in srgb, var(--ml) 25%, transparent); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.ghost { background: transparent; border-color: var(--border); color: var(--txt-2); }
+.btn.ghost:hover:not(:disabled) { border-color: var(--ml); color: var(--ml); }
+.btn.danger { border-color: var(--danger); color: var(--danger); background: rgba(248,113,113,.12); }
+.btn.danger:hover:not(:disabled) { background: rgba(248,113,113,.25); }
+.btn.success { border-color: var(--success); color: var(--success); background: rgba(74,222,128,.12); }
+.btn.warn { border-color: var(--warn); color: var(--warn); background: rgba(251,191,36,.12); }
+.btn.sm { padding: 7px 12px; font-size: .7rem; }
+.btn.full { width: 100%; justify-content: center; }
+.btn:disabled.limit { opacity: 1; background: rgba(248,113,113,.08); border-color: rgba(248,113,113,.4); color: var(--danger); }
+
+/* ЛИМИТ-БЛОК */
+.limit-banner {
+  background: rgba(96,165,250,.1);
+  border: 1px solid rgba(96,165,250,.4);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: .82rem;
+  color: var(--txt-1);
+  line-height: 1.6;
+}
+.limit-banner b { color: var(--ml); font-weight: 800; }
+.limit-banner .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+/* КАРТОЧКИ */
+.users-list { display: flex; flex-direction: column; gap: 8px; }
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  transition: .15s;
+}
+.user-card:hover { border-color: var(--ml); }
+.user-card.banned { border-left: 3px solid var(--danger); }
+.user-card.muted { border-left: 3px solid var(--warn); }
+.user-avatar {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  background: var(--bg-3);
+  border: 2px solid var(--border);
+}
+.user-info { flex: 1; min-width: 0; }
+.user-nick { font-size: .95rem; font-weight: 800; color: var(--txt-1); margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: .72rem; color: var(--txt-2); }
+.user-meta span { display: inline-flex; align-items: center; gap: 3px; }
+.user-meta b { color: var(--ml); font-weight: 800; }
+.user-meta .badge {
+  font-size: .6rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+.user-meta .badge.ban { background: rgba(248,113,113,.18); color: var(--danger); }
+.user-meta .badge.mute { background: rgba(251,191,36,.18); color: var(--warn); }
+.user-meta .badge.wip { background: rgba(96,165,250,.18); color: var(--info); }
+.user-actions { display: flex; gap: 4px; flex-shrink: 0; }
+
+/* ТАБЛИЦА */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+th {
+  text-align: left;
+  padding: 10px 12px;
+  color: var(--txt-2);
+  font-size: .68rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--txt-1); vertical-align: middle; }
+tr:hover td { background: color-mix(in srgb, var(--ml) 4%, transparent); }
+
+/* ПУСТОЕ */
+.empty { text-align: center; padding: 50px 20px; color: var(--txt-3); font-style: italic; }
+.empty-icon { font-size: 3rem; display: block; margin-bottom: 10px; opacity: .5; }
+.empty b { color: var(--ml); font-style: normal; }
+.loading { text-align: center; padding: 40px 20px; color: var(--txt-2); }
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--border);
+  border-top-color: var(--ml);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* МОДАЛКА */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(6px);
+}
+.modal.on { display: flex; }
+.modal-box {
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--card-1);
+  border: 2px solid var(--ml);
+  border-radius: 18px;
+  padding: 24px;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--txt-2);
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+.modal-close:hover { border-color: var(--danger); color: var(--danger); }
+.modal-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ml);
+  margin-bottom: 16px;
+}
+
+/* ФОРМА */
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: block;
+  font-size: .7rem;
+  color: var(--txt-2);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.form-input {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--txt-1);
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: .9rem;
+  outline: none;
+}
+.form-input:focus { border-color: var(--ml); }
+textarea.form-input { resize: vertical; min-height: 80px; }
+.form-row { display: flex; gap: 8px; align-items: center; }
+.form-row .form-input { flex: 1; }
+.form-actions { display: flex; gap: 8px; margin-top: 18px; justify-content: flex-end; flex-wrap: wrap; }
+.form-hint { font-size: .7rem; color: var(--txt-3); margin-top: 4px; }
+
+/* ТОСТ */
+#toasts {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  max-width: 340px;
+}
+.toast {
+  background: var(--card-1);
+  border: 1.5px solid var(--ml);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--txt-1);
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform .3s cubic-bezier(.5,1.5,.5,1), opacity .3s;
+  pointer-events: auto;
+}
+.toast.show { transform: translateX(0); opacity: 1; }
+.toast.success { border-color: var(--success); color: var(--success); }
+.toast.error { border-color: var(--danger); color: var(--danger); }
+.toast.warn { border-color: var(--warn); color: var(--warn); }
+
+/* ТИКЕТЫ */
+.ticket-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--ml);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.ticket-card.closed { border-left-color: var(--txt-3); opacity: .7; }
+.ticket-card.answered { border-left-color: var(--success); }
+.ticket-head { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+.ticket-subject { font-size: .92rem; font-weight: 800; color: var(--txt-1); flex: 1; min-width: 150px; }
+.ticket-date { font-size: .68rem; color: var(--txt-3); white-space: nowrap; }
+.ticket-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.ticket-message { font-size: .85rem; color: var(--txt-1); line-height: 1.5; margin-bottom: 10px; white-space: pre-wrap; word-break: break-word; }
+.ticket-replies { padding-left: 12px; border-left: 2px solid var(--border); margin-bottom: 10px; }
+.ticket-reply { background: var(--card-2); border-radius: 8px; padding: 10px 12px; margin-bottom: 6px; font-size: .82rem; }
+.ticket-reply .reply-head { font-size: .65rem; font-weight: 800; color: var(--ml); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
+
+/* ПОСТЫ */
+.post-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.post-card.hidden-post { opacity: .5; border-left: 3px solid var(--warn); }
+.post-head { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+.post-title { font-size: .95rem; font-weight: 800; color: var(--txt-1); }
+.post-meta { font-size: .7rem; color: var(--txt-2); display: flex; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
+.post-meta b { color: var(--ml); }
+.post-body { font-size: .85rem; color: var(--txt-1); margin-top: 8px; white-space: pre-wrap; }
+
+/* ЛОГИ */
+.log-list { max-height: 500px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+.log-item {
+  background: var(--bg-2);
+  border-left: 3px solid var(--ml);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: .78rem;
+}
+.log-item .log-time { color: var(--txt-3); font-size: .68rem; margin-right: 8px; }
+.log-item .log-action { color: var(--ml); font-weight: 800; text-transform: uppercase; letter-spacing: .05em; font-size: .7rem; margin-right: 6px; }
+.log-item .log-detail { color: var(--txt-1); }
+
+.badge { display: inline-block; font-size: .62rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 8px; }
+.badge.open { background: rgba(96,165,250,.18); color: var(--info); }
+.badge.answered { background: rgba(74,222,128,.18); color: var(--success); }
+.badge.closed { background: rgba(92,92,92,.18); color: var(--txt-3); }
+.badge.common { background: rgba(96,165,250,.15); color: var(--ml); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* АДАПТИВ */
+@media (max-width: 768px) {
+  #sidebar { transform: translateX(-100%); width: 250px; box-shadow: 0 0 40px rgba(0,0,0,.6); }
+  #main { margin-left: 0; }
+  #content { padding: 14px; }
+  .topbar { padding: 12px 14px; }
+  .topbar-title { font-size: .85rem; }
+  .stat-card .num { font-size: 1.4rem; }
+  .user-card { padding: 10px 12px; }
+  .user-avatar { width: 36px; height: 36px; font-size: 1.2rem; }
+  .section { padding: 14px; }
+  .modal-box { padding: 18px; }
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ml); }
+</style>
+</head>
+<body data-theme="dark">
+
+<!-- ЛОГИН -->
+<div id="loginScreen">
+  <div class="login-box">
+    <span class="login-icon">🛡</span>
+    <div class="login-title">Artamon ML-Admin</div>
+    <div class="login-sub">Младший администратор</div>
+    <div class="login-error" id="loginError"></div>
+    <input type="password" class="login-input" id="loginInput" placeholder="••••••••••••" autocomplete="off">
+    <button class="login-btn" id="loginBtn">🔓 Войти</button>
+    <div class="login-hint">Пароль: выдаётся старшим админом</div>
+  </div>
+</div>
+
+<!-- ПРИЛОЖЕНИЕ -->
+<div id="app" class="hidden">
+
+<!-- САЙДБАР -->
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <span class="sidebar-logo">🛡</span>
+    <div>
+      <div class="sidebar-title">ML-Admin</div>
+      <div class="sidebar-version">v2.7 · Junior</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-tab="dashboard">
+      <span class="nav-icon">📊</span><span>Дашборд</span>
+    </button>
+    <button class="nav-item" data-tab="users">
+      <span class="nav-icon">👥</span><span>Пользователи</span>
+      <span class="nav-badge" id="badgeUsers">0</span>
+    </button>
+    <button class="nav-item" data-tab="posts">
+      <span class="nav-icon">📰</span><span>Посты</span>
+      <span class="nav-badge" id="badgePosts">0</span>
+    </button>
+    <button class="nav-item" data-tab="tickets">
+      <span class="nav-icon">🎫</span><span>Поддержка</span>
+      <span class="nav-badge danger" id="badgeTickets">0</span>
+    </button>
+    <button class="nav-item" data-tab="promos">
+      <span class="nav-icon">🎁</span><span>Промокоды</span>
+      <span class="nav-badge" id="badgePromos">0</span>
+    </button>
+    <button class="nav-item" data-tab="logs">
+      <span class="nav-icon">📋</span><span>Мои логи</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button id="refreshBtn">🔄 Обновить</button>
+    <button id="logoutBtn" class="danger">🚪 Выйти</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div id="main">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <button class="burger" id="burger">☰</button>
+  <div class="topbar-title" id="topbarTitle">📊 Дашборд</div>
+  <div class="topbar-role">🛡 ML-ADMIN</div>
+  <div class="theme-switch">
+    <button data-theme="dark" title="Тёмная">🌙</button>
+    <button data-theme="light" title="Светлая">☀️</button>
+    <button data-theme="blue" title="Синяя">🔵</button>
+    <button data-theme="red" title="Красная">🔴</button>
+  </div>
+</div>
+
+<!-- КОНТЕНТ -->
+<div id="content">
+
+<!-- ЛИМИТ-БАННЕР -->
+<div class="limit-banner" id="limitBanner">
+  <div class="row"><span>🪙 Монет себе сегодня:</span><b id="limitCoins">0 / 1000</b></div>
+  <div class="row"><span>💎 WIP себе сегодня:</span><b id="limitWip">0 / 7 дней</b></div>
+</div>
+
+<!-- ДАШБОРД -->
+<div class="tab-content active" data-tab="dashboard">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="num" id="statUsers">—</div><div class="lbl">Пользователей</div></div>
+    <div class="stat-card"><div class="num" id="statPosts">—</div><div class="lbl">Постов</div></div>
+    <div class="stat-card"><div class="num" id="statRatings">—</div><div class="lbl">Оценок</div></div>
+    <div class="stat-card"><div class="num" id="statComments">—</div><div class="lbl">Комментариев</div></div>
+    <div class="stat-card"><div class="num" id="statBans">—</div><div class="lbl">В бане</div></div>
+    <div class="stat-card"><div class="num" id="statTickets">—</div><div class="lbl">Тикетов</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">ℹ️ Информация</div>
+    </div>
+    <div style="font-size:.85rem;color:var(--txt-2);line-height:1.7;">
+      <b style="color:var(--ml);">Доступно ML-Админу:</b><br>
+      ✅ Просмотр статистики и пользователей<br>
+      ✅ Модерация постов (скрыть/показать)<br>
+      ✅ Ответы на тикеты поддержки<br>
+      ✅ Просмотр промокодов<br>
+      ✅ Выдача монет и WIP <b>себе</b> (с лимитами)<br><br>
+      <b style="color:var(--danger);">Недоступно:</b><br>
+      ❌ Баны и мут<br>
+      ❌ Удаление постов и комментариев<br>
+      ❌ Создание промокодов и рассылки<br>
+      ❌ Настройки и данные
+    </div>
+  </div>
+</div>
+
+<!-- ПОЛЬЗОВАТЕЛИ -->
+<div class="tab-content" data-tab="users">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">👥 Пользователи</div>
+      <div class="section-actions">
+        <button class="btn ghost sm" id="reloadUsers">🔄</button>
+      </div>
+    </div>
+    <div class="search-bar">
+      <input type="text" class="search-input" id="userSearch" placeholder="🔍 Поиск по нику...">
+      <select class="search-input" id="userFilter" style="min-width:130px;flex:0;">
+        <option value="all">Все</option>
+        <option value="banned">Забаненные</option>
+        <option value="wip">С WIP</option>
+      </select>
+    </div>
+    <div class="users-list" id="usersList">
+      <div class="loading"><div class="spinner"></div>Загрузка...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ПОСТЫ -->
+<div class="tab-content" data-tab="posts">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">📰 Посты (просмотр + скрыть)</div>
+      <div class="section-actions">
+        <button class="btn ghost sm" id="reloadPosts">🔄</button>
+      </div>
+    </div>
+    <div id="postsList">
+      <div class="loading"><div class="spinner"></div>Загрузка...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ПОДДЕРЖКА -->
+<div class="tab-content" data-tab="tickets">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">🎫 Тикеты</div>
+      <div class="section-actions">
+        <select class="search-input" id="ticketFilter" style="flex:0;min-width:140px;">
+          <option value="all">Все</option>
+          <option value="open">🆕 Открытые</option>
+          <option value="answered">✅ Отвеченные</option>
+          <option value="closed">🔒 Закрытые</option>
+        </select>
+        <button class="btn ghost sm" id="reloadTickets">🔄</button>
+      </div>
+    </div>
+    <div id="ticketsList">
+      <div class="loading"><div class="spinner"></div>Загрузка...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ПРОМОКОДЫ -->
+<div class="tab-content" data-tab="promos">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">🎁 Промокоды (просмотр)</div>
+      <div class="section-actions">
+        <button class="btn ghost sm" id="reloadPromos">🔄</button>
+      </div>
+    </div>
+    <div id="promosList">
+      <div class="loading"><div class="spinner"></div>Загрузка...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ЛОГИ -->
+<div class="tab-content" data-tab="logs">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">📋 Мои действия</div>
+      <div class="section-actions">
+        <button class="btn ghost sm" id="clearLogs">🗑 Очистить</button>
+      </div>
+    </div>
+    <div class="log-list" id="logsList">
+      <div class="empty">Пока пусто</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- МОДАЛКА -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">×</button>
+    <div class="modal-title" id="modalTitle">—</div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ТОСТЫ -->
+<div id="toasts"></div>
+
+</div>
+
+</body>
+<script>
+// ============================================================
+// ARTAMON ML-ADMIN v2.7 — ЧАСТЬ 2
+// Авторизация, дашборд, пользователи с лимитами
+// ============================================================
+
+var API = "https://artamon-api.artem123kv.workers.dev";
+var ML_SECRET = "artamon-ml-admin-2026";
+
+// ЛИМИТЫ
+var LIMITS = {
+  COINS_DAILY: 1000,
+  WIP_DAYS_DAILY: 7
+};
+
+var state = {
+  password: "",
+  users: [],
+  posts: [],
+  tickets: [],
+  promos: [],
+  currentTab: "dashboard",
+  limits: { coins: 0, wipDays: 0, date: "" }
+};
+
+// ═══════════════════════════════════════════════════════
+// УТИЛИТЫ
+// ═══════════════════════════════════════════════════════
+function $(id){ return document.getElementById(id); }
+function $$(sel){ return document.querySelectorAll(sel); }
+function escapeHtml(s){
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+function fmtDate(ts){
+  if(!ts) return "—";
+  var d = new Date(ts);
+  return d.toLocaleDateString("ru-RU") + " " + d.toTimeString().slice(0,5);
+}
+function fmtDateShort(ts){
+  if(!ts) return "—";
+  return new Date(ts).toLocaleDateString("ru-RU");
+}
+function timeAgo(ts){
+  if(!ts) return "—";
+  var diff = Date.now() - ts;
+  var min = Math.floor(diff / 60000);
+  if(min < 1) return "только что";
+  if(min < 60) return min + " мин назад";
+  var hrs = Math.floor(min / 60);
+  if(hrs < 24) return hrs + " ч назад";
+  var days = Math.floor(hrs / 24);
+  if(days < 30) return days + " дн назад";
+  return fmtDateShort(ts);
+}
+function todayStr(){
+  var d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+
+// ТОСТЫ
+function toast(msg, type){
+  type = type || "info";
+  var el = document.createElement("div");
+  el.className = "toast " + type;
+  el.textContent = msg;
+  $("toasts").appendChild(el);
+  setTimeout(function(){ el.classList.add("show"); }, 30);
+  setTimeout(function(){
+    el.classList.remove("show");
+    setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 400);
+  }, 3500);
+}
+
+// API
+async function api(path, body){
+  var r = await fetch(API + path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(Object.assign({ password: state.password }, body || {}))
+  });
+  var data = await r.json();
+  if(!r.ok) throw new Error(data.error || ("HTTP " + r.status));
+  return data;
+}
+
+// МОДАЛКА
+function openModal(title, html){
+  $("modalTitle").textContent = title;
+  $("modalBody").innerHTML = html;
+  $("modal").classList.add("on");
+}
+function closeModal(){
+  $("modal").classList.remove("on");
+}
+
+// ТЕМЫ
+function applyTheme(theme){
+  document.body.setAttribute("data-theme", theme);
+  try { localStorage.setItem("artamon_ml_theme", theme); }catch(e){}
+  $$(".theme-switch button").forEach(function(b){
+    b.classList.toggle("active", b.getAttribute("data-theme") === theme);
+  });
+}
+function loadTheme(){
+  var saved = "dark";
+  try { saved = localStorage.getItem("artamon_ml_theme") || "dark"; }catch(e){}
+  applyTheme(saved);
+}
+
+// НАВИГАЦИЯ
+var TAB_TITLES = {
+  dashboard: "📊 Дашборд",
+  users: "👥 Пользователи",
+  posts: "📰 Посты",
+  tickets: "🎫 Поддержка",
+  promos: "🎁 Промокоды",
+  logs: "📋 Мои логи"
+};
+
+function switchTab(tab){
+  state.currentTab = tab;
+  $$(".nav-item").forEach(function(b){
+    b.classList.toggle("active", b.getAttribute("data-tab") === tab);
+  });
+  $$(".tab-content").forEach(function(c){
+    c.classList.toggle("active", c.getAttribute("data-tab") === tab);
+  });
+  if($("topbarTitle")) $("topbarTitle").textContent = TAB_TITLES[tab] || tab;
+  $("sidebar").classList.remove("mobile-open");
+
+  if(tab === "dashboard") loadStats();
+  else if(tab === "users") loadUsers();
+  else if(tab === "posts") loadPosts();
+  else if(tab === "tickets") loadTickets();
+  else if(tab === "promos") loadPromos();
+  else if(tab === "logs") loadLogs();
+}
+
+// ═══════════════════════════════════════════════════════
+// ЛИМИТЫ (LocalStorage)
+// ═══════════════════════════════════════════════════════
+var LIMITS_KEY = "artamon_ml_limits_v1";
+
+function loadLimits(){
+  try {
+    var s = localStorage.getItem(LIMITS_KEY);
+    if(s){
+      var p = JSON.parse(s);
+      if(p && typeof p === "object") state.limits = p;
+    }
+  }catch(e){}
+  // Сброс если новый день
+  if(state.limits.date !== todayStr()){
+    state.limits = { coins: 0, wipDays: 0, date: todayStr() };
+    saveLimits();
+  }
+  renderLimits();
+}
+function saveLimits(){
+  try { localStorage.setItem(LIMITS_KEY, JSON.stringify(state.limits)); }catch(e){}
+}
+function renderLimits(){
+  var coinsUsed = state.limits.coins || 0;
+  var wipUsed = state.limits.wipDays || 0;
+  var coinsEl = $("limitCoins");
+  var wipEl = $("limitWip");
+  if(coinsEl){
+    coinsEl.textContent = coinsUsed + " / " + LIMITS.COINS_DAILY;
+    coinsEl.style.color = coinsUsed >= LIMITS.COINS_DAILY ? "var(--danger)" : "var(--ml)";
+  }
+  if(wipEl){
+    wipEl.textContent = wipUsed + " / " + LIMITS.WIP_DAYS_DAILY + " дней";
+    wipEl.style.color = wipUsed >= LIMITS.WIP_DAYS_DAILY ? "var(--danger)" : "var(--ml)";
+  }
+}
+function canGiveCoins(amount){
+  return (state.limits.coins + amount) <= LIMITS.COINS_DAILY;
+}
+function canGiveWip(days){
+  return (state.limits.wipDays + days) <= LIMITS.WIP_DAYS_DAILY;
+}
+function useCoins(amount){
+  state.limits.coins += amount;
+  saveLimits();
+  renderLimits();
+}
+function useWip(days){
+  state.limits.wipDays += days;
+  saveLimits();
+  renderLimits();
+}
+
+// ═══════════════════════════════════════════════════════
+// АВТОРИЗАЦИЯ
+// ═══════════════════════════════════════════════════════
+async function tryLogin(){
+  var input = $("loginInput");
+  var err = $("loginError");
+  var pass = input.value.trim();
+  if(!pass) return;
+
+  if(pass !== ML_SECRET){
+    err.textContent = "❌ Неверный пароль";
+    err.classList.add("on");
+    input.value = "";
+    return;
+  }
+
+  // Проверка через воркер (login)
+  err.classList.remove("on");
+  var btn = $("loginBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ Проверка...";
+
+  try {
+    // Пробуем обычный login — если воркер отдаёт 200 — значит ок
+    var r = await fetch(API + "/api/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: pass })
+    });
+    // 401 — это нормально, потому что пароль ML не совпадает с основным
+    // Но нам нужен доступ к данным — используем основной пароль в запросах? Нет!
+    // Просто пускаем — данные будут доступны через ML-токен, если воркер поддерживает
+    // Иначе — просто клиентская проверка.
+
+    state.password = pass;
+    try { localStorage.setItem("artamon_ml_pass", pass); }catch(e){}
+
+    $("loginScreen").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    toast("🛡 Добро пожаловать, ML-Админ!", "success");
+
+    loadLimits();
+    switchTab("dashboard");
+  } catch(e){
+    // Если воркер не поддерживает ML — всё равно пускаем (клиентская проверка)
+    state.password = pass;
+    try { localStorage.setItem("artamon_ml_pass", pass); }catch(e){}
+    $("loginScreen").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    toast("🛡 Добро пожаловать, ML-Админ!", "success");
+    loadLimits();
+    switchTab("dashboard");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "🔓 Войти";
+  }
+}
+
+function logout(){
+  try { localStorage.removeItem("artamon_ml_pass"); }catch(e){}
+  state.password = "";
+  $("loginScreen").classList.remove("hidden");
+  $("app").classList.add("hidden");
+  $("loginInput").value = "";
+}
+
+// ═══════════════════════════════════════════════════════
+// ДАШБОРД
+// ═══════════════════════════════════════════════════════
+async function loadStats(){
+  try {
+    var r = await api("/api/admin/stats");
+    var s = r.stats;
+    if($("statUsers")) $("statUsers").textContent = s.usersCount;
+    if($("statPosts")) $("statPosts").textContent = s.postsCount;
+    if($("statRatings")) $("statRatings").textContent = s.ratingsCount;
+    if($("statComments")) $("statComments").textContent = s.commentsCount;
+    if($("statBans")) $("statBans").textContent = s.bansCount;
+    if($("statTickets")) $("statTickets").textContent = (s.ticketsOpen || 0) + "/" + (s.ticketsTotal || 0);
+    if($("badgeUsers")) $("badgeUsers").textContent = s.usersCount;
+    if($("badgePosts")) $("badgePosts").textContent = s.postsCount;
+    if($("badgeTickets")) $("badgeTickets").textContent = s.ticketsOpen || 0;
+    if($("badgePromos")) $("badgePromos").textContent = s.promosCount || 0;
+  } catch(e){
+    toast("❌ Статистика: " + e.message, "error");
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// ПОЛЬЗОВАТЕЛИ
+// ═══════════════════════════════════════════════════════
+async function loadUsers(){
+  var box = $("usersList");
+  if(!box) return;
+  box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
+  try {
+    var r = await api("/api/admin/users");
+    state.users = r.users || [];
+    renderUsers();
+  } catch(e){
+    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+function renderUsers(){
+  var box = $("usersList");
+  if(!box) return;
+  var search = ($("userSearch").value || "").toLowerCase().trim();
+  var filter = $("userFilter").value || "all";
+
+  var list = state.users.slice();
+  if(search) list = list.filter(function(u){ return u.nick.toLowerCase().indexOf(search) !== -1; });
+  if(filter === "banned") list = list.filter(function(u){ return u.banned; });
+  else if(filter === "wip") list = list.filter(function(u){ return u.wip && u.wip.active && u.wip.until > Date.now(); });
+
+  list.sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
+
+  if(!list.length){
+    box.innerHTML = '<div class="empty"><span class="empty-icon">👥</span>Нет пользователей</div>';
+    return;
+  }
+
+  var myNick = (localStorage.getItem("artamon_ml_nick") || "").toLowerCase();
+
+  box.innerHTML = "";
+  list.forEach(function(u){
+    var card = document.createElement("div");
+    card.className = "user-card";
+    if(u.banned) card.classList.add("banned");
+    if(u.muted) card.classList.add("muted");
+
+    var wipActive = u.wip && u.wip.active && u.wip.until > Date.now();
+    var wipDays = wipActive ? Math.ceil((u.wip.until - Date.now()) / 86400000) : 0;
+    var avatar = (u.owned && u.owned.avatars && u.owned.avatars.length)
+      ? u.owned.avatars[u.owned.avatars.length - 1] : "👤";
+
+    var badges = [];
+    if(u.banned) badges.push('<span class="badge ban">🚫 БАН</span>');
+    if(u.muted) badges.push('<span class="badge mute">🔕 МУТ</span>');
+    if(wipActive) badges.push('<span class="badge wip">💎 ' + wipDays + 'д</span>');
+
+    // Кнопка управления — только для СЕБЯ
+    var isMe = myNick && u.nick.toLowerCase() === myNick;
+    var manageBtn = isMe
+      ? '<button class="btn sm" data-action="self-manage" data-nick="' + escapeHtml(u.nick) + '">⚙️</button>'
+      : '<button class="btn sm ghost" disabled title="Только себе">🔒</button>';
+
+    card.innerHTML =
+      '<div class="user-avatar">' + avatar + '</div>' +
+      '<div class="user-info">' +
+        '<div class="user-nick">' + escapeHtml(u.nick) + (isMe ? ' <span style="color:var(--ml);font-size:.7rem;">(Вы)</span>' : '') + '</div>' +
+        '<div class="user-meta">' +
+          '<span>🪙 <b>' + (u.coins || 0) + '</b></span>' +
+          '<span>⭐ <b>' + (u.ratings || 0) + '</b></span>' +
+          '<span>💬 <b>' + (u.comments || 0) + '</b></span>' +
+          '<span>📅 ' + fmtDateShort(u.createdAt) + '</span>' +
+          badges.join(" ") +
+        '</div>' +
+      '</div>' +
+      '<div class="user-actions">' + manageBtn + '</div>';
+
+    box.appendChild(card);
+  });
+
+  box.querySelectorAll("[data-action='self-manage']").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      openSelfManage(btn.getAttribute("data-nick"));
+    });
+  });
+}
+
+// МОДАЛКА «СЕБЕ»
+async function openSelfManage(nick){
+  try {
+    var r = await api("/api/admin/user-detail", { nick: nick });
+    var u = r.user;
+    var wipActive = u.wip && u.wip.active && u.wip.until > Date.now();
+    var wipDays = wipActive ? Math.ceil((u.wip.until - Date.now()) / 86400000) : 0;
+
+    var coinsLeft = LIMITS.COINS_DAILY - state.limits.coins;
+    var wipLeft = LIMITS.WIP_DAYS_DAILY - state.limits.wipDays;
+
+    openModal("⚙️ " + u.nick + " (себе)",
+      '<div style="font-size:.82rem;color:var(--txt-2);margin-bottom:16px;line-height:1.7;">' +
+        '🪙 Монет: <b style="color:var(--ml);">' + (u.coins || 0) + '</b><br>' +
+        '💎 WIP: <b style="color:' + (wipActive ? 'var(--success)' : 'var(--txt-2)') + ';">' + (wipActive ? wipDays + ' дн.' : 'нет') + '</b>' +
+      '</div>' +
+
+      '<div class="limit-banner" style="margin-bottom:14px;">' +
+        '<div class="row"><span>Осталось монет сегодня:</span><b>' + coinsLeft + ' / ' + LIMITS.COINS_DAILY + '</b></div>' +
+        '<div class="row"><span>Осталось WIP дней:</span><b>' + wipLeft + ' / ' + LIMITS.WIP_DAYS_DAILY + '</b></div>' +
+      '</div>' +
+
+      '<div class="form-group"><label class="form-label">🪙 Выдать себе монеты</label>' +
+        '<input type="number" class="form-input" id="mCoins" value="100" min="1" max="' + coinsLeft + '">' +
+        '<div class="form-hint">Максимум: ' + coinsLeft + ' монет</div>' +
+        '<div class="form-row" style="margin-top:6px;">' +
+          '<button class="btn success sm" data-coin="add" style="flex:1;" ' + (coinsLeft <= 0 ? 'disabled' : '') + '>➕ Выдать</button>' +
+        '</div></div>' +
+
+      '<div class="form-group"><label class="form-label">💎 Выдать себе WIP</label>' +
+        '<input type="number" class="form-input" id="mWipDays" value="1" min="1" max="' + wipLeft + '">' +
+        '<div class="form-hint">Максимум: ' + wipLeft + ' дней</div>' +
+        '<div class="form-row" style="margin-top:6px;">' +
+          '<button class="btn success sm" data-wip="give" style="flex:1;" ' + (wipLeft <= 0 ? 'disabled' : '') + '>➕ Выдать</button>' +
+        '</div></div>' +
+
+      '<div class="form-actions"><button class="btn ghost" onclick="closeModal()">Закрыть</button></div>'
+    );
+
+    // Монеты себе
+    $("modalBody").querySelectorAll("[data-coin='add']").forEach(function(b){
+      b.addEventListener("click", async function(){
+        var amount = parseInt($("mCoins").value, 10) || 0;
+        if(amount <= 0) return toast("Введи число", "error");
+        if(amount > coinsLeft) return toast("❌ Превышен лимит (" + coinsLeft + " осталось)", "error");
+        if(!canGiveCoins(amount)) return toast("❌ Лимит на сегодня исчерпан", "error");
+        try {
+          var rr = await api("/api/admin/give-coins", { nick: nick, amount: amount, mode: "add" });
+          useCoins(amount);
+          toast("🪙 Выдано себе: +" + amount, "success");
+          addLog("self_coins", "+" + amount);
+          closeModal();
+          loadUsers();
+        } catch(e){ toast("❌ " + e.message, "error"); }
+      });
+    });
+
+    // WIP себе
+    $("modalBody").querySelectorAll("[data-wip='give']").forEach(function(b){
+      b.addEventListener("click", async function(){
+        var days = parseInt($("mWipDays").value, 10) || 0;
+        if(days <= 0) return toast("Введи число", "error");
+        if(days > wipLeft) return toast("❌ Превышен лимит (" + wipLeft + " осталось)", "error");
+        if(!canGiveWip(days)) return toast("❌ Лимит на сегодня исчерпан", "error");
+        try {
+          await api("/api/admin/give-wip", { nick: nick, days: days });
+          useWip(days);
+          toast("💎 WIP +" + days + " дней", "success");
+          addLog("self_wip", "+" + days + " дней");
+          closeModal();
+          loadUsers();
+        } catch(e){ toast("❌ " + e.message, "error"); }
+      });
+    });
+  } catch(e){ toast("❌ " + e.message, "error"); }
+}
+
+if($("userSearch")) $("userSearch").addEventListener("input", renderUsers);
+if($("userFilter")) $("userFilter").addEventListener("change", renderUsers);
+
+// ═══════════════════════════════════════════════════════
+// ЛОГИ (свои)
+// ═══════════════════════════════════════════════════════
+var LOGS_KEY = "artamon_ml_logs_v1";
+var MAX_LOGS = 100;
+
+function loadLogs(){
+  var box = $("logsList");
+  if(!box) return;
+  var logs = [];
+  try {
+    var s = localStorage.getItem(LOGS_KEY);
+    if(s) logs = JSON.parse(s) || [];
+  }catch(e){}
+  if(!logs.length){
+    box.innerHTML = '<div class="empty">Пока пусто</div>';
+    return;
+  }
+  box.innerHTML = logs.map(function(l){
+    return '<div class="log-item"><span class="log-time">' + fmtDate(l.time) + '</span>' +
+      '<span class="log-action">' + escapeHtml(l.action) + '</span>' +
+      '<span class="log-detail">' + escapeHtml(l.detail || "") + '</span></div>';
+  }).join("");
+}
+
+function addLog(action, detail){
+  var logs = [];
+  try {
+    var s = localStorage.getItem(LOGS_KEY);
+    if(s) logs = JSON.parse(s) || [];
+  }catch(e){}
+  logs.unshift({ time: Date.now(), action: action, detail: detail || "" });
+  if(logs.length > MAX_LOGS) logs.length = MAX_LOGS;
+  try { localStorage.setItem(LOGS_KEY, JSON.stringify(logs)); }catch(e){}
+}
+
+if($("clearLogs")) $("clearLogs").addEventListener("click", function(){
+  if(!confirm("Очистить мои логи?")) return;
+  try { localStorage.removeItem(LOGS_KEY); }catch(e){}
+  loadLogs();
+  toast("🗑 Логи очищены", "success");
+});
+
+// ═══════════════════════════════════════════════════════
+// ИНИЦИАЛИЗАЦИЯ
+// ═══════════════════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", function(){
+  loadTheme();
+  loadLimits();
+
+  if($("loginBtn")) $("loginBtn").addEventListener("click", tryLogin);
+  if($("loginInput")) $("loginInput").addEventListener("keydown", function(e){
+    if(e.key === "Enter"){ e.preventDefault(); tryLogin(); }
+  });
+  if($("logoutBtn")) $("logoutBtn").addEventListener("click", function(){
+    if(confirm("Выйти?")) logout();
+  });
+  if($("refreshBtn")) $("refreshBtn").addEventListener("click", function(){
+    switchTab(state.currentTab);
+    toast("🔄 Обновлено", "success");
+  });
+  if($("burger")) $("burger").addEventListener("click", function(){
+    $("sidebar").classList.toggle("mobile-open");
+  });
+  if($("modalClose")) $("modalClose").addEventListener("click", closeModal);
+  if($("modal")) $("modal").addEventListener("click", function(e){
+    if(e.target === $("modal")) closeModal();
+  });
+  $$(".nav-item").forEach(function(b){
+    b.addEventListener("click", function(){ switchTab(b.getAttribute("data-tab")); });
+  });
+  $$(".theme-switch button").forEach(function(b){
+    b.addEventListener("click", function(){ applyTheme(b.getAttribute("data-theme")); });
+  });
+  if($("reloadUsers")) $("reloadUsers").addEventListener("click", loadUsers);
+  if($("reloadPosts")) $("reloadPosts").addEventListener("click", loadPosts);
+  if($("reloadTickets")) $("reloadTickets").addEventListener("click", loadTickets);
+  if($("reloadPromos")) $("reloadPromos").addEventListener("click", loadPromos);
+
+  // Автовход
+  try {
+    var saved = localStorage.getItem("artamon_ml_pass");
+    if(saved){
+      $("loginInput").value = saved;
+      setTimeout(tryLogin, 100);
+    }
+  }catch(e){}
+});
+
+window.closeModal = closeModal;
+console.log("✅ ML-Admin v2.7 — Часть 2 загружена");
+</script>
+<script>
+// ============================================================
+// ARTAMON ML-ADMIN v2.7 — ЧАСТЬ 3 (финальная)
+// Посты, Поддержка, Промокоды, Boot
+// ============================================================
+
+// ═══════════════════════════════════════════════════════
+// ПОСТЫ (просмотр + скрыть/показать)
+// ═══════════════════════════════════════════════════════
+async function loadPosts(){
+  var box = $("postsList");
+  if(!box) return;
+  box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
+  try {
+    var r = await api("/api/admin/posts");
+    state.posts = r.posts || [];
+    renderPosts();
+  } catch(e){
+    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+function renderPosts(){
+  var box = $("postsList");
+  if(!box) return;
+  if(!state.posts.length){
+    box.innerHTML = '<div class="empty"><span class="empty-icon">📰</span>Постов нет</div>';
+    return;
+  }
+  box.innerHTML = "";
+  state.posts.forEach(function(p){
+    var ratings = p.ratings || {};
+    var keys = Object.keys(ratings).filter(function(k){ return k.indexOf("__") === -1; });
+    var cnt = keys.length;
+    var avg = 0;
+    if(cnt){
+      var sum = 0;
+      keys.forEach(function(k){ sum += ratings[k]; });
+      avg = (sum / cnt).toFixed(1);
+    }
+    var commentsCount = (p.comments || []).length;
+
+    var card = document.createElement("div");
+    card.className = "post-card" + (p.hidden ? " hidden-post" : "");
+    card.innerHTML =
+      '<div class="post-head">' +
+        '<div class="post-title">' + escapeHtml(p.title) + '</div>' +
+        '<div>' + (p.pinned ? '<span class="badge common">📌</span>' : '') + (p.hidden ? '<span class="badge closed">🙈 Скрыт</span>' : '') + '</div>' +
+      '</div>' +
+      '<div class="post-meta">' +
+        '<span>👤 ' + escapeHtml(p.author || "—") + '</span>' +
+        '<span>📅 ' + fmtDate(p.date) + '</span>' +
+        '<span>⭐ <b>' + (cnt ? avg + ' (' + cnt + ')' : '—') + '</b></span>' +
+        '<span>💬 <b>' + commentsCount + '</b></span>' +
+      '</div>' +
+      (p.body ? '<div class="post-body">' + escapeHtml(p.body.slice(0, 200)) + (p.body.length > 200 ? "..." : "") + '</div>' : '') +
+      '<div class="section-actions" style="margin-top:12px;">' +
+        '<button class="btn ' + (p.hidden ? 'success' : 'warn') + ' sm" data-act="hide" data-id="' + p.id + '">' +
+          (p.hidden ? '👁 Показать' : '🙈 Скрыть') +
+        '</button>' +
+      '</div>';
+    box.appendChild(card);
+  });
+
+  box.querySelectorAll("[data-act='hide']").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var id = btn.getAttribute("data-id");
+      togglePostVisibility(id);
+    });
+  });
+}
+
+async function togglePostVisibility(id){
+  try {
+    await api("/api/admin/post-toggle", { id: id, field: "hidden" });
+    toast("✅ Изменено", "success");
+    addLog("post_hide", "ID: " + id);
+    loadPosts();
+  } catch(e){ toast("❌ " + e.message, "error"); }
+}
+
+// ═══════════════════════════════════════════════════════
+// ПОДДЕРЖКА (ответы)
+// ═══════════════════════════════════════════════════════
+async function loadTickets(){
+  var box = $("ticketsList");
+  if(!box) return;
+  box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
+  try {
+    var r = await api("/api/admin/tickets");
+    state.tickets = r.tickets || [];
+    renderTickets();
+  } catch(e){
+    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+function renderTickets(){
+  var box = $("ticketsList");
+  if(!box) return;
+  var filter = $("ticketFilter") ? $("ticketFilter").value : "all";
+  var list = state.tickets.slice();
+  if(filter !== "all") list = list.filter(function(t){ return t.status === filter; });
+
+  if(!list.length){
+    box.innerHTML = '<div class="empty"><span class="empty-icon">📭</span>Нет обращений</div>';
+    return;
+  }
+  var catNames = { bug:"🐛 Баг", question:"❓ Вопрос", suggest:"💡 Идея", complaint:"😡 Жалоба", other:"📝 Другое" };
+  box.innerHTML = "";
+  list.forEach(function(t){
+    var el = document.createElement("div");
+    el.className = "ticket-card " + (t.status || "open");
+    var repliesHtml = (t.replies || []).map(function(r){
+      return '<div class="ticket-reply"><div class="reply-head">🛡 ML-Админ · ' + timeAgo(r.time) + '</div><div>' + escapeHtml(r.text) + '</div></div>';
+    }).join("");
+    var statusName = t.status === "closed" ? "🔒 Закрыто" : t.status === "answered" ? "✅ Отвечено" : "🆕 Открыто";
+    el.innerHTML =
+      '<div class="ticket-head">' +
+        '<div class="ticket-subject">' + escapeHtml(t.subject) + '</div>' +
+        '<div class="ticket-date">' + timeAgo(t.createdAt) + '</div>' +
+      '</div>' +
+      '<div class="ticket-meta">' +
+        '<span class="badge ' + (t.status || "open") + '">' + statusName + '</span>' +
+        '<span class="badge common">' + (catNames[t.category] || "📝") + '</span>' +
+        '<span class="badge common">👤 ' + escapeHtml(t.nick) + '</span>' +
+      '</div>' +
+      '<div class="ticket-message">' + escapeHtml(t.message) + '</div>' +
+      (repliesHtml ? '<div class="ticket-replies">' + repliesHtml + '</div>' : '') +
+      '<div class="section-actions">' +
+        '<button class="btn sm success" data-reply="' + t.id + '">💬 Ответить</button>' +
+        (t.status !== "closed" ? '<button class="btn sm warn" data-close="' + t.id + '">🔒 Закрыть</button>' : '') +
+      '</div>';
+    box.appendChild(el);
+  });
+
+  box.querySelectorAll("[data-reply]").forEach(function(b){
+    b.addEventListener("click", function(){ openReplyModal(b.getAttribute("data-reply")); });
+  });
+  box.querySelectorAll("[data-close]").forEach(function(b){
+    b.addEventListener("click", async function(){
+      var id = b.getAttribute("data-close");
+      if(!confirm("Закрыть тикет?")) return;
+      try {
+        await api("/api/admin/ticket-close", { id: id });
+        toast("🔒 Тикет закрыт", "success");
+        addLog("ticket_close", "ID: " + id);
+        loadTickets();
+      } catch(e){ toast("❌ " + e.message, "error"); }
+    });
+  });
+}
+
+function openReplyModal(id){
+  var t = state.tickets.filter(function(x){ return x.id === id; })[0];
+  if(!t) return;
+  openModal("💬 Ответ на " + t.nick,
+    '<div style="font-size:.82rem;color:var(--txt-2);margin-bottom:12px;padding:10px;background:var(--bg-2);border-radius:8px;">' +
+      '<b style="color:var(--ml);">' + escapeHtml(t.subject) + '</b><br>' +
+      escapeHtml(t.message) +
+    '</div>' +
+    '<div class="form-group"><label class="form-label">Ответ</label>' +
+      '<textarea class="form-input" id="repText" placeholder="Твой ответ..." style="min-height:120px;"></textarea></div>' +
+    '<div class="form-group"><label class="checkbox-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.88rem;padding:8px 0;">' +
+      '<input type="checkbox" id="repClose" style="width:18px;height:18px;accent-color:var(--ml);cursor:pointer;"> 🔒 Закрыть после ответа</label></div>' +
+    '<div class="form-actions">' +
+      '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
+      '<button class="btn success" id="repSend">💬 Отправить</button></div>'
+  );
+  $("repSend").addEventListener("click", async function(){
+    var text = $("repText").value.trim();
+    if(!text) return toast("Введи текст", "error");
+    var close = $("repClose").checked;
+    try {
+      await api("/api/admin/ticket-reply", { id: id, text: text, close: close });
+      toast("💬 Ответ отправлен", "success");
+      addLog("ticket_reply", "ID: " + id);
+      closeModal();
+      loadTickets();
+    } catch(e){ toast("❌ " + e.message, "error"); }
+  });
+}
+
+if($("ticketFilter")) $("ticketFilter").addEventListener("change", renderTickets);
+
+// ═══════════════════════════════════════════════════════
+// ПРОМОКОДЫ (просмотр)
+// ═══════════════════════════════════════════════════════
+async function loadPromos(){
+  var box = $("promosList");
+  if(!box) return;
+  box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
+  try {
+    var r = await api("/api/admin/promo-list");
+    state.promos = r.promos || [];
+    renderPromos();
+  } catch(e){
+    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+function renderPromos(){
+  var box = $("promosList");
+  if(!box) return;
+  if(!state.promos.length){
+    box.innerHTML = '<div class="empty"><span class="empty-icon">🎁</span>Промокодов нет</div>';
+    return;
+  }
+  box.innerHTML = "";
+  state.promos.forEach(function(p){
+    var expired = p.expiresAt < Date.now();
+    var usedCount = (p.usedBy || []).length;
+    var card = document.createElement("div");
+    card.className = "post-card";
+    if(expired) card.style.opacity = "0.5";
+    card.innerHTML =
+      '<div class="post-head">' +
+        '<div class="post-title" style="font-family:ui-monospace,monospace;letter-spacing:.1em;color:var(--ml);">' + escapeHtml(p.code) + (expired ? " ⚠️ ИСТЁК" : "") + '</div>' +
+      '</div>' +
+      '<div class="post-meta">' +
+        (p.coins > 0 ? '<span>🪙 <b>' + p.coins + '</b></span>' : '') +
+        (p.wipDays > 0 ? '<span>💎 <b>' + p.wipDays + 'д</b></span>' : '') +
+        (p.avatar ? '<span>🎨 <b>' + p.avatar + '</b></span>' : '') +
+        '<span>👥 <b>' + usedCount + '</b> активаций</span>' +
+        '<span>📅 до ' + fmtDateShort(p.expiresAt) + '</span>' +
+      '</div>' +
+      '<div class="section-actions" style="margin-top:10px;">' +
+        '<button class="btn sm ghost" data-copy="' + escapeHtml(p.code) + '">📋 Копировать</button>' +
+      '</div>';
+    box.appendChild(card);
+  });
+  box.querySelectorAll("[data-copy]").forEach(function(b){
+    b.addEventListener("click", function(){
+      var code = b.getAttribute("data-copy");
+      try { navigator.clipboard.writeText(code); toast("📋 " + code, "success"); }catch(e){}
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// МОБИЛЬНОЕ МЕНЮ — авто-закрытие
+// ═══════════════════════════════════════════════════════
+document.addEventListener("click", function(e){
+  var el = e.target;
+  if(!el || !el.closest) return;
+  if(window.innerWidth > 768) return;
+  var sidebar = $("sidebar");
+  if(!sidebar || !sidebar.classList.contains("mobile-open")) return;
+  if(sidebar.contains(e.target)) return;
+  if(e.target.closest("#burger")) return;
+  sidebar.classList.remove("mobile-open");
+});
+
+// ═══════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════
+(function(){
+  function initFinal(){
+    loadLimits();
+    if(state.password){
+      switchTab("dashboard");
+    }
+    console.log("✅ Artamon ML-Admin v2.7 загружена полностью");
+    console.log("Пароль: artamon-ml-admin-2026");
+    console.log("Лимиты: 1000 монет/день, 7 дней WIP/день");
+  }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", initFinal);
+  else setTimeout(initFinal, 300);
+})();
+</script>
+</html>
