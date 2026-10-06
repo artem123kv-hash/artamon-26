@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#d4af37">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Artamon Wiki — гайд, боты, достижения, магазин, FAQ">
+<title>📖 Artamon Wiki</title>
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+/* ═══════════════════════════════════════════════════════
+   ARTAMON WIKI — STYLES
+   ═══════════════════════════════════════════════════════ */
+
+/* ТЕМЫ */
+:root[data-theme="dark"] {
+  --bg-1: #050505;
+  --bg-2: #0d0d0d;
+  --bg-3: #141414;
+  --card-bg: rgba(20, 20, 20, 0.95);
+  --card-border: #2a2a2a;
+  --txt-1: #e8e6e1;
+  --txt-2: #8a8a8a;
+  --txt-3: #5c5c5c;
+  --gold-1: #f6e6a8;
+  --gold-2: #d4af37;
+  --gold-3: #8f6f1a;
+  --accent: #d4af37;
+  --success: #4ade80;
+  --danger: #f87171;
+  --warn: #fbbf24;
+  --info: #60a5fa;
+  --shadow: 0 10px 30px rgba(0,0,0,.5);
+  --rar-common: #8a8a8a;
+  --rar-rare: #60a5fa;
+  --rar-epic: #a78bfa;
+  --rar-legendary: #d4af37;
+}
+:root[data-theme="light"] {
+  --bg-1: #f8fafc;
+  --bg-2: #f1f5f9;
+  --bg-3: #e2e8f0;
+  --card-bg: rgba(255, 255, 255, 0.98);
+  --card-border: #cbd5e1;
+  --txt-1: #0f172a;
+  --txt-2: #475569;
+  --txt-3: #94a3b8;
+  --gold-1: #b45309;
+  --gold-2: #92400e;
+  --gold-3: #78350f;
+  --accent: #b45309;
+  --success: #16a34a;
+  --danger: #dc2626;
+  --warn: #ca8a04;
+  --info: #2563eb;
+  --shadow: 0 10px 30px rgba(0,0,0,.08);
+  --rar-common: #64748b;
+  --rar-rare: #2563eb;
+  --rar-epic: #7c3aed;
+  --rar-legendary: #b45309;
+}
+:root[data-theme="blue"] {
+  --bg-1: #020617;
+  --bg-2: #0f172a;
+  --bg-3: #1e293b;
+  --card-bg: rgba(15, 23, 42, 0.95);
+  --card-border: #334155;
+  --txt-1: #e2e8f0;
+  --txt-2: #94a3b8;
+  --txt-3: #64748b;
+  --gold-1: #dbeafe;
+  --gold-2: #60a5fa;
+  --gold-3: #1e40af;
+  --accent: #60a5fa;
+  --success: #4ade80;
+  --danger: #f87171;
+  --warn: #fbbf24;
+  --info: #60a5fa;
+  --shadow: 0 10px 30px rgba(0,0,0,.5);
+  --rar-common: #94a3b8;
+  --rar-rare: #60a5fa;
+  --rar-epic: #a78bfa;
+  --rar-legendary: #fbbf24;
+}
+:root[data-theme="red"] {
+  --bg-1: #0a0505;
+  --bg-2: #1a0a0a;
+  --bg-3: #2a1010;
+  --card-bg: rgba(30, 10, 10, 0.95);
+  --card-border: #4a2020;
+  --txt-1: #f5e8e8;
+  --txt-2: #b09090;
+  --txt-3: #705050;
+  --gold-1: #fecaca;
+  --gold-2: #ef4444;
+  --gold-3: #991b1b;
+  --accent: #ef4444;
+  --success: #4ade80;
+  --danger: #f87171;
+  --warn: #fbbf24;
+  --info: #60a5fa;
+  --shadow: 0 10px 30px rgba(0,0,0,.5);
+  --rar-common: #b09090;
+  --rar-rare: #60a5fa;
+  --rar-epic: #a78bfa;
+  --rar-legendary: #fbbf24;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+  min-height: 100vh;
+  background: var(--bg-1);
+  color: var(--txt-1);
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+body { transition: background .3s, color .3s; }
+button { font-family: inherit; cursor: pointer; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; }
+.hidden { display: none !important; }
+
+/* ═══ СТРУКТУРА ═══ */
+#app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* САЙДБАР */
+#sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--card-bg);
+  border-right: 1px solid var(--card-border);
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  transition: transform .3s ease;
+  overflow-y: auto;
+}
+#sidebar.hidden-sidebar { transform: translateX(-100%); }
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 6px 16px;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 16px;
+}
+.sidebar-logo {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 12px var(--accent));
+}
+.sidebar-title {
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: .05em;
+  background: linear-gradient(180deg, var(--gold-1), var(--gold-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1.1;
+}
+.sidebar-version {
+  font-size: .62rem;
+  color: var(--txt-3);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--txt-2);
+  padding: 11px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .88rem;
+  font-weight: 600;
+  text-align: left;
+  transition: .15s;
+  position: relative;
+}
+.nav-item .nav-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+.nav-item:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--txt-1);
+}
+.nav-item.active {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sidebar-footer {
+  padding-top: 14px;
+  border-top: 1px solid var(--card-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sidebar-footer a,
+.sidebar-footer button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  transition: .15s;
+  text-align: center;
+  text-decoration: none;
+}
+.sidebar-footer a:hover,
+.sidebar-footer button:hover {
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
+  text-decoration: none;
+}
+.sidebar-footer .secondary {
+  background: transparent;
+  border-color: var(--card-border);
+  color: var(--txt-2);
+}
+.sidebar-footer .secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* MAIN */
+#main {
+  flex: 1;
+  margin-left: 260px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left .3s ease;
+}
+#main.full-width { margin-left: 0; }
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--card-border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(12px);
+}
+.burger {
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--txt-2);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: .15s;
+}
+.burger:hover { border-color: var(--accent); color: var(--accent); }
+.topbar-title {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--txt-1);
+}
+.theme-switch {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: var(--bg-2);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+}
+.theme-switch button {
+  background: transparent;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .15s;
+}
+.theme-switch button:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.theme-switch button.active {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+/* КОНТЕНТ */
+#content {
+  flex: 1;
+  padding: 24px 20px 80px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ═══ ЗАГОЛОВКИ ═══ */
+.page-title {
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
+  font-weight: 900;
+  letter-spacing: .04em;
+  background: linear-gradient(180deg, var(--gold-1), var(--gold-2) 50%, var(--gold-3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 8px;
+  line-height: 1.15;
+}
+.page-subtitle {
+  color: var(--txt-2);
+  font-size: .95rem;
+  margin-bottom: 24px;
+}
+
+h2 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--txt-1);
+  margin: 28px 0 14px;
+  letter-spacing: .02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+h2 .h-icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 0 8px var(--accent));
+}
+h3 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin: 18px 0 10px;
+  letter-spacing: .02em;
+}
+
+p {
+  margin-bottom: 14px;
+  color: var(--txt-1);
+  font-size: .95rem;
+}
+p b, p strong { color: var(--accent); font-weight: 800; }
+
+ul, ol {
+  margin: 0 0 16px 22px;
+  color: var(--txt-1);
+  font-size: .95rem;
+}
+li { margin-bottom: 8px; }
+li b { color: var(--accent); }
+
+/* ═══ КАРТОЧКИ ═══ */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: .2s;
+}
+.card:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.card.mini {
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+}
+.card.mini .mini-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 10px var(--accent));
+}
+.card.mini .mini-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--txt-1);
+  margin-bottom: 4px;
+}
+.card.mini .mini-desc {
+  font-size: .78rem;
+  color: var(--txt-2);
+  line-height: 1.4;
+}
+.card.mini:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+
+/* ═══ СПЕЦИАЛЬНЫЕ БЛОКИ ═══ */
+.hero {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent) 15%, transparent),
+    color-mix(in srgb, var(--accent) 5%, transparent));
+  border: 2px solid var(--accent);
+  border-radius: 18px;
+  padding: 28px 24px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.hero .hero-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 20px var(--accent));
+  animation: pulseIcon 2.5s ease-in-out infinite;
+}
+@keyframes pulseIcon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+.hero h1 {
+  font-size: clamp(1.8rem, 6vw, 2.4rem);
+  font-weight: 900;
+  letter-spacing: .06em;
+  background: linear-gradient(180deg, var(--gold-1), var(--gold-2) 50%, var(--gold-3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 8px;
+}
+.hero p {
+  color: var(--txt-1);
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 0 auto 16px;
+}
+
+/* ═══ БЕЙДЖИ ═══ */
+.badge {
+  display: inline-block;
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.badge.common { background: color-mix(in srgb, var(--rar-common) 18%, transparent); color: var(--rar-common); border: 1px solid color-mix(in srgb, var(--rar-common) 40%, transparent); }
+.badge.rare { background: color-mix(in srgb, var(--rar-rare) 18%, transparent); color: var(--rar-rare); border: 1px solid color-mix(in srgb, var(--rar-rare) 40%, transparent); }
+.badge.epic { background: color-mix(in srgb, var(--rar-epic) 18%, transparent); color: var(--rar-epic); border: 1px solid color-mix(in srgb, var(--rar-epic) 40%, transparent); }
+.badge.legendary { background: color-mix(in srgb, var(--rar-legendary) 18%, transparent); color: var(--rar-legendary); border: 1px solid color-mix(in srgb, var(--rar-legendary) 40%, transparent); }
+
+/* ═══ БОТЫ ═══ */
+.bot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.bot-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  gap: 12px;
+  transition: .15s;
+}
+.bot-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.bot-avatar {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  background: var(--bg-2);
+  border: 2px solid var(--card-border);
+}
+.bot-info { flex: 1; min-width: 0; }
+.bot-nick {
+  font-size: .95rem;
+  font-weight: 800;
+  color: var(--txt-1);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bot-role {
+  font-size: .68rem;
+  color: var(--txt-3);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.bot-bio {
+  font-size: .78rem;
+  color: var(--txt-2);
+  line-height: 1.4;
+}
+
+/* ═══ ДОСТИЖЕНИЯ ═══ */
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.ach-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  transition: .15s;
+}
+.ach-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.ach-card.rar-common { border-left: 3px solid var(--rar-common); }
+.ach-card.rar-rare { border-left: 3px solid var(--rar-rare); }
+.ach-card.rar-epic { border-left: 3px solid var(--rar-epic); }
+.ach-card.rar-legendary { border-left: 3px solid var(--rar-legendary); }
+.ach-icon-box {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  background: var(--bg-2);
+  border: 1.5px solid var(--card-border);
+}
+.ach-card.rar-common .ach-icon-box { border-color: var(--rar-common); }
+.ach-card.rar-rare .ach-icon-box { border-color: var(--rar-rare); }
+.ach-card.rar-epic .ach-icon-box { border-color: var(--rar-epic); }
+.ach-card.rar-legendary .ach-icon-box { border-color: var(--rar-legendary); box-shadow: 0 0 12px color-mix(in srgb, var(--rar-legendary) 50%, transparent); }
+.ach-body { flex: 1; min-width: 0; }
+.ach-name {
+  font-size: .85rem;
+  font-weight: 800;
+  color: var(--txt-1);
+  margin-bottom: 2px;
+}
+.ach-desc {
+  font-size: .72rem;
+  color: var(--txt-2);
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+
+/* ═══ МАГАЗИН ═══ */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.shop-item {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  transition: .15s;
+}
+.shop-item:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.shop-item .shop-icon {
+  font-size: 2.2rem;
+  display: block;
+  margin-bottom: 8px;
+}
+.shop-item .shop-name {
+  font-size: .9rem;
+  font-weight: 800;
+  color: var(--txt-1);
+  margin-bottom: 4px;
+}
+.shop-item .shop-desc {
+  font-size: .72rem;
+  color: var(--txt-2);
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+.shop-item .shop-price {
+  font-size: .9rem;
+  font-weight: 900;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ═══ ШАГИ / ГАЙД ═══ */
+.steps {
+  counter-reset: step;
+  margin: 16px 0 24px;
+}
+.step {
+  position: relative;
+  padding: 14px 14px 14px 60px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  font-size: .92rem;
+  line-height: 1.55;
+}
+.step::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  font-weight: 900;
+  font-size: .95rem;
+  display: grid;
+  place-items: center;
+}
+.step b { color: var(--accent); }
+
+/* ═══ FAQ ═══ */
+.faq-item {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: .2s;
+}
+.faq-item:hover { border-color: var(--accent); }
+.faq-question {
+  padding: 14px 16px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: .92rem;
+  color: var(--txt-1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  transition: .15s;
+}
+.faq-question:hover { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+.faq-question .faq-arrow {
+  color: var(--accent);
+  font-size: 1.2rem;
+  transition: transform .25s;
+  flex-shrink: 0;
+}
+.faq-item.open .faq-arrow { transform: rotate(180deg); }
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .3s ease;
+  padding: 0 16px;
+  color: var(--txt-2);
+  font-size: .88rem;
+  line-height: 1.6;
+}
+.faq-item.open .faq-answer {
+  max-height: 600px;
+  padding: 0 16px 16px;
+}
+.faq-answer b { color: var(--accent); }
+
+/* ═══ УСТАНОВКА ═══ */
+.platform-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.platform-tab {
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--txt-2);
+  padding: 9px 16px;
+  border-radius: 20px;
+  font-size: .76rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  transition: .15s;
+}
+.platform-tab:hover { border-color: var(--accent); color: var(--accent); }
+.platform-tab.active {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ═══ ССЫЛКА-КНОПКА ═══ */
+.big-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  padding: 14px 26px;
+  border-radius: 12px;
+  font-size: .92rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: .15s;
+  margin: 8px 6px;
+}
+.big-btn:hover {
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+.big-btn.ghost {
+  background: transparent;
+  border-color: var(--card-border);
+  color: var(--txt-2);
+}
+.big-btn.ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ═══ ТАБ-КОНТЕНТ ═══ */
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ═══ ИНФО-БЛОКИ ═══ */
+.info-box {
+  border-left: 3px solid var(--info);
+  background: color-mix(in srgb, var(--info) 8%, transparent);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 14px 0;
+  font-size: .88rem;
+  line-height: 1.6;
+}
+.info-box.warn { border-left-color: var(--warn); background: color-mix(in srgb, var(--warn) 8%, transparent); }
+.info-box.success { border-left-color: var(--success); background: color-mix(in srgb, var(--success) 8%, transparent); }
+.info-box.danger { border-left-color: var(--danger); background: color-mix(in srgb, var(--danger) 8%, transparent); }
+.info-box b { color: var(--txt-1); }
+
+/* ═══ ФУТЕР ═══ */
+footer {
+  text-align: center;
+  padding: 30px 20px;
+  color: var(--txt-3);
+  font-size: .78rem;
+  border-top: 1px solid var(--card-border);
+  margin-top: 40px;
+}
+footer a { color: var(--accent); }
+
+/* ═══ АДАПТИВ ═══ */
+@media (max-width: 768px) {
+  #sidebar {
+    transform: translateX(-100%);
+    width: 280px;
+    box-shadow: 0 0 40px rgba(0,0,0,.6);
+  }
+  #sidebar.mobile-open { transform: translateX(0); }
+  #main { margin-left: 0; }
+  #content { padding: 18px 14px 60px; }
+  .topbar { padding: 12px 14px; }
+  .topbar-title { font-size: .88rem; }
+  .bot-grid { grid-template-columns: 1fr; }
+  .ach-grid { grid-template-columns: 1fr; }
+  .shop-grid { grid-template-columns: repeat(2, 1fr); }
+  .card-grid { grid-template-columns: repeat(2, 1fr); }
+  .page-title { font-size: 1.6rem; }
+  .hero { padding: 20px 16px; }
+  .hero .hero-icon { font-size: 3rem; }
+}
+
+/* ═══ СКРОЛЛБАР ═══ */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-2); }
+::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- САЙДБАР -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-logo">📖</span>
+      <div>
+        <div class="sidebar-title">Artamon Wiki</div>
+        <div class="sidebar-version">v2.6.6</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-tab="home">
+        <span class="nav-icon">🏠</span>
+        <span>Главная</span>
+      </button>
+      <button class="nav-item" data-tab="guide">
+        <span class="nav-icon">🎮</span>
+        <span>Как играть</span>
+      </button>
+      <button class="nav-item" data-tab="bots">
+        <span class="nav-icon">🤖</span>
+        <span>Боты</span>
+      </button>
+      <button class="nav-item" data-tab="achievements">
+        <span class="nav-icon">🏆</span>
+        <span>Достижения</span>
+      </button>
+      <button class="nav-item" data-tab="shop">
+        <span class="nav-icon">🛒</span>
+        <span>Магазин</span>
+      </button>
+      <button class="nav-item" data-tab="wip">
+        <span class="nav-icon">💎</span>
+        <span>WIP-подписка</span>
+      </button>
+      <button class="nav-item" data-tab="daily">
+        <span class="nav-icon">🎁</span>
+        <span>Ежедневки</span>
+      </button>
+      <button class="nav-item" data-tab="install">
+        <span class="nav-icon">📱</span>
+        <span>Установка</span>
+      </button>
+      <button class="nav-item" data-tab="faq">
+        <span class="nav-icon">❓</span>
+        <span>FAQ</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="./index.html">🎮 Открыть игру</a>
+      <a href="./test.html" class="secondary">🔬 Мониторинг API</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <button class="burger" id="burger">☰</button>
+      <div class="topbar-title" id="topbarTitle">🏠 Главная</div>
+      <div class="theme-switch">
+        <button data-theme="dark" title="Тёмная">🌙</button>
+        <button data-theme="light" title="Светлая">☀️</button>
+        <button data-theme="blue" title="Синяя">🔵</button>
+        <button data-theme="red" title="Красная">🔴</button>
+      </div>
+    </div>
+
+    <!-- КОНТЕНТ -->
+    <div id="content">
+
+      <!-- ГЛАВНАЯ -->
+      <div class="tab-content active" data-tab="home">
+        <div class="hero">
+          <span class="hero-icon">📖</span>
+          <h1>Artamon Wiki</h1>
+          <p>Полный гайд по игре Artamon 2.6.6 — боты, достижения, магазин, ежедневки и ответы на частые вопросы.</p>
+          <a href="./index.html" class="big-btn">🎮 Играть</a>
+        </div>
+
+        <h2><span class="h-icon">📚</span> Разделы Wiki</h2>
+        <div class="card-grid" id="homeCards"></div>
+
+        <h2><span class="h-icon">ℹ️</span> О игре</h2>
+        <p><b>Artamon</b> — это веб-игра, где ты:</p>
+        <ul>
+          <li>🗳 Создаёшь <b>опросы</b> и голосуешь в чужих.</li>
+          <li>🤖 Общаешься с <b>30 уникальными ботами</b>, у каждого свой характер.</li>
+          <li>⭐ Оставляешь <b>оценки и комментарии</b> в ленте рейтинга.</li>
+          <li>🪙 Зарабатываешь <b>монеты</b> и тратишь их в магазине.</li>
+          <li>💎 Покупаешь <b>WIP-подписку</b> со скидками и бонусами.</li>
+          <li>🎁 Заходишь каждый день за <b>ежедневной наградой</b>.</li>
+          <li>🏆 Открываешь <b>достижения</b> 4 редкостей.</li>
+        </ul>
+
+        <div class="info-box">
+          <b>💡 Совет:</b> установи Artamon как приложение на телефон — будет быстрее и удобнее. Инструкция в разделе <a href="#" data-goto="install">📱 Установка</a>.
+        </div>
+      </div>
+
+      <!-- КАК ИГРАТЬ -->
+      <div class="tab-content" data-tab="guide">
+        <div class="page-title">🎮 Как играть</div>
+        <div class="page-subtitle">Гайд для новичков — с нуля до профи</div>
+
+        <h2><span class="h-icon">🚀</span> Первые шаги</h2>
+        <div class="steps">
+          <div class="step">Открой игру по ссылке <b>artamon-26</b>. Дождись загрузки интро.</div>
+          <div class="step">Введи свой <b>возраст</b>. Если меньше 18 — боты будут вежливы. Если 18+ — могут материться.</div>
+          <div class="step">Выбери режим: <b>Одиночный</b> (только ты) или <b>С ботами</b> (30 ботов голосуют и спорят).</div>
+          <div class="step">Создай первый <b>опрос</b> — введи вопрос и 2-10 вариантов ответа.</div>
+          <div class="step">Проголосуй сам — и смотри, как боты комментируют.</div>
+        </div>
+
+        <h2><span class="h-icon">⭐</span> Лента рейтинга</h2>
+        <p>Это отдельный раздел (кнопка <b>⭐ Лента рейтинга</b> на главной). Здесь:</p>
+        <ul>
+          <li><b>Посты от админа</b> — с картинками, текстом, оценками.</li>
+          <li><b>Оценки 1-5 звёзд</b> — ставь звёзды постам.</li>
+          <li><b>Комментарии</b> — обсуждай с другими игроками.</li>
+          <li><b>Топ постов</b> — самые популярные за неделю.</li>
+          <li><b>Топ пользователей</b> — самые активные.</li>
+        </ul>
+
+        <h2><span class="h-icon">🪙</span> Монеты</h2>
+        <p>Монеты — основная валюта. Их можно получить:</p>
+        <ul>
+          <li>🎁 За <b>ежедневный вход</b> (50+ монет).</li>
+          <li>⭐ За <b>оценки и комментарии</b> в ленте.</li>
+          <li>🎉 За <b>промокоды</b> (если админ раздаёт).</li>
+          <li>🛒 За <b>активность</b> (голосование, создание опросов).</li>
+        </ul>
+
+        <h2><span class="h-icon">🛒</span> Что купить в магазине</h2>
+        <p>Монеты тратятся в <b>магазине</b>:</p>
+        <ul>
+          <li><b>👤 Аватарки</b> — от 300 монет.</li>
+          <li><b>🌌 Фоны</b> — от 500 монет.</li>
+          <li><b>🎵 Музыка</b> — от 700 монет.</li>
+          <li><b>🎨 Темы</b> — от 2000 монет.</li>
+        </ul>
+
+        <h2><span class="h-icon">💎</span> WIP-подписка</h2>
+        <p>За <b>5000 монет</b> получаешь на 30 дней:</p>
+        <ul>
+          <li><b>Скидка 20%</b> в магазине.</li>
+          <li><b>+50 монет</b> к ежедневной награде.</li>
+          <li><b>Особый статус</b> в профиле.</li>
+        </ul>
+
+        <div class="info-box success">
+          <b>💡 Совет:</b> если играешь каждый день — WIP окупается за 10 дней. Бери смело!
+        </div>
+      </div>
+
+      <!-- БОТЫ, ДОСТИЖЕНИЯ, МАГАЗИН, WIP, ЕЖЕДНЕВКИ, УСТАНОВКА, FAQ - заполняются из JS -->
+
+      <div class="tab-content" data-tab="bots">
+        <div class="page-title">🤖 Боты Artamon</div>
+        <div class="page-subtitle">30 уникальных персонажей с характерами</div>
+        <div class="bot-grid" id="botsGrid"></div>
+      </div>
+
+      <div class="tab-content" data-tab="achievements">
+        <div class="page-title">🏆 Достижения</div>
+        <div class="page-subtitle">36 достижений 4 редкостей</div>
+        <div id="achContainer"></div>
+      </div>
+
+      <div class="tab-content" data-tab="shop">
+        <div class="page-title">🛒 Магазин</div>
+        <div class="page-subtitle">Что можно купить за монеты</div>
+        <div id="shopContainer"></div>
+      </div>
+
+      <div class="tab-content" data-tab="wip">
+        <div class="page-title">💎 WIP-подписка</div>
+        <div class="page-subtitle">Премиум-статус на 30 дней</div>
+
+        <div class="hero">
+          <span class="hero-icon">💎</span>
+          <h1>5000 🪙</h1>
+          <p>Одна оплата — 30 дней премиума</p>
+        </div>
+
+        <h2><span class="h-icon">✨</span> Что даёт WIP</h2>
+        <div class="card-grid">
+          <div class="card mini">
+            <span class="mini-icon">💰</span>
+            <div class="mini-title">Скидка 20%</div>
+            <div class="mini-desc">На все товары в магазине</div>
+          </div>
+          <div class="card mini">
+            <span class="mini-icon">🎁</span>
+            <div class="mini-title">+50 монет</div>
+            <div class="mini-desc">К ежедневной награде</div>
+          </div>
+          <div class="card mini">
+            <span class="mini-icon">👑</span>
+            <div class="mini-title">Особый статус</div>
+            <div class="mini-desc">Значок в профиле</div>
+          </div>
+        </div>
+
+        <h2><span class="h-icon">📊</span> Окупается ли?</h2>
+        <p>Посчитаем:</p>
+        <ul>
+          <li>За 30 дней ежедневок с WIP ты получишь <b>+1500 монет</b> бонусом.</li>
+          <li>На покупках от 10 000 монет сэкономишь <b>2000+ монет</b> (скидка 20%).</li>
+          <li>Итого выгода: <b>3500+ монет</b>.</li>
+        </ul>
+        <div class="info-box success">
+          <b>💡 Итог:</b> если играешь активно — WIP <b>окупается с лихвой</b>. Если заходишь раз в неделю — не бери.
+        </div>
+      </div>
+
+      <div class="tab-content" data-tab="daily">
+        <div class="page-title">🎁 Ежедневки</div>
+        <div class="page-subtitle">Заходи каждый день — получай награды</div>
+
+        <h2><span class="h-icon">🔥</span> Как работает стрик</h2>
+        <p><b>Стрик</b> — это счётчик дней подряд. Чем больше — тем круче награды. Если пропустишь день — стрик обнулится.</p>
+
+        <h2><span class="h-icon">🎁</span> Награды по дням</h2>
+        <div class="card-grid" id="dailyGrid"></div>
+
+        <div class="info-box warn">
+          <b>⚠️ Важно:</b> не пропускай дни! Стрик обнуляется при пропуске. Но если купил WIP — получишь <b>+50 монет</b> к каждой награде.
+        </div>
+      </div>
+
+      <div class="tab-content" data-tab="install">
+        <div class="page-title">📱 Установка Artamon</div>
+        <div class="page-subtitle">Как поставить игру как приложение</div>
+
+        <div class="platform-tabs">
+          <button class="platform-tab active" data-platform="android">🤖 Android</button>
+          <button class="platform-tab" data-platform="ios">🍎 iOS</button>
+          <button class="platform-tab" data-platform="pc">💻 ПК</button>
+        </div>
+
+        <div id="installContent"></div>
+      </div>
+
+      <div class="tab-content" data-tab="faq">
+        <div class="page-title">❓ Частые вопросы</div>
+        <div class="page-subtitle">Ответы на популярные вопросы</div>
+        <div id="faqContainer"></div>
+      </div>
+
+    </div>
+
+    <footer>
+      📖 Artamon Wiki · v2.6.6 · <a href="./index.html">Играть</a> · <a href="./Management_Artamon.html">Админ</a> · <a href="./test.html">API</a>
+    </footer>
+
+  </div>
+</div>
+
+<!-- JS будет вставлен в следующих частях -->
+</body>
+</html>
+<script>
+/* ============================================================
+   ARTAMON WIKI — JS Часть 1
+   Навигация, темы, главная, гайд
+   ============================================================ */
+
+/* ═══════════════════════════════════════════════════════
+   ТЕМЫ
+   ═══════════════════════════════════════════════════════ */
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  try { localStorage.setItem("artamon_wiki_theme", theme); } catch(e) {}
+  document.querySelectorAll(".theme-switch button").forEach(b => {
+    b.classList.toggle("active", b.getAttribute("data-theme") === theme);
+  });
+}
+
+function loadTheme() {
+  let saved = "dark";
+  try { saved = localStorage.getItem("artamon_wiki_theme") || "dark"; } catch(e) {}
+  applyTheme(saved);
+}
+
+/* ═══════════════════════════════════════════════════════
+   НАВИГАЦИЯ
+   ═══════════════════════════════════════════════════════ */
+const TAB_TITLES = {
+  home: "🏠 Главная",
+  guide: "🎮 Как играть",
+  bots: "🤖 Боты",
+  achievements: "🏆 Достижения",
+  shop: "🛒 Магазин",
+  wip: "💎 WIP-подписка",
+  daily: "🎁 Ежедневки",
+  install: "📱 Установка",
+  faq: "❓ FAQ"
+};
+
+function switchTab(tab) {
+  /* Активная вкладка в сайдбаре */
+  document.querySelectorAll(".nav-item").forEach(b => {
+    b.classList.toggle("active", b.getAttribute("data-tab") === tab);
+  });
+  /* Активный контент */
+  document.querySelectorAll(".tab-content").forEach(c => {
+    c.classList.toggle("active", c.getAttribute("data-tab") === tab);
+  });
+  /* Заголовок */
+  const title = document.getElementById("topbarTitle");
+  if (title) title.textContent = TAB_TITLES[tab] || tab;
+
+  /* Закрываем мобильный сайдбар */
+  const sb = document.getElementById("sidebar");
+  if (sb) sb.classList.remove("mobile-open");
+
+  /* Обновляем URL hash */
+  try { history.replaceState(null, "", "#" + tab); } catch(e) {}
+
+  /* Загружаем данные вкладки (если есть) */
+  if (tab === "bots" && typeof renderBots === "function") renderBots();
+  if (tab === "achievements" && typeof renderAchievements === "function") renderAchievements();
+  if (tab === "shop" && typeof renderShop === "function") renderShop();
+  if (tab === "daily" && typeof renderDaily === "function") renderDaily();
+  if (tab === "install" && typeof renderInstall === "function") renderInstall("android");
+  if (tab === "faq" && typeof renderFAQ === "function") renderFAQ();
+
+  /* Скролл вверх */
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ═══════════════════════════════════════════════════════
+   ДАННЫЕ ДЛЯ ГЛАВНОЙ
+   ═══════════════════════════════════════════════════════ */
+const HOME_CARDS = [
+  { tab: "guide", icon: "🎮", title: "Как играть", desc: "Гайд для новичков — с нуля до профи" },
+  { tab: "bots", icon: "🤖", title: "Боты", desc: "30 уникальных персонажей с характерами" },
+  { tab: "achievements", icon: "🏆", title: "Достижения", desc: "36 достижений — от обычных до легендарных" },
+  { tab: "shop", icon: "🛒", title: "Магазин", desc: "Аватарки, фоны, музыка, темы" },
+  { tab: "wip", icon: "💎", title: "WIP-подписка", desc: "Скидки и бонусы на 30 дней" },
+  { tab: "daily", icon: "🎁", title: "Ежедневки", desc: "Стрик, награды, эксклюзивы" },
+  { tab: "install", icon: "📱", title: "Установка", desc: "Как поставить как приложение" },
+  { tab: "faq", icon: "❓", title: "FAQ", desc: "Ответы на частые вопросы" }
+];
+
+function renderHomeCards() {
+  const box = document.getElementById("homeCards");
+  if (!box) return;
+  box.innerHTML = HOME_CARDS.map(c =>
+    '<div class="card mini" data-goto="' + c.tab + '">' +
+      '<span class="mini-icon">' + c.icon + '</span>' +
+      '<div class="mini-title">' + c.title + '</div>' +
+      '<div class="mini-desc">' + c.desc + '</div>' +
+    '</div>'
+  ).join("");
+
+  box.querySelectorAll("[data-goto]").forEach(el => {
+    el.addEventListener("click", () => switchTab(el.getAttribute("data-goto")));
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   ИНИЦИАЛИЗАЦИЯ
+   ═══════════════════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", () => {
+  loadTheme();
+
+  /* Темы */
+  document.querySelectorAll(".theme-switch button").forEach(b => {
+    b.addEventListener("click", () => applyTheme(b.getAttribute("data-theme")));
+  });
+
+  /* Навигация */
+  document.querySelectorAll(".nav-item").forEach(b => {
+    b.addEventListener("click", () => switchTab(b.getAttribute("data-tab")));
+  });
+
+  /* Бургер */
+  const burger = document.getElementById("burger");
+  if (burger) burger.addEventListener("click", () => {
+    document.getElementById("sidebar").classList.toggle("mobile-open");
+  });
+
+  /* Закрываем сайдбар при клике вне его (мобильный) */
+  document.addEventListener("click", (e) => {
+    const sb = document.getElementById("sidebar");
+    if (!sb) return;
+    if (window.innerWidth > 768) return;
+    if (!sb.classList.contains("mobile-open")) return;
+    if (sb.contains(e.target)) return;
+    if (e.target.closest(".burger")) return;
+    sb.classList.remove("mobile-open");
+  });
+
+  /* Обработка ссылок с data-goto */
+  document.querySelectorAll("[data-goto]").forEach(el => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      switchTab(el.getAttribute("data-goto"));
+    });
+  });
+
+  /* Загружаем главную */
+  renderHomeCards();
+
+  /* Проверка hash в URL */
+  const hash = location.hash.replace("#", "");
+  if (hash && TAB_TITLES[hash]) {
+    switchTab(hash);
+  }
+});
+
+/* Экспортируем в глобал */
+window.switchTab = switchTab;
+window.applyTheme = applyTheme;
+</script>
+<script>
+/* ============================================================
+   ARTAMON WIKI — JS Часть 2
+   Боты + Достижения
+   ============================================================ */
+
+/* ═══════════════════════════════════════════════════════
+   ДАННЫЕ — 30 БОТОВ
+   ═══════════════════════════════════════════════════════ */
+const WIKI_BOTS = [
+  { nick: "Ховавко", emoji: "😎", color: "#7dd3fc", role: "Гроза чатов", bio: "Вечно всем недоволен. Спорит с каждым вторым." },
+  { nick: "Гастер", emoji: "💀", color: "#a78bfa", role: "Тёмный наблюдатель", bio: "Никто не знает, откуда он. Говорит загадками." },
+  { nick: "Санс", emoji: "🦴", color: "#fbbf24", role: "Любитель шуток", bio: "Постоянно шутит, часто неуместно." },
+  { nick: "Папирус", emoji: "🍝", color: "#f97316", role: "Восторженный", bio: "КРИЧИТ ВСЁ ВРЕМЯ!!! ОБОЖАЕТ СПАГЕТТИ!!!" },
+  { nick: "Андайн", emoji: "🐟", color: "#38bdf8", role: "Добрая душа", bio: "Всегда поддержит и утешит." },
+  { nick: "Меттатон", emoji: "🎤", color: "#f472b6", role: "Звезда сцены", bio: "КАЖДЫЙ ЕГО КОММЕНТАРИЙ — ЭТО ПРЕДСТАВЛЕНИЕ!" },
+  { nick: "Альфис", emoji: "🔬", color: "#4ade80", role: "Учёная", bio: "Постоянно что-то изобретает." },
+  { nick: "Ториэль", emoji: "🐐", color: "#c084fc", role: "Мама", bio: "Заботится обо всех. Печёт пироги." },
+  { nick: "Азгор", emoji: "🌿", color: "#34d399", role: "Мудрый король", bio: "Спокоен и мудр." },
+  { nick: "Флауи", emoji: "🌸", color: "#fb7185", role: "Подозрительный цветок", bio: "Слишком дружелюбный. Что-то тут не так..." },
+  { nick: "Напстаблук", emoji: "👻", color: "#94a3b8", role: "Стеснительный", bio: "Боится всего. Извиняется каждые 5 минут." },
+  { nick: "Маффет", emoji: "🕷️", color: "#a3e635", role: "Флиртующая", bio: "Флиртует со всеми." },
+  { nick: "Гриллби", emoji: "🔥", color: "#f87171", role: "Гриль-мастер", bio: "Постоянно ворчит." },
+  { nick: "Темми", emoji: "🐶", color: "#fcd34d", role: "Весёлая собачка", bio: "ВАУ!!! ВСЁ ТАК КРУТО!!!" },
+  { nick: "Джерри", emoji: "🖱️", color: "#d4d4d8", role: "Мышонок", bio: "Никогда не торопится." },
+  { nick: "Kot_Baron", emoji: "🐱", color: "#fb923c", role: "Кот-аристократ", bio: "Считает себя выше всех." },
+  { nick: "_Ghost_", emoji: "👽", color: "#a78bfa", role: "Пришелец", bio: "Прибыл с другой планеты." },
+  { nick: "Zelya", emoji: "🌿", color: "#4ade80", role: "Хиппи", bio: "Всё чилл." },
+  { nick: "PixelCat", emoji: "🎨", color: "#f472b6", role: "Художница", bio: "Рисует пиксель-арт." },
+  { nick: "Rainbow", emoji: "🌈", color: "#a3e635", role: "Оптимист", bio: "Всё видит в радужном свете." },
+  { nick: "Sanya2007", emoji: "🍕", color: "#fbbf24", role: "Геймер", bio: "Играет 8 часов в день." },
+  { nick: "KefirKing", emoji: "🥛", color: "#e8e6e1", role: "Кефирный король", bio: "Правит кефиром." },
+  { nick: "Grisha_zhe", emoji: "😤", color: "#f87171", role: "Вечно злой", bio: "Постоянно недоволен." },
+  { nick: "Mashka", emoji: "🌸", color: "#fb7185", role: "Мягкая душа", bio: "Добрая и заботливая." },
+  { nick: "DarkLord_", emoji: "⚔️", color: "#dc2626", role: "Тёмный лорд", bio: "Говорит пафосно." },
+  { nick: "Luntik", emoji: "🌙", color: "#c084fc", role: "Лунный малыш", bio: "Родился на Луне." },
+  { nick: "Vovan_54", emoji: "🍺", color: "#facc15", role: "Сосед", bio: "Пиво и гараж = классика." },
+  { nick: "Molniya", emoji: "⚡", color: "#fde047", role: "Гонщик", bio: "Всё делает быстро." },
+  { nick: "Kosmos", emoji: "🚀", color: "#6366f1", role: "Космонавт", bio: "Говорит о космосе." },
+  { nick: "Lisichka", emoji: "🦊", color: "#fb923c", role: "Хитрая лисичка", bio: "Умна, красива, опасна." }
+];
+
+function renderBots() {
+  const box = document.getElementById("botsGrid");
+  if (!box) return;
+  box.innerHTML = WIKI_BOTS.map(b =>
+    '<div class="bot-card">' +
+      '<div class="bot-avatar" style="border-color:' + b.color + ';">' + b.emoji + '</div>' +
+      '<div class="bot-info">' +
+        '<div class="bot-nick" style="color:' + b.color + ';">' + b.nick + '</div>' +
+        '<div class="bot-role">' + b.role + '</div>' +
+        '<div class="bot-bio">' + b.bio + '</div>' +
+      '</div>' +
+    '</div>'
+  ).join("");
+}
+
+/* ═══════════════════════════════════════════════════════
+   ДАННЫЕ — 36 ДОСТИЖЕНИЙ
+   ═══════════════════════════════════════════════════════ */
+const WIKI_ACHIEVEMENTS = [
+  /* ОБЫЧНЫЕ */
+  { icon: "✅", name: "Голос учтён", desc: "Проголосовал впервые", rarity: "common" },
+  { icon: "💬", name: "Первое слово", desc: "Написал первый комментарий", rarity: "common" },
+  { icon: "💬", name: "Переписка", desc: "Получил личное сообщение", rarity: "common" },
+  { icon: "🎨", name: "Стилист", desc: "Сменил тему оформления", rarity: "common" },
+  { icon: "🌌", name: "Декоратор", desc: "Сменил фон", rarity: "common" },
+  { icon: "👤", name: "Личность", desc: "Настроил профиль", rarity: "common" },
+  { icon: "🔞", name: "18+", desc: "Указал возраст 18+", rarity: "common" },
+  { icon: "👶", name: "Юный", desc: "Указал возраст меньше 18", rarity: "common" },
+  { icon: "📸", name: "Фотограф", desc: "Создал опрос с картинкой", rarity: "common" },
+  { icon: "🤖", name: "Друг ботов", desc: "Играл в режиме с ботами", rarity: "common" },
+  { icon: "💣", name: "Чистый лист", desc: "Стёр все данные игры", rarity: "common" },
+  { icon: "🔄", name: "Синхронизатор", desc: "Синхронизировал прогресс", rarity: "common" },
+  { icon: "🎮", name: "Гость", desc: "Играл без аккаунта", rarity: "common" },
+  { icon: "🛒", name: "Первая покупка", desc: "Купил что-то в магазине", rarity: "common" },
+  { icon: "⭐", name: "Первая оценка", desc: "Поставил первую звезду", rarity: "common" },
+  { icon: "💬", name: "Обсуждатель", desc: "Написал комментарий под постом", rarity: "common" },
+  { icon: "🎁", name: "Первый день", desc: "Забрал первую ежедневку", rarity: "common" },
+
+  /* РЕДКИЕ */
+  { icon: "🗳️", name: "Первый опрос", desc: "Создал свой первый опрос", rarity: "rare" },
+  { icon: "📖", name: "Читатель", desc: "Открыл книгу достижений", rarity: "rare" },
+  { icon: "📖", name: "Биограф", desc: "Прочитал биографию бота", rarity: "rare" },
+  { icon: "🎉", name: "Юбилей 2.6.6", desc: "Увидел анимацию релиза", rarity: "rare" },
+  { icon: "👤", name: "Первый аккаунт", desc: "Создал аккаунт Artamon", rarity: "rare" },
+  { icon: "🛍️", name: "Шопоголик", desc: "Купил 5 товаров в магазине", rarity: "rare" },
+  { icon: "🌟", name: "Ценитель", desc: "Поставил 10 оценок", rarity: "rare" },
+  { icon: "🗣", name: "Оратор", desc: "10 комментариев под постами", rarity: "rare" },
+  { icon: "🔥", name: "3 дня подряд", desc: "Стрик ежедневок 3 дня", rarity: "rare" },
+  { icon: "💜", name: "Фиолет", desc: "Открыта аватарка 💜", rarity: "rare" },
+  { icon: "✨", name: "Искры", desc: "Открыта аватарка ✨", rarity: "rare" },
+
+  /* ЭПИЧЕСКИЕ */
+  { icon: "🗣", name: "Свидетель спора", desc: "Увидел спор между ботами", rarity: "epic" },
+  { icon: "❤️", name: "Любимчик", desc: "Бот отреагировал на твой комментарий", rarity: "epic" },
+  { icon: "🗃️", name: "Коллекционер", desc: "Собрал все аватарки магазина", rarity: "epic" },
+  { icon: "💎", name: "WIP-подписчик", desc: "Активировал WIP-подписку", rarity: "epic" },
+  { icon: "✨", name: "Критик", desc: "Поставил 50 оценок", rarity: "epic" },
+  { icon: "👑", name: "Автор топ-поста", desc: "Твой пост стал топ-1", rarity: "epic" },
+  { icon: "💎", name: "Неделя", desc: "Стрик ежедневок 7 дней", rarity: "epic" },
+  { icon: "🎁", name: "Подарок", desc: "Открыта аватарка 🎁", rarity: "epic" },
+  { icon: "🌌", name: "Космос", desc: "Открыта аватарка 🌌", rarity: "epic" },
+  { icon: "🦸", name: "Герой", desc: "Открыта аватарка 🦸", rarity: "epic" },
+  { icon: "🧙", name: "Маг", desc: "Открыта аватарка 🧙", rarity: "epic" },
+
+  /* ЛЕГЕНДАРНЫЕ */
+  { icon: "🤑", name: "Миллионер", desc: "Накопил 10 000 монет", rarity: "legendary" },
+  { icon: "💫", name: "Эксперт", desc: "Поставил 100 оценок", rarity: "legendary" },
+  { icon: "👑", name: "Месяц", desc: "Стрик ежедневок 30 дней", rarity: "legendary" },
+  { icon: "👑", name: "Корона", desc: "Открыта аватарка 👑", rarity: "legendary" },
+  { icon: "🐉", name: "Дракон", desc: "Открыта аватарка 🐉", rarity: "legendary" },
+  { icon: "☠", name: "Череп", desc: "Открыта скрытая аватарка", rarity: "legendary" },
+  { icon: "🏆", name: "Топ-1", desc: "Открыта аватарка 🏆", rarity: "legendary" }
+];
+
+const RARITY_NAMES = {
+  common: "Обычное",
+  rare: "Редкое",
+  epic: "Эпическое",
+  legendary: "Легендарное"
+};
+
+const RARITY_ORDER = { legendary: 0, epic: 1, rare: 2, common: 3 };
+
+function renderAchievements() {
+  const box = document.getElementById("achContainer");
+  if (!box) return;
+
+  /* Сортируем по редкости (от легендарных к обычным) */
+  const sorted = WIKI_ACHIEVEMENTS.slice().sort((a, b) =>
+    RARITY_ORDER[a.rarity] - RARITY_ORDER[b.rarity]
+  );
+
+  /* Группируем по редкости */
+  const groups = { legendary: [], epic: [], rare: [], common: [] };
+  sorted.forEach(a => groups[a.rarity].push(a));
+
+  let html = "";
+
+  ["legendary", "epic", "rare", "common"].forEach(rarity => {
+    if (!groups[rarity].length) return;
+    html +=
+      '<h2><span class="h-icon">' +
+        (rarity === "legendary" ? "👑" : rarity === "epic" ? "💎" : rarity === "rare" ? "✨" : "✅") +
+      '</span> ' + RARITY_NAMES[rarity] +
+      ' <span class="badge ' + rarity + '">' + groups[rarity].length + '</span></h2>' +
+      '<div class="ach-grid">';
+
+    groups[rarity].forEach(a => {
+      html +=
+        '<div class="ach-card rar-' + rarity + '">' +
+          '<div class="ach-icon-box">' + a.icon + '</div>' +
+          '<div class="ach-body">' +
+            '<div class="ach-name">' + a.name + '</div>' +
+            '<div class="ach-desc">' + a.desc + '</div>' +
+            '<span class="badge ' + rarity + '">' + RARITY_NAMES[rarity] + '</span>' +
+          '</div>' +
+        '</div>';
+    });
+
+    html += '</div>';
+  });
+
+  box.innerHTML = html;
+}
+
+/* ═══════════════════════════════════════════════════════
+   АВТОЗАПУСК (если пользователь попал сразу на раздел)
+   ═══════════════════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", () => {
+  /* Если URL hash — bots или achievements, рендерим сразу */
+  setTimeout(() => {
+    const hash = location.hash.replace("#", "");
+    if (hash === "bots") renderBots();
+    if (hash === "achievements") renderAchievements();
+  }, 100);
+});
+
+/* Экспорт */
+window.renderBots = renderBots;
+window.renderAchievements = renderAchievements;
+</script>
+<script>
+/* ============================================================
+   ARTAMON WIKI — JS Часть 3 (финальная)
+   Магазин, Ежедневки, Установка, FAQ
+   ============================================================ */
+
+/* ═══════════════════════════════════════════════════════
+   МАГАЗИН — данные
+   ═══════════════════════════════════════════════════════ */
+const WIKI_SHOP = {
+  avatars: {
+    title: "👤 Аватарки",
+    items: [
+      { icon: "🎃", name: "Хэллоуин", desc: "Аватарка-тыква", price: 300 },
+      { icon: "🎄", name: "Новогодняя", desc: "Праздничное настроение", price: 300 },
+      { icon: "❤", name: "Валентин", desc: "Романтика", price: 500 },
+      { icon: "🏆", name: "Топ-1", desc: "Для чемпионов", price: 800 },
+      { icon: "🦸", name: "Герой", desc: "Спасатель", price: 1000 },
+      { icon: "🧙", name: "Маг", desc: "Волшебник", price: 1500 },
+      { icon: "🐉", name: "Дракон", desc: "Легендарный", price: 2500 },
+      { icon: "👑", name: "Корона", desc: "Королевский", price: 5000 },
+      { icon: "☠", name: "Скрытая", desc: "Для самых смелых", price: 10000 }
+    ]
+  },
+  backgrounds: {
+    title: "🌌 Фоны",
+    items: [
+      { icon: "⭐", name: "Звёздный", desc: "Звёзды на фоне", price: 500 },
+      { icon: "✨", name: "Частицы+", desc: "Премиум-частицы", price: 800 },
+      { icon: "💚", name: "Матрица", desc: "Зелёный код", price: 1000 }
+    ]
+  },
+  music: {
+    title: "🎵 Музыка",
+    items: [
+      { icon: "🌃", name: "Neon Dream", desc: "Неоновый сон", price: 700 },
+      { icon: "🏃", name: "Cyber Run", desc: "Кибер-бег", price: 700 },
+      { icon: "🎷", name: "Midnight Jazz", desc: "Полуночный джаз", price: 900 },
+      { icon: "🚀", name: "Cosmic Voyage", desc: "Космическое путешествие", price: 900 },
+      { icon: "🏆", name: "Victory Fanfare", desc: "Фанфары победы", price: 1200 }
+    ]
+  },
+  themes: {
+    title: "🎨 Темы",
+    items: [
+      { icon: "🌙", name: "Ночная", desc: "Фиолетовая тема", price: 2000 }
+    ]
+  }
+};
+
+function renderShop() {
+  const box = document.getElementById("shopContainer");
+  if (!box) return;
+  let html = "";
+  Object.keys(WIKI_SHOP).forEach(catKey => {
+    const cat = WIKI_SHOP[catKey];
+    html += '<h2><span class="h-icon">' + cat.title.split(" ")[0] + '</span> ' + cat.title + '</h2>';
+    html += '<div class="shop-grid">';
+    cat.items.forEach(item => {
+      html +=
+        '<div class="shop-item">' +
+          '<span class="shop-icon">' + item.icon + '</span>' +
+          '<div class="shop-name">' + item.name + '</div>' +
+          '<div class="shop-desc">' + item.desc + '</div>' +
+          '<div class="shop-price">🪙 ' + item.price.toLocaleString("ru-RU") + '</div>' +
+        '</div>';
+    });
+    html += '</div>';
+  });
+
+  html += '<div class="info-box">' +
+    '<b>💡 Совет:</b> с <b>WIP-подпиской</b> все цены в магазине снижаются на <b>20%</b>. Подробности в разделе <a href="#" data-goto="wip">💎 WIP-подписка</a>.' +
+  '</div>';
+
+  box.innerHTML = html;
+
+  /* Обработчики ссылок data-goto */
+  box.querySelectorAll("[data-goto]").forEach(el => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      switchTab(el.getAttribute("data-goto"));
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   ЕЖЕДНЕВКИ — данные
+   ═══════════════════════════════════════════════════════ */
+const WIKI_DAILY = [
+  { day: 1, icon: "🪙", label: "50 монет" },
+  { day: 2, icon: "⭐", label: "100 очков" },
+  { day: 3, icon: "💜", label: "Аватарка 💜" },
+  { day: 4, icon: "🪙", label: "200 монет" },
+  { day: 5, icon: "🌌", label: "Фон «Звёзды»" },
+  { day: 6, icon: "⭐", label: "500 очков" },
+  { day: 7, icon: "🎁", label: "Аватарка 🎁" },
+  { day: 8, icon: "🪙", label: "300 монет" },
+  { day: 9, icon: "✨", label: "Аватарка ✨" },
+  { day: 10, icon: "🏆", label: "Аватарка 🏆" },
+  { day: 15, icon: "🦸", label: "Аватарка 🦸" },
+  { day: 20, icon: "🧙", label: "Аватарка 🧙" },
+  { day: 25, icon: "✨", label: "Фон «Частицы»" },
+  { day: 30, icon: "👑", label: "Корона 👑" }
+];
+
+function renderDaily() {
+  const box = document.getElementById("dailyGrid");
+  if (!box) return;
+  box.innerHTML = WIKI_DAILY.map(d =>
+    '<div class="card mini">' +
+      '<span class="mini-icon">' + d.icon + '</span>' +
+      '<div class="mini-title">День ' + d.day + '</div>' +
+      '<div class="mini-desc">' + d.label + '</div>' +
+    '</div>'
+  ).join("");
+}
+
+/* ═══════════════════════════════════════════════════════
+   УСТАНОВКА — данные по платформам
+   ═══════════════════════════════════════════════════════ */
+const WIKI_INSTALL = {
+  android: {
+    title: "🤖 Установка на Android",
+    steps: [
+      "Открой игру <b>в браузере Chrome</b> (или Яндекс.Браузер).",
+      "Нажми на <b>три точки</b> в правом верхнем углу.",
+      "Выбери <b>«Установить приложение»</b> или <b>«Добавить на главный экран»</b>.",
+      "Подтверди — иконка Artamon появится на рабочем столе.",
+      "Открывай игру как обычное приложение — без адресной строки!"
+    ],
+    note: "Если не видишь кнопку «Установить» — играй в браузере. Или обнови Chrome до последней версии."
+  },
+  ios: {
+    title: "🍎 Установка на iPhone / iPad",
+    steps: [
+      "Открой игру <b>в Safari</b> (именно Safari, не Chrome!).",
+      "Нажми на кнопку <b>«Поделиться»</b> внизу экрана (квадрат со стрелкой вверх).",
+      "Пролистай вниз и выбери <b>«На экран «Домой»»</b>.",
+      "Введи название (например, <b>Artamon</b>) и нажми <b>«Добавить»</b>.",
+      "Иконка появится на рабочем столе — открывай как приложение!"
+    ],
+    note: "На iOS PWA-приложения работают только через Safari. Chrome и Firefox не поддерживают установку."
+  },
+  pc: {
+    title: "💻 Установка на ПК",
+    steps: [
+      "Открой игру в <b>Chrome</b> или <b>Edge</b>.",
+      "В адресной строке справа появится <b>иконка «Установить»</b> (⊕ или монитор со стрелкой).",
+      "Нажми на неё и подтверди установку.",
+      "Artamon появится в <b>меню «Пуск»</b> и на рабочем столе.",
+      "Можно запускать в <b>отдельном окне</b>, без вкладок браузера."
+    ],
+    note: "Если иконки нет — играй в браузере. Или нажми Ctrl+Shift+B и проверь закладки."
+  }
+};
+
+function renderInstall(platform) {
+  platform = platform || "android";
+  const box = document.getElementById("installContent");
+  if (!box) return;
+  const data = WIKI_INSTALL[platform];
+  if (!data) return;
+
+  box.innerHTML =
+    '<h2><span class="h-icon">' + data.title.split(" ")[0] + '</span> ' + data.title.substring(2) + '</h2>' +
+    '<div class="steps">' +
+      data.steps.map(s => '<div class="step">' + s + '</div>').join("") +
+    '</div>' +
+    '<div class="info-box warn"><b>⚠️ Важно:</b> ' + data.note + '</div>' +
+    '<div class="info-box success">' +
+      '<b>💡 Зачем устанавливать?</b> Приложение работает <b>быстрее</b>, не занимает вкладку в браузере, ' +
+      'и иконка всегда под рукой.' +
+    '</div>';
+
+  /* Обновляем активную вкладку платформы */
+  document.querySelectorAll(".platform-tab").forEach(t => {
+    t.classList.toggle("active", t.getAttribute("data-platform") === platform);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   FAQ — данные
+   ═══════════════════════════════════════════════════════ */
+const WIKI_FAQ = [
+  {
+    q: "Что такое Artamon?",
+    a: "Artamon — это веб-игра, где ты создаёшь опросы, общаешься с <b>30 уникальными ботами</b>, зарабатываешь монеты, покупаешь аватарки и соревнуешься в ленте рейтинга."
+  },
+  {
+    q: "Как начать играть?",
+    a: "Открой <a href='./index.html'>игру</a>, дождись интро, введи возраст, выбери режим и создай первый опрос. Не забудь поставить на главный экран — так удобнее!"
+  },
+  {
+    q: "Как заработать монеты?",
+    a: "Монеты дают за: <b>ежедневный вход</b> (50+ монет), <b>оценки и комментарии</b> в ленте рейтинга, <b>промокоды</b> от админа, <b>создание опросов</b>. Чем активнее играешь — тем больше монет."
+  },
+  {
+    q: "Что такое WIP-подписка?",
+    a: "WIP — это премиум за <b>5000 монет</b> на <b>30 дней</b>. Даёт: <b>скидку 20%</b> на все товары в магазине и <b>+50 монет</b> к каждой ежедневной награде."
+  },
+  {
+    q: "Зачем нужна ежедневка?",
+    a: "Заходи каждый день — увеличивается <b>стрик</b>. Чем больше стрик — тем круче награды. На 30-й день получишь <b>👑 Королевскую аватарку</b>!"
+  },
+  {
+    q: "Что будет, если пропущу день?",
+    a: "Стрик <b>обнулится</b>. Награды начнутся сначала. Но если купил WIP — бонусы останутся (пока не кончится подписка)."
+  },
+  {
+    q: "Можно ли играть без аккаунта?",
+    a: "Да, есть <b>гостевой режим</b>. Но прогресс сохранится <b>только локально</b> (в браузере). Если очистишь кэш — данные потеряются. <b>С аккаунтом</b> прогресс синхронизируется в облако."
+  },
+  {
+    q: "Как зарегистрироваться?",
+    a: "Нажми <b>«Войти»</b> в правом верхнем углу → вкладка <b>«Регистрация»</b>. Придумай ник (3-20 символов: буквы, цифры, _ и -) и пароль (минимум 4 символа). Всё, аккаунт готов."
+  },
+  {
+    q: "Забыл пароль — что делать?",
+    a: "Восстановление пароля <b>пока не автоматизировано</b>. Но ты можешь написать админу (<b>Artemon</b>) — он сбросит пароль через админку. Или создай новый аккаунт."
+  },
+  {
+    q: "Что такое лента рейтинга?",
+    a: "Это отдельный раздел (кнопка ⭐ на главной). Там посты от админа с картинками. Ты ставишь <b>оценки 1-5 звёзд</b>, пишешь комментарии, видишь <b>топ постов</b> и <b>топ игроков</b>."
+  },
+  {
+    q: "Как получить редкие аватарки?",
+    a: "Разные способы: <b>покупка в магазине</b> (🏆, 🦸, 🧙, 🐉, 👑, ☠), <b>ежедневки</b> (💜, 🎁, ✨, 🦸, 🧙, 👑), <b>достижения</b>. Самая редкая — <b>☠ Скрытая</b> (10000 монет)."
+  },
+  {
+    q: "Почему боты иногда матерятся?",
+    a: "Это зависит от <b>твоего возраста</b>. Если указал <b>18+</b> — боты могут материться. Если меньше 18 — вежливы."
+  },
+  {
+    q: "Можно ли играть офлайн?",
+    a: "Частично. Игра устанавливается как <b>PWA</b> и кэшируется. Но <b>синхронизация и лента рейтинга</b> требуют интернета."
+  },
+  {
+    q: "Как связаться с админом?",
+    a: "Админ — <b>Артем Колыбельский</b>. Ссылки на его соцсети (YouTube, Telegram, MAX) есть в футере игры. Пиши по любому вопросу!"
+  },
+  {
+    q: "Как стать бета-тестером?",
+    a: "Пока что бета-тестеры назначаются вручную (<b>Рамзан Грабарь</b> — текущий). Если хочешь помочь — напиши админу, покажи активность в игре."
+  },
+  {
+    q: "Куда делись монеты после обновления?",
+    a: "Все монеты <b>синхронизируются с аккаунтом</b>. Если ты играл без аккаунта (гость) — при обновлении кэша данные могли сброситься. <b>Зарегистрируйся</b>, чтобы такого не было."
+  },
+  {
+    q: "Сколько всего аватарок?",
+    a: "Около <b>45 штук</b>: 30 базовых (эмодзи), 9 в магазине, 13 редких наград. Самые крутые — 🐉 Дракон, 👑 Корона, ☠ Череп."
+  },
+  {
+    q: "Что такое редкости достижений?",
+    a: "Достижения делятся на <b>4 редкости</b>: обычные (серые), редкие (синие), эпические (фиолетовые), легендарные (золотые). Легендарные — самые сложные и крутые."
+  },
+  {
+    q: "Планируются ли новые функции?",
+    a: "Да! В разработке: <b>Friends System</b> (друзья и чат), <b>Avatar Customizer</b> (создание своих аватарок), <b>Web Shop</b> (покупка за реальные деньги), <b>Mini Games</b> (рулетка, викторина)."
+  },
+  {
+    q: "Где посмотреть топ игроков?",
+    a: "В ленте рейтинга → вкладка <b>«👥 Топ пользователей»</b>. Там самые активные: по оценкам, комментариям, монетам."
+  }
+];
+
+function renderFAQ() {
+  const box = document.getElementById("faqContainer");
+  if (!box) return;
+  box.innerHTML = WIKI_FAQ.map((f, i) =>
+    '<div class="faq-item" data-faq="' + i + '">' +
+      '<button class="faq-question">' +
+        '<span>' + f.q + '</span>' +
+        '<span class="faq-arrow">▼</span>' +
+      '</button>' +
+      '<div class="faq-answer">' + f.a + '</div>' +
+    '</div>'
+  ).join("");
+
+  /* Обработчики кликов на вопросах */
+  box.querySelectorAll(".faq-item").forEach(item => {
+    const q = item.querySelector(".faq-question");
+    q.addEventListener("click", () => {
+      item.classList.toggle("open");
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   ИНИЦИАЛИЗАЦИЯ — обработчики вкладок установки
+   ═══════════════════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", () => {
+  /* Кнопки платформ для установки */
+  document.querySelectorAll(".platform-tab").forEach(t => {
+    t.addEventListener("click", () => {
+      renderInstall(t.getAttribute("data-platform"));
+    });
+  });
+
+  /* Автозапуск если открыли по hash */
+  setTimeout(() => {
+    const hash = location.hash.replace("#", "");
+    if (hash === "shop") renderShop();
+    if (hash === "daily") renderDaily();
+    if (hash === "install") renderInstall("android");
+    if (hash === "faq") renderFAQ();
+  }, 150);
+
+  console.log("📖 Artamon Wiki загружен");
+  console.log("Версия: 2.6.6");
+  console.log("Разделов: 9 (Главная, Гайд, Боты, Достижения, Магазин, WIP, Ежедневки, Установка, FAQ)");
+});
+
+/* Экспорт */
+window.renderShop = renderShop;
+window.renderDaily = renderDaily;
+window.renderInstall = renderInstall;
+window.renderFAQ = renderFAQ;
+</script>
