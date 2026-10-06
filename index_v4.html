@@ -5661,4 +5661,54 @@ if(document.readyState === "loading") document.addEventListener("DOMContentLoade
 else boot();
 
 console.log("✅ Artamon 2.7 загружен полностью!");
+  // PWA INSTALL
+(function(){
+  var deferredPrompt = null;
+  var btn = document.getElementById("pwaInstallBtn");
+  if(!btn) return;
+  function showBtn(){
+    btn.style.transform = "translateX(-50%) translateY(0)";
+    btn.style.opacity = "1";
+    btn.style.pointerEvents = "auto";
+  }
+  function hideBtn(){
+    btn.style.transform = "translateX(-50%) translateY(120px)";
+    btn.style.opacity = "0";
+    btn.style.pointerEvents = "none";
+  }
+  window.addEventListener("beforeinstallprompt", function(e){
+    e.preventDefault();
+    deferredPrompt = e;
+    setTimeout(showBtn, 3000);
+  });
+  btn.addEventListener("click", function(){
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(choice){
+      if(choice.outcome === "accepted"){
+        try { toast("📱 Artamon установлен!"); }catch(e){}
+      }
+      deferredPrompt = null;
+      hideBtn();
+    });
+  });
+  window.addEventListener("appinstalled", function(){
+    hideBtn();
+    try { toast("🎉 Добро пожаловать в приложение!"); }catch(e){}
+  });
+})();
+
+// SERVICE WORKER
+if("serviceWorker" in navigator){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").then(function(reg){
+      console.log("✅ Service Worker зарегистрирован");
+    }).catch(function(err){
+      console.log("❌ Service Worker: ", err);
+    });
+  });
+}
 </script>
+
+</body>
+</html>
