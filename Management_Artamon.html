@@ -5,513 +5,91 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#d4af37">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>⚡ Artamon Admin</title>
+<title>⚡ Artamon Admin v2.7</title>
 <link rel="icon" type="image/png" href="icon-192.png">
 <style>
-/* ═══════════════════════════════════════════════════════
-   ARTAMON ADMIN — STYLES
-   ═══════════════════════════════════════════════════════ */
-
-/* ТЕМЫ */
-:root[data-theme="dark"] {
-  --bg-1: #050505;
-  --bg-2: #0d0d0d;
-  --bg-3: #141414;
-  --card-bg: rgba(20, 20, 20, 0.95);
-  --card-border: #2a2a2a;
-  --txt-1: #e8e6e1;
-  --txt-2: #8a8a8a;
-  --txt-3: #5c5c5c;
-  --gold-1: #f6e6a8;
-  --gold-2: #d4af37;
-  --gold-3: #8f6f1a;
-  --accent: #d4af37;
-  --success: #4ade80;
-  --danger: #f87171;
-  --warn: #fbbf24;
-  --info: #60a5fa;
-  --shadow: 0 10px 30px rgba(0,0,0,.5);
-}
-:root[data-theme="light"] {
-  --bg-1: #f8fafc;
-  --bg-2: #f1f5f9;
-  --bg-3: #e2e8f0;
-  --card-bg: rgba(255, 255, 255, 0.98);
-  --card-border: #cbd5e1;
-  --txt-1: #0f172a;
-  --txt-2: #475569;
-  --txt-3: #94a3b8;
-  --gold-1: #b45309;
-  --gold-2: #92400e;
-  --gold-3: #78350f;
-  --accent: #b45309;
-  --success: #16a34a;
-  --danger: #dc2626;
-  --warn: #ca8a04;
-  --info: #2563eb;
-  --shadow: 0 10px 30px rgba(0,0,0,.08);
-}
-:root[data-theme="blue"] {
-  --bg-1: #020617;
-  --bg-2: #0f172a;
-  --bg-3: #1e293b;
-  --card-bg: rgba(15, 23, 42, 0.95);
-  --card-border: #334155;
-  --txt-1: #e2e8f0;
-  --txt-2: #94a3b8;
-  --txt-3: #64748b;
-  --gold-1: #dbeafe;
-  --gold-2: #60a5fa;
-  --gold-3: #1e40af;
-  --accent: #60a5fa;
-  --success: #4ade80;
-  --danger: #f87171;
-  --warn: #fbbf24;
-  --info: #60a5fa;
-  --shadow: 0 10px 30px rgba(0,0,0,.5);
-}
-:root[data-theme="red"] {
-  --bg-1: #0a0505;
-  --bg-2: #1a0a0a;
-  --bg-3: #2a1010;
-  --card-bg: rgba(30, 10, 10, 0.95);
-  --card-border: #4a2020;
-  --txt-1: #f5e8e8;
-  --txt-2: #b09090;
-  --txt-3: #705050;
-  --gold-1: #fecaca;
-  --gold-2: #ef4444;
-  --gold-3: #991b1b;
-  --accent: #ef4444;
-  --success: #4ade80;
-  --danger: #f87171;
-  --warn: #fbbf24;
-  --info: #60a5fa;
-  --shadow: 0 10px 30px rgba(0,0,0,.5);
-}
+:root[data-theme="dark"] { --bg-1:#050505; --bg-2:#0d0d0d; --bg-3:#141414; --card-bg:rgba(20,20,20,.95); --card-border:#2a2a2a; --txt-1:#e8e6e1; --txt-2:#8a8a8a; --txt-3:#5c5c5c; --gold-1:#f6e6a8; --gold-2:#d4af37; --gold-3:#8f6f1a; --accent:#d4af37; --success:#4ade80; --danger:#f87171; --warn:#fbbf24; --info:#60a5fa; --shadow:0 10px 30px rgba(0,0,0,.5); }
+:root[data-theme="light"] { --bg-1:#f8fafc; --bg-2:#f1f5f9; --bg-3:#e2e8f0; --card-bg:rgba(255,255,255,.98); --card-border:#cbd5e1; --txt-1:#0f172a; --txt-2:#475569; --txt-3:#94a3b8; --gold-1:#b45309; --gold-2:#92400e; --gold-3:#78350f; --accent:#b45309; --success:#16a34a; --danger:#dc2626; --warn:#ca8a04; --info:#2563eb; --shadow:0 10px 30px rgba(0,0,0,.08); }
+:root[data-theme="blue"] { --bg-1:#020617; --bg-2:#0f172a; --bg-3:#1e293b; --card-bg:rgba(15,23,42,.95); --card-border:#334155; --txt-1:#e2e8f0; --txt-2:#94a3b8; --txt-3:#64748b; --gold-1:#dbeafe; --gold-2:#60a5fa; --gold-3:#1e40af; --accent:#60a5fa; --success:#4ade80; --danger:#f87171; --warn:#fbbf24; --info:#60a5fa; --shadow:0 10px 30px rgba(0,0,0,.5); }
+:root[data-theme="red"] { --bg-1:#0a0505; --bg-2:#1a0a0a; --bg-3:#2a1010; --card-bg:rgba(30,10,10,.95); --card-border:#4a2020; --txt-1:#f5e8e8; --txt-2:#b09090; --txt-3:#705050; --gold-1:#fecaca; --gold-2:#ef4444; --gold-3:#991b1b; --accent:#ef4444; --success:#4ade80; --danger:#f87171; --warn:#fbbf24; --info:#60a5fa; --shadow:0 10px 30px rgba(0,0,0,.5); }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body {
-  min-height: 100vh;
-  background: var(--bg-1);
-  color: var(--txt-1);
-  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
-  line-height: 1.5;
-  overflow-x: hidden;
-}
+html, body { min-height: 100vh; background: var(--bg-1); color: var(--txt-1); font-family: -apple-system, "Segoe UI", system-ui, sans-serif; line-height: 1.5; overflow-x: hidden; }
 body { transition: background .3s, color .3s; }
 button { font-family: inherit; cursor: pointer; }
 input, textarea, select { font-family: inherit; }
 .hidden { display: none !important; }
 
-/* ═══ ЭКРАН ВХОДА ═══ */
-#loginScreen {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: radial-gradient(circle at 50% 50%, var(--bg-2) 0%, var(--bg-1) 70%);
-}
-.login-box {
-  max-width: 420px;
-  width: 100%;
-  background: var(--card-bg);
-  border: 2px solid var(--accent);
-  border-radius: 20px;
-  padding: 32px 26px;
-  text-align: center;
-  box-shadow: var(--shadow);
-}
-.login-icon {
-  font-size: 4rem;
-  margin-bottom: 12px;
-  display: block;
-  animation: pulseIcon 2s ease-in-out infinite;
-}
-@keyframes pulseIcon {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-.login-title {
-  font-size: 1.5rem;
-  font-weight: 900;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  background: linear-gradient(180deg, var(--gold-1), var(--gold-2) 45%, var(--gold-3));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  margin-bottom: 8px;
-}
-.login-sub {
-  color: var(--txt-2);
-  font-size: .78rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  margin-bottom: 24px;
-}
-.login-input {
-  width: 100%;
-  background: var(--bg-2);
-  border: 1px solid var(--card-border);
-  color: var(--accent);
-  padding: 14px;
-  border-radius: 10px;
-  font-family: ui-monospace, monospace;
-  font-size: 1rem;
-  text-align: center;
-  outline: none;
-  letter-spacing: .06em;
-  margin-bottom: 12px;
-}
-.login-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
-}
-.login-btn {
-  width: 100%;
-  border: 1.5px solid var(--accent);
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  color: var(--accent);
-  padding: 14px;
-  border-radius: 11px;
-  font-size: .88rem;
-  font-weight: 800;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  transition: .2s;
-}
-.login-btn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--accent) 28%, transparent);
-}
+/* ЛОГИН */
+#loginScreen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; background: radial-gradient(circle at 50% 50%, var(--bg-2) 0%, var(--bg-1) 70%); }
+.login-box { max-width: 420px; width: 100%; background: var(--card-bg); border: 2px solid var(--accent); border-radius: 20px; padding: 32px 26px; text-align: center; box-shadow: var(--shadow); }
+.login-icon { font-size: 4rem; margin-bottom: 12px; display: block; animation: pulseIcon 2s ease-in-out infinite; }
+@keyframes pulseIcon { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+.login-title { font-size: 1.5rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; background: linear-gradient(180deg, var(--gold-1), var(--gold-2) 45%, var(--gold-3)); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 8px; }
+.login-sub { color: var(--txt-2); font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 24px; }
+.login-input { width: 100%; background: var(--bg-2); border: 1px solid var(--card-border); color: var(--accent); padding: 14px; border-radius: 10px; font-family: ui-monospace, monospace; font-size: 1rem; text-align: center; outline: none; letter-spacing: .06em; margin-bottom: 12px; }
+.login-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
+.login-btn { width: 100%; border: 1.5px solid var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); padding: 14px; border-radius: 11px; font-size: .88rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; transition: .2s; }
+.login-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--accent) 28%, transparent); }
 .login-btn:disabled { opacity: .5; cursor: not-allowed; }
-.login-error {
-  background: color-mix(in srgb, var(--danger) 15%, transparent);
-  border: 1px solid color-mix(in srgb, var(--danger) 40%, transparent);
-  color: var(--danger);
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: .82rem;
-  margin-bottom: 12px;
-  display: none;
-}
+.login-error { background: color-mix(in srgb, var(--danger) 15%, transparent); border: 1px solid color-mix(in srgb, var(--danger) 40%, transparent); color: var(--danger); border-radius: 10px; padding: 10px 14px; font-size: .82rem; margin-bottom: 12px; display: none; }
 .login-error.on { display: block; }
 
-/* ═══ ОСНОВНАЯ СТРУКТУРА ═══ */
-#app {
-  display: flex;
-  min-height: 100vh;
-}
-
-/* САЙДБАР */
-#sidebar {
-  width: 240px;
-  flex-shrink: 0;
-  background: var(--card-bg);
-  border-right: 1px solid var(--card-border);
-  padding: 20px 14px;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 100;
-  transition: transform .3s ease;
-  overflow-y: auto;
-}
+/* СТРУКТУРА */
+#app { display: flex; min-height: 100vh; }
+#sidebar { width: 250px; flex-shrink: 0; background: var(--card-bg); border-right: 1px solid var(--card-border); padding: 20px 14px; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transition: transform .3s ease; overflow-y: auto; }
 #sidebar.hidden-sidebar { transform: translateX(-100%); }
 
-.sidebar-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 6px 16px;
-  border-bottom: 1px solid var(--card-border);
-  margin-bottom: 16px;
-}
-.sidebar-logo {
-  font-size: 1.6rem;
-  filter: drop-shadow(0 0 10px var(--accent));
-}
-.sidebar-title {
-  font-size: 1rem;
-  font-weight: 900;
-  letter-spacing: .06em;
-  background: linear-gradient(180deg, var(--gold-1), var(--gold-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  line-height: 1.1;
-}
-.sidebar-version {
-  font-size: .62rem;
-  color: var(--txt-3);
-  letter-spacing: .1em;
-}
+.sidebar-header { display: flex; align-items: center; gap: 10px; padding: 0 6px 16px; border-bottom: 1px solid var(--card-border); margin-bottom: 16px; }
+.sidebar-logo { font-size: 1.6rem; filter: drop-shadow(0 0 10px var(--accent)); }
+.sidebar-title { font-size: 1rem; font-weight: 900; letter-spacing: .06em; background: linear-gradient(180deg, var(--gold-1), var(--gold-2)); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1.1; }
+.sidebar-version { font-size: .62rem; color: var(--txt-3); letter-spacing: .1em; }
 
-.sidebar-nav {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  color: var(--txt-2);
-  padding: 11px 12px;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: .88rem;
-  font-weight: 600;
-  text-align: left;
-  transition: .15s;
-  position: relative;
-}
-.nav-item .nav-icon { font-size: 1.1rem; }
-.nav-item .nav-badge {
-  margin-left: auto;
-  font-size: .65rem;
-  font-weight: 800;
-  background: color-mix(in srgb, var(--accent) 20%, transparent);
-  color: var(--accent);
-  padding: 2px 8px;
-  border-radius: 10px;
-}
-.nav-item:hover {
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
-  color: var(--txt-1);
-}
-.nav-item.active {
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.nav-item.danger { color: var(--danger); }
-.nav-item.danger:hover { background: color-mix(in srgb, var(--danger) 12%, transparent); }
+.sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.nav-item { display: flex; align-items: center; gap: 12px; background: transparent; border: 1px solid transparent; border-radius: 10px; color: var(--txt-2); padding: 11px 12px; cursor: pointer; font-family: inherit; font-size: .88rem; font-weight: 600; text-align: left; transition: .15s; position: relative; }
+.nav-item .nav-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+.nav-item .nav-badge { margin-left: auto; font-size: .65rem; font-weight: 800; background: color-mix(in srgb, var(--accent) 20%, transparent); color: var(--accent); padding: 2px 8px; border-radius: 10px; }
+.nav-item .nav-badge.danger { background: color-mix(in srgb, var(--danger) 20%, transparent); color: var(--danger); }
+.nav-item:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); color: var(--txt-1); }
+.nav-item.active { background: color-mix(in srgb, var(--accent) 15%, transparent); border-color: var(--accent); color: var(--accent); }
 
-.sidebar-footer {
-  padding-top: 14px;
-  border-top: 1px solid var(--card-border);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.sidebar-footer button {
-  background: transparent;
-  border: 1px solid var(--card-border);
-  color: var(--txt-2);
-  padding: 9px 12px;
-  border-radius: 8px;
-  font-size: .78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  transition: .15s;
-}
-.sidebar-footer button:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
+.sidebar-footer { padding-top: 14px; border-top: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 6px; }
+.sidebar-footer button { background: transparent; border: 1px solid var(--card-border); color: var(--txt-2); padding: 9px 12px; border-radius: 8px; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; transition: .15s; }
+.sidebar-footer button:hover { border-color: var(--accent); color: var(--accent); }
 .sidebar-footer button.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, transparent); }
 .sidebar-footer button.danger:hover { background: color-mix(in srgb, var(--danger) 15%, transparent); }
 
-/* MAIN */
-#main {
-  flex: 1;
-  margin-left: 240px;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  transition: margin-left .3s ease;
-}
-#main.full-width { margin-left: 0; }
+#main { flex: 1; margin-left: 250px; display: flex; flex-direction: column; min-height: 100vh; }
 
-/* TOPBAR */
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 20px;
-  background: var(--card-bg);
-  border-bottom: 1px solid var(--card-border);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  backdrop-filter: blur(12px);
-}
-.burger {
-  background: transparent;
-  border: 1px solid var(--card-border);
-  color: var(--txt-2);
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  transition: .15s;
-}
+.topbar { display: flex; align-items: center; gap: 12px; padding: 14px 20px; background: var(--card-bg); border-bottom: 1px solid var(--card-border); position: sticky; top: 0; z-index: 50; backdrop-filter: blur(12px); }
+.burger { background: transparent; border: 1px solid var(--card-border); color: var(--txt-2); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: .15s; }
 .burger:hover { border-color: var(--accent); color: var(--accent); }
-.topbar-title {
-  flex: 1;
-  font-size: 1rem;
-  font-weight: 800;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--txt-1);
-}
-.theme-switch {
-  display: flex;
-  gap: 4px;
-  padding: 3px;
-  background: var(--bg-2);
-  border: 1px solid var(--card-border);
-  border-radius: 10px;
-}
-.theme-switch button {
-  background: transparent;
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 7px;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: .15s;
-}
+.topbar-title { flex: 1; font-size: 1rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.theme-switch { display: flex; gap: 4px; padding: 3px; background: var(--bg-2); border: 1px solid var(--card-border); border-radius: 10px; }
+.theme-switch button { background: transparent; border: none; width: 32px; height: 32px; border-radius: 7px; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: .15s; }
 .theme-switch button:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
-.theme-switch button.active {
-  background: color-mix(in srgb, var(--accent) 22%, transparent);
-  box-shadow: 0 0 0 1px var(--accent) inset;
-}
+.theme-switch button.active { background: color-mix(in srgb, var(--accent) 22%, transparent); box-shadow: 0 0 0 1px var(--accent) inset; }
 
-/* КОНТЕНТ */
-#content {
-  flex: 1;
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto;
-  width: 100%;
-}
+#content { flex: 1; padding: 20px; max-width: 1400px; margin: 0 auto; width: 100%; }
 
-/* ═══ КАРТОЧКИ СТАТИСТИКИ ═══ */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
-  margin-bottom: 20px;
-}
-.stat-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 14px;
-  padding: 16px;
-  text-align: center;
-  transition: .2s;
-}
-.stat-card:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
-}
-.stat-card .num {
-  font-size: 1.7rem;
-  font-weight: 900;
-  color: var(--accent);
-  line-height: 1;
-  margin-bottom: 6px;
-}
-.stat-card .lbl {
-  font-size: .68rem;
-  color: var(--txt-2);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
+/* СТАТИСТИКА */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 16px; text-align: center; transition: .2s; }
+.stat-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.stat-card .num { font-size: 1.6rem; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 6px; }
+.stat-card .lbl { font-size: .68rem; color: var(--txt-2); letter-spacing: .1em; text-transform: uppercase; }
 
-/* ═══ СЕКЦИИ ═══ */
-.section {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 14px;
-  padding: 18px;
-  margin-bottom: 16px;
-}
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-.section-title {
-  font-size: .9rem;
-  font-weight: 800;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.section-actions {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
+/* СЕКЦИИ */
+.section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
+.section-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.section-title { font-size: .9rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+.section-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
-/* ═══ ПОИСК ═══ */
-.search-bar {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-.search-input {
-  flex: 1;
-  min-width: 180px;
-  background: var(--bg-2);
-  border: 1px solid var(--card-border);
-  color: var(--txt-1);
-  padding: 11px 14px;
-  border-radius: 10px;
-  font-size: .88rem;
-  outline: none;
-  transition: .15s;
-}
-.search-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
-}
+.search-bar { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.search-input { flex: 1; min-width: 180px; background: var(--bg-2); border: 1px solid var(--card-border); color: var(--txt-1); padding: 11px 14px; border-radius: 10px; font-size: .88rem; outline: none; transition: .15s; }
+.search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent); }
 
-/* ═══ КНОПКИ ═══ */
-.btn {
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  border: 1.5px solid var(--accent);
-  color: var(--accent);
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-size: .78rem;
-  font-weight: 800;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  transition: .15s;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
+.btn { background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1.5px solid var(--accent); color: var(--accent); padding: 10px 16px; border-radius: 10px; font-size: .78rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; transition: .15s; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
 .btn:hover:not(:disabled) { background: color-mix(in srgb, var(--accent) 25%, transparent); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn.ghost { background: transparent; border-color: var(--card-border); color: var(--txt-2); }
@@ -522,416 +100,125 @@ input, textarea, select { font-family: inherit; }
 .btn.success:hover:not(:disabled) { background: color-mix(in srgb, var(--success) 25%, transparent); }
 .btn.warn { border-color: var(--warn); color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, transparent); }
 .btn.sm { padding: 7px 12px; font-size: .7rem; }
-.btn.icon { padding: 8px 10px; }
 .btn.full { width: 100%; justify-content: center; }
 
-/* ═══ СПИСОК ПОЛЬЗОВАТЕЛЕЙ (карточки) ═══ */
-.users-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.user-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--bg-2);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 12px 14px;
-  transition: .15s;
-}
-.user-card:hover {
-  border-color: var(--accent);
-  background: var(--bg-3);
-}
-.user-card.banned {
-  border-left: 3px solid var(--danger);
-}
-.user-card.muted {
-  border-left: 3px solid var(--warn);
-}
-.user-avatar {
-  width: 42px;
-  height: 42px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 1.4rem;
-  background: var(--bg-3);
-  border: 2px solid var(--card-border);
-}
+/* КАРТОЧКИ ЮЗЕРОВ */
+.users-list { display: flex; flex-direction: column; gap: 8px; }
+.user-card { display: flex; align-items: center; gap: 12px; background: var(--bg-2); border: 1px solid var(--card-border); border-radius: 12px; padding: 12px 14px; transition: .15s; }
+.user-card:hover { border-color: var(--accent); background: var(--bg-3); }
+.user-card.banned { border-left: 3px solid var(--danger); }
+.user-card.muted { border-left: 3px solid var(--warn); }
+.user-avatar { width: 42px; height: 42px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center; font-size: 1.4rem; background: var(--bg-3); border: 2px solid var(--card-border); }
 .user-card.banned .user-avatar { border-color: var(--danger); }
-.user-info {
-  flex: 1;
-  min-width: 0;
-}
-.user-nick {
-  font-size: .95rem;
-  font-weight: 800;
-  color: var(--txt-1);
-  margin-bottom: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.user-meta {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  font-size: .72rem;
-  color: var(--txt-2);
-}
+.user-info { flex: 1; min-width: 0; }
+.user-nick { font-size: .95rem; font-weight: 800; color: var(--txt-1); margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: .72rem; color: var(--txt-2); }
 .user-meta span { display: inline-flex; align-items: center; gap: 3px; }
 .user-meta b { color: var(--accent); font-weight: 800; }
-.user-meta .badge {
-  font-size: .6rem;
-  font-weight: 800;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  padding: 2px 7px;
-  border-radius: 6px;
-}
+.user-meta .badge { font-size: .6rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 6px; }
 .user-meta .badge.ban { background: color-mix(in srgb, var(--danger) 18%, transparent); color: var(--danger); }
 .user-meta .badge.mute { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
 .user-meta .badge.wip { background: color-mix(in srgb, var(--info) 18%, transparent); color: var(--info); }
-.user-actions {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0;
-}
+.user-actions { display: flex; gap: 4px; flex-shrink: 0; }
 
-/* ═══ ТАБЛИЦЫ ═══ */
+/* ТАБЛИЦЫ */
 .table-wrap { overflow-x: auto; margin-top: 10px; }
 table { width: 100%; border-collapse: collapse; font-size: .82rem; }
-th {
-  text-align: left;
-  padding: 10px 12px;
-  color: var(--txt-2);
-  font-size: .68rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  border-bottom: 1px solid var(--card-border);
-  white-space: nowrap;
-}
-td {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--card-border);
-  color: var(--txt-1);
-  vertical-align: middle;
-}
+th { text-align: left; padding: 10px 12px; color: var(--txt-2); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; border-bottom: 1px solid var(--card-border); white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--card-border); color: var(--txt-1); vertical-align: middle; }
 tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent); }
 
-/* ═══ ПУСТОЕ СОСТОЯНИЕ ═══ */
-.empty {
-  text-align: center;
-  padding: 50px 20px;
-  color: var(--txt-3);
-  font-style: italic;
-}
-.empty-icon {
-  font-size: 3rem;
-  display: block;
-  margin-bottom: 10px;
-  opacity: .5;
-}
+/* ПУСТОЕ */
+.empty { text-align: center; padding: 50px 20px; color: var(--txt-3); font-style: italic; }
+.empty-icon { font-size: 3rem; display: block; margin-bottom: 10px; opacity: .5; }
 .empty b { color: var(--accent); font-style: normal; }
-
-/* ═══ ЗАГРУЗКА ═══ */
-.loading {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--txt-2);
-}
-.spinner {
-  width: 30px;
-  height: 30px;
-  border: 3px solid var(--card-border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto 12px;
-}
+.loading { text-align: center; padding: 40px 20px; color: var(--txt-2); }
+.spinner { width: 30px; height: 30px; border: 3px solid var(--card-border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ═══ МОДАЛКА ═══ */
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 500;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: rgba(0, 0, 0, .75);
-  backdrop-filter: blur(6px);
-}
+/* МОДАЛКА */
+.modal { position: fixed; inset: 0; z-index: 500; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(0,0,0,.75); backdrop-filter: blur(6px); }
 .modal.on { display: flex; animation: fadeIn .2s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-.modal-box {
-  max-width: 520px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  background: var(--card-bg);
-  border: 2px solid var(--accent);
-  border-radius: 18px;
-  padding: 24px;
-  position: relative;
-  animation: slideUp .3s cubic-bezier(.4, 0, .2, 1);
-}
-@keyframes slideUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-.modal-close {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  background: transparent;
-  border: 1px solid var(--card-border);
-  color: var(--txt-2);
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  transition: .15s;
-}
+.modal-box { max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto; background: var(--card-bg); border: 2px solid var(--accent); border-radius: 18px; padding: 24px; position: relative; animation: slideUp .3s cubic-bezier(.4,0,.2,1); }
+@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal-close { position: absolute; top: 14px; right: 14px; background: transparent; border: 1px solid var(--card-border); color: var(--txt-2); width: 34px; height: 34px; border-radius: 8px; font-size: 1.1rem; transition: .15s; }
 .modal-close:hover { border-color: var(--danger); color: var(--danger); }
-.modal-title {
-  font-size: 1.15rem;
-  font-weight: 900;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 16px;
-}
+.modal-title { font-size: 1.15rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
 
 /* ФОРМА */
 .form-group { margin-bottom: 14px; }
-.form-label {
-  display: block;
-  font-size: .7rem;
-  color: var(--txt-2);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-  font-weight: 700;
-}
-.form-input {
-  width: 100%;
-  background: var(--bg-2);
-  border: 1px solid var(--card-border);
-  color: var(--txt-1);
-  padding: 11px 14px;
-  border-radius: 10px;
-  font-size: .9rem;
-  outline: none;
-  transition: .15s;
-}
-.form-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
-}
+.form-label { display: block; font-size: .7rem; color: var(--txt-2); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; font-weight: 700; }
+.form-input { width: 100%; background: var(--bg-2); border: 1px solid var(--card-border); color: var(--txt-1); padding: 11px 14px; border-radius: 10px; font-size: .9rem; outline: none; transition: .15s; }
+.form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent); }
 textarea.form-input { resize: vertical; min-height: 80px; }
-.form-hint {
-  font-size: .7rem;
-  color: var(--txt-3);
-  margin-top: 4px;
-}
-.form-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
+.form-hint { font-size: .7rem; color: var(--txt-3); margin-top: 4px; }
+.form-row { display: flex; gap: 8px; align-items: center; }
 .form-row .form-input { flex: 1; }
-.form-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 18px;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
+.form-actions { display: flex; gap: 8px; margin-top: 18px; justify-content: flex-end; flex-wrap: wrap; }
+.checkbox-row { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: .88rem; padding: 8px 0; }
+.checkbox-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
 
-/* ЧЕКБОКСЫ */
-.checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: .88rem;
-  padding: 8px 0;
-}
-.checkbox-row input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--accent);
-  cursor: pointer;
-}
-
-/* ═══ ТОСТЫ ═══ */
-#toasts {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  pointer-events: none;
-  max-width: 340px;
-}
-.toast {
-  background: var(--card-bg);
-  border: 1.5px solid var(--accent);
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-size: .85rem;
-  font-weight: 600;
-  color: var(--txt-1);
-  box-shadow: var(--shadow);
-  transform: translateX(120%);
-  opacity: 0;
-  transition: transform .3s cubic-bezier(.5, 1.5, .5, 1), opacity .3s;
-  pointer-events: auto;
-}
+/* ТОСТЫ */
+#toasts { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; max-width: 340px; }
+.toast { background: var(--card-bg); border: 1.5px solid var(--accent); border-radius: 12px; padding: 12px 16px; font-size: .85rem; font-weight: 600; color: var(--txt-1); box-shadow: var(--shadow); transform: translateX(120%); opacity: 0; transition: transform .3s cubic-bezier(.5,1.5,.5,1), opacity .3s; pointer-events: auto; }
 .toast.show { transform: translateX(0); opacity: 1; }
 .toast.success { border-color: var(--success); color: var(--success); }
 .toast.error { border-color: var(--danger); color: var(--danger); }
 .toast.warn { border-color: var(--warn); color: var(--warn); }
 
-/* ═══ ПУСТОЙ ЭКРАН (для вкладок) ═══ */
+/* ТАБЫ КОНТЕНТА */
 .tab-content { display: none; }
 .tab-content.active { display: block; animation: fadeIn .25s ease; }
 
-/* ═══ ГРАФИК ═══ */
-.chart-container {
-  background: var(--bg-2);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  padding: 16px;
-  height: 200px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-  gap: 8px;
-}
-.chart-bar {
-  flex: 1;
-  background: linear-gradient(180deg, var(--accent), var(--gold-3));
-  border-radius: 6px 6px 0 0;
-  min-height: 4px;
-  position: relative;
-  transition: .3s;
-}
+/* ГРАФИК */
+.chart-container { background: var(--bg-2); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px; height: 200px; display: flex; align-items: flex-end; justify-content: space-around; gap: 8px; }
+.chart-bar { flex: 1; background: linear-gradient(180deg, var(--accent), var(--gold-3)); border-radius: 6px 6px 0 0; min-height: 4px; position: relative; transition: .3s; }
 .chart-bar:hover { filter: brightness(1.3); }
-.chart-bar .chart-label {
-  position: absolute;
-  bottom: -22px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: .62rem;
-  color: var(--txt-3);
-}
-.chart-bar .chart-value {
-  position: absolute;
-  top: -20px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: .7rem;
-  font-weight: 800;
-  color: var(--accent);
-}
+.chart-bar .chart-label { position: absolute; bottom: -22px; left: 0; right: 0; text-align: center; font-size: .62rem; color: var(--txt-3); }
+.chart-bar .chart-value { position: absolute; top: -20px; left: 0; right: 0; text-align: center; font-size: .7rem; font-weight: 800; color: var(--accent); }
 
-/* ═══ ЛОГИ ═══ */
-.log-list {
-  max-height: 500px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.log-item {
-  background: var(--bg-2);
-  border-left: 3px solid var(--accent);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: .78rem;
-}
-.log-item .log-time {
-  color: var(--txt-3);
-  font-size: .68rem;
-  margin-right: 8px;
-}
-.log-item .log-action {
-  color: var(--accent);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  font-size: .7rem;
-  margin-right: 6px;
-}
+/* ЛОГИ */
+.log-list { max-height: 500px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+.log-item { background: var(--bg-2); border-left: 3px solid var(--accent); border-radius: 8px; padding: 10px 12px; font-size: .78rem; }
+.log-item .log-time { color: var(--txt-3); font-size: .68rem; margin-right: 8px; }
+.log-item .log-action { color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: .05em; font-size: .7rem; margin-right: 6px; }
 .log-item .log-detail { color: var(--txt-1); }
 
-/* ═══ ПРОМОКОДЫ ═══ */
-.promo-card {
-  background: var(--bg-2);
-  border: 1.5px dashed var(--accent);
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 10px;
-}
-.promo-code {
-  font-family: ui-monospace, monospace;
-  font-size: 1.1rem;
-  font-weight: 900;
-  color: var(--accent);
-  letter-spacing: .1em;
-  margin-bottom: 6px;
-}
-.promo-info {
-  font-size: .75rem;
-  color: var(--txt-2);
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
+/* ПРОМОКОДЫ */
+.promo-card { background: var(--bg-2); border: 1.5px dashed var(--accent); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+.promo-code { font-family: ui-monospace, monospace; font-size: 1.1rem; font-weight: 900; color: var(--accent); letter-spacing: .1em; margin-bottom: 6px; }
+.promo-info { font-size: .75rem; color: var(--txt-2); display: flex; gap: 12px; flex-wrap: wrap; }
 .promo-info b { color: var(--txt-1); }
 
-/* ═══ ПЛАВАЮЩАЯ КНОПКА ═══ */
-.fab {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: #000;
-  border: none;
-  font-size: 1.8rem;
-  font-weight: 300;
-  box-shadow: 0 8px 25px color-mix(in srgb, var(--accent) 60%, transparent);
-  z-index: 60;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: .2s;
-}
+/* FAB */
+.fab { position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: var(--accent); color: #000; border: none; font-size: 1.8rem; font-weight: 300; box-shadow: 0 8px 25px color-mix(in srgb, var(--accent) 60%, transparent); z-index: 60; display: flex; align-items: center; justify-content: center; transition: .2s; }
 .fab:hover { transform: scale(1.1); }
 .fab:active { transform: scale(.95); }
 
-/* ═══ АДАПТИВ ═══ */
+/* БЕЙДЖИ */
+.badge { display: inline-block; font-size: .65rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 8px; }
+.badge.open { background: color-mix(in srgb, var(--info) 18%, transparent); color: var(--info); border: 1px solid color-mix(in srgb, var(--info) 40%, transparent); }
+.badge.answered { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); border: 1px solid color-mix(in srgb, var(--success) 40%, transparent); }
+.badge.closed { background: color-mix(in srgb, var(--txt-3) 18%, transparent); color: var(--txt-3); border: 1px solid color-mix(in srgb, var(--txt-3) 40%, transparent); }
+.badge.cat { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+
+/* ТИКЕТЫ */
+.ticket-card { background: var(--bg-2); border: 1px solid var(--card-border); border-left: 3px solid var(--accent); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+.ticket-card.closed { border-left-color: var(--txt-3); opacity: .75; }
+.ticket-card.answered { border-left-color: var(--success); }
+.ticket-head { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+.ticket-subject { font-size: .92rem; font-weight: 800; color: var(--txt-1); flex: 1; min-width: 150px; }
+.ticket-date { font-size: .68rem; color: var(--txt-3); white-space: nowrap; }
+.ticket-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.ticket-message { font-size: .85rem; color: var(--txt-1); line-height: 1.5; margin-bottom: 10px; white-space: pre-wrap; word-break: break-word; }
+.ticket-replies { padding-left: 12px; border-left: 2px solid var(--card-border); margin-bottom: 10px; }
+.ticket-reply { background: var(--card-bg); border-radius: 8px; padding: 10px 12px; margin-bottom: 6px; font-size: .82rem; }
+.ticket-reply .reply-head { font-size: .65rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
+
+/* АДАПТИВ */
 @media (max-width: 768px) {
-  #sidebar {
-    transform: translateX(-100%);
-    width: 260px;
-    box-shadow: 0 0 40px rgba(0,0,0,.6);
-  }
+  #sidebar { transform: translateX(-100%); width: 270px; box-shadow: 0 0 40px rgba(0,0,0,.6); }
   #sidebar.mobile-open { transform: translateX(0); }
   #main { margin-left: 0; }
   #content { padding: 14px; }
@@ -947,19 +234,15 @@ textarea.form-input { resize: vertical; min-height: 80px; }
   .fab { bottom: 16px; right: 16px; width: 52px; height: 52px; }
 }
 
-/* ═══ СКРОЛЛБАР ═══ */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-2); }
-::-webkit-scrollbar-thumb {
-  background: var(--card-border);
-  border-radius: 4px;
-}
+::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 </style>
 </head>
 <body>
 
-<!-- ═══ ЭКРАН ВХОДА ═══ -->
+<!-- ЛОГИН -->
 <div id="loginScreen">
   <div class="login-box">
     <span class="login-icon">⚡</span>
@@ -971,7 +254,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
   </div>
 </div>
 
-<!-- ═══ ПРИЛОЖЕНИЕ ═══ -->
+<!-- ПРИЛОЖЕНИЕ -->
 <div id="app" class="hidden">
 
   <!-- САЙДБАР -->
@@ -980,50 +263,48 @@ textarea.form-input { resize: vertical; min-height: 80px; }
       <span class="sidebar-logo">⚡</span>
       <div>
         <div class="sidebar-title">Artamon</div>
-        <div class="sidebar-version">Admin v2.6.6</div>
+        <div class="sidebar-version">Admin v2.7.0</div>
       </div>
     </div>
 
     <nav class="sidebar-nav">
       <button class="nav-item active" data-tab="dashboard">
-        <span class="nav-icon">📊</span>
-        <span>Дашборд</span>
+        <span class="nav-icon">📊</span><span>Дашборд</span>
       </button>
       <button class="nav-item" data-tab="users">
-        <span class="nav-icon">👥</span>
-        <span>Пользователи</span>
+        <span class="nav-icon">👥</span><span>Пользователи</span>
         <span class="nav-badge" id="badgeUsers">0</span>
       </button>
+      <button class="nav-item" data-tab="tickets">
+        <span class="nav-icon">🎫</span><span>Поддержка</span>
+        <span class="nav-badge danger" id="badgeTickets">0</span>
+      </button>
       <button class="nav-item" data-tab="bans">
-        <span class="nav-icon">🚫</span>
-        <span>Баны</span>
+        <span class="nav-icon">🚫</span><span>Баны</span>
         <span class="nav-badge" id="badgeBans">0</span>
       </button>
       <button class="nav-item" data-tab="posts">
-        <span class="nav-icon">📰</span>
-        <span>Посты</span>
+        <span class="nav-icon">📰</span><span>Посты</span>
         <span class="nav-badge" id="badgePosts">0</span>
       </button>
       <button class="nav-item" data-tab="promos">
-        <span class="nav-icon">🎁</span>
-        <span>Промокоды</span>
+        <span class="nav-icon">🎁</span><span>Промокоды</span>
         <span class="nav-badge" id="badgePromos">0</span>
       </button>
       <button class="nav-item" data-tab="broadcast">
-        <span class="nav-icon">📢</span>
-        <span>Рассылка</span>
+        <span class="nav-icon">📢</span><span>Рассылка</span>
       </button>
       <button class="nav-item" data-tab="achievements">
-        <span class="nav-icon">🏆</span>
-        <span>Достижения</span>
+        <span class="nav-icon">🏆</span><span>Достижения</span>
+      </button>
+      <button class="nav-item" data-tab="games">
+        <span class="nav-icon">🎮</span><span>Игровые системы</span>
       </button>
       <button class="nav-item" data-tab="tools">
-        <span class="nav-icon">🛠</span>
-        <span>Инструменты</span>
+        <span class="nav-icon">🛠</span><span>Инструменты</span>
       </button>
       <button class="nav-item" data-tab="logs">
-        <span class="nav-icon">📋</span>
-        <span>Логи</span>
+        <span class="nav-icon">📋</span><span>Логи</span>
       </button>
     </nav>
 
@@ -1035,8 +316,6 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 
   <!-- MAIN -->
   <div id="main">
-
-    <!-- TOPBAR -->
     <div class="topbar">
       <button class="burger" id="burger">☰</button>
       <div class="topbar-title" id="topbarTitle">📊 Дашборд</div>
@@ -1048,17 +327,17 @@ textarea.form-input { resize: vertical; min-height: 80px; }
       </div>
     </div>
 
-    <!-- КОНТЕНТ -->
     <div id="content">
 
       <!-- ДАШБОРД -->
       <div class="tab-content active" data-tab="dashboard">
-        <div class="stats-grid" id="statsGrid">
+        <div class="stats-grid">
           <div class="stat-card"><div class="num" id="statUsers">—</div><div class="lbl">Пользователей</div></div>
           <div class="stat-card"><div class="num" id="statPosts">—</div><div class="lbl">Постов</div></div>
           <div class="stat-card"><div class="num" id="statRatings">—</div><div class="lbl">Оценок</div></div>
           <div class="stat-card"><div class="num" id="statComments">—</div><div class="lbl">Комментариев</div></div>
           <div class="stat-card"><div class="num" id="statBans">—</div><div class="lbl">В бане</div></div>
+          <div class="stat-card"><div class="num" id="statTickets">—</div><div class="lbl">Тикетов</div></div>
           <div class="stat-card"><div class="num" id="statCoins">—</div><div class="lbl">Всего монет</div></div>
         </div>
 
@@ -1109,6 +388,27 @@ textarea.form-input { resize: vertical; min-height: 80px; }
         </div>
       </div>
 
+      <!-- ТИКЕТЫ -->
+      <div class="tab-content" data-tab="tickets">
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">🎫 Обращения игроков</div>
+            <div class="section-actions">
+              <select class="search-input" id="ticketFilter" style="flex:0;min-width:140px;">
+                <option value="all">Все</option>
+                <option value="open">🆕 Открытые</option>
+                <option value="answered">✅ Отвеченные</option>
+                <option value="closed">🔒 Закрытые</option>
+              </select>
+              <button class="btn ghost sm" id="reloadTickets">🔄</button>
+            </div>
+          </div>
+          <div id="ticketsList">
+            <div class="loading"><div class="spinner"></div>Загрузка...</div>
+          </div>
+        </div>
+      </div>
+
       <!-- БАНЫ -->
       <div class="tab-content" data-tab="bans">
         <div class="section">
@@ -1136,18 +436,8 @@ textarea.form-input { resize: vertical; min-height: 80px; }
           </div>
           <div class="table-wrap">
             <table>
-              <thead>
-                <tr>
-                  <th>Ник</th>
-                  <th>Причина</th>
-                  <th>Когда</th>
-                  <th>До</th>
-                  <th>Действия</th>
-                </tr>
-              </thead>
-              <tbody id="bansBody">
-                <tr><td colspan="5" class="empty">Загрузка...</td></tr>
-              </tbody>
+              <thead><tr><th>Ник</th><th>Причина</th><th>Когда</th><th>До</th><th>Действия</th></tr></thead>
+              <tbody id="bansBody"><tr><td colspan="5" class="empty">Загрузка...</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -1243,6 +533,48 @@ textarea.form-input { resize: vertical; min-height: 80px; }
         </div>
       </div>
 
+      <!-- ИГРОВЫЕ СИСТЕМЫ -->
+      <div class="tab-content" data-tab="games">
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">🎡 Колесо фортуны</div>
+          </div>
+          <p style="font-size:.85rem;color:var(--txt-2);line-height:1.7;margin-bottom:14px;">
+            Игроки могут крутить колесо <b>1 раз в день бесплатно</b> или за <b>500 монет</b>. Призы: от 50 монет до <b>ДЖЕКПОТА 10000</b>.
+          </p>
+          <div class="section-actions">
+            <button class="btn ghost" id="reloadWheel">📊 Обновить статистику колеса</button>
+          </div>
+          <div id="wheelStats" style="margin-top:14px;"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">🎯 Ежедневные квесты</div>
+          </div>
+          <p style="font-size:.85rem;color:var(--txt-2);line-height:1.7;margin-bottom:14px;">
+            Квесты: голосуй, комментируй, ставь оценки, создавай опросы. За каждый — <b>монеты</b>. Сбрасываются каждый день в 00:00.
+          </p>
+          <div class="section-actions">
+            <button class="btn ghost" id="reloadQuests">📊 Обновить статистику квестов</button>
+          </div>
+          <div id="questsStats" style="margin-top:14px;"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">👥 Друзья</div>
+          </div>
+          <p style="font-size:.85rem;color:var(--txt-2);line-height:1.7;margin-bottom:14px;">
+            Игроки добавляют друг друга в друзья, видят онлайн-статус. Пока без чата.
+          </p>
+          <div class="section-actions">
+            <button class="btn ghost" id="reloadFriends">📊 Обновить статистику друзей</button>
+          </div>
+          <div id="friendsStats" style="margin-top:14px;"></div>
+        </div>
+      </div>
+
       <!-- ИНСТРУМЕНТЫ -->
       <div class="tab-content" data-tab="tools">
         <div class="section">
@@ -1252,6 +584,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
           <div class="section-actions">
             <button class="btn" id="kvDumpBtn">📦 Дамп KV</button>
             <button class="btn ghost" id="apiTestBtn">🌐 Проверить API</button>
+            <button class="btn success" id="backupBtn">💾 Скачать бэкап</button>
           </div>
           <pre id="toolsOut" style="background:var(--bg-2);padding:14px;border-radius:10px;color:var(--txt-2);font-family:ui-monospace,monospace;font-size:.74rem;max-height:400px;overflow-y:auto;white-space:pre-wrap;margin-top:14px;">Нажми кнопку для результата.</pre>
         </div>
@@ -1275,12 +608,10 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     </div>
   </div>
 
-  <!-- FAB -->
   <button class="fab" id="fab" title="Создать пост">+</button>
 
 </div>
 
-<!-- ═══ МОДАЛКА ═══ -->
 <div class="modal" id="modal">
   <div class="modal-box">
     <button class="modal-close" id="modalClose">×</button>
@@ -1289,24 +620,15 @@ textarea.form-input { resize: vertical; min-height: 80px; }
   </div>
 </div>
 
-<!-- ═══ ТОСТЫ ═══ -->
 <div id="toasts"></div>
 
-<!-- JS вставим в Части 4 и 5 -->
-</body>
-</html>
 <script>
 /* ============================================================
-   ARTAMON ADMIN — JS Часть 1
-   Авторизация, темы, навигация, дашборд, пользователи, баны
+   ARTAMON ADMIN v2.7.0
    ============================================================ */
 
 const API = "https://artamon-api.artem123kv.workers.dev";
-const ADMIN_SECRET_DEFAULT = "artamon-admin-2026";
 
-/* ═══════════════════════════════════════════════════════
-   СОСТОЯНИЕ
-   ═══════════════════════════════════════════════════════ */
 const state = {
   password: "",
   users: [],
@@ -1315,12 +637,10 @@ const state = {
   promos: [],
   broadcasts: [],
   logs: [],
+  tickets: [],
   currentTab: "dashboard"
 };
 
-/* ═══════════════════════════════════════════════════════
-   УТИЛИТЫ
-   ═══════════════════════════════════════════════════════ */
 const $ = (id) => document.getElementById(id);
 const $$ = (sel) => document.querySelectorAll(sel);
 
@@ -1329,19 +649,15 @@ function escapeHtml(s) {
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   }[c]));
 }
-
 function fmtDate(ts) {
   if (!ts) return "—";
   const d = new Date(ts);
   return d.toLocaleDateString("ru-RU") + " " + d.toTimeString().slice(0, 5);
 }
-
 function fmtDateShort(ts) {
   if (!ts) return "—";
-  const d = new Date(ts);
-  return d.toLocaleDateString("ru-RU");
+  return new Date(ts).toLocaleDateString("ru-RU");
 }
-
 function timeAgo(ts) {
   if (!ts) return "—";
   const diff = Date.now() - ts;
@@ -1355,9 +671,6 @@ function timeAgo(ts) {
   return fmtDateShort(ts);
 }
 
-/* ═══════════════════════════════════════════════════════
-   ТОСТЫ
-   ═══════════════════════════════════════════════════════ */
 function toast(msg, type) {
   type = type || "info";
   const el = document.createElement("div");
@@ -1371,9 +684,6 @@ function toast(msg, type) {
   }, 3500);
 }
 
-/* ═══════════════════════════════════════════════════════
-   API
-   ═══════════════════════════════════════════════════════ */
 async function api(path, body) {
   const r = await fetch(API + path, {
     method: "POST",
@@ -1385,21 +695,13 @@ async function api(path, body) {
   return data;
 }
 
-/* ═══════════════════════════════════════════════════════
-   МОДАЛКА
-   ═══════════════════════════════════════════════════════ */
 function openModal(title, html) {
   $("modalTitle").textContent = title;
   $("modalBody").innerHTML = html;
   $("modal").classList.add("on");
 }
-function closeModal() {
-  $("modal").classList.remove("on");
-}
+function closeModal() { $("modal").classList.remove("on"); }
 
-/* ═══════════════════════════════════════════════════════
-   ТЕМЫ
-   ═══════════════════════════════════════════════════════ */
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   try { localStorage.setItem("artamon_admin_theme", theme); } catch(e) {}
@@ -1407,24 +709,23 @@ function applyTheme(theme) {
     b.classList.toggle("active", b.getAttribute("data-theme") === theme);
   });
 }
-
 function loadTheme() {
   let saved = "dark";
   try { saved = localStorage.getItem("artamon_admin_theme") || "dark"; } catch(e) {}
   applyTheme(saved);
 }
 
-/* ═══════════════════════════════════════════════════════
-   НАВИГАЦИЯ
-   ═══════════════════════════════════════════════════════ */
+/* ═══ НАВИГАЦИЯ ═══ */
 const TAB_TITLES = {
   dashboard: "📊 Дашборд",
   users: "👥 Пользователи",
+  tickets: "🎫 Поддержка",
   bans: "🚫 Баны",
   posts: "📰 Посты",
   promos: "🎁 Промокоды",
   broadcast: "📢 Рассылка",
   achievements: "🏆 Достижения",
+  games: "🎮 Игровые системы",
   tools: "🛠 Инструменты",
   logs: "📋 Логи"
 };
@@ -1432,11 +733,13 @@ const TAB_TITLES = {
 const TAB_LOADERS = {
   dashboard: () => { loadStats(); loadChart(); },
   users: () => loadUsers(),
+  tickets: () => loadTickets(),
   bans: () => loadBans(),
   posts: () => loadPosts(),
   promos: () => loadPromos(),
   broadcast: () => loadBroadcasts(),
   achievements: () => renderAchList(),
+  games: () => { /* загрузим при клике на кнопки */ },
   tools: () => {},
   logs: () => loadLogs()
 };
@@ -1447,19 +750,14 @@ function switchTab(tab) {
   $$(".tab-content").forEach(c => c.classList.toggle("active", c.getAttribute("data-tab") === tab));
   const title = $("topbarTitle");
   if (title) title.textContent = TAB_TITLES[tab] || tab;
-  /* Закрываем мобильный сайдбар */
-  const sb = $("sidebar");
-  if (sb) sb.classList.remove("mobile-open");
-  /* Загружаем данные */
+  $("sidebar").classList.remove("mobile-open");
   try {
     const fn = TAB_LOADERS[tab];
     if (fn) fn();
-  } catch(e) { console.warn("Loader error:", e); }
+  } catch(e) { console.warn("Loader:", e); }
 }
 
-/* ═══════════════════════════════════════════════════════
-   АВТОРИЗАЦИЯ
-   ═══════════════════════════════════════════════════════ */
+/* ═══ АВТОРИЗАЦИЯ ═══ */
 async function tryLogin() {
   const input = $("loginInput");
   const err = $("loginError");
@@ -1486,8 +784,6 @@ async function tryLogin() {
     $("loginScreen").classList.add("hidden");
     $("app").classList.remove("hidden");
     toast("✅ Добро пожаловать!", "success");
-
-    /* Загружаем дашборд */
     switchTab("dashboard");
   } catch (e) {
     err.textContent = "❌ " + e.message;
@@ -1508,9 +804,7 @@ function logout() {
   $("loginInput").value = "";
 }
 
-/* ═══════════════════════════════════════════════════════
-   ДАШБОРД — статистика
-   ═══════════════════════════════════════════════════════ */
+/* ═══ ДАШБОРД ═══ */
 async function loadStats() {
   try {
     const r = await api("/api/admin/stats");
@@ -1520,11 +814,14 @@ async function loadStats() {
     $("statRatings").textContent = s.ratingsCount;
     $("statComments").textContent = s.commentsCount;
     $("statBans").textContent = s.bansCount;
+    $("statTickets").textContent = (s.ticketsOpen || 0) + "/" + (s.ticketsTotal || 0);
     $("statCoins").textContent = (s.totalCoins || 0).toLocaleString("ru-RU");
     $("badgeUsers").textContent = s.usersCount;
     $("badgeBans").textContent = s.bansCount;
     $("badgePosts").textContent = s.postsCount;
     $("badgePromos").textContent = s.promosCount || 0;
+    $("badgeTickets").textContent = s.ticketsOpen || 0;
+    $("badgeTickets").className = "nav-badge" + ((s.ticketsOpen || 0) > 0 ? " danger" : "");
   } catch (e) {
     toast("❌ Статистика: " + e.message, "error");
   }
@@ -1538,26 +835,24 @@ async function loadChart() {
     const r = await api("/api/admin/registrations-chart");
     const chart = r.chart || [];
     if (!chart.length) {
-      box.innerHTML = '<div class="empty"><span class="empty-icon">📊</span>Нет данных</div>';
+      box.innerHTML = '<div class="empty">Нет данных</div>';
       return;
     }
     const max = Math.max(...chart.map(c => c.count), 1);
     box.innerHTML = chart.map(c => {
       const h = Math.max((c.count / max) * 100, 2);
-      const day = c.date.slice(5); /* MM-DD */
+      const day = c.date.slice(5);
       return '<div class="chart-bar" style="height:' + h + '%">' +
         '<div class="chart-value">' + c.count + '</div>' +
         '<div class="chart-label">' + day + '</div>' +
       '</div>';
     }).join("");
   } catch (e) {
-    box.innerHTML = '<div class="empty"><span class="empty-icon">❌</span>' + e.message + '</div>';
+    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
   }
 }
 
-/* ═══════════════════════════════════════════════════════
-   ПОЛЬЗОВАТЕЛИ
-   ═══════════════════════════════════════════════════════ */
+/* ═══ ПОЛЬЗОВАТЕЛИ ═══ */
 async function loadUsers() {
   const box = $("usersList");
   if (!box) return;
@@ -1567,7 +862,7 @@ async function loadUsers() {
     state.users = r.users || [];
     renderUsers();
   } catch (e) {
-    box.innerHTML = '<div class="empty"><span class="empty-icon">❌</span>' + escapeHtml(e.message) + '</div>';
+    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
   }
 }
 
@@ -1598,10 +893,8 @@ function renderUsers() {
 
     const wipActive = u.wip && u.wip.active && u.wip.until > Date.now();
     const wipDays = wipActive ? Math.ceil((u.wip.until - Date.now()) / 86400000) : 0;
-
     const avatar = (u.owned && u.owned.avatars && u.owned.avatars.length)
-      ? u.owned.avatars[u.owned.avatars.length - 1]
-      : "👤";
+      ? u.owned.avatars[u.owned.avatars.length - 1] : "👤";
 
     const badges = [];
     if (u.banned) badges.push('<span class="badge ban">🚫 БАН</span>');
@@ -1621,8 +914,8 @@ function renderUsers() {
         '</div>' +
       '</div>' +
       '<div class="user-actions">' +
-        '<button class="btn sm" data-action="manage" data-nick="' + escapeHtml(u.nick) + '" title="Управление">⚙️</button>' +
-        '<button class="btn sm ' + (u.banned ? 'success' : 'danger') + '" data-action="' + (u.banned ? 'unban' : 'ban') + '" data-nick="' + escapeHtml(u.nick) + '" title="' + (u.banned ? 'Разбанить' : 'Забанить') + '">' + (u.banned ? '✅' : '🚫') + '</button>' +
+        '<button class="btn sm" data-action="manage" data-nick="' + escapeHtml(u.nick) + '">⚙️</button>' +
+        '<button class="btn sm ' + (u.banned ? 'success' : 'danger') + '" data-action="' + (u.banned ? 'unban' : 'ban') + '" data-nick="' + escapeHtml(u.nick) + '">' + (u.banned ? '✅' : '🚫') + '</button>' +
       '</div>';
 
     box.appendChild(card);
@@ -1641,24 +934,17 @@ function renderUsers() {
 
 async function quickBan(nick) {
   openModal("🚫 Забанить " + nick,
-    '<div class="form-group">' +
-      '<label class="form-label">Причина</label>' +
-      '<input type="text" class="form-input" id="qBanReason" value="Нарушение правил">' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label class="form-label">Срок</label>' +
+    '<div class="form-group"><label class="form-label">Причина</label>' +
+      '<input type="text" class="form-input" id="qBanReason" value="Нарушение правил"></div>' +
+    '<div class="form-group"><label class="form-label">Срок</label>' +
       '<select class="form-input" id="qBanHours">' +
-        '<option value="0">Навсегда</option>' +
-        '<option value="1">1 час</option>' +
-        '<option value="24">1 день</option>' +
-        '<option value="168">7 дней</option>' +
+        '<option value="0">Навсегда</option><option value="1">1 час</option>' +
+        '<option value="24">1 день</option><option value="168">7 дней</option>' +
         '<option value="720">30 дней</option>' +
-      '</select>' +
-    '</div>' +
+      '</select></div>' +
     '<div class="form-actions">' +
       '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
-      '<button class="btn danger" id="qBanConfirm">🚫 Забанить</button>' +
-    '</div>'
+      '<button class="btn danger" id="qBanConfirm">🚫 Забанить</button></div>'
   );
   $("qBanConfirm").addEventListener("click", async () => {
     const reason = $("qBanReason").value.trim();
@@ -1681,9 +967,6 @@ async function quickUnban(nick) {
   } catch(e) { toast("❌ " + e.message, "error"); }
 }
 
-/* ═══════════════════════════════════════════════════════
-   УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЕМ
-   ═══════════════════════════════════════════════════════ */
 async function openUserManage(nick) {
   try {
     const r = await api("/api/admin/user-detail", { nick });
@@ -1702,89 +985,63 @@ async function openUserManage(nick) {
         (muted ? '<br>🔕 Мут до: <b style="color:var(--warn);">' + fmtDate(u.mutedUntil) + '</b>' : '') +
       '</div>' +
 
-      /* МОНЕТЫ */
-      '<div class="form-group">' +
-        '<label class="form-label">🪙 Монеты</label>' +
-        '<input type="number" class="form-input" id="mCoins" value="100" placeholder="Сколько">' +
+      '<div class="form-group"><label class="form-label">🪙 Монеты</label>' +
+        '<input type="number" class="form-input" id="mCoins" value="100">' +
         '<div class="form-row" style="margin-top:6px;">' +
           '<button class="btn success sm" data-coin="add" style="flex:1;">➕</button>' +
           '<button class="btn danger sm" data-coin="take" style="flex:1;">➖</button>' +
           '<button class="btn ghost sm" data-coin="set" style="flex:1;">=</button>' +
-        '</div>' +
-      '</div>' +
+        '</div></div>' +
 
-      /* WIP */
-      '<div class="form-group">' +
-        '<label class="form-label">💎 WIP-подписка</label>' +
-        '<input type="number" class="form-input" id="mWipDays" value="30" placeholder="Дней">' +
+      '<div class="form-group"><label class="form-label">💎 WIP-подписка</label>' +
+        '<input type="number" class="form-input" id="mWipDays" value="30">' +
         '<div class="form-row" style="margin-top:6px;">' +
           '<button class="btn success sm" data-wip="give" style="flex:1;">➕ Выдать</button>' +
           '<button class="btn danger sm" data-wip="remove" style="flex:1;">➖ Забрать</button>' +
-        '</div>' +
-      '</div>' +
+        '</div></div>' +
 
-      /* АВАТАРКА */
-      '<div class="form-group">' +
-        '<label class="form-label">🎁 Аватарка</label>' +
-        '<input type="text" class="form-input" id="mAvatar" placeholder="Например: 👑 или 🐉" maxlength="4">' +
+      '<div class="form-group"><label class="form-label">🎁 Аватарка</label>' +
+        '<input type="text" class="form-input" id="mAvatar" placeholder="Например: 👑" maxlength="4">' +
         '<div class="form-row" style="margin-top:6px;">' +
           '<button class="btn success sm" data-avatar="give" style="flex:1;">➕ Выдать</button>' +
           '<button class="btn danger sm" data-avatar="remove" style="flex:1;">➖ Забрать</button>' +
-        '</div>' +
-      '</div>' +
+        '</div></div>' +
 
-      /* СБРОС ПАРОЛЯ */
-      '<div class="form-group">' +
-        '<label class="form-label">🔑 Сбросить пароль</label>' +
+      '<div class="form-group"><label class="form-label">🔑 Сбросить пароль</label>' +
         '<div class="form-row">' +
-          '<input type="text" class="form-input" id="mNewPass" placeholder="Новый пароль (мин. 4 симв.)">' +
+          '<input type="text" class="form-input" id="mNewPass" placeholder="Новый пароль (мин. 4)">' +
           '<button class="btn warn sm" data-action="reset-pass">🔑</button>' +
-        '</div>' +
-      '</div>' +
+        '</div></div>' +
 
-      /* СМЕНА НИКА */
-      '<div class="form-group">' +
-        '<label class="form-label">✏️ Сменить ник</label>' +
+      '<div class="form-group"><label class="form-label">✏️ Сменить ник</label>' +
         '<div class="form-row">' +
           '<input type="text" class="form-input" id="mNewNick" placeholder="Новый ник">' +
           '<button class="btn warn sm" data-action="change-nick">✏️</button>' +
-        '</div>' +
-      '</div>' +
+        '</div></div>' +
 
-      /* МУТ */
-      '<div class="form-group">' +
-        '<label class="form-label">🔕 Мут (запрет комментариев)</label>' +
+      '<div class="form-group"><label class="form-label">🔕 Мут</label>' +
         '<div class="form-row">' +
-          '<input type="number" class="form-input" id="mMuteHours" value="1" placeholder="Часов">' +
+          '<input type="number" class="form-input" id="mMuteHours" value="1">' +
           (muted
-            ? '<button class="btn success sm" data-action="unmute">✅ Снять</button>'
-            : '<button class="btn warn sm" data-action="mute">🔕 Мут</button>') +
-        '</div>' +
-      '</div>' +
+            ? '<button class="btn success sm" data-action="unmute">✅</button>'
+            : '<button class="btn warn sm" data-action="mute">🔕</button>') +
+        '</div></div>' +
 
-      /* БАН */
-      '<div class="form-group">' +
-        '<label class="form-label">🚫 Бан</label>' +
+      '<div class="form-group"><label class="form-label">🚫 Бан</label>' +
         '<div class="form-row">' +
           '<input type="text" class="form-input" id="mBanReason" placeholder="Причина" value="Нарушение правил">' +
           '<select class="form-input" id="mBanHours" style="flex:0;min-width:100px;">' +
-            '<option value="0">∞</option>' +
-            '<option value="24">24ч</option>' +
-            '<option value="168">7д</option>' +
-            '<option value="720">30д</option>' +
+            '<option value="0">∞</option><option value="24">24ч</option>' +
+            '<option value="168">7д</option><option value="720">30д</option>' +
           '</select>' +
         '</div>' +
         '<div class="form-row" style="margin-top:6px;">' +
           '<button class="btn danger sm" data-action="ban" style="flex:1;">🚫 Забанить</button>' +
-        '</div>' +
-      '</div>' +
+        '</div></div>' +
 
-      '<div class="form-actions">' +
-        '<button class="btn ghost" onclick="closeModal()">Закрыть</button>' +
-      '</div>'
+      '<div class="form-actions"><button class="btn ghost" onclick="closeModal()">Закрыть</button></div>'
     );
 
-    /* Монеты */
     $("modalBody").querySelectorAll("[data-coin]").forEach(b => b.addEventListener("click", async () => {
       const amount = parseInt($("mCoins").value, 10) || 0;
       const mode = b.getAttribute("data-coin");
@@ -1797,7 +1054,6 @@ async function openUserManage(nick) {
       } catch(e) { toast("❌ " + e.message, "error"); }
     }));
 
-    /* WIP */
     $("modalBody").querySelectorAll("[data-wip]").forEach(b => b.addEventListener("click", async () => {
       const mode = b.getAttribute("data-wip");
       try {
@@ -1814,7 +1070,6 @@ async function openUserManage(nick) {
       } catch(e) { toast("❌ " + e.message, "error"); }
     }));
 
-    /* Аватарки */
     $("modalBody").querySelectorAll("[data-avatar]").forEach(b => b.addEventListener("click", async () => {
       const avatar = $("mAvatar").value.trim();
       if (!avatar) return toast("Введи аватарку", "error");
@@ -1828,7 +1083,6 @@ async function openUserManage(nick) {
       } catch(e) { toast("❌ " + e.message, "error"); }
     }));
 
-    /* Действия */
     $("modalBody").querySelectorAll("[data-action]").forEach(b => b.addEventListener("click", async () => {
       const action = b.getAttribute("data-action");
       try {
@@ -1871,9 +1125,129 @@ async function openUserManage(nick) {
   }
 }
 
-/* ═══════════════════════════════════════════════════════
-   БАНЫ
-   ═══════════════════════════════════════════════════════ */
+/* ═══ ТИКЕТЫ ═══ */
+async function loadTickets() {
+  const box = $("ticketsList");
+  if (!box) return;
+  box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
+  try {
+    const r = await api("/api/admin/tickets");
+    state.tickets = r.tickets || [];
+    renderTickets();
+    const openCount = state.tickets.filter(t => t.status === "open").length;
+    $("badgeTickets").textContent = openCount;
+    $("badgeTickets").className = "nav-badge" + (openCount > 0 ? " danger" : "");
+  } catch (e) {
+    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+function renderTickets() {
+  const box = $("ticketsList");
+  if (!box) return;
+  const filter = $("ticketFilter") ? $("ticketFilter").value : "all";
+  let list = (state.tickets || []).slice();
+  if (filter !== "all") list = list.filter(t => t.status === filter);
+
+  if (!list.length) {
+    box.innerHTML = '<div class="empty"><span class="empty-icon">📭</span>Нет обращений</div>';
+    return;
+  }
+
+  const catNames = {
+    bug: "🐛 Баг", question: "❓ Вопрос", suggest: "💡 Предложение",
+    complaint: "😡 Жалоба", other: "📝 Другое"
+  };
+
+  box.innerHTML = "";
+  list.forEach(t => {
+    const el = document.createElement("div");
+    el.className = "ticket-card " + (t.status || "open");
+
+    const repliesHtml = (t.replies || []).map(r =>
+      '<div class="ticket-reply">' +
+        '<div class="reply-head">👑 Админ · ' + timeAgo(r.time) + '</div>' +
+        '<div>' + escapeHtml(r.text) + '</div>' +
+      '</div>'
+    ).join("");
+
+    const statusName = t.status === "closed" ? "🔒 Закрыто" :
+                       t.status === "answered" ? "✅ Отвечено" : "🆕 Открыто";
+
+    el.innerHTML =
+      '<div class="ticket-head">' +
+        '<div class="ticket-subject">' + escapeHtml(t.subject) + '</div>' +
+        '<div class="ticket-date">' + timeAgo(t.createdAt) + '</div>' +
+      '</div>' +
+      '<div class="ticket-meta">' +
+        '<span class="badge ' + (t.status || "open") + '">' + statusName + '</span>' +
+        '<span class="badge cat">' + (catNames[t.category] || "📝") + '</span>' +
+        '<span class="badge cat">👤 ' + escapeHtml(t.nick) + '</span>' +
+      '</div>' +
+      '<div class="ticket-message">' + escapeHtml(t.message) + '</div>' +
+      (repliesHtml ? '<div class="ticket-replies">' + repliesHtml + '</div>' : '') +
+      '<div class="section-actions">' +
+        '<button class="btn sm success" data-reply="' + t.id + '">💬 Ответить</button>' +
+        (t.status !== "closed" ? '<button class="btn sm warn" data-close="' + t.id + '">🔒 Закрыть</button>' : '') +
+        '<button class="btn sm danger" data-delete="' + t.id + '">🗑 Удалить</button>' +
+      '</div>';
+
+    box.appendChild(el);
+  });
+
+  box.querySelectorAll("[data-reply]").forEach(b => b.addEventListener("click", () => {
+    const id = b.getAttribute("data-reply");
+    openReplyModal(id);
+  }));
+  box.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", async () => {
+    const id = b.getAttribute("data-close");
+    if (!confirm("Закрыть тикет?")) return;
+    try {
+      await api("/api/admin/ticket-close", { id });
+      toast("🔒 Тикет закрыт", "success");
+      loadTickets(); loadStats();
+    } catch(e) { toast("❌ " + e.message, "error"); }
+  }));
+  box.querySelectorAll("[data-delete]").forEach(b => b.addEventListener("click", async () => {
+    const id = b.getAttribute("data-delete");
+    if (!confirm("Удалить тикет?")) return;
+    try {
+      await api("/api/admin/ticket-delete", { id });
+      toast("🗑 Удалён", "success");
+      loadTickets(); loadStats();
+    } catch(e) { toast("❌ " + e.message, "error"); }
+  }));
+}
+
+function openReplyModal(id) {
+  const t = state.tickets.find(x => x.id === id);
+  if (!t) return;
+  openModal("💬 Ответ на " + t.nick,
+    '<div style="font-size:.82rem;color:var(--txt-2);margin-bottom:12px;padding:10px;background:var(--bg-2);border-radius:8px;">' +
+      '<b style="color:var(--accent);">' + escapeHtml(t.subject) + '</b><br>' +
+      escapeHtml(t.message) +
+    '</div>' +
+    '<div class="form-group"><label class="form-label">Ответ</label>' +
+      '<textarea class="form-input" id="repText" placeholder="Твой ответ..." style="min-height:120px;"></textarea></div>' +
+    '<div class="form-group"><label class="checkbox-row"><input type="checkbox" id="repClose"> 🔒 Закрыть тикет после ответа</label></div>' +
+    '<div class="form-actions">' +
+      '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
+      '<button class="btn success" id="repSend">💬 Отправить</button></div>'
+  );
+  $("repSend").addEventListener("click", async () => {
+    const text = $("repText").value.trim();
+    if (!text) return toast("Введи текст", "error");
+    const close = $("repClose").checked;
+    try {
+      await api("/api/admin/ticket-reply", { id, text, close });
+      toast("💬 Ответ отправлен", "success");
+      closeModal();
+      loadTickets(); loadStats();
+    } catch(e) { toast("❌ " + e.message, "error"); }
+  });
+}
+
+/* ═══ БАНЫ ═══ */
 async function loadBans() {
   const tbody = $("bansBody");
   tbody.innerHTML = '<tr><td colspan="5" class="empty">Загрузка...</td></tr>';
@@ -1912,147 +1286,9 @@ async function loadBans() {
   }
 }
 
-/* ═══════════════════════════════════════════════════════
-   ДОСТИЖЕНИЯ (заглушка — список загрузим в JS 2)
-   ═══════════════════════════════════════════════════════ */
-function renderAchList() {
-  /* Реализация будет в JS 2 */
-  const box = $("achList");
-  if (!box) return;
-  box.innerHTML = '<div class="empty"><span class="empty-icon">🏆</span>Загрузка списка достижений...</div>';
-}
-
-/* ═══════════════════════════════════════════════════════
-   ЗАГЛУШКИ (реализация в JS 2)
-   ═══════════════════════════════════════════════════════ */
-function loadPosts() {
-  const box = $("postsList");
-  if (box) box.innerHTML = '<div class="empty"><span class="empty-icon">📰</span>Загрузка...</div>';
-}
-function loadPromos() {
-  const box = $("promosList");
-  if (box) box.innerHTML = '<div class="empty"><span class="empty-icon">🎁</span>Загрузка...</div>';
-}
-function loadBroadcasts() {
-  const box = $("broadcastsList");
-  if (box) box.innerHTML = '<div class="empty"><span class="empty-icon">📢</span>Загрузка...</div>';
-}
-function loadLogs() {
-  const box = $("logsList");
-  if (box) box.innerHTML = '<div class="empty"><span class="empty-icon">📋</span>Загрузка...</div>';
-}
-
-/* ═══════════════════════════════════════════════════════
-   ИНИЦИАЛИЗАЦИЯ
-   ═══════════════════════════════════════════════════════ */
-document.addEventListener("DOMContentLoaded", () => {
-  loadTheme();
-
-  /* Вход */
-  $("loginBtn").addEventListener("click", tryLogin);
-  $("loginInput").addEventListener("keydown", e => {
-    if (e.key === "Enter") tryLogin();
-  });
-
-  /* Выход */
-  $("logoutBtn").addEventListener("click", () => {
-    if (confirm("Выйти из админки?")) logout();
-  });
-
-  /* Обновить */
-  $("refreshBtn").addEventListener("click", () => {
-    switchTab(state.currentTab);
-    toast("🔄 Обновлено", "success");
-  });
-
-  /* Навигация */
-  $$(".nav-item").forEach(b => {
-    b.addEventListener("click", () => switchTab(b.getAttribute("data-tab")));
-  });
-
-  /* Темы */
-  $$(".theme-switch button").forEach(b => {
-    b.addEventListener("click", () => applyTheme(b.getAttribute("data-theme")));
-  });
-
-  /* Бургер для мобильного */
-  $("burger").addEventListener("click", () => {
-    $("sidebar").classList.toggle("mobile-open");
-  });
-
-  /* Модалка */
-  $("modalClose").addEventListener("click", closeModal);
-  $("modal").addEventListener("click", e => {
-    if (e.target === $("modal")) closeModal();
-  });
-
-  /* Поиск и фильтр пользователей */
-  $("userSearch").addEventListener("input", renderUsers);
-  $("userFilter").addEventListener("change", renderUsers);
-
-  /* Кнопки разделов */
-  $("reloadUsers").addEventListener("click", loadUsers);
-  $("reloadBans").addEventListener("click", loadBans);
-  $("reloadPosts").addEventListener("click", loadPosts);
-  $("reloadPromos").addEventListener("click", loadPromos);
-  $("reloadBroadcasts").addEventListener("click", loadBroadcasts);
-  $("reloadLogs").addEventListener("click", loadLogs);
-
-  /* Быстрый бан из вкладки «Баны» */
-  $("banBtn").addEventListener("click", async () => {
-    const nick = $("banNick").value.trim();
-    const reason = $("banReason").value.trim() || "Без причины";
-    const hours = parseInt($("banHours").value, 10) || 0;
-    if (!nick) return toast("Введи ник", "error");
-    try {
-      await api("/api/admin/ban", { nick, reason, hours });
-      toast("🚫 " + nick + " забанен", "success");
-      $("banNick").value = "";
-      $("banReason").value = "";
-      loadBans(); loadUsers(); loadStats();
-    } catch(e) { toast("❌ " + e.message, "error"); }
-  });
-
-  /* Удалить test-аккаунты */
-  $("deleteTestAccounts").addEventListener("click", async () => {
-    if (!confirm("Удалить ВСЕ тестовые аккаунты (test*)?")) return;
-    try {
-      const r = await api("/api/admin/delete-test-accounts");
-      toast("🧹 Удалено: " + r.deleted, "success");
-      loadUsers(); loadStats();
-    } catch(e) { toast("❌ " + e.message, "error"); }
-  });
-
-  /* FAB */
-  $("fab").addEventListener("click", () => {
-    if (typeof openCreatePost === "function") openCreatePost();
-    else toast("📝 Функция появится в следующей части", "warn");
-  });
-
-  /* Автовход */
-  try {
-    const saved = localStorage.getItem("artamon_admin_pass");
-    if (saved) {
-      $("loginInput").value = saved;
-      setTimeout(tryLogin, 100);
-    }
-  } catch(e) {}
-});
-
-/* Экспортируем наружу для HTML-атрибутов */
-window.closeModal = closeModal;
-</script>
-<script>
-/* ============================================================
-   ARTAMON ADMIN — JS Часть 2
-   Посты, промокоды, рассылка, достижения, логи, инструменты
-   ============================================================ */
-
-/* ═══════════════════════════════════════════════════════
-   ПОСТЫ
-   ═══════════════════════════════════════════════════════ */
+/* ═══ ПОСТЫ ═══ */
 async function loadPosts() {
-  const box = document.getElementById("postsList");
+  const box = $("postsList");
   if (!box) return;
   box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
   try {
@@ -2060,12 +1296,12 @@ async function loadPosts() {
     state.posts = r.posts || [];
     renderPosts();
   } catch (e) {
-    box.innerHTML = '<div class="empty"><span class="empty-icon">❌</span>' + escapeHtml(e.message) + '</div>';
+    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
   }
 }
 
 function renderPosts() {
-  const box = document.getElementById("postsList");
+  const box = $("postsList");
   if (!box) return;
   if (!state.posts.length) {
     box.innerHTML = '<div class="empty"><span class="empty-icon">📰</span>Постов нет<br><b>Создай первый!</b></div>';
@@ -2083,9 +1319,9 @@ function renderPosts() {
     const commentsCount = (p.comments || []).length;
 
     const statuses = [];
-    if (p.pinned) statuses.push('<span class="badge wip">📌 Закреплён</span>');
-    if (p.hidden) statuses.push('<span class="badge ban">🙈 Скрыт</span>');
-    if (p.closed) statuses.push('<span class="badge ban">🔒 Закрыт</span>');
+    if (p.pinned) statuses.push('<span class="badge wip">📌</span>');
+    if (p.hidden) statuses.push('<span class="badge closed">🙈</span>');
+    if (p.closed) statuses.push('<span class="badge closed">🔒</span>');
 
     const card = document.createElement("div");
     card.className = "section";
@@ -2100,6 +1336,7 @@ function renderPosts() {
             '<span>📅 ' + fmtDate(p.date) + '</span>' +
             '<span>⭐ ' + (ratingsCount ? avg + ' (' + ratingsCount + ')' : '—') + '</span>' +
             '<span>💬 ' + commentsCount + '</span>' +
+            statuses.join(" ") +
           '</div>' +
         '</div>' +
         '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
@@ -2110,9 +1347,8 @@ function renderPosts() {
           '<button class="btn sm danger" data-act="delete" data-id="' + p.id + '">🗑</button>' +
         '</div>' +
       '</div>' +
-      (p.body ? '<div style="font-size:.85rem;color:var(--txt-1);margin-bottom:8px;white-space:pre-wrap;">' + escapeHtml(p.body.slice(0, 200)) + (p.body.length > 200 ? "..." : "") + '</div>' : '') +
-      (p.img ? '<img src="' + escapeHtml(p.img) + '" style="max-width:100%;max-height:200px;border-radius:8px;margin-bottom:8px;" onerror="this.style.display=\'none\'">' : '') +
-      (statuses.length ? '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">' + statuses.join(" ") + '</div>' : '');
+      (p.body ? '<div style="font-size:.85rem;color:var(--txt-1);white-space:pre-wrap;">' + escapeHtml(p.body.slice(0, 200)) + (p.body.length > 200 ? "..." : "") + '</div>' : '') +
+      (p.img ? '<img src="' + escapeHtml(p.img) + '" style="max-width:100%;max-height:180px;border-radius:8px;margin-top:8px;" onerror="this.style.display=\'none\'">' : '');
 
     box.appendChild(card);
   });
@@ -2149,35 +1385,24 @@ async function deletePost(id) {
 
 function openCreatePost() {
   openModal("➕ Новый пост",
-    '<div class="form-group">' +
-      '<label class="form-label">Заголовок *</label>' +
-      '<input type="text" class="form-input" id="npTitle" maxlength="200" placeholder="О чём пост?">' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label class="form-label">Текст</label>' +
-      '<textarea class="form-input" id="npBody" placeholder="Описание..." style="min-height:120px;"></textarea>' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label class="form-label">URL картинки (необязательно)</label>' +
-      '<input type="text" class="form-input" id="npImg" placeholder="https://...">' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label class="checkbox-row"><input type="checkbox" id="npPinned"> 📌 Закрепить пост</label>' +
-    '</div>' +
+    '<div class="form-group"><label class="form-label">Заголовок *</label>' +
+      '<input type="text" class="form-input" id="npTitle" maxlength="200"></div>' +
+    '<div class="form-group"><label class="form-label">Текст</label>' +
+      '<textarea class="form-input" id="npBody" style="min-height:120px;"></textarea></div>' +
+    '<div class="form-group"><label class="form-label">URL картинки</label>' +
+      '<input type="text" class="form-input" id="npImg" placeholder="https://..."></div>' +
+    '<div class="form-group"><label class="checkbox-row"><input type="checkbox" id="npPinned"> 📌 Закрепить пост</label></div>' +
     '<div class="form-actions">' +
       '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
-      '<button class="btn success" id="npCreate">✅ Создать</button>' +
-    '</div>'
+      '<button class="btn success" id="npCreate">✅ Создать</button></div>'
   );
-  document.getElementById("npCreate").addEventListener("click", async () => {
-    const title = document.getElementById("npTitle").value.trim();
+  $("npCreate").addEventListener("click", async () => {
+    const title = $("npTitle").value.trim();
     if (!title) return toast("Введи заголовок", "error");
     try {
       await api("/api/admin/post-create", {
-        title,
-        body: document.getElementById("npBody").value.trim(),
-        img: document.getElementById("npImg").value.trim(),
-        pinned: document.getElementById("npPinned").checked
+        title, body: $("npBody").value.trim(), img: $("npImg").value.trim(),
+        pinned: $("npPinned").checked
       });
       toast("✅ Пост создан", "success");
       closeModal();
@@ -2190,30 +1415,21 @@ function openEditPost(id) {
   const post = state.posts.find(p => p.id === id);
   if (!post) return;
   openModal("✏️ Редактировать пост",
-    '<div class="form-group">' +
-      '<label class="form-label">Заголовок</label>' +
-      '<input type="text" class="form-input" id="epTitle" value="' + escapeHtml(post.title) + '" maxlength="200">' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label class="form-label">Текст</label>' +
-      '<textarea class="form-input" id="epBody" style="min-height:120px;">' + escapeHtml(post.body || "") + '</textarea>' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label class="form-label">URL картинки</label>' +
-      '<input type="text" class="form-input" id="epImg" value="' + escapeHtml(post.img || "") + '">' +
-    '</div>' +
+    '<div class="form-group"><label class="form-label">Заголовок</label>' +
+      '<input type="text" class="form-input" id="epTitle" value="' + escapeHtml(post.title) + '"></div>' +
+    '<div class="form-group"><label class="form-label">Текст</label>' +
+      '<textarea class="form-input" id="epBody" style="min-height:120px;">' + escapeHtml(post.body || "") + '</textarea></div>' +
+    '<div class="form-group"><label class="form-label">URL картинки</label>' +
+      '<input type="text" class="form-input" id="epImg" value="' + escapeHtml(post.img || "") + '"></div>' +
     '<div class="form-actions">' +
       '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
-      '<button class="btn success" id="epSave">💾 Сохранить</button>' +
-    '</div>'
+      '<button class="btn success" id="epSave">💾 Сохранить</button></div>'
   );
-  document.getElementById("epSave").addEventListener("click", async () => {
+  $("epSave").addEventListener("click", async () => {
     try {
       await api("/api/admin/post-edit", {
-        id,
-        title: document.getElementById("epTitle").value.trim(),
-        body: document.getElementById("epBody").value.trim(),
-        img: document.getElementById("epImg").value.trim()
+        id, title: $("epTitle").value.trim(),
+        body: $("epBody").value.trim(), img: $("epImg").value.trim()
       });
       toast("💾 Сохранено", "success");
       closeModal();
@@ -2228,7 +1444,7 @@ function openComments(postId) {
   const comments = post.comments || [];
   let html = '<div style="font-size:.82rem;color:var(--txt-2);margin-bottom:12px;">Пост: <b style="color:var(--accent);">' + escapeHtml(post.title) + '</b></div>';
   if (!comments.length) {
-    html += '<div class="empty"><span class="empty-icon">💬</span>Комментариев нет</div>';
+    html += '<div class="empty">💬 Комментариев нет</div>';
   } else {
     html += '<div style="display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;">';
     comments.forEach(c => {
@@ -2236,38 +1452,32 @@ function openComments(postId) {
         '<div style="background:var(--bg-2);border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;">' +
           '<div style="display:flex;justify-content:space-between;margin-bottom:5px;gap:8px;">' +
             '<b style="color:var(--accent);font-size:.82rem;">' + escapeHtml(c.nick) + '</b>' +
-            '<span style="font-size:.66rem;color:var(--txt-3);white-space:nowrap;">' + timeAgo(c.time) + '</span>' +
+            '<span style="font-size:.66rem;color:var(--txt-3);">' + timeAgo(c.time) + '</span>' +
           '</div>' +
-          '<div style="font-size:.84rem;margin-bottom:6px;word-break:break-word;">' + escapeHtml(c.text) + '</div>' +
+          '<div style="font-size:.84rem;margin-bottom:6px;">' + escapeHtml(c.text) + '</div>' +
           '<button class="btn sm danger" data-delcomment="' + c.id + '">🗑 Удалить</button>' +
         '</div>';
     });
     html += '</div>';
   }
   html += '<div class="form-actions"><button class="btn ghost" onclick="closeModal()">Закрыть</button></div>';
-
   openModal("💬 Комментарии (" + comments.length + ")", html);
-
-  document.getElementById("modalBody").querySelectorAll("[data-delcomment]").forEach(b => {
-    b.addEventListener("click", async () => {
-      const commentId = b.getAttribute("data-delcomment");
-      if (!confirm("Удалить комментарий?")) return;
-      try {
-        await api("/api/admin/comment-delete", { postId, commentId });
-        toast("🗑 Удалён", "success");
-        await loadPosts();
-        const updated = state.posts.find(p => p.id === postId);
-        if (updated) openComments(postId);
-      } catch(e) { toast("❌ " + e.message, "error"); }
-    });
-  });
+  $("modalBody").querySelectorAll("[data-delcomment]").forEach(b => b.addEventListener("click", async () => {
+    const commentId = b.getAttribute("data-delcomment");
+    if (!confirm("Удалить комментарий?")) return;
+    try {
+      await api("/api/admin/comment-delete", { postId, commentId });
+      toast("🗑 Удалён", "success");
+      await loadPosts();
+      const updated = state.posts.find(p => p.id === postId);
+      if (updated) openComments(postId);
+    } catch(e) { toast("❌ " + e.message, "error"); }
+  }));
 }
 
-/* ═══════════════════════════════════════════════════════
-   ПРОМОКОДЫ
-   ═══════════════════════════════════════════════════════ */
+/* ═══ ПРОМОКОДЫ ═══ */
 async function loadPromos() {
-  const box = document.getElementById("promosList");
+  const box = $("promosList");
   if (!box) return;
   box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
   try {
@@ -2275,12 +1485,12 @@ async function loadPromos() {
     state.promos = r.promos || [];
     renderPromos();
   } catch (e) {
-    box.innerHTML = '<div class="empty"><span class="empty-icon">❌</span>' + escapeHtml(e.message) + '</div>';
+    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
   }
 }
 
 function renderPromos() {
-  const box = document.getElementById("promosList");
+  const box = $("promosList");
   if (!box) return;
   if (!state.promos.length) {
     box.innerHTML = '<div class="empty"><span class="empty-icon">🎁</span>Промокодов нет<br><b>Создай первый!</b></div>';
@@ -2308,79 +1518,58 @@ function renderPromos() {
       '</div>';
     box.appendChild(card);
   });
-
-  box.querySelectorAll("[data-copy]").forEach(b => {
-    b.addEventListener("click", () => {
-      const code = b.getAttribute("data-copy");
-      navigator.clipboard.writeText(code).then(() => {
-        toast("📋 Код скопирован: " + code, "success");
-      }).catch(() => toast("❌ Не удалось скопировать", "error"));
-    });
-  });
-  box.querySelectorAll("[data-delete]").forEach(b => {
-    b.addEventListener("click", async () => {
-      const code = b.getAttribute("data-delete");
-      if (!confirm("Удалить промокод " + code + "?")) return;
-      try {
-        await api("/api/admin/promo-delete", { code });
-        toast("🗑 Удалён", "success");
-        loadPromos();
-      } catch(e) { toast("❌ " + e.message, "error"); }
-    });
-  });
+  box.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", () => {
+    const code = b.getAttribute("data-copy");
+    navigator.clipboard.writeText(code).then(() => toast("📋 Код: " + code, "success"));
+  }));
+  box.querySelectorAll("[data-delete]").forEach(b => b.addEventListener("click", async () => {
+    const code = b.getAttribute("data-delete");
+    if (!confirm("Удалить промокод " + code + "?")) return;
+    try {
+      await api("/api/admin/promo-delete", { code });
+      toast("🗑 Удалён", "success");
+      loadPromos();
+    } catch(e) { toast("❌ " + e.message, "error"); }
+  }));
 }
 
 function openCreatePromo() {
   const randomCode = "ARTAMON" + Math.floor(Math.random() * 9000 + 1000);
   openModal("🎁 Новый промокод",
-    '<div class="form-group">' +
-      '<label class="form-label">Код</label>' +
-      '<input type="text" class="form-input" id="pCode" value="' + randomCode + '" maxlength="30" style="text-transform:uppercase;font-family:ui-monospace,monospace;letter-spacing:.1em;">' +
-      '<div class="form-hint">Игроки вводят этот код в игре</div>' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label class="form-label">🪙 Монеты</label>' +
-      '<input type="number" class="form-input" id="pCoins" value="1000" min="0">' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label class="form-label">💎 WIP (дней)</label>' +
-      '<input type="number" class="form-input" id="pWip" value="0" min="0">' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label class="form-label">🎨 Аватарка (эмодзи, необязательно)</label>' +
-      '<input type="text" class="form-input" id="pAvatar" maxlength="4" placeholder="👑">' +
-    '</div>' +
-    '<div class="form-group">' +
-      '<label class="form-label">📅 Действует дней</label>' +
-      '<input type="number" class="form-input" id="pExpire" value="30" min="1">' +
-    '</div>' +
+    '<div class="form-group"><label class="form-label">Код</label>' +
+      '<input type="text" class="form-input" id="pCode" value="' + randomCode + '" maxlength="30" style="text-transform:uppercase;font-family:ui-monospace,monospace;letter-spacing:.1em;"></div>' +
+    '<div class="form-group"><label class="form-label">🪙 Монеты</label>' +
+      '<input type="number" class="form-input" id="pCoins" value="1000" min="0"></div>' +
+    '<div class="form-group"><label class="form-label">💎 WIP (дней)</label>' +
+      '<input type="number" class="form-input" id="pWip" value="0" min="0"></div>' +
+    '<div class="form-group"><label class="form-label">🎨 Аватарка</label>' +
+      '<input type="text" class="form-input" id="pAvatar" maxlength="4" placeholder="👑"></div>' +
+    '<div class="form-group"><label class="form-label">📅 Действует дней</label>' +
+      '<input type="number" class="form-input" id="pExpire" value="30" min="1"></div>' +
     '<div class="form-actions">' +
       '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
-      '<button class="btn success" id="pCreate">✅ Создать</button>' +
-    '</div>'
+      '<button class="btn success" id="pCreate">✅ Создать</button></div>'
   );
-  document.getElementById("pCreate").addEventListener("click", async () => {
-    const code = document.getElementById("pCode").value.trim().toUpperCase();
-    const coins = parseInt(document.getElementById("pCoins").value, 10) || 0;
-    const wipDays = parseInt(document.getElementById("pWip").value, 10) || 0;
-    const avatar = document.getElementById("pAvatar").value.trim();
-    const expiresInDays = parseInt(document.getElementById("pExpire").value, 10) || 30;
-    if (code.length < 3) return toast("Код минимум 3 символа", "error");
+  $("pCreate").addEventListener("click", async () => {
+    const code = $("pCode").value.trim().toUpperCase();
+    const coins = parseInt($("pCoins").value, 10) || 0;
+    const wipDays = parseInt($("pWip").value, 10) || 0;
+    const avatar = $("pAvatar").value.trim();
+    const expiresInDays = parseInt($("pExpire").value, 10) || 30;
+    if (code.length < 3) return toast("Код мин. 3 символа", "error");
     if (coins <= 0 && wipDays <= 0 && !avatar) return toast("Нужна хоть одна награда", "error");
     try {
       await api("/api/admin/promo-create", { code, coins, wipDays, avatar, expiresInDays });
-      toast("✅ Промокод создан: " + code, "success");
+      toast("✅ Код создан: " + code, "success");
       closeModal();
       loadPromos(); loadStats();
     } catch(e) { toast("❌ " + e.message, "error"); }
   });
 }
 
-/* ═══════════════════════════════════════════════════════
-   РАССЫЛКА
-   ═══════════════════════════════════════════════════════ */
+/* ═══ РАССЫЛКА ═══ */
 async function loadBroadcasts() {
-  const box = document.getElementById("broadcastsList");
+  const box = $("broadcastsList");
   if (!box) return;
   box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
   try {
@@ -2388,15 +1577,15 @@ async function loadBroadcasts() {
     state.broadcasts = r.broadcasts || [];
     renderBroadcasts();
   } catch (e) {
-    box.innerHTML = '<div class="empty"><span class="empty-icon">❌</span>' + escapeHtml(e.message) + '</div>';
+    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
   }
 }
 
 function renderBroadcasts() {
-  const box = document.getElementById("broadcastsList");
+  const box = $("broadcastsList");
   if (!box) return;
   if (!state.broadcasts.length) {
-    box.innerHTML = '<div class="empty"><span class="empty-icon">📢</span>Рассылок не было</div>';
+    box.innerHTML = '<div class="empty">📢 Рассылок не было</div>';
     return;
   }
   box.innerHTML = "";
@@ -2411,50 +1600,30 @@ function renderBroadcasts() {
   });
 }
 
-/* ═══════════════════════════════════════════════════════
-   ДОСТИЖЕНИЯ — список
-   ═══════════════════════════════════════════════════════ */
+/* ═══ ДОСТИЖЕНИЯ ═══ */
 const ACHIEVEMENTS_LIST = [
-  { id: "first_vote", name: "✅ Голос учтён" },
-  { id: "first_comment", name: "💬 Первое слово" },
-  { id: "first_poll", name: "🗳️ Первый опрос" },
-  { id: "book_reader", name: "📖 Читатель" },
-  { id: "bot_bio_read", name: "📖 Биограф" },
-  { id: "anniversary_2", name: "🎉 Юбилей 2.6.5" },
-  { id: "bot_argument", name: "🗣 Свидетель спора" },
-  { id: "bot_reaction_you", name: "❤️ Любимчик" },
-  { id: "first_dm", name: "💬 Переписка" },
-  { id: "theme_changed", name: "🎨 Стилист" },
-  { id: "bg_changed", name: "🌌 Декоратор" },
-  { id: "profile_customized", name: "👤 Личность" },
-  { id: "adult_mode", name: "🔞 18+" },
-  { id: "minor_mode", name: "👶 Юный" },
-  { id: "poll_with_image", name: "📸 Фотограф" },
-  { id: "bots_friend", name: "🤖 Друг ботов" },
-  { id: "clear_data", name: "💣 Чистый лист" },
-  { id: "first_account", name: "👤 Первый аккаунт" },
-  { id: "first_sync", name: "🔄 Синхронизатор" },
-  { id: "guest_start", name: "🎮 Гость" },
-  { id: "first_buy", name: "🛒 Первая покупка" },
-  { id: "shopaholic", name: "🛍️ Шопоголик" },
-  { id: "collector", name: "🗃️ Коллекционер" },
-  { id: "millionaire", name: "🤑 Миллионер" },
-  { id: "wip_subscriber", name: "💎 WIP-подписчик" },
-  { id: "rating_first", name: "⭐ Первая оценка" },
-  { id: "rating_10", name: "🌟 Ценитель" },
-  { id: "rating_50", name: "✨ Критик" },
-  { id: "rating_100", name: "💫 Эксперт" },
-  { id: "comment_rating", name: "💬 Обсуждатель" },
-  { id: "comment_rating_10", name: "🗣 Оратор" },
-  { id: "top_post_author", name: "👑 Автор топ-поста" },
-  { id: "first_daily", name: "🎁 Первый день" },
-  { id: "daily_streak_3", name: "🔥 3 дня подряд" },
-  { id: "daily_streak_7", name: "💎 Неделя" },
-  { id: "daily_streak_30", name: "👑 Месяц" }
+  { id: "first_vote", name: "✅ Голос учтён" }, { id: "first_comment", name: "💬 Первое слово" },
+  { id: "first_poll", name: "🗳️ Первый опрос" }, { id: "book_reader", name: "📖 Читатель" },
+  { id: "bot_bio_read", name: "📖 Биограф" }, { id: "anniversary_2", name: "🎉 Юбилей 2.6.6" },
+  { id: "bot_argument", name: "🗣 Свидетель спора" }, { id: "bot_reaction_you", name: "❤️ Любимчик" },
+  { id: "first_dm", name: "💬 Переписка" }, { id: "theme_changed", name: "🎨 Стилист" },
+  { id: "bg_changed", name: "🌌 Декоратор" }, { id: "profile_customized", name: "👤 Личность" },
+  { id: "adult_mode", name: "🔞 18+" }, { id: "minor_mode", name: "👶 Юный" },
+  { id: "poll_with_image", name: "📸 Фотограф" }, { id: "bots_friend", name: "🤖 Друг ботов" },
+  { id: "clear_data", name: "💣 Чистый лист" }, { id: "first_account", name: "👤 Первый аккаунт" },
+  { id: "first_sync", name: "🔄 Синхронизатор" }, { id: "guest_start", name: "🎮 Гость" },
+  { id: "first_buy", name: "🛒 Первая покупка" }, { id: "shopaholic", name: "🛍️ Шопоголик" },
+  { id: "collector", name: "🗃️ Коллекционер" }, { id: "millionaire", name: "🤑 Миллионер" },
+  { id: "wip_subscriber", name: "💎 WIP-подписчик" }, { id: "rating_first", name: "⭐ Первая оценка" },
+  { id: "rating_10", name: "🌟 Ценитель" }, { id: "rating_50", name: "✨ Критик" },
+  { id: "rating_100", name: "💫 Эксперт" }, { id: "comment_rating", name: "💬 Обсуждатель" },
+  { id: "comment_rating_10", name: "🗣 Оратор" }, { id: "top_post_author", name: "👑 Автор топ-поста" },
+  { id: "first_daily", name: "🎁 Первый день" }, { id: "daily_streak_3", name: "🔥 3 дня" },
+  { id: "daily_streak_7", name: "💎 Неделя" }, { id: "daily_streak_30", name: "👑 Месяц" }
 ];
 
 function renderAchList() {
-  const box = document.getElementById("achList");
+  const box = $("achList");
   if (!box) return;
   box.innerHTML = "";
   ACHIEVEMENTS_LIST.forEach(a => {
@@ -2468,17 +1637,14 @@ function renderAchList() {
   });
   box.querySelectorAll("[data-copy-ach]").forEach(b => {
     b.addEventListener("click", () => {
-      const id = b.getAttribute("data-copy-ach");
-      navigator.clipboard.writeText(id).then(() => toast("📋 " + id, "success"));
+      navigator.clipboard.writeText(b.getAttribute("data-copy-ach")).then(() => toast("📋 Скопировано", "success"));
     });
   });
 }
 
-/* ═══════════════════════════════════════════════════════
-   ЛОГИ
-   ═══════════════════════════════════════════════════════ */
+/* ═══ ЛОГИ ═══ */
 async function loadLogs() {
-  const box = document.getElementById("logsList");
+  const box = $("logsList");
   if (!box) return;
   box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
   try {
@@ -2486,15 +1652,15 @@ async function loadLogs() {
     state.logs = r.logs || [];
     renderLogs();
   } catch (e) {
-    box.innerHTML = '<div class="empty"><span class="empty-icon">❌</span>' + escapeHtml(e.message) + '</div>';
+    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
   }
 }
 
 function renderLogs() {
-  const box = document.getElementById("logsList");
+  const box = $("logsList");
   if (!box) return;
   if (!state.logs.length) {
-    box.innerHTML = '<div class="empty"><span class="empty-icon">📋</span>Логов нет</div>';
+    box.innerHTML = '<div class="empty">📋 Логов нет</div>';
     return;
   }
   box.innerHTML = "";
@@ -2509,15 +1675,106 @@ function renderLogs() {
   });
 }
 
-/* ═══════════════════════════════════════════════════════
-   ИНСТРУМЕНТЫ
-   ═══════════════════════════════════════════════════════ */
+/* ═══ ИНИЦИАЛИЗАЦИЯ ═══ */
 document.addEventListener("DOMContentLoaded", () => {
+  loadTheme();
 
-  /* KV dump */
-  const kvBtn = document.getElementById("kvDumpBtn");
-  if (kvBtn) kvBtn.addEventListener("click", async () => {
-    const out = document.getElementById("toolsOut");
+  $("loginBtn").addEventListener("click", tryLogin);
+  $("loginInput").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
+
+  $("logoutBtn").addEventListener("click", () => {
+    if (confirm("Выйти из админки?")) logout();
+  });
+  $("refreshBtn").addEventListener("click", () => {
+    switchTab(state.currentTab);
+    toast("🔄 Обновлено", "success");
+  });
+
+  $$(".nav-item").forEach(b => {
+    b.addEventListener("click", () => switchTab(b.getAttribute("data-tab")));
+  });
+
+  $$(".theme-switch button").forEach(b => {
+    b.addEventListener("click", () => applyTheme(b.getAttribute("data-theme")));
+  });
+
+  $("burger").addEventListener("click", () => {
+    $("sidebar").classList.toggle("mobile-open");
+  });
+
+  $("modalClose").addEventListener("click", closeModal);
+  $("modal").addEventListener("click", e => { if (e.target === $("modal")) closeModal(); });
+
+  $("userSearch").addEventListener("input", renderUsers);
+  $("userFilter").addEventListener("change", renderUsers);
+  $("ticketFilter").addEventListener("change", renderTickets);
+
+  $("reloadUsers").addEventListener("click", loadUsers);
+  $("reloadBans").addEventListener("click", loadBans);
+  $("reloadPosts").addEventListener("click", loadPosts);
+  $("reloadPromos").addEventListener("click", loadPromos);
+  $("reloadBroadcasts").addEventListener("click", loadBroadcasts);
+  $("reloadLogs").addEventListener("click", loadLogs);
+  $("reloadTickets").addEventListener("click", loadTickets);
+
+  $("banBtn").addEventListener("click", async () => {
+    const nick = $("banNick").value.trim();
+    const reason = $("banReason").value.trim() || "Без причины";
+    const hours = parseInt($("banHours").value, 10) || 0;
+    if (!nick) return toast("Введи ник", "error");
+    try {
+      await api("/api/admin/ban", { nick, reason, hours });
+      toast("🚫 " + nick + " забанен", "success");
+      $("banNick").value = "";
+      $("banReason").value = "";
+      loadBans(); loadUsers(); loadStats();
+    } catch(e) { toast("❌ " + e.message, "error"); }
+  });
+
+  $("deleteTestAccounts").addEventListener("click", async () => {
+    if (!confirm("Удалить ВСЕ тестовые аккаунты (test*)?")) return;
+    try {
+      const r = await api("/api/admin/delete-test-accounts");
+      toast("🧹 Удалено: " + r.deleted, "success");
+      loadUsers(); loadStats();
+    } catch(e) { toast("❌ " + e.message, "error"); }
+  });
+
+  $("fab").addEventListener("click", openCreatePost);
+  $("createPostBtn").addEventListener("click", openCreatePost);
+  $("createPromoBtn").addEventListener("click", openCreatePromo);
+  $("dashCreatePost").addEventListener("click", openCreatePost);
+  $("dashCreatePromo").addEventListener("click", openCreatePromo);
+  $("dashBroadcast").addEventListener("click", () => switchTab("broadcast"));
+
+  $("sendBroadcastBtn").addEventListener("click", async () => {
+    const message = $("bcMessage").value.trim();
+    const type = $("bcType").value;
+    if (!message) return toast("Введи сообщение", "error");
+    if (!confirm("Отправить рассылку ВСЕМ игрокам?")) return;
+    try {
+      await api("/api/admin/broadcast-send", { message, type, duration: 15 });
+      toast("📢 Рассылка отправлена", "success");
+      $("bcMessage").value = "";
+      loadBroadcasts();
+    } catch(e) { toast("❌ " + e.message, "error"); }
+  });
+
+  $("giveAchBtn").addEventListener("click", async () => {
+    const nick = $("achNick").value.trim();
+    const achId = $("achId").value.trim();
+    if (!nick || !achId) return toast("Ник и ID обязательны", "error");
+    try {
+      await api("/api/admin/give-ach", { nick, achId });
+      toast("🏆 Достижение выдано", "success");
+      $("achNick").value = "";
+      $("achId").value = "";
+    } catch(e) { toast("❌ " + e.message, "error"); }
+  });
+
+  /* Инструменты */
+  $("kvDumpBtn").addEventListener("click", async () => {
+    const out = $("toolsOut");
     out.textContent = "Загрузка...";
     try {
       const r = await api("/api/admin/kv-dump");
@@ -2529,10 +1786,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* API test */
-  const apiBtn = document.getElementById("apiTestBtn");
-  if (apiBtn) apiBtn.addEventListener("click", async () => {
-    const out = document.getElementById("toolsOut");
+  $("apiTestBtn").addEventListener("click", async () => {
+    const out = $("toolsOut");
     out.textContent = "Проверка...";
     try {
       const r = await fetch(API + "/");
@@ -2541,77 +1796,47 @@ document.addEventListener("DOMContentLoaded", () => {
       toast("🌐 API работает", "success");
     } catch(e) {
       out.textContent = "❌ " + e.message;
-      toast("❌ " + e.message, "error");
     }
   });
 
-  /* Кнопка "Создать пост" на дашборде */
-  const dashPost = document.getElementById("dashCreatePost");
-  if (dashPost) dashPost.addEventListener("click", openCreatePost);
-
-  /* Кнопка "Создать промокод" на дашборде */
-  const dashPromo = document.getElementById("dashCreatePromo");
-  if (dashPromo) dashPromo.addEventListener("click", openCreatePromo);
-
-  /* Кнопка "Рассылка" на дашборде */
-  const dashBC = document.getElementById("dashBroadcast");
-  if (dashBC) dashBC.addEventListener("click", () => {
-    switchTab("broadcast");
-  });
-
-  /* Кнопка "Создать пост" во вкладке Посты */
-  const createPostBtn = document.getElementById("createPostBtn");
-  if (createPostBtn) createPostBtn.addEventListener("click", openCreatePost);
-
-  /* Кнопка "Создать промокод" во вкладке Промокоды */
-  const createPromoBtn = document.getElementById("createPromoBtn");
-  if (createPromoBtn) createPromoBtn.addEventListener("click", openCreatePromo);
-
-  /* Отправка рассылки */
-  const sendBC = document.getElementById("sendBroadcastBtn");
-  if (sendBC) sendBC.addEventListener("click", async () => {
-    const message = document.getElementById("bcMessage").value.trim();
-    const type = document.getElementById("bcType").value;
-    if (!message) return toast("Введи сообщение", "error");
-    if (!confirm("Отправить рассылку ВСЕМ игрокам?")) return;
+  $("backupBtn").addEventListener("click", async () => {
     try {
-      await api("/api/admin/broadcast-send", { message, type, duration: 15 });
-      toast("📢 Рассылка отправлена", "success");
-      document.getElementById("bcMessage").value = "";
-      loadBroadcasts();
+      const r = await api("/api/admin/backup-export");
+      const data = JSON.stringify(r.backup, null, 2);
+      const blob = new Blob([data], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "artamon-backup-" + new Date().toISOString().slice(0, 10) + ".json";
+      a.click();
+      URL.revokeObjectURL(url);
+      toast("💾 Бэкап скачан", "success");
     } catch(e) { toast("❌ " + e.message, "error"); }
   });
 
-  /* Выдача достижения */
-  const giveAch = document.getElementById("giveAchBtn");
-  if (giveAch) giveAch.addEventListener("click", async () => {
-    const nick = document.getElementById("achNick").value.trim();
-    const achId = document.getElementById("achId").value.trim();
-    if (!nick || !achId) return toast("Ник и ID обязательны", "error");
-    try {
-      await api("/api/admin/give-ach", { nick, achId });
-      toast("🏆 Достижение выдано", "success");
-      document.getElementById("achNick").value = "";
-      document.getElementById("achId").value = "";
-    } catch(e) { toast("❌ " + e.message, "error"); }
+  /* Игровые системы */
+  $("reloadWheel").addEventListener("click", () => {
+    $("wheelStats").innerHTML = '<div style="padding:12px;background:var(--bg-2);border-radius:10px;font-size:.85rem;">🎡 Колесо работает. Статистика доступна через дамп KV (ключ <code>user:*</code>).</div>';
+  });
+  $("reloadQuests").addEventListener("click", () => {
+    $("questsStats").innerHTML = '<div style="padding:12px;background:var(--bg-2);border-radius:10px;font-size:.85rem;">🎯 Квесты: 5 видов, сбрасываются ежедневно.</div>';
+  });
+  $("reloadFriends").addEventListener("click", () => {
+    $("friendsStats").innerHTML = '<div style="padding:12px;background:var(--bg-2);border-radius:10px;font-size:.85rem;">👥 Друзья: игроки добавляют друг друга, видят онлайн-статус.</div>';
   });
 
-  /* FAB — плавающая кнопка */
-  const fab = document.getElementById("fab");
-  if (fab) fab.addEventListener("click", openCreatePost);
-
-  /* Автозагрузка данных при переключении табов уже сделана через TAB_LOADERS */
+  /* Автовход */
+  try {
+    const saved = localStorage.getItem("artamon_admin_pass");
+    if (saved) {
+      $("loginInput").value = saved;
+      setTimeout(tryLogin, 100);
+    }
+  } catch(e) {}
 });
 
-/* Экспортируем в глобал */
-window.openCreatePost = openCreatePost;
-window.openCreatePromo = openCreatePromo;
-window.loadPosts = loadPosts;
-window.loadPromos = loadPromos;
-window.loadBroadcasts = loadBroadcasts;
-window.loadLogs = loadLogs;
-window.renderAchList = renderAchList;
-
-console.log("✅ Artamon Admin 2.6.6 — полностью загружен.");
-console.log("💡 Пароль по умолчанию: artamon-admin-2026");
+window.closeModal = closeModal;
+console.log("⚡ Artamon Admin v2.7.0 загружен");
 </script>
+</body>
+</html>
