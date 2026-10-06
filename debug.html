@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Artamon Debug</title>
+<style>
+body { background:#0a0a0a; color:#eee; font-family:monospace; padding:20px; }
+button { background:#d4af37; color:#000; border:none; padding:12px 20px; border-radius:8px; font-size:16px; font-weight:800; cursor:pointer; margin:5px; }
+pre { background:#000; color:#0f0; padding:15px; border-radius:8px; margin-top:20px; white-space:pre-wrap; font-size:13px; max-height:70vh; overflow-y:auto; }
+.err { color:#f87171; }
+.ok { color:#4ade80; }
+.warn { color:#fbbf24; }
+</style>
+</head>
+<body>
+<h1>🔍 Artamon Debug</h1>
+<button onclick="check1()">1. Проверить HTML структуру</button>
+<button onclick="check2()">2. Проверить JS</button>
+<button onclick="check3()">3. Тест iframe</button>
+<pre id="out">Нажми кнопку...</pre>
+
+<script>
+const out = document.getElementById("out");
+function log(msg, cls) {
+  const line = document.createElement("div");
+  if(cls) line.className = cls;
+  line.textContent = msg;
+  out.appendChild(line);
+  out.scrollTop = out.scrollHeight;
+}
+
+async function check1() {
+  out.textContent = "";
+  log("=== ПРОВЕРКА HTML index_v2.html ===");
+  try {
+    const r = await fetch("./index_v2.html");
+    const html = await r.text();
+    log("✅ Файл загружен, размер: " + html.length + " байт", "ok");
+
+    // Проверки
+    const checks = [
+      ["<!DOCTYPE html>", html.indexOf("<!DOCTYPE html>") !== -1],
+      ["<html", html.indexOf("<html") !== -1],
+      ["<body", html.indexOf("<body") !== -1],
+      ["</body>", html.indexOf("</body>") !== -1],
+      ["</html>", html.indexOf("</html>") !== -1],
+      ["<script>", html.indexOf("<script>") !== -1],
+      ["</script>", html.indexOf("</script>") !== -1],
+      ["SAFE_STORE", html.indexOf("SAFE_STORE") !== -1],
+      ["ANNIVERSARY", html.indexOf("ANNIVERSARY") !== -1],
+      ["INTRO", html.indexOf("INTRO") !== -1],
+      ["id=\"intro\"", html.indexOf('id="intro"') !== -1],
+      ["id=\"anniversary\"", html.indexOf('id="anniversary"') !== -1],
+    ];
+
+    checks.forEach(([name, ok]) => {
+      log((ok ? "✅ " : "❌ ") + name, ok ? "ok" : "err");
+    });
+
+    // Считаем скрипты
+    const scripts = (html.match(/<script>/g) || []).length;
+    log("Найдено <script> тегов: " + scripts, scripts >= 5 ? "ok" : "warn");
+
+    // Считаем модалки
+    const modals = (html.match(/class="modal"/g) || []).length;
+    log("Найдено модалок: " + modals, "warn");
+
+  } catch(e) {
+    log("❌ ОШИБКА: " + e.message, "err");
+  }
+}
+
+async function check2() {
+  out.textContent = "";
+  log("=== ПРОВЕРКА JS ===");
+  try {
+    const r = await fetch("./index_v2.html");
+    const html = await r.text();
+
+    // Извлекаем все скрипты и пробуем парсить
+    const scripts = html.match(/<script>([\s\S]*?)<\/script>/g) || [];
+    log("Найдено " + scripts.length + " скриптов");
+
+    scripts.forEach((s, i) => {
+      const code = s.replace(/<\/?script>/g, "");
+      log("Скрипт #" + (i+1) + " — " + code.length + " символов");
+      try {
+        // Проверка синтаксиса без выполнения
+        new Function(code);
+        log("  ✅ Синтаксис ОК", "ok");
+      } catch(e) {
+        log("  ❌ ОШИБКА СИНТАКСИСА: " + e.message, "err");
+        log("  Первые 200 символов: " + code.slice(0, 200), "err");
+      }
+    });
+  } catch(e) {
+    log("❌ ОШИБКА: " + e.message, "err");
+  }
+}
+
+async function check3() {
+  out.textContent = "";
+  log("=== ТЕСТ В IFRAME ===");
+  const iframe = document.createElement("iframe");
+  iframe.src = "./index_v2.html";
+  iframe.style.cssText = "width:100%;height:300px;border:2px solid #d4af37;border-radius:8px;margin-top:10px;";
+  iframe.onload = () => {
+    log("✅ iframe загрузился", "ok");
+    setTimeout(() => {
+      try {
+        const doc = iframe.contentDocument;
+        if(doc) {
+          log("Заголовок: " + doc.title, "ok");
+          const intro = doc.getElementById("intro");
+          log("Элемент #intro: " + (intro ? "✅ есть" : "❌ нет"), intro ? "ok" : "err");
+          const anniv = doc.getElementById("anniversary");
+          log("Элемент #anniversary: " + (anniv ? "✅ есть" : "❌ нет"), anniv ? "ok" : "err");
+        }
+      } catch(e) {
+        log("⚠️ Не могу прочитать iframe: " + e.message, "warn");
+      }
+    }, 2000);
+  };
+  iframe.onerror = () => log("❌ iframe не загрузился", "err");
+  out.appendChild(iframe);
+}
+</script>
+</body>
+</html>
