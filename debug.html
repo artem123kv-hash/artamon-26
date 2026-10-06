@@ -1,129 +1,325 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Artamon Debug</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔍 Artamon Debug</title>
 <style>
-body { background:#0a0a0a; color:#eee; font-family:monospace; padding:20px; }
-button { background:#d4af37; color:#000; border:none; padding:12px 20px; border-radius:8px; font-size:16px; font-weight:800; cursor:pointer; margin:5px; }
-pre { background:#000; color:#0f0; padding:15px; border-radius:8px; margin-top:20px; white-space:pre-wrap; font-size:13px; max-height:70vh; overflow-y:auto; }
-.err { color:#f87171; }
-.ok { color:#4ade80; }
-.warn { color:#fbbf24; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#0a0a0a;color:#e8e6e1;
+  font-family:-apple-system,"Segoe UI",system-ui,sans-serif;
+  padding:16px;font-size:14px;line-height:1.5;
+  min-height:100vh;
+}
+h1{font-size:1.2rem;color:#d4af37;margin-bottom:14px;text-align:center}
+.section{background:#141414;border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:12px}
+.section h2{font-size:.85rem;color:#d4af37;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase}
+button{
+  background:linear-gradient(180deg,#f6e6a8,#d4af37);
+  color:#0a0a0a;border:none;padding:12px 18px;
+  border-radius:10px;font-size:.85rem;font-weight:800;
+  cursor:pointer;margin:4px 4px 4px 0;
+  font-family:inherit;width:100%;
+  letter-spacing:.05em;
+}
+button:hover{opacity:.9}
+button:active{transform:scale(.98)}
+button:disabled{opacity:.5}
+.out{
+  background:#000;border:1px solid #1a1a1a;border-radius:10px;
+  padding:12px;margin-top:10px;
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:12px;line-height:1.6;
+  white-space:pre-wrap;word-break:break-word;
+  max-height:60vh;overflow-y:auto;
+  min-height:80px;color:#d4d4d4;
+}
+.ok{color:#4ade80;font-weight:700}
+.err{color:#f87171;font-weight:700}
+.warn{color:#fbbf24;font-weight:700}
+.info{color:#60a5fa;font-weight:700}
+.dim{color:#5c5c5c}
+.line{padding:2px 0;border-bottom:1px solid #111}
+.line:last-child{border-bottom:none}
+iframe{width:100%;height:400px;border:2px solid #d4af37;border-radius:10px;margin-top:10px;background:#000}
 </style>
 </head>
 <body>
-<h1>🔍 Artamon Debug</h1>
-<button onclick="check1()">1. Проверить HTML структуру</button>
-<button onclick="check2()">2. Проверить JS</button>
-<button onclick="check3()">3. Тест iframe</button>
-<pre id="out">Нажми кнопку...</pre>
+
+<h1>🔍 Artamon Debug Tool</h1>
+
+<div class="section">
+  <h2>1. Проверить HTML</h2>
+  <button onclick="checkHTML()">📄 Проверить структуру index_v2.html</button>
+</div>
+
+<div class="section">
+  <h2>2. Проверить JS</h2>
+  <button onclick="checkJS()">🔧 Найти синтаксические ошибки</button>
+</div>
+
+<div class="section">
+  <h2>3. Проверить API</h2>
+  <button onclick="checkAPI()">🌐 Проверить воркер</button>
+</div>
+
+<div class="section">
+  <h2>4. Открыть игру (iframe)</h2>
+  <button onclick="checkIframe()">🎮 Загрузить index_v2.html в окне</button>
+</div>
+
+<div class="section">
+  <h2>Результаты</h2>
+  <div class="out" id="out">Нажми любую кнопку выше, чтобы начать проверку...</div>
+</div>
 
 <script>
 const out = document.getElementById("out");
+
+function clearOut() {
+  out.innerHTML = "";
+}
+
 function log(msg, cls) {
-  const line = document.createElement("div");
-  if(cls) line.className = cls;
-  line.textContent = msg;
-  out.appendChild(line);
+  const d = document.createElement("div");
+  d.className = "line";
+  d.innerHTML = cls ? '<span class="' + cls + '">' + msg + '</span>' : msg;
+  out.appendChild(d);
   out.scrollTop = out.scrollHeight;
 }
 
-async function check1() {
-  out.textContent = "";
-  log("=== ПРОВЕРКА HTML index_v2.html ===");
-  try {
-    const r = await fetch("./index_v2.html");
-    const html = await r.text();
-    log("✅ Файл загружен, размер: " + html.length + " байт", "ok");
+function logHTML(msg) {
+  const d = document.createElement("div");
+  d.className = "line";
+  d.innerHTML = msg;
+  out.appendChild(d);
+  out.scrollTop = out.scrollHeight;
+}
 
+/* ═══ 1. ПРОВЕРКА HTML ═══ */
+async function checkHTML() {
+  clearOut();
+  log("=== ПРОВЕРКА index_v2.html ===", "info");
+  log("");
+  
+  try {
+    log("Загрузка файла...", "dim");
+    const r = await fetch("./index_v2.html?t=" + Date.now());
+    
+    if (!r.ok) {
+      log("❌ Не удалось загрузить index_v2.html — статус " + r.status, "err");
+      log("Проверь, что файл загружен в репозиторий!", "warn");
+      return;
+    }
+    
+    const html = await r.text();
+    log("✅ Файл загружен: " + html.length.toLocaleString() + " символов", "ok");
+    log("");
+    
     // Проверки
     const checks = [
       ["<!DOCTYPE html>", html.indexOf("<!DOCTYPE html>") !== -1],
       ["<html", html.indexOf("<html") !== -1],
+      ["</html>", html.indexOf("</html>") !== -1],
+      ["<head>", html.indexOf("<head>") !== -1],
+      ["</head>", html.indexOf("</head>") !== -1],
       ["<body", html.indexOf("<body") !== -1],
       ["</body>", html.indexOf("</body>") !== -1],
-      ["</html>", html.indexOf("</html>") !== -1],
-      ["<script>", html.indexOf("<script>") !== -1],
-      ["</script>", html.indexOf("</script>") !== -1],
+      ["<style>", html.indexOf("<style>") !== -1],
+      ["</style>", html.indexOf("</style>") !== -1],
+      ["id=\"intro\"", html.indexOf('id="intro"') !== -1],
+      ["id=\"introCanvas\"", html.indexOf('id="introCanvas"') !== -1],
+      ["id=\"anniversary\"", html.indexOf('id="anniversary"') !== -1],
+      ["id=\"mainSite\"", html.indexOf('id="mainSite"') !== -1],
+      ["id=\"preloader\"", html.indexOf('id="preloader"') !== -1],
       ["SAFE_STORE", html.indexOf("SAFE_STORE") !== -1],
       ["ANNIVERSARY", html.indexOf("ANNIVERSARY") !== -1],
-      ["INTRO", html.indexOf("INTRO") !== -1],
-      ["id=\"intro\"", html.indexOf('id="intro"') !== -1],
-      ["id=\"anniversary\"", html.indexOf('id="anniversary"') !== -1],
+      ["var INTRO", html.indexOf("var INTRO") !== -1 || html.indexOf("INTRO = ") !== -1],
+      ["ARTAMON_API", html.indexOf("ARTAMON_API") !== -1],
+      ["BOTS_ENGINE", html.indexOf("BOTS_ENGINE") !== -1],
+      ["COINS", html.indexOf("var COINS") !== -1 || html.indexOf("COINS = ") !== -1],
     ];
-
-    checks.forEach(([name, ok]) => {
-      log((ok ? "✅ " : "❌ ") + name, ok ? "ok" : "err");
+    
+    log("СТРУКТУРА:", "info");
+    let okCount = 0, errCount = 0;
+    checks.forEach(function(pair) {
+      if (pair[1]) {
+        log("  ✅ " + pair[0], "ok");
+        okCount++;
+      } else {
+        log("  ❌ " + pair[0] + " — НЕ НАЙДЕНО!", "err");
+        errCount++;
+      }
     });
-
+    
+    log("");
+    log("Итого: " + okCount + " ОК, " + errCount + " ошибок", errCount > 0 ? "err" : "ok");
+    
     // Считаем скрипты
     const scripts = (html.match(/<script>/g) || []).length;
-    log("Найдено <script> тегов: " + scripts, scripts >= 5 ? "ok" : "warn");
-
-    // Считаем модалки
-    const modals = (html.match(/class="modal"/g) || []).length;
-    log("Найдено модалок: " + modals, "warn");
-
+    const scriptEnds = (html.match(/<\/script>/g) || []).length;
+    log("");
+    log("Скриптов <script>: " + scripts, scripts >= 5 ? "ok" : "warn");
+    log("Закрытий </script>: " + scriptEnds, scriptEnds === scripts ? "ok" : "err");
+    
+    if (scripts !== scriptEnds) {
+      log("⚠️ Скрипты НЕ ЗАКРЫТЫ — это ломает всю страницу!", "err");
+    }
+    
+    // Размер частей
+    log("");
+    log("Проверка размера файла:", "info");
+    if (html.length < 100000) {
+      log("⚠️ Файл слишком маленький (< 100 КБ) — возможно, не все 5 частей склеены", "warn");
+    } else if (html.length < 300000) {
+      log("⚠️ Файл средний (100-300 КБ) — проверь, что все 5 частей есть", "warn");
+    } else {
+      log("✅ Файл достаточного размера (300+ КБ)", "ok");
+    }
+    
   } catch(e) {
     log("❌ ОШИБКА: " + e.message, "err");
+    log("Возможно, проблема с интернетом или GitHub Pages не обновился.", "warn");
   }
 }
 
-async function check2() {
-  out.textContent = "";
-  log("=== ПРОВЕРКА JS ===");
+/* ═══ 2. ПРОВЕРКА JS ═══ */
+async function checkJS() {
+  clearOut();
+  log("=== ПРОВЕРКА JS-СКРИПТОВ ===", "info");
+  log("");
+  
   try {
-    const r = await fetch("./index_v2.html");
+    const r = await fetch("./index_v2.html?t=" + Date.now());
+    if (!r.ok) {
+      log("❌ Не загрузился файл (статус " + r.status + ")", "err");
+      return;
+    }
     const html = await r.text();
-
-    // Извлекаем все скрипты и пробуем парсить
-    const scripts = html.match(/<script>([\s\S]*?)<\/script>/g) || [];
-    log("Найдено " + scripts.length + " скриптов");
-
-    scripts.forEach((s, i) => {
-      const code = s.replace(/<\/?script>/g, "");
-      log("Скрипт #" + (i+1) + " — " + code.length + " символов");
+    
+    // Найти все скрипты
+    const regex = /<script>([\s\S]*?)<\/script>/g;
+    let match;
+    let num = 0;
+    let errors = 0;
+    
+    while ((match = regex.exec(html)) !== null) {
+      num++;
+      const code = match[1];
+      log("─── СКРИПТ #" + num + " ───", "info");
+      log("Размер: " + code.length.toLocaleString() + " символов", "dim");
+      
+      // Показать первые 60 символов
+      const preview = code.slice(0, 60).replace(/\n/g, " ");
+      log("Начало: " + preview + "...", "dim");
+      
+      // Проверка синтаксиса
       try {
-        // Проверка синтаксиса без выполнения
         new Function(code);
-        log("  ✅ Синтаксис ОК", "ok");
+        log("  ✅ Синтаксис корректный", "ok");
       } catch(e) {
-        log("  ❌ ОШИБКА СИНТАКСИСА: " + e.message, "err");
-        log("  Первые 200 символов: " + code.slice(0, 200), "err");
+        errors++;
+        log("  ❌ ОШИБКА СИНТАКСИСА!", "err");
+        log("  Сообщение: " + e.message, "err");
+        
+        // Найти строку с ошибкой
+        if (e.stack) {
+          const stack = e.stack.split("\n").slice(0, 3).join(" | ");
+          log("  Стек: " + stack, "warn");
+        }
       }
-    });
+      log("");
+    }
+    
+    log("═══════════════════", "info");
+    log("Найдено скриптов: " + num, num === 5 ? "ok" : "warn");
+    log("Ошибок синтаксиса: " + errors, errors === 0 ? "ok" : "err");
+    
+    if (num !== 5) {
+      log("⚠️ Ожидалось 5 скриптов (3A, 3B, 4, + встроенные). Найдено " + num, "warn");
+    }
+    
+    if (errors === 0 && num >= 4) {
+      log("");
+      log("🎉 JS корректный! Если интро не работает — проблема в чём-то другом.", "ok");
+    }
+    
   } catch(e) {
-    log("❌ ОШИБКА: " + e.message, "err");
+    log("❌ " + e.message, "err");
   }
 }
 
-async function check3() {
-  out.textContent = "";
-  log("=== ТЕСТ В IFRAME ===");
-  const iframe = document.createElement("iframe");
-  iframe.src = "./index_v2.html";
-  iframe.style.cssText = "width:100%;height:300px;border:2px solid #d4af37;border-radius:8px;margin-top:10px;";
-  iframe.onload = () => {
-    log("✅ iframe загрузился", "ok");
-    setTimeout(() => {
-      try {
-        const doc = iframe.contentDocument;
-        if(doc) {
-          log("Заголовок: " + doc.title, "ok");
-          const intro = doc.getElementById("intro");
-          log("Элемент #intro: " + (intro ? "✅ есть" : "❌ нет"), intro ? "ok" : "err");
-          const anniv = doc.getElementById("anniversary");
-          log("Элемент #anniversary: " + (anniv ? "✅ есть" : "❌ нет"), anniv ? "ok" : "err");
-        }
-      } catch(e) {
-        log("⚠️ Не могу прочитать iframe: " + e.message, "warn");
+/* ═══ 3. ПРОВЕРКА API ═══ */
+async function checkAPI() {
+  clearOut();
+  log("=== ПРОВЕРКА ВОРКЕРА ===", "info");
+  log("");
+  
+  const API = "https://artamon-api.artem123kv.workers.dev";
+  
+  try {
+    log("Запрос к " + API + "/", "dim");
+    const start = Date.now();
+    const r = await fetch(API + "/");
+    const time = Date.now() - start;
+    const data = await r.json();
+    
+    log("✅ Воркер отвечает (за " + time + " мс)", "ok");
+    log("Ответ: " + JSON.stringify(data), "ok");
+    
+    if (data.version) {
+      log("Версия воркера: " + data.version, "info");
+      if (data.version === "2.7.0") {
+        log("✅ Актуальная версия!", "ok");
+      } else {
+        log("⚠️ Старая версия — обнови воркер", "warn");
       }
-    }, 2000);
-  };
-  iframe.onerror = () => log("❌ iframe не загрузился", "err");
-  out.appendChild(iframe);
+    }
+    
+  } catch(e) {
+    log("❌ Воркер не отвечает: " + e.message, "err");
+    log("Проверь:", "warn");
+    log("  1. Воркер задеплоен?", "warn");
+    log("  2. URL правильный?", "warn");
+  }
 }
+
+/* ═══ 4. IFRAME ═══ */
+function checkIframe() {
+  clearOut();
+  log("=== ЗАГРУЗКА index_v2.html В IFRAME ===", "info");
+  log("Если игра загрузится в окошке ниже — код рабочий. Если нет — увидишь чёрный экран.", "dim");
+  log("");
+  
+  const iframe = document.createElement("iframe");
+  iframe.src = "./index_v2.html?t=" + Date.now();
+  iframe.onload = function() {
+    log("✅ iframe загрузился", "ok");
+    try {
+      const doc = iframe.contentDocument;
+      if (doc) {
+        log("Заголовок: " + (doc.title || "—"), "dim");
+        const intro = doc.getElementById("intro");
+        log("Элемент #intro: " + (intro ? "✅ есть" : "❌ нет"), intro ? "ok" : "err");
+        const canvas = doc.getElementById("introCanvas");
+        log("Canvas #introCanvas: " + (canvas ? "✅ есть" : "❌ нет"), canvas ? "ok" : "err");
+        if (canvas) {
+          log("Canvas размер: " + canvas.width + "×" + canvas.height, "dim");
+        }
+      }
+    } catch(e) {
+      log("⚠️ Не могу прочитать iframe (CORS): " + e.message, "warn");
+    }
+  };
+  iframe.onerror = function() {
+    log("❌ iframe не загрузился", "err");
+  };
+  out.appendChild(iframe);
+  iframe.scrollIntoView({behavior: "smooth"});
+}
+
+console.log("🔍 Debug tool loaded");
 </script>
 </body>
-</html>
+    </html>
