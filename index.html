@@ -7,13 +7,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#d4af37">
-<meta name="description" content="Artamon 2.6 — опросы, боты, лента рейтинга, ежедневки">
+<meta name="description" content="Artamon 2.6.5 — опросы, боты, лента рейтинга, магазин, WIP">
 <meta name="apple-mobile-web-app-title" content="Artamon">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-<title>Artamon 2.6 — The Big Update</title>
+<title>Artamon 2.6.5 — The Big Update</title>
 <style>
 :root{
   --gold-1:#f6e6a8; --gold-2:#d4af37; --gold-3:#8f6f1a;
@@ -102,7 +102,7 @@ body[data-bg="matrix"] #bgMatrix{display:block}
 .bio-stats .bs{text-align:center}
 .bio-stats .bs b{display:block;font-size:1rem;color:var(--gold-2)}
 
-/* ═══ ЮБИЛЕЙ 2.6 ═══ */
+/* ═══ ЮБИЛЕЙ 2.6.5 ═══ */
 #anniversary{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at 50% 50%, #0a0a0a 0%, #000 70%);display:none;align-items:center;justify-content:center;flex-direction:column;overflow:hidden;}
 #anniversary.on{display:flex}
 .ann-big{font-size:clamp(6rem,28vw,16rem);font-weight:900;line-height:1;background:linear-gradient(180deg,#f6e6a8 0%,#d4af37 45%,#8f6f1a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 80px rgba(212,175,55,.6);letter-spacing:.04em;animation:annZoomIn 1.4s cubic-bezier(.2,1.4,.4,1) forwards;opacity:0;transform:scale(.3);z-index:2;}
@@ -200,7 +200,7 @@ body[data-bg="matrix"] #bgMatrix{display:block}
 .pre-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--gold-3),var(--gold-2),var(--gold-1));transition:width .25s ease;}
 .pre-pct{margin-top:8px;font-size:.72rem;color:var(--txt-2);letter-spacing:.16em}
 
-/* ═══ ОБНОВЛЕНИЕ 2.6 ═══ */
+/* ═══ ОБНОВЛЕНИЕ 2.6.5 ═══ */
 #updateModal{position:fixed;inset:0;z-index:9600;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.94);backdrop-filter:blur(10px);}
 #updateModal.on{display:flex;animation:fadeIn .4s ease}
 .upd-box{max-width:560px;width:100%;max-height:90vh;overflow-y:auto;background:linear-gradient(180deg,var(--card-bg-1),var(--card-bg-2));border:1px solid color-mix(in srgb, var(--gold-2) 35%, transparent);border-radius:20px;padding:28px 24px;text-align:left;}
@@ -488,6 +488,8 @@ textarea{resize:vertical;min-height:84px}
 .track-desc{font-size:.72rem;color:var(--txt-3);margin-top:2px}
 .track-tag{font-size:.6rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:8px;margin-left:8px;vertical-align:middle;}
 .track-tag.new{background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.4);}
+.track-tag.premium{background:rgba(212,175,55,.15);color:var(--gold-2);border:1px solid rgba(212,175,55,.4);}
+.track-price{font-size:.72rem;color:var(--gold-2);font-weight:700;white-space:nowrap;}
 .online-bar{display:flex;align-items:center;justify-content:center;gap:8px;font-size:.78rem;color:var(--txt-2);margin-bottom:14px;user-select:none}
 .online-bar.hidden{display:none}
 .online-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;animation:onlinePulse 1.6s ease-in-out infinite}
@@ -686,6 +688,56 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
 .admin-log .log-line b{color:#e06a6a;}
 .admin-log .log-time{color:#5c5c5c;margin-right:6px;}
 
+/* ═══ МАГАЗИН ═══ */
+#shopModal{position:fixed;inset:0;z-index:9300;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.94);backdrop-filter:blur(10px);}
+#shopModal.on{display:flex;animation:fadeIn .35s ease;}
+.shop-box{max-width:640px;width:100%;max-height:92vh;overflow-y:auto;background:linear-gradient(180deg,var(--card-bg-1),var(--card-bg-2));border:1px solid color-mix(in srgb, var(--gold-2) 40%, transparent);border-radius:20px;padding:24px 22px;position:relative;}
+.shop-close{position:absolute;top:14px;right:14px;background:transparent;border:1px solid var(--card-border);color:var(--txt-2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:1.1rem;line-height:1;}
+.shop-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.shop-title{font-size:clamp(1.3rem,5vw,1.7rem);font-weight:900;letter-spacing:.12em;text-transform:uppercase;background:linear-gradient(180deg,var(--gold-1),var(--gold-2) 45%,var(--gold-3));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.shop-balance{font-size:1rem;font-weight:900;color:var(--gold-2);background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.4);border-radius:12px;padding:8px 16px;white-space:nowrap;}
+.shop-balance b{font-size:1.2rem;}
+.shop-tabs{display:flex;justify-content:center;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+.shop-tab{background:transparent;border:1px solid var(--card-border);color:var(--txt-2);padding:8px 16px;border-radius:20px;font-family:inherit;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:.15s;}
+.shop-tab.active{background:color-mix(in srgb, var(--gold-2) 15%, transparent);border-color:var(--gold-2);color:var(--gold-2);}
+.shop-list{display:flex;flex-direction:column;gap:10px;}
+.shop-item{display:flex;align-items:center;gap:14px;background:rgba(0,0,0,.4);border:1px solid var(--card-border);border-radius:14px;padding:12px 14px;transition:.2s;}
+.shop-item.owned{border-color:rgba(74,222,128,.4);background:linear-gradient(90deg,rgba(74,222,128,.08),rgba(0,0,0,.4));}
+.shop-item .s-icon{width:50px;height:50px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;font-size:26px;background:var(--bg-2);border:1.5px solid var(--card-border);}
+.shop-item.owned .s-icon{border-color:rgba(74,222,128,.5);}
+.shop-item .s-body{flex:1;min-width:0;}
+.shop-item .s-name{font-size:.95rem;font-weight:800;color:var(--txt-1);margin-bottom:3px;}
+.shop-item .s-desc{font-size:.74rem;color:var(--txt-2);line-height:1.3;}
+.shop-item .s-buy{flex:0 0 auto;border:1.5px solid var(--gold-3);background:color-mix(in srgb, var(--gold-2) 12%, transparent);color:var(--gold-2);padding:10px 16px;border-radius:10px;cursor:pointer;font-family:inherit;font-size:.78rem;font-weight:800;letter-spacing:.06em;transition:.15s;white-space:nowrap;}
+.shop-item .s-buy:hover:not(:disabled){background:color-mix(in srgb, var(--gold-2) 25%, transparent);}
+.shop-item .s-buy:disabled{opacity:.5;cursor:not-allowed;}
+.shop-item .s-buy.owned{border-color:rgba(74,222,128,.5);background:rgba(74,222,128,.1);color:#4ade80;cursor:default;}
+.shop-empty{text-align:center;color:var(--txt-3);font-size:.85rem;padding:30px 10px;}
+
+/* ═══ WIP ═══ */
+#wipModal{position:fixed;inset:0;z-index:9400;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.94);backdrop-filter:blur(10px);}
+#wipModal.on{display:flex;animation:fadeIn .35s ease;}
+.wip-box{max-width:480px;width:100%;background:linear-gradient(180deg,var(--card-bg-1),var(--card-bg-2));border:2px solid rgba(212,175,55,.5);border-radius:20px;padding:28px 24px;text-align:center;position:relative;}
+.wip-close{position:absolute;top:14px;right:14px;background:transparent;border:1px solid var(--card-border);color:var(--txt-2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:1.1rem;line-height:1;}
+.wip-icon{font-size:5rem;display:block;margin-bottom:14px;filter:drop-shadow(0 0 25px rgba(212,175,55,.8));animation:iconFloat 3s ease-in-out infinite;}
+.wip-title{font-size:1.7rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:linear-gradient(180deg,var(--gold-1),var(--gold-2) 45%,var(--gold-3));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:10px;}
+.wip-desc{font-size:.9rem;color:var(--txt-2);line-height:1.6;margin-bottom:20px;}
+.wip-desc b{color:var(--gold-2);}
+.wip-features{text-align:left;background:rgba(0,0,0,.3);border:1px solid var(--card-border);border-radius:12px;padding:16px;margin-bottom:20px;}
+.wip-features li{list-style:none;font-size:.85rem;color:var(--txt-1);padding:6px 0;display:flex;gap:8px;align-items:flex-start;}
+.wip-features li::before{content:"💎";flex:0 0 auto;}
+.wip-status{margin-bottom:16px;font-size:.85rem;color:var(--txt-2);}
+.wip-active{background:linear-gradient(180deg,rgba(74,222,128,.15),rgba(74,222,128,.05));border:1px solid rgba(74,222,128,.5);color:#4ade80;padding:12px;border-radius:12px;font-weight:700;font-size:.9rem;}
+.wip-buy-btn{width:100%;border:1.5px solid var(--gold-2);background:linear-gradient(180deg,rgba(212,175,55,.35),rgba(212,175,55,.15));color:#fff;font-weight:900;font-size:1rem;letter-spacing:.12em;text-transform:uppercase;padding:16px 22px;border-radius:14px;cursor:pointer;font-family:inherit;transition:.2s;}
+.wip-buy-btn:hover:not(:disabled){background:linear-gradient(180deg,rgba(212,175,55,.5),rgba(212,175,55,.25));}
+.wip-buy-btn:disabled{opacity:.5;cursor:not-allowed;background:transparent;border-color:rgba(212,175,55,.3);color:#5c5c5c;}
+
+/* ═══ БАЛАНС В ТОПБАРЕ ═══ */
+.coin-badge{display:flex;align-items:center;gap:5px;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.4);border-radius:10px;padding:7px 12px;font-size:.82rem;font-weight:800;color:var(--gold-2);cursor:pointer;transition:.2s;white-space:nowrap;}
+.coin-badge:hover{border-color:var(--gold-2);background:rgba(212,175,55,.18);}
+.coin-badge .c-ic{font-size:1rem;}
+.coin-badge b{color:#f6e6a8;}
+
 @media (max-width:520px){
   .wrap{padding:16px 10px 70px;padding-top:calc(16px + env(safe-area-inset-top));padding-bottom:calc(70px + env(safe-area-inset-bottom))}
   .card{padding:16px}
@@ -700,6 +752,12 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
   .admin-panel-inner{padding:14px 10px;padding-top:calc(14px + env(safe-area-inset-top))}
   .admin-header{padding:12px 14px}
   .admin-header h1{font-size:1rem}
+  .shop-box,.wip-box{padding:18px 14px;}
+  .shop-item{padding:10px 10px;gap:10px;}
+  .shop-item .s-icon{width:40px;height:40px;font-size:22px;}
+  .shop-item .s-buy{padding:8px 12px;font-size:.72rem;}
+  .topbar{gap:6px;}
+  .coin-badge{padding:6px 9px;font-size:.75rem;}
 }
 
 /* ═══ МОДАЛКА «RUNNER НА РЕМОНТЕ» ═══ */
@@ -716,9 +774,45 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
 .repair-progress i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:repairShine 1.5s linear infinite;}
 @keyframes repairShine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
 
-/* ═══ ЭКРАН «ЧТО НОВОГО В 2.6» ═══ */
-.upd-badge-v26{background:linear-gradient(180deg,#60a5fa,#3b82f6)!important;color:#fff!important;}
+/* ═══ AUTH MODAL ═══ */
+#authModal{position:fixed;inset:0;z-index:9800;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.94);backdrop-filter:blur(12px);}
+#authModal.on{display:flex;animation:fadeIn .35s ease;}
+.auth-box{max-width:440px;width:100%;background:linear-gradient(180deg,var(--card-bg-1),var(--card-bg-2));border:1px solid color-mix(in srgb, var(--gold-2) 40%, transparent);border-radius:20px;padding:28px 24px;position:relative;}
+.auth-close{position:absolute;top:14px;right:14px;background:transparent;border:1px solid var(--card-border);color:var(--txt-2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:1.1rem;line-height:1;}
+.auth-title{font-size:1.5rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;text-align:center;background:linear-gradient(180deg,var(--gold-1),var(--gold-2) 45%,var(--gold-3));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px;}
+.auth-sub{text-align:center;color:var(--txt-2);font-size:.78rem;margin-bottom:22px;letter-spacing:.08em;}
+.auth-tabs{display:flex;justify-content:center;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+.auth-tab{background:transparent;border:1px solid var(--card-border);color:var(--txt-2);padding:8px 16px;border-radius:20px;font-family:inherit;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:.15s;}
+.auth-tab.active{background:color-mix(in srgb, var(--gold-2) 15%, transparent);border-color:var(--gold-2);color:var(--gold-2);}
+.auth-pane{display:none;}
+.auth-pane.on{display:block;animation:fadeIn .3s ease;}
+.auth-field{margin-bottom:12px;}
+.auth-field label{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-2);margin-bottom:6px;}
+.auth-field input{width:100%;background:var(--bg-2);border:1px solid var(--card-border);color:var(--txt-1);border-radius:10px;padding:12px 14px;font-size:16px;font-family:inherit;outline:none;}
+.auth-field input:focus{border-color:var(--gold-2);box-shadow:0 0 0 3px color-mix(in srgb, var(--gold-2) 14%, transparent);}
+.auth-hint{font-size:.7rem;color:var(--txt-3);margin-top:4px;}
+.auth-btn{width:100%;border:1.5px solid var(--gold-3);background:color-mix(in srgb, var(--gold-2) 12%, transparent);color:var(--gold-2);padding:14px;border-radius:11px;cursor:pointer;font-family:inherit;font-size:.88rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;transition:.2s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.auth-btn:hover:not(:disabled){background:color-mix(in srgb, var(--gold-2) 25%, transparent);}
+.auth-btn:disabled{opacity:.6;cursor:not-allowed;}
+.auth-btn.ghost{background:transparent;border-color:var(--card-border);color:var(--txt-2);}
+.auth-error{background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.4);color:#f87171;border-radius:10px;padding:10px 14px;font-size:.82rem;margin-bottom:14px;display:none;}
+.auth-error.on{display:block;}
+.auth-info{background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.4);color:#60a5fa;border-radius:10px;padding:10px 14px;font-size:.82rem;margin-bottom:14px;display:none;}
+.auth-info.on{display:block;}
+.auth-guest{text-align:center;font-size:.88rem;color:var(--txt-2);line-height:1.7;margin-bottom:16px;}
+.auth-guest b{color:var(--gold-2);}
+.auth-logged{text-align:center;margin-bottom:18px;}
+.auth-logged .av{width:70px;height:70px;border-radius:50%;margin:0 auto 10px;display:grid;place-items:center;font-size:34px;background:var(--bg-2);border:2px solid var(--gold-2);}
+.auth-logged .nk{font-size:1.2rem;font-weight:900;color:var(--gold-2);}
+.auth-logged .jn{font-size:.75rem;color:var(--txt-3);margin-top:4px;}
+.auth-stats{background:rgba(0,0,0,.3);border:1px solid var(--card-border);border-radius:12px;padding:12px 14px;margin-bottom:16px;}
+.auth-stat-row{display:flex;justify-content:space-between;padding:6px 0;font-size:.85rem;}
+.auth-stat-row .lbl{color:var(--txt-2);}
+.auth-stat-row .val{color:var(--gold-2);font-weight:800;}
+.auth-spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:inline-block;}
 
+/* ═══ PWA ═══ */
+#pwaInstallBtn{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(120px);z-index:9999;background:linear-gradient(135deg,#f6e6a8,#d4af37,#8f6f1a);color:#0a0a0a;border:2px solid #f6e6a8;border-radius:14px;padding:12px 24px;font-family:inherit;font-size:.85rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 8px 30px rgba(212,175,55,.6);transition:transform .4s cubic-bezier(.5,1.5,.5,1),opacity .3s ease;opacity:0;pointer-events:none;}
 </style>
 </head>
 <body class="intro-lock" data-theme="gold" data-bg="aurora">
@@ -733,14 +827,14 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
 <div id="botDiag"></div>
 <div id="dmStack"></div>
 
-<!-- ═══ ЮБИЛЕЙ 2.6 ═══ -->
+<!-- ═══ ЮБИЛЕЙ 2.6.5 ═══ -->
 <div id="anniversary">
   <button class="ann-skip" id="annSkip" type="button">Пропустить »</button>
   <div class="ann-confetti" id="annConfetti"></div>
-  <div class="ann-big">2.6</div>
+  <div class="ann-big">2.6.5</div>
   <div class="ann-sub">⭐ THE BIG UPDATE ⭐</div>
-  <div class="ann-title">Artamon 2.6</div>
-  <div class="ann-thanks">Спасибо что ты с нами!<br><b>Лента рейтинга · Ежедневки · Новые награды</b></div>
+  <div class="ann-title">Artamon 2.6.5</div>
+  <div class="ann-thanks">Спасибо что ты с нами!<br><b>Магазин · Монеты · WIP · Лента рейтинга</b></div>
   <div class="ann-authors"><b>Артем Колыбельский</b> · Автор<br><b>Липовец Максим</b> · Вербовщик<br><b>Рамзан Грабарь</b> · Бета-тестер</div>
 </div>
 
@@ -768,12 +862,31 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
   </div>
 </div>
 
-<!-- ═══ ОБНОВЛЕНИЕ 2.6 ═══ -->
+<!-- ═══ ОБНОВЛЕНИЕ 2.6.5 ═══ -->
 <div id="updateModal">
   <div class="upd-box">
-    <span class="upd-badge upd-badge-v26">ВЕРСИЯ 2.6 — THE BIG UPDATE</span>
-    <div class="upd-title">Artamon 2.6</div>
+    <span class="upd-badge upd-badge-v26">ВЕРСИЯ 2.6.5 — THE BIG UPDATE</span>
+    <div class="upd-title">Artamon 2.6.5</div>
     <div class="upd-sub">Что нового</div>
+
+    <div class="upd-section">
+      <div class="upd-section-title new">💰 Монеты и Магазин</div>
+      <ul class="upd-list">
+        <li><b>Монеты Artamon</b> — зарабатывай за активность</li>
+        <li><b>Магазин</b> — аватарки, фоны, музыка, темы</li>
+        <li><b>Редкости</b> — обычные, редкие, эпические, легендарные</li>
+        <li><b>Синхронизация</b> — монеты сохраняются в облаке</li>
+      </ul>
+    </div>
+
+    <div class="upd-section">
+      <div class="upd-section-title new">💎 WIP-подписка</div>
+      <ul class="upd-list">
+        <li><b>Скидка 20%</b> на все товары в магазине</li>
+        <li><b>+50 монет</b> к ежедневной награде</li>
+        <li><b>30 дней</b> действия за 5000 монет</li>
+      </ul>
+    </div>
 
     <div class="upd-section">
       <div class="upd-section-title new">⭐ Лента рейтинга</div>
@@ -873,7 +986,7 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
       <path d="M100 42 L104 54 L116 54 L106 62 L110 74 L100 66 L90 74 L94 62 L84 54 L96 54 Z" fill="url(#gLogo)"/>
     </svg>
   </div>
-  <div class="intro-brand" id="introBrand">ARTAMON 2.6</div>
+  <div class="intro-brand" id="introBrand">ARTAMON 2.6.5</div>
   <div class="intro-hand" id="introHand">👉</div>
   <div class="intro-word" id="introWord">RATING</div>
   <div class="intro-narrative" id="introNarrative"></div>
@@ -884,7 +997,7 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
       <span class="cr-item"><span class="hl">Липовец Максим</span><span class="cr-role">Вербовщик · PR-менеджер</span></span>
       <span class="cr-item"><span class="hl">Рамзан Грабарь</span><span class="cr-role">Поиск багов · Бета-тестер</span></span>
     </div>
-    <div class="cr-footer">Artamon · 2026 · v2.6</div>
+    <div class="cr-footer">Artamon · 2026 · v2.6.5</div>
   </div>
   <div class="intro-final" id="introFinal">
     <canvas id="sakuraCanvas"></canvas>
@@ -916,7 +1029,7 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
       </svg>
     </div>
     <div class="pre-g" id="preG">ARTAMON</div>
-    <div class="pre-sub" id="preSub">initializing 2.6…</div>
+    <div class="pre-sub" id="preSub">initializing 2.6.5…</div>
     <div class="pre-phrase" id="prePhrase">…</div>
     <div class="pre-bw"><div class="pre-bar" id="preBar"></div></div>
     <div class="pre-pct" id="prePct">0%</div>
@@ -974,8 +1087,8 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
     <button class="tut-skip" id="tutSkip" type="button">Пропустить »</button>
     <div class="tut-progress" id="tutProgress"></div>
     <span class="tut-icon" id="tutIcon">🌐</span>
-    <div class="tut-title" id="tutTitle">Artamon 2.6</div>
-    <div class="tut-text" id="tutText">Новые возможности и лента рейтинга.</div>
+    <div class="tut-title" id="tutTitle">Artamon 2.6.5</div>
+    <div class="tut-text" id="tutText">Новые возможности, магазин и лента рейтинга.</div>
     <div class="tut-actions">
       <button class="tut-btn ghost" id="tutPrev" type="button">Назад</button>
       <button class="tut-btn" id="tutNext" type="button">Далее</button>
@@ -988,7 +1101,7 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
   <div class="wrap">
     <header>
       <div class="logo" id="logo">Artamon</div>
-      <div class="tagline" data-i18n="header.tagline">Голосуй · Обсуждай · 2.6</div>
+      <div class="tagline" data-i18n="header.tagline">Голосуй · Обсуждай · 2.6.5</div>
     </header>
 
     <div class="online-bar hidden" id="onlineBar">
@@ -1000,6 +1113,10 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
       <button class="menu-btn" id="menuBtn" type="button">
         <span class="bars"><span></span><span></span><span></span></span>
         <span data-i18n="menu.button">Меню</span>
+      </button>
+      <button class="coin-badge" id="coinBadge" type="button" title="Магазин">
+        <span class="c-ic">🪙</span>
+        <b id="coinBalance">0</b>
       </button>
       <button class="user-btn guest" id="userBtn" type="button">
         <span class="u-av">👤</span>
@@ -1140,7 +1257,7 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
           <div class="track" data-track="cosmic"><button class="track-play" type="button">▶</button><div class="track-info"><div class="track-name">Cosmic Voyage</div><div class="track-desc">Космическое путешествие</div></div></div>
           <div class="track" data-track="victory"><button class="track-play" type="button">▶</button><div class="track-info"><div class="track-name">Victory Fanfare</div><div class="track-desc">Фанфары победы</div></div></div>
           <div class="track" data-track="gaster"><button class="track-play" type="button">▶</button><div class="track-info"><div class="track-name">Gaster's Theme</div><div class="track-desc" data-i18n="music.gasterDesc">☠ Не выключается.</div></div></div>
-          <div class="track locked" data-track="lucky"><button class="track-play" type="button" disabled>▶</button><div class="track-info"><div class="track-name">Lucky Theme</div><div class="track-desc" data-i18n="music.luckyDesc">🔒 За «Везунчик»</div></div></div>
+          <div class="track locked" data-track="lucky"><button class="track-play" type="button" disabled>▶</button><div class="track-info"><div class="track-name">Lucky Theme</div><div class="track-desc" data-i18n="music.luckyDesc">🔒 За «Везунчик»</div></div><span class="track-price">🪙 700</span></div>
         </div>
         <div class="btn-row">
           <button class="btn ghost" id="stopAll" type="button" data-i18n="music.stopAll">Остановить всё</button>
@@ -1233,7 +1350,7 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
         <span data-i18n="footer.visits">Посещений:</span> <b id="visitCount">1</b> · <span data-i18n="footer.today">Сегодня:</span> <b id="todayDate">—</b>
       </div>
       <div class="footer-version">
-        <span data-i18n="footer.version">Версия:</span> <b>2.6 · THE BIG UPDATE</b>
+        <span data-i18n="footer.version">Версия:</span> <b>2.6.5 · THE BIG UPDATE</b>
         <span class="admin-dot" id="adminDot" title=""></span>
       </div>
     </footer>
@@ -1262,6 +1379,8 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
   <div class="sub" data-i18n="drawer.nav">Навигация</div>
   <button class="menu-item" id="miMain" type="button"><span>🏠</span><span data-i18n="drawer.main">Опрос</span></button>
   <button class="menu-item" id="miRating" type="button"><span>⭐</span><span>Лента рейтинга</span><span class="badge-count">NEW</span></button>
+  <button class="menu-item" id="miShop" type="button"><span>🛒</span><span data-i18n="drawer.shop">Магазин</span><span class="badge-count" id="miShopCoins">0</span></button>
+  <button class="menu-item" id="miWip" type="button"><span>💎</span><span data-i18n="drawer.wip">WIP-подписка</span><span class="badge-count" id="miWipBadge" style="display:none;">WIP</span></button>
   <button class="menu-item" id="miDaily" type="button"><span>🎁</span><span>Ежедневка</span><span class="badge-count" id="miDailyCount" style="display:none;">!</span></button>
   <button class="menu-item" id="miMusic" type="button"><span>🎵</span><span data-i18n="drawer.music">Музыка</span></button>
   <button class="menu-item" id="miStats" type="button"><span>📊</span><span data-i18n="drawer.stats">Статистика</span></button>
@@ -1273,7 +1392,7 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
   <div class="sub">Действия</div>
   <button class="menu-item" id="miMode" type="button"><span>🔄</span><span data-i18n="drawer.changeMode">Сменить режим</span></button>
   <button class="menu-item" id="miTutorial" type="button"><span>📘</span><span data-i18n="drawer.tutorial">Туториал</span></button>
-  <button class="menu-item" id="miUpdate" type="button"><span>📢</span><span data-i18n="drawer.whatsNew">Что нового в 2.6</span></button>
+  <button class="menu-item" id="miUpdate" type="button"><span>📢</span><span data-i18n="drawer.whatsNew">Что нового в 2.6.5</span></button>
 </aside>
 
 <!-- ═══ МОДАЛКА ПОДТВЕРЖДЕНИЯ ═══ -->
@@ -1354,6 +1473,7 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
         <div class="auth-stat-row"><span class="lbl">💬 Комментариев</span><span class="val" id="authStatComments">0</span></div>
         <div class="auth-stat-row"><span class="lbl">🎁 Дней подряд</span><span class="val" id="authStatStreak">0</span></div>
         <div class="auth-stat-row"><span class="lbl">🏆 Достижений</span><span class="val" id="authStatAch">0</span></div>
+        <div class="auth-stat-row"><span class="lbl">🪙 Монет</span><span class="val" id="authStatCoins">0</span></div>
       </div>
       <button class="auth-btn" type="button" id="authSyncBtn">🔄 Синхронизировать</button>
       <button class="auth-btn ghost" type="button" id="authLogoutBtn" style="margin-top:10px;">🚪 Выйти из аккаунта</button>
@@ -1370,6 +1490,41 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
     <div class="daily-streak">🔥 Стрик: <b id="dailyStreakNum">0</b> дней</div>
     <div class="daily-grid" id="dailyGrid"></div>
     <button class="daily-claim-btn" id="dailyClaimBtn" type="button">Забрать награду</button>
+  </div>
+</div>
+
+<!-- ═══ МАГАЗИН ═══ -->
+<div id="shopModal">
+  <div class="shop-box">
+    <button class="shop-close" type="button" id="shopClose">×</button>
+    <div class="shop-header">
+      <div class="shop-title">🛒 Магазин</div>
+      <div class="shop-balance">🪙 <b id="shopBalance">0</b></div>
+    </div>
+    <div class="shop-tabs">
+      <button class="shop-tab active" type="button" data-shop="avatars">👤 Аватарки</button>
+      <button class="shop-tab" type="button" data-shop="backgrounds">🌌 Фоны</button>
+      <button class="shop-tab" type="button" data-shop="music">🎵 Музыка</button>
+      <button class="shop-tab" type="button" data-shop="themes">🎨 Темы</button>
+    </div>
+    <div class="shop-list" id="shopList"></div>
+  </div>
+</div>
+
+<!-- ═══ WIP ═══ -->
+<div id="wipModal">
+  <div class="wip-box">
+    <button class="wip-close" type="button" id="wipClose">×</button>
+    <span class="wip-icon">💎</span>
+    <div class="wip-title">WIP Подписка</div>
+    <div class="wip-desc">Премиум-подписка <b>Artamon</b> на 30 дней</div>
+    <ul class="wip-features">
+      <li><b>Скидка 20%</b> на все товары в магазине</li>
+      <li><b>+50 монет</b> к ежедневной награде</li>
+      <li><b>Особый статус</b> в профиле</li>
+    </ul>
+    <div class="wip-status" id="wipStatus"></div>
+    <button class="wip-buy-btn" id="wipBuyBtn" type="button">Купить WIP — 30 дней</button>
   </div>
 </div>
 
@@ -1399,34 +1554,16 @@ footer .admin-dot:hover{background:rgba(212,175,55,.3);}
 
 <div id="toast"></div>
 
-<button id="pwaInstallBtn" type="button" style="
-  position:fixed;
-  bottom:calc(20px + env(safe-area-inset-bottom));
-  left:50%;
-  transform:translateX(-50%) translateY(120px);
-  z-index:9999;
-  background:linear-gradient(135deg,#f6e6a8,#d4af37,#8f6f1a);
-  color:#0a0a0a;
-  border:2px solid #f6e6a8;
-  border-radius:14px;
-  padding:12px 24px;
-  font-family:inherit;
-  font-size:.85rem;
-  font-weight:900;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  cursor:pointer;
-  box-shadow:0 8px 30px rgba(212,175,55,.6);
-  transition:transform .4s cubic-bezier(.5,1.5,.5,1),opacity .3s ease;
-  opacity:0;
-  pointer-events:none;
-">
+<button id="pwaInstallBtn" type="button">
   📱 Установить Artamon
 </button>
 
+<!-- JS будет вставлен в следующих частях -->
+</body>
+</html>
 <script>
 /* ============================================================
-   ARTAMON 2.6 — ЧАСТЬ 3A: Утилиты, Storage, Audio, i18n, Profile, Bots, Achievements
+   ARTAMON 2.6.5 — ЧАСТЬ 3A: Утилиты, Storage, Audio, i18n, Profile, Bots, Achievements
    ============================================================ */
 
 /* ═══════════════════════════════════════════════════════
@@ -1854,20 +1991,20 @@ var PROFILE = (function(){
   var data = Object.assign({}, DEFAULT);
   var AVATARS_BASE = ["👤","😎","🤖","👽","🐱","🐶","🦊","🐻","🐼","🐨","🦁","🐯","🐸","🐵","🦉","🦄","🐲","👾","🎭","🎨","🎮","🎧","⚡","🔥","💎","🌙","⭐","☀️","🌈","🍀"];
   var AVATARS_REWARD = {
-  "trophy":{icon:"🏆",rarity:"rare",desc:"За топ-1 рейтинга"},
-  "crown":{icon:"👑",rarity:"legendary",desc:"За 30 дней стрика"},
-  "gift":{icon:"🎁",rarity:"epic",desc:"За 7 дней стрика"},
-  "galaxy":{icon:"🌌",rarity:"epic",desc:"За 5 дней стрика"},
-  "purple":{icon:"💜",rarity:"rare",desc:"За 3 дня стрика"},
-  "sparkles":{icon:"✨",rarity:"rare",desc:"За топ-10 рейтинга"},
-  "hero":{icon:"🦸",rarity:"epic",desc:"За 50 комментариев"},
-  "wizard":{icon:"🧙",rarity:"epic",desc:"За 100 оценок"},
-  "dragon":{icon:"🐉",rarity:"legendary",desc:"За все достижения"},
-  "pumpkin":{icon:"🎃",rarity:"rare",desc:"Хэллоуин"},
-  "tree":{icon:"🎄",rarity:"rare",desc:"Новый год"},
-  "heart":{icon:"❤",rarity:"rare",desc:"День Святого Валентина"},
-  "skull":{icon:"☠",rarity:"legendary",desc:"Скрытое"}
-};
+    "trophy":{icon:"🏆",rarity:"rare",desc:"За топ-1 рейтинга"},
+    "crown":{icon:"👑",rarity:"legendary",desc:"За 30 дней стрика"},
+    "gift":{icon:"🎁",rarity:"epic",desc:"За 7 дней стрика"},
+    "galaxy":{icon:"🌌",rarity:"epic",desc:"За 5 дней стрика"},
+    "purple":{icon:"💜",rarity:"rare",desc:"За 3 дня стрика"},
+    "sparkles":{icon:"✨",rarity:"rare",desc:"За топ-10 рейтинга"},
+    "hero":{icon:"🦸",rarity:"epic",desc:"За 50 комментариев"},
+    "wizard":{icon:"🧙",rarity:"epic",desc:"За 100 оценок"},
+    "dragon":{icon:"🐉",rarity:"legendary",desc:"За все достижения"},
+    "pumpkin":{icon:"🎃",rarity:"rare",desc:"Хэллоуин"},
+    "tree":{icon:"🎄",rarity:"rare",desc:"Новый год"},
+    "heart":{icon:"❤",rarity:"rare",desc:"День Святого Валентина"},
+    "skull":{icon:"☠",rarity:"legendary",desc:"Скрытое"}
+  };
   var COLORS = ["#d4af37","#f6e6a8","#4ade80","#60a5fa","#a78bfa","#f472b6","#fb923c","#f87171","#22d3ee","#e8e6e1"];
 
   function load(){
@@ -1895,7 +2032,7 @@ var PROFILE = (function(){
     try{
       if(typeof ACH !== "undefined") ACH.unlock("got_avatar_" + a);
     }catch(e){}
-    try{ toast("🎁 Открыта аватарка: " + a + " — " + (AVATARS_REWARD[a]?.desc || "")); }catch(e){}
+    try{ toast("🎁 Открыта аватарка: " + a); }catch(e){}
     return true;
   }
   function renderAvatarPicker(){
@@ -2116,7 +2253,7 @@ var AUDIO = (function(){
 })();
 
 /* ═══════════════════════════════════════════════════════
-   ACHIEVEMENTS — с редкостями + новые
+   ACHIEVEMENTS — с редкостями + новые (для 2.6.5)
    ═══════════════════════════════════════════════════════ */
 var ACHIEVEMENTS = {
   first_vote:{icon:"✅",name:"Голос учтён",desc:"Проголосовал впервые",rarity:"common"},
@@ -2124,7 +2261,7 @@ var ACHIEVEMENTS = {
   first_poll:{icon:"🗳️",name:"Первый опрос",desc:"Создал свой первый опрос",rarity:"rare"},
   book_reader:{icon:"📖",name:"Читатель",desc:"Открыл книгу достижений",rarity:"rare"},
   bot_bio_read:{icon:"📖",name:"Биограф",desc:"Прочитал биографию бота",rarity:"rare"},
-  anniversary_2:{icon:"🎉",name:"Юбилей 2.6",desc:"Увидел анимацию 2.6",rarity:"rare"},
+  anniversary_2:{icon:"🎉",name:"Юбилей 2.6.5",desc:"Увидел анимацию 2.6.5",rarity:"rare"},
   bot_argument:{icon:"🗣",name:"Свидетель спора",desc:"Увидел спор между ботами",rarity:"epic"},
   bot_reaction_you:{icon:"❤️",name:"Любимчик",desc:"Бот отреагировал на твой комментарий",rarity:"epic"},
   first_dm:{icon:"💬",name:"Переписка",desc:"Получил личное сообщение",rarity:"common"},
@@ -2139,7 +2276,12 @@ var ACHIEVEMENTS = {
   first_account:{icon:"👤",name:"Первый аккаунт",desc:"Создал аккаунт Artamon",rarity:"rare"},
   first_sync:{icon:"🔄",name:"Синхронизатор",desc:"Синхронизировал прогресс",rarity:"common"},
   guest_start:{icon:"🎮",name:"Гость",desc:"Играл без аккаунта",rarity:"common"},
-  /* ═══ НОВОЕ В 2.6 ═══ */
+  /* ═══ НОВОЕ В 2.6.5 ═══ */
+  first_buy:{icon:"🛒",name:"Первая покупка",desc:"Купил что-то в магазине",rarity:"common"},
+  shopaholic:{icon:"🛍️",name:"Шопоголик",desc:"Купил 5 товаров",rarity:"rare"},
+  collector:{icon:"🗃️",name:"Коллекционер",desc:"Собрал все аватарки магазина",rarity:"epic"},
+  millionaire:{icon:"🤑",name:"Миллионер",desc:"Накопил 10 000 монет",rarity:"legendary"},
+  wip_subscriber:{icon:"💎",name:"WIP-подписчик",desc:"Активировал WIP-подписку",rarity:"epic"},
   rating_first:{icon:"⭐",name:"Первая оценка",desc:"Поставил первую звезду",rarity:"common"},
   rating_10:{icon:"🌟",name:"Ценитель",desc:"Поставил 10 оценок",rarity:"rare"},
   rating_50:{icon:"✨",name:"Критик",desc:"Поставил 50 оценок",rarity:"epic"},
@@ -2152,15 +2294,15 @@ var ACHIEVEMENTS = {
   daily_streak_7:{icon:"💎",name:"Неделя",desc:"Стрик 7 дней",rarity:"epic"},
   daily_streak_30:{icon:"👑",name:"Месяц",desc:"Стрик 30 дней",rarity:"legendary"},
   got_avatar_trophy:{icon:"🏆",name:"Топ-1",desc:"Открыта аватарка 🏆",rarity:"epic"},
-got_avatar_crown:{icon:"👑",name:"Корона",desc:"Открыта аватарка 👑",rarity:"legendary"},
-got_avatar_gift:{icon:"🎁",name:"Подарок",desc:"Открыта аватарка 🎁",rarity:"epic"},
-got_avatar_galaxy:{icon:"🌌",name:"Космос",desc:"Открыта аватарка 🌌",rarity:"epic"},
-got_avatar_purple:{icon:"💜",name:"Фиолет",desc:"Открыта аватарка 💜",rarity:"rare"},
-got_avatar_sparkles:{icon:"✨",name:"Искры",desc:"Открыта аватарка ✨",rarity:"rare"},
-got_avatar_hero:{icon:"🦸",name:"Герой",desc:"Открыта аватарка 🦸",rarity:"epic"},
-got_avatar_wizard:{icon:"🧙",name:"Маг",desc:"Открыта аватарка 🧙",rarity:"epic"},
-got_avatar_dragon:{icon:"🐉",name:"Дракон",desc:"Открыта аватарка 🐉",rarity:"legendary"},
-got_avatar_skull:{icon:"☠",name:"Череп",desc:"Открыта скрытая аватарка",rarity:"legendary"}
+  got_avatar_crown:{icon:"👑",name:"Корона",desc:"Открыта аватарка 👑",rarity:"legendary"},
+  got_avatar_gift:{icon:"🎁",name:"Подарок",desc:"Открыта аватарка 🎁",rarity:"epic"},
+  got_avatar_galaxy:{icon:"🌌",name:"Космос",desc:"Открыта аватарка 🌌",rarity:"epic"},
+  got_avatar_purple:{icon:"💜",name:"Фиолет",desc:"Открыта аватарка 💜",rarity:"rare"},
+  got_avatar_sparkles:{icon:"✨",name:"Искры",desc:"Открыта аватарка ✨",rarity:"rare"},
+  got_avatar_hero:{icon:"🦸",name:"Герой",desc:"Открыта аватарка 🦸",rarity:"epic"},
+  got_avatar_wizard:{icon:"🧙",name:"Маг",desc:"Открыта аватарка 🧙",rarity:"epic"},
+  got_avatar_dragon:{icon:"🐉",name:"Дракон",desc:"Открыта аватарка 🐉",rarity:"legendary"},
+  got_avatar_skull:{icon:"☠",name:"Череп",desc:"Открыта скрытая аватарка",rarity:"legendary"}
 };
 var RARITY_NAMES = { common:"Обычное", rare:"Редкое", epic:"Эпическое", legendary:"Легендарное" };
 var RARITY_SOUNDS = { common:"achCommon", rare:"achRare", epic:"achEpic", legendary:"achLegendary" };
@@ -2326,7 +2468,7 @@ var BOOK = (function(){
 })();
 
 /* ═══════════════════════════════════════════════════════
-   I18N
+   I18N (добавлены строки для магазина/WIP)
    ═══════════════════════════════════════════════════════ */
 var I18N = (function(){
   var KEY = "artamon_lang_v1";
@@ -2334,10 +2476,10 @@ var I18N = (function(){
   var T = {
     ru: {
       "common.back":"Назад","common.cancel":"Отмена",
-      "header.tagline":"Голосуй · Обсуждай · 2.6","menu.button":"Меню",
+      "header.tagline":"Голосуй · Обсуждай · 2.6.5","menu.button":"Меню",
       "online.now":"Сейчас на опросе:","online.people":"чел.",
       "welcome.title":"Добро пожаловать",
-      "welcome.text":"<p>Привет! <b>Artamon 2.6</b> — The Big Update!</p><br><p>⭐ <b>Лента рейтинга · Оценки 1-5 звёзд · Комментарии</b><br>🎁 <b>Ежедневки со стриками и наградами</b><br>🎨 <b>Новые аватарки и фоны</b><br>🛠️ <b>Runner 2.0 — на ремонте</b></p>",
+      "welcome.text":"<p>Привет! <b>Artamon 2.6.5</b> — The Big Update!</p><br><p>🪙 <b>Монеты и магазин</b><br>💎 <b>WIP-подписка со скидкой</b><br>⭐ <b>Лента рейтинга</b><br>🎁 <b>Ежедневки со стриками</b></p>",
       "welcome.start":"Начать",
       "age.title":"Сколько тебе лет?","age.sub":"Это влияет на маты ботов.","age.submit":"Продолжить","age.skip":"Мне 18+",
       "age.note":"🔞 Если <b>меньше 18</b> — боты без матов.<br>🔥 Если <b>18+</b> — боты могут материться.",
@@ -2348,21 +2490,20 @@ var I18N = (function(){
       "music.title":"Музыка","music.mainDesc":"Главная тема","music.goldDesc":"Спокойный цикл","music.darkDesc":"Тёмный пульс","music.echoDesc":"Эхо-камера","music.gasterDesc":"☠ Не выключается.","music.luckyDesc":"🔒 За «Везунчик»","music.stopAll":"Остановить всё",
       "stats.title":"Статистика","stats.votes":"Голосов","stats.options":"Вариантов","stats.comments":"Комментариев","stats.leader":"Лидер",
       "settings.title":"Настройки","settings.sound":"Звуковые эффекты","settings.soundDesc":"Клики, голосование","settings.volume":"Громкость","settings.volumeDesc":"Уровень","settings.dm":"Личные сообщения от ботов","settings.dmDesc":"Всплывающие окна","settings.theme":"Тема оформления","settings.themeDesc":"Золотая / Сталь / Светлая","settings.themeGold":"Золотая","settings.themeSteel":"Сталь","settings.themeLight":"Светлая","settings.bg":"Анимированный фон","settings.bgDesc":"6 вариантов","settings.bgAurora":"Аврора","settings.bgStars":"Звёзды","settings.bgBubbles":"Пузыри","settings.bgParticles":"Частицы","settings.bgMatrix":"Матрица","settings.bgNone":"Без фона","settings.profile":"Профиль","settings.profileDesc":"Аватар, ник, цвет","settings.profileAvatar":"Аватар","settings.profileNick":"Ник","settings.profileColor":"Цвет ника","settings.profileBio":"Биография","settings.age":"Возраст","settings.ageDesc":"Влияет на маты","settings.change":"Сменить","settings.lang":"Язык","settings.langDesc":"RU / EN / DE / ES / UK","settings.wipe":"Стереть все данные",
-      "about.title":"О приложении","about.text":"Artamon 2.6 — The Big Update. Лента рейтинга, ежедневки, новые аватарки и фоны.","about.hint":"Онлайн-аккаунты + локальный режим.",
+      "about.title":"О приложении","about.text":"Artamon 2.6.5 — The Big Update. Монеты, магазин, WIP, лента рейтинга, ежедневки.","about.hint":"Онлайн-аккаунты + локальный режим.",
       "footer.storage":"Artamon · локальное + облако","footer.visits":"Посещений:","footer.today":"Сегодня:","footer.version":"Версия:",
       "socials.title":"Мы в соцсетях","socials.soon":"скоро","socials.share":"🔗 Поделиться","socials.copy":"📋 Скопировать","socials.sign":"С любовью, <b>Артем</b> ❤️",
-      "drawer.title":"Меню","drawer.nav":"Навигация","drawer.main":"Опрос","drawer.music":"Музыка","drawer.stats":"Статистика","drawer.book":"Книга достижений","drawer.settings":"Настройки","drawer.about":"О приложении","drawer.changeMode":"Сменить режим","drawer.tutorial":"Туториал","drawer.whatsNew":"Что нового в 2.6",
+      "drawer.title":"Меню","drawer.nav":"Навигация","drawer.main":"Опрос","drawer.shop":"Магазин","drawer.wip":"WIP-подписка","drawer.music":"Музыка","drawer.stats":"Статистика","drawer.book":"Книга достижений","drawer.settings":"Настройки","drawer.about":"О приложении","drawer.changeMode":"Сменить режим","drawer.tutorial":"Туториал","drawer.whatsNew":"Что нового в 2.6.5",
       "modal.title":"Подтверждение","modal.text":"Удалить все данные?","modal.yes":"Да",
       "toast.enterQuestion":"Введите вопрос","toast.min2":"Минимум 2 варианта","toast.voted":"Голос учтён","toast.category":"📚 Категория: ","toast.reset":"Сброшено","toast.enterNick":"Укажите никнейм","toast.enterComment":"Введите комментарий","toast.commentAdded":"Комментарий добавлен","toast.ageRange":"Возраст: 1-120","toast.adult":"🔥 Боты могут материться","toast.minor":"😇 Боты вежливы","toast.adultSkip":"🔥 18+","toast.linkCopied":"Скопировано","toast.musicStopped":"⏹ Музыка остановлена","toast.locked":"🔒 Заблокировано","toast.themeChanged":"🎨 Тема изменена","toast.bgChanged":"🌌 Фон изменён","toast.imgLoaded":"📷 Картинка загружена","toast.imgError":"❌ Ошибка картинки","toast.dmOn":"💬 Личные включены","toast.dmOff":"💬 Личные выключены",
-      "toast.regOk":"🎉 Аккаунт создан","toast.loginOk":"👋 С возвращением","toast.logoutOk":"🚪 Вы вышли","toast.syncOk":"🔄 Синхронизировано","toast.syncErr":"❌ Ошибка синхронизации","toast.guest":"🎮 Гостевой режим"
+      "toast.regOk":"🎉 Аккаунт создан","toast.loginOk":"👋 С возвращением","toast.logoutOk":"🚪 Вы вышли","toast.syncOk":"🔄 Синхронизировано","toast.syncErr":"❌ Ошибка синхронизации","toast.guest":"🎮 Гостевой режим",
+      "shop.title":"Магазин","shop.buy":"Купить","shop.owned":"✓ Куплено","shop.noCoins":"Не хватает монет","shop.bought":"Куплено!","shop.alreadyOwned":"Уже куплено","shop.empty":"Пусто",
+      "wip.title":"WIP Подписка","wip.buy":"Купить WIP — 30 дней","wip.active":"✅ Активна","wip.alreadyActive":"Уже активна","wip.needCoins":"Не хватает монет. Нужно 5000 🪙","wip.activated":"WIP активирована на 30 дней!","wip.daysLeft":"осталось","wip.days":"дн."
     },
     en: {
-      "common.back":"Back","common.cancel":"Cancel",
-      "header.tagline":"Vote · Discuss · 2.6","menu.button":"Menu",
+      "common.back":"Back","common.cancel":"Cancel","header.tagline":"Vote · Discuss · 2.6.5","menu.button":"Menu",
       "online.now":"Online:","online.people":"ppl.",
-      "welcome.title":"Welcome",
-      "welcome.text":"<p>Hi! <b>Artamon 2.6</b> — The Big Update!</p>",
-      "welcome.start":"Start",
+      "welcome.title":"Welcome","welcome.text":"<p>Hi! <b>Artamon 2.6.5</b> — The Big Update!</p>","welcome.start":"Start",
       "age.title":"How old are you?","age.sub":"Affects swearing.","age.submit":"Continue","age.skip":"18+","age.note":"🔞 Under 18 — no swearing.<br>🔥 18+ — bots may swear.",
       "modes.title":"Choose mode","modes.sub":"Atmosphere","modes.soloTitle":"Solo","modes.soloDesc":"Just you.","modes.botsTitle":"With bots","modes.botsDesc":"30 bots vote.",
       "create.title":"New poll","create.typeChoice":"Choice","create.question":"Question","create.questionImg":"📷 Image (URL)","create.questionPlaceholder":"What to ask?","create.options":"Options","create.addOption":"+ Add option","create.hint":"Min 2, max 10.","create.start":"Start",
@@ -2371,18 +2512,20 @@ var I18N = (function(){
       "music.title":"Music","music.mainDesc":"Main theme","music.goldDesc":"Calm loop","music.darkDesc":"Dark pulse","music.echoDesc":"Echo","music.gasterDesc":"☠ Won't turn off.","music.luckyDesc":"🔒 Lucky","music.stopAll":"Stop all",
       "stats.title":"Stats","stats.votes":"Votes","stats.options":"Options","stats.comments":"Comments","stats.leader":"Leader",
       "settings.title":"Settings","settings.sound":"Sound","settings.soundDesc":"Clicks","settings.volume":"Volume","settings.volumeDesc":"Level","settings.dm":"Bot DMs","settings.dmDesc":"Popups","settings.theme":"Theme","settings.themeDesc":"Gold / Steel / Light","settings.themeGold":"Gold","settings.themeSteel":"Steel","settings.themeLight":"Light","settings.bg":"Background","settings.bgDesc":"6 variants","settings.bgAurora":"Aurora","settings.bgStars":"Stars","settings.bgBubbles":"Bubbles","settings.bgParticles":"Particles","settings.bgMatrix":"Matrix","settings.bgNone":"None","settings.profile":"Profile","settings.profileDesc":"Avatar, nick, color","settings.profileAvatar":"Avatar","settings.profileNick":"Nickname","settings.profileColor":"Color","settings.profileBio":"Bio","settings.age":"Age","settings.ageDesc":"Swearing","settings.change":"Change","settings.lang":"Language","settings.langDesc":"RU / EN / DE / ES / UK","settings.wipe":"Erase all",
-      "about.title":"About","about.text":"Artamon 2.6 — The Big Update.","about.hint":"Online accounts + local mode.",
+      "about.title":"About","about.text":"Artamon 2.6.5 — The Big Update.","about.hint":"Online accounts + local mode.",
       "footer.storage":"Artamon · local + cloud","footer.visits":"Visits:","footer.today":"Today:","footer.version":"Version:",
       "socials.title":"Find us","socials.soon":"soon","socials.share":"🔗 Share","socials.copy":"📋 Copy","socials.sign":"With love, <b>Artem</b> ❤️",
-      "drawer.title":"Menu","drawer.nav":"Navigation","drawer.main":"Poll","drawer.music":"Music","drawer.stats":"Stats","drawer.book":"Achievements","drawer.settings":"Settings","drawer.about":"About","drawer.changeMode":"Change mode","drawer.tutorial":"Tutorial","drawer.whatsNew":"What's new in 2.6",
+      "drawer.title":"Menu","drawer.nav":"Navigation","drawer.main":"Poll","drawer.shop":"Shop","drawer.wip":"WIP-subscription","drawer.music":"Music","drawer.stats":"Stats","drawer.book":"Achievements","drawer.settings":"Settings","drawer.about":"About","drawer.changeMode":"Change mode","drawer.tutorial":"Tutorial","drawer.whatsNew":"What's new in 2.6.5",
       "modal.title":"Confirm","modal.text":"Delete all?","modal.yes":"Yes",
       "toast.enterQuestion":"Enter question","toast.min2":"Min 2 options","toast.voted":"Counted","toast.category":"📚 Category: ","toast.reset":"Reset","toast.enterNick":"Enter nick","toast.enterComment":"Enter comment","toast.commentAdded":"Added","toast.ageRange":"Age: 1-120","toast.adult":"🔥 Bots swear","toast.minor":"😇 Polite","toast.adultSkip":"🔥 18+","toast.linkCopied":"Copied","toast.musicStopped":"⏹ Stopped","toast.locked":"🔒 Locked","toast.themeChanged":"🎨 Changed","toast.bgChanged":"🌌 Changed","toast.imgLoaded":"📷 Loaded","toast.imgError":"❌ Error","toast.dmOn":"💬 DMs ON","toast.dmOff":"💬 DMs OFF",
-      "toast.regOk":"🎉 Account created","toast.loginOk":"👋 Welcome back","toast.logoutOk":"🚪 Logged out","toast.syncOk":"🔄 Synced","toast.syncErr":"❌ Sync error","toast.guest":"🎮 Guest mode"
+      "toast.regOk":"🎉 Account created","toast.loginOk":"👋 Welcome back","toast.logoutOk":"🚪 Logged out","toast.syncOk":"🔄 Synced","toast.syncErr":"❌ Sync error","toast.guest":"🎮 Guest mode",
+      "shop.title":"Shop","shop.buy":"Buy","shop.owned":"✓ Owned","shop.noCoins":"Not enough coins","shop.bought":"Bought!","shop.alreadyOwned":"Already owned","shop.empty":"Empty",
+      "wip.title":"WIP Subscription","wip.buy":"Buy WIP — 30 days","wip.active":"✅ Active","wip.alreadyActive":"Already active","wip.needCoins":"Not enough coins. Need 5000 🪙","wip.activated":"WIP activated for 30 days!","wip.daysLeft":"left","wip.days":"d."
     },
     de: {
-      "common.back":"Zurück","common.cancel":"Abbrechen","header.tagline":"Abstimmen · 2.6","menu.button":"Menü",
+      "common.back":"Zurück","common.cancel":"Abbrechen","header.tagline":"Abstimmen · 2.6.5","menu.button":"Menü",
       "online.now":"Online:","online.people":"Pers.",
-      "welcome.title":"Willkommen","welcome.text":"<p>Hallo! <b>Artamon 2.6</b>.</p>","welcome.start":"Starten",
+      "welcome.title":"Willkommen","welcome.text":"<p>Hallo! <b>Artamon 2.6.5</b>.</p>","welcome.start":"Starten",
       "age.title":"Wie alt?","age.sub":"Flüche.","age.submit":"Weiter","age.skip":"18+","age.note":"🔞 Unter 18.<br>🔥 18+.",
       "modes.title":"Modus","modes.sub":"Atmosphäre","modes.soloTitle":"Solo","modes.soloDesc":"Nur du.","modes.botsTitle":"Mit Bots","modes.botsDesc":"30 Bots.",
       "create.title":"Neue Umfrage","create.typeChoice":"Auswahl","create.question":"Frage","create.questionImg":"📷 Bild","create.questionPlaceholder":"Frage?","create.options":"Optionen","create.addOption":"+ Option","create.hint":"2-10.","create.start":"Starten",
@@ -2391,18 +2534,20 @@ var I18N = (function(){
       "music.title":"Musik","music.mainDesc":"Hauptthema","music.goldDesc":"Ruhig","music.darkDesc":"Dunkel","music.echoDesc":"Echo","music.gasterDesc":"☠ Geht nicht aus.","music.luckyDesc":"🔒 Lucky","music.stopAll":"Stoppen",
       "stats.title":"Statistik","stats.votes":"Stimmen","stats.options":"Optionen","stats.comments":"Kommentare","stats.leader":"Führend",
       "settings.title":"Einstellungen","settings.sound":"Sound","settings.soundDesc":"Klicks","settings.volume":"Lautstärke","settings.volumeDesc":"Pegel","settings.dm":"Bot-DMs","settings.dmDesc":"Popups","settings.theme":"Thema","settings.themeDesc":"Gold / Stahl / Hell","settings.themeGold":"Gold","settings.themeSteel":"Stahl","settings.themeLight":"Hell","settings.bg":"Hintergrund","settings.bgDesc":"6 Varianten","settings.bgAurora":"Aurora","settings.bgStars":"Sterne","settings.bgBubbles":"Blasen","settings.bgParticles":"Partikel","settings.bgMatrix":"Matrix","settings.bgNone":"Ohne","settings.profile":"Profil","settings.profileDesc":"Avatar","settings.profileAvatar":"Avatar","settings.profileNick":"Nick","settings.profileColor":"Farbe","settings.profileBio":"Bio","settings.age":"Alter","settings.ageDesc":"Flüche","settings.change":"Ändern","settings.lang":"Sprache","settings.langDesc":"RU / EN / DE / ES / UK","settings.wipe":"Daten löschen",
-      "about.title":"Über","about.text":"Artamon 2.6.","about.hint":"Offline + Online.",
+      "about.title":"Über","about.text":"Artamon 2.6.5.","about.hint":"Offline + Online.",
       "footer.storage":"Artamon","footer.visits":"Besuche:","footer.today":"Heute:","footer.version":"Version:",
       "socials.title":"Sozial","socials.soon":"bald","socials.share":"🔗 Teilen","socials.copy":"📋 Kopieren","socials.sign":"Mit Liebe, <b>Artem</b> ❤️",
-      "drawer.title":"Menü","drawer.nav":"Navigation","drawer.main":"Umfrage","drawer.music":"Musik","drawer.stats":"Statistik","drawer.book":"Erfolge","drawer.settings":"Einstellungen","drawer.about":"Über","drawer.changeMode":"Modus","drawer.tutorial":"Tutorial","drawer.whatsNew":"Neu in 2.6",
+      "drawer.title":"Menü","drawer.nav":"Navigation","drawer.main":"Umfrage","drawer.shop":"Shop","drawer.wip":"WIP-Abo","drawer.music":"Musik","drawer.stats":"Statistik","drawer.book":"Erfolge","drawer.settings":"Einstellungen","drawer.about":"Über","drawer.changeMode":"Modus","drawer.tutorial":"Tutorial","drawer.whatsNew":"Neu in 2.6.5",
       "modal.title":"Bestätigung","modal.text":"Alle Daten löschen?","modal.yes":"Ja",
       "toast.enterQuestion":"Frage","toast.min2":"Min 2","toast.voted":"Gezählt","toast.category":"📚 Kategorie: ","toast.reset":"Zurück","toast.enterNick":"Nick","toast.enterComment":"Kommentar","toast.commentAdded":"Hinzugefügt","toast.ageRange":"Alter: 1-120","toast.adult":"🔥 Fluchen","toast.minor":"😇 Höflich","toast.adultSkip":"🔥 18+","toast.linkCopied":"Kopiert","toast.musicStopped":"⏹ Stopp","toast.locked":"🔒","toast.themeChanged":"🎨 Geändert","toast.bgChanged":"🌌 Geändert","toast.imgLoaded":"📷","toast.imgError":"❌","toast.dmOn":"💬 DMs AN","toast.dmOff":"💬 DMs AUS",
-      "toast.regOk":"🎉 Konto erstellt","toast.loginOk":"👋 Willkommen","toast.logoutOk":"🚪 Abgemeldet","toast.syncOk":"🔄 Synchronisiert","toast.syncErr":"❌ Sync-Fehler","toast.guest":"🎮 Gast"
+      "toast.regOk":"🎉 Konto erstellt","toast.loginOk":"👋 Willkommen","toast.logoutOk":"🚪 Abgemeldet","toast.syncOk":"🔄 Synchronisiert","toast.syncErr":"❌ Sync-Fehler","toast.guest":"🎮 Gast",
+      "shop.title":"Shop","shop.buy":"Kaufen","shop.owned":"✓ Gekauft","shop.noCoins":"Nicht genug Münzen","shop.bought":"Gekauft!","shop.alreadyOwned":"Bereits gekauft","shop.empty":"Leer",
+      "wip.title":"WIP-Abo","wip.buy":"WIP kaufen — 30 Tage","wip.active":"✅ Aktiv","wip.alreadyActive":"Bereits aktiv","wip.needCoins":"Nicht genug Münzen. 5000 nötig","wip.activated":"WIP für 30 Tage aktiviert!","wip.daysLeft":"übrig","wip.days":"T."
     },
     es: {
-      "common.back":"Atrás","common.cancel":"Cancelar","header.tagline":"Vota · 2.6","menu.button":"Menú",
+      "common.back":"Atrás","common.cancel":"Cancelar","header.tagline":"Vota · 2.6.5","menu.button":"Menú",
       "online.now":"En línea:","online.people":"pers.",
-      "welcome.title":"Bienvenido","welcome.text":"<p>¡Hola! <b>Artamon 2.6</b>.</p>","welcome.start":"Empezar",
+      "welcome.title":"Bienvenido","welcome.text":"<p>¡Hola! <b>Artamon 2.6.5</b>.</p>","welcome.start":"Empezar",
       "age.title":"¿Años?","age.sub":"Juramentos.","age.submit":"Continuar","age.skip":"18+","age.note":"🔞 Menor.<br>🔥 18+.",
       "modes.title":"Modo","modes.sub":"Atmósfera","modes.soloTitle":"Solo","modes.soloDesc":"Solo tú.","modes.botsTitle":"Con bots","modes.botsDesc":"30 bots.",
       "create.title":"Nueva encuesta","create.typeChoice":"Elección","create.question":"Pregunta","create.questionImg":"📷 Imagen","create.questionPlaceholder":"¿Qué?","create.options":"Opciones","create.addOption":"+ Opción","create.hint":"2-10.","create.start":"Iniciar",
@@ -2411,18 +2556,20 @@ var I18N = (function(){
       "music.title":"Música","music.mainDesc":"Tema","music.goldDesc":"Bucle","music.darkDesc":"Pulso","music.echoDesc":"Eco","music.gasterDesc":"☠ No se apaga.","music.luckyDesc":"🔒 Lucky","music.stopAll":"Detener",
       "stats.title":"Estadísticas","stats.votes":"Votos","stats.options":"Opciones","stats.comments":"Comentarios","stats.leader":"Líder",
       "settings.title":"Ajustes","settings.sound":"Sonido","settings.soundDesc":"Clics","settings.volume":"Volumen","settings.volumeDesc":"Nivel","settings.dm":"MPs de bots","settings.dmDesc":"Popups","settings.theme":"Tema","settings.themeDesc":"Oro / Acero / Claro","settings.themeGold":"Oro","settings.themeSteel":"Acero","settings.themeLight":"Claro","settings.bg":"Fondo","settings.bgDesc":"6","settings.bgAurora":"Aurora","settings.bgStars":"Estrellas","settings.bgBubbles":"Burbujas","settings.bgParticles":"Partículas","settings.bgMatrix":"Matrix","settings.bgNone":"Sin fondo","settings.profile":"Perfil","settings.profileDesc":"Avatar","settings.profileAvatar":"Avatar","settings.profileNick":"Apodo","settings.profileColor":"Color","settings.profileBio":"Bio","settings.age":"Edad","settings.ageDesc":"Juramentos","settings.change":"Cambiar","settings.lang":"Idioma","settings.langDesc":"RU / EN / DE / ES / UK","settings.wipe":"Borrar todo",
-      "about.title":"Acerca","about.text":"Artamon 2.6.","about.hint":"Offline + Online.",
+      "about.title":"Acerca","about.text":"Artamon 2.6.5.","about.hint":"Offline + Online.",
       "footer.storage":"Artamon","footer.visits":"Visitas:","footer.today":"Hoy:","footer.version":"Versión:",
       "socials.title":"Redes","socials.soon":"pronto","socials.share":"🔗 Compartir","socials.copy":"📋 Copiar","socials.sign":"Con amor, <b>Artem</b> ❤️",
-      "drawer.title":"Menú","drawer.nav":"Navegación","drawer.main":"Encuesta","drawer.music":"Música","drawer.stats":"Estadísticas","drawer.book":"Logros","drawer.settings":"Ajustes","drawer.about":"Acerca","drawer.changeMode":"Cambiar modo","drawer.tutorial":"Tutorial","drawer.whatsNew":"Nuevo en 2.6",
+      "drawer.title":"Menú","drawer.nav":"Navegación","drawer.main":"Encuesta","drawer.shop":"Tienda","drawer.wip":"Suscripción WIP","drawer.music":"Música","drawer.stats":"Estadísticas","drawer.book":"Logros","drawer.settings":"Ajustes","drawer.about":"Acerca","drawer.changeMode":"Cambiar modo","drawer.tutorial":"Tutorial","drawer.whatsNew":"Nuevo en 2.6.5",
       "modal.title":"Confirmar","modal.text":"¿Borrar todo?","modal.yes":"Sí",
       "toast.enterQuestion":"Pregunta","toast.min2":"Mín 2","toast.voted":"Contado","toast.category":"📚 Categoría: ","toast.reset":"Reiniciado","toast.enterNick":"Apodo","toast.enterComment":"Comentario","toast.commentAdded":"Añadido","toast.ageRange":"Edad: 1-120","toast.adult":"🔥 Juran","toast.minor":"😇 Educados","toast.adultSkip":"🔥 18+","toast.linkCopied":"Copiado","toast.musicStopped":"⏹ Detenido","toast.locked":"🔒","toast.themeChanged":"🎨 Cambiado","toast.bgChanged":"🌌 Cambiado","toast.imgLoaded":"📷","toast.imgError":"❌","toast.dmOn":"💬 MPs ON","toast.dmOff":"💬 MPs OFF",
-      "toast.regOk":"🎉 Cuenta creada","toast.loginOk":"👋 Bienvenido","toast.logoutOk":"🚪 Sesión cerrada","toast.syncOk":"🔄 Sincronizado","toast.syncErr":"❌ Error de sync","toast.guest":"🎮 Invitado"
+      "toast.regOk":"🎉 Cuenta creada","toast.loginOk":"👋 Bienvenido","toast.logoutOk":"🚪 Sesión cerrada","toast.syncOk":"🔄 Sincronizado","toast.syncErr":"❌ Error de sync","toast.guest":"🎮 Invitado",
+      "shop.title":"Tienda","shop.buy":"Comprar","shop.owned":"✓ Comprado","shop.noCoins":"Monedas insuficientes","shop.bought":"¡Comprado!","shop.alreadyOwned":"Ya comprado","shop.empty":"Vacío",
+      "wip.title":"Suscripción WIP","wip.buy":"Comprar WIP — 30 días","wip.active":"✅ Activa","wip.alreadyActive":"Ya activa","wip.needCoins":"Monedas insuficientes. Necesitas 5000","wip.activated":"¡WIP activada por 30 días!","wip.daysLeft":"quedan","wip.days":"d."
     },
     uk: {
-      "common.back":"Назад","common.cancel":"Скасувати","header.tagline":"Голосуй · 2.6","menu.button":"Меню",
+      "common.back":"Назад","common.cancel":"Скасувати","header.tagline":"Голосуй · 2.6.5","menu.button":"Меню",
       "online.now":"Онлайн:","online.people":"ос.",
-      "welcome.title":"Ласкаво просимо","welcome.text":"<p>Привіт! <b>Artamon 2.6</b>.</p>","welcome.start":"Почати",
+      "welcome.title":"Ласкаво просимо","welcome.text":"<p>Привіт! <b>Artamon 2.6.5</b>.</p>","welcome.start":"Почати",
       "age.title":"Скільки років?","age.sub":"Мати.","age.submit":"Далі","age.skip":"18+","age.note":"🔞 Менше.<br>🔥 18+.",
       "modes.title":"Режим","modes.sub":"Атмосфера","modes.soloTitle":"Одиночний","modes.soloDesc":"Тільки ти.","modes.botsTitle":"З ботами","modes.botsDesc":"30 ботів.",
       "create.title":"Нове опитування","create.typeChoice":"Звичайне","create.question":"Питання","create.questionImg":"📷 Картинка","create.questionPlaceholder":"Про що?","create.options":"Варіанти","create.addOption":"+ Варіант","create.hint":"2-10.","create.start":"Запустити",
@@ -2431,13 +2578,15 @@ var I18N = (function(){
       "music.title":"Музика","music.mainDesc":"Тема","music.goldDesc":"Цикл","music.darkDesc":"Пульс","music.echoDesc":"Ехо","music.gasterDesc":"☠ Не вимикається.","music.luckyDesc":"🔒 Lucky","music.stopAll":"Зупинити",
       "stats.title":"Статистика","stats.votes":"Голосів","stats.options":"Варіантів","stats.comments":"Коментарів","stats.leader":"Лідер",
       "settings.title":"Налаштування","settings.sound":"Звуки","settings.soundDesc":"Кліки","settings.volume":"Гучність","settings.volumeDesc":"Рівень","settings.dm":"Особисті від ботів","settings.dmDesc":"Спливаючі","settings.theme":"Тема","settings.themeDesc":"Золота / Сталь / Світла","settings.themeGold":"Золота","settings.themeSteel":"Сталь","settings.themeLight":"Світла","settings.bg":"Фон","settings.bgDesc":"6","settings.bgAurora":"Аврора","settings.bgStars":"Зірки","settings.bgBubbles":"Бульбашки","settings.bgParticles":"Частинки","settings.bgMatrix":"Матриця","settings.bgNone":"Без фону","settings.profile":"Профіль","settings.profileDesc":"Аватар, нік, колір","settings.profileAvatar":"Аватар","settings.profileNick":"Нік","settings.profileColor":"Колір","settings.profileBio":"Біо","settings.age":"Вік","settings.ageDesc":"Мати","settings.change":"Змінити","settings.lang":"Мова","settings.langDesc":"RU / EN / DE / ES / UK","settings.wipe":"Стерти",
-      "about.title":"Про додаток","about.text":"Artamon 2.6.","about.hint":"Офлайн + Онлайн.",
+      "about.title":"Про додаток","about.text":"Artamon 2.6.5.","about.hint":"Офлайн + Онлайн.",
       "footer.storage":"Artamon","footer.visits":"Відвідувань:","footer.today":"Сьогодні:","footer.version":"Версія:",
       "socials.title":"Соцмережі","socials.soon":"скоро","socials.share":"🔗 Поділитися","socials.copy":"📋 Копіювати","socials.sign":"З любов'ю, <b>Артем</b> ❤️",
-      "drawer.title":"Меню","drawer.nav":"Навігація","drawer.main":"Опитування","drawer.music":"Музика","drawer.stats":"Статистика","drawer.book":"Досягнення","drawer.settings":"Налаштування","drawer.about":"Про додаток","drawer.changeMode":"Режим","drawer.tutorial":"Туторіал","drawer.whatsNew":"Нове в 2.6",
+      "drawer.title":"Меню","drawer.nav":"Навігація","drawer.main":"Опитування","drawer.shop":"Магазин","drawer.wip":"WIP-підписка","drawer.music":"Музика","drawer.stats":"Статистика","drawer.book":"Досягнення","drawer.settings":"Налаштування","drawer.about":"Про додаток","drawer.changeMode":"Режим","drawer.tutorial":"Туторіал","drawer.whatsNew":"Нове в 2.6.5",
       "modal.title":"Підтвердження","modal.text":"Видалити?","modal.yes":"Так",
       "toast.enterQuestion":"Питання","toast.min2":"Мін 2","toast.voted":"Враховано","toast.category":"📚 Категорія: ","toast.reset":"Скинуто","toast.enterNick":"Нік","toast.enterComment":"Коментар","toast.commentAdded":"Додано","toast.ageRange":"Вік: 1-120","toast.adult":"🔥 Матюкаються","toast.minor":"😇 Ввічливі","toast.adultSkip":"🔥 18+","toast.linkCopied":"Скопійовано","toast.musicStopped":"⏹ Зупинено","toast.locked":"🔒","toast.themeChanged":"🎨 Змінено","toast.bgChanged":"🌌 Змінено","toast.imgLoaded":"📷","toast.imgError":"❌","toast.dmOn":"💬 Особисті УВІМК","toast.dmOff":"💬 Особисті ВИКЛ",
-      "toast.regOk":"🎉 Акаунт створено","toast.loginOk":"👋 З поверненням","toast.logoutOk":"🚪 Ви вийшли","toast.syncOk":"🔄 Синхронізовано","toast.syncErr":"❌ Помилка","toast.guest":"🎮 Гість"
+      "toast.regOk":"🎉 Акаунт створено","toast.loginOk":"👋 З поверненням","toast.logoutOk":"🚪 Ви вийшли","toast.syncOk":"🔄 Синхронізовано","toast.syncErr":"❌ Помилка","toast.guest":"🎮 Гість",
+      "shop.title":"Магазин","shop.buy":"Купити","shop.owned":"✓ Куплено","shop.noCoins":"Не вистачає монет","shop.bought":"Куплено!","shop.alreadyOwned":"Вже куплено","shop.empty":"Порожньо",
+      "wip.title":"WIP-підписка","wip.buy":"Купити WIP — 30 днів","wip.active":"✅ Активна","wip.alreadyActive":"Вже активна","wip.needCoins":"Не вистачає монет. Потрібно 5000","wip.activated":"WIP активована на 30 днів!","wip.daysLeft":"залишилось","wip.days":"дн."
     }
   };
   function t(key){
@@ -2881,7 +3030,7 @@ function shareResult(state){
   if(!state || !state.question) return;
   var cat = detectCategory(state.question);
   var tot = state.options.reduce(function(a,o){ return a + (o.votes||0); }, 0);
-  var lines = ["🗳 Artamon 2.6", "📚 " + cat.icon + " " + cat.name, "", "❓ " + state.question, ""];
+  var lines = ["🗳 Artamon 2.6.5", "📚 " + cat.icon + " " + cat.name, "", "❓ " + state.question, ""];
   state.options.forEach(function(o){
     var pct = tot ? Math.round((o.votes / tot) * 100) : 0;
     var bar = "█".repeat(Math.round(pct/5));
@@ -2892,7 +3041,7 @@ function shareResult(state){
   try{ navigator.clipboard.writeText(text); toast("📤 Скопировано"); }catch(e){}
   if(navigator.share){
     setTimeout(function(){
-      navigator.share({ title: "Artamon 2.6", text: text }).catch(function(){});
+      navigator.share({ title: "Artamon 2.6.5", text: text }).catch(function(){});
     }, 200);
   }
 }
@@ -2901,7 +3050,7 @@ function shareResult(state){
    UPDATE
    ═══════════════════════════════════════════════════════ */
 var UPDATE = (function(){
-  var VK = "artamon_last_seen_version_v1", CV = "2.6.0";
+  var VK = "artamon_last_seen_version_v1", CV = "2.6.5";
   function should(){ try{ return SAFE_STORE.get(VK) !== CV; }catch(e){ return true; } }
   function mark(){ try{ SAFE_STORE.set(VK, CV); }catch(e){} }
   function open(){
@@ -3214,20 +3363,20 @@ var INTRO = (function(){
     setTimeout(function(){ n.innerHTML = html; n.classList.add("show"); }, 300);
   }
   var WORD_SEQ = [
-    {at:900,word:"ARTAMON 2.6",hand:"🎉",anim:"fly"},
-    {at:3100,word:"ЛЕНТА РЕЙТИНГА",hand:"⭐",anim:"hold"},
-    {at:5400,word:"ОЦЕНКИ 1-5 ⭐",hand:"✨",anim:"punch"},
-    {at:7700,word:"КОММЕНТАРИИ",hand:"💬",anim:"hold"},
-    {at:10000,word:"ЕЖЕДНЕВКИ",hand:"🎁",anim:"hold"},
-    {at:12300,word:"ТОП ПОЛЬЗОВАТЕЛЕЙ",hand:"🏆",anim:"throw"},
+    {at:900,word:"ARTAMON 2.6.5",hand:"🎉",anim:"fly"},
+    {at:3100,word:"МАГАЗИН",hand:"🛒",anim:"hold"},
+    {at:5400,word:"МОНЕТЫ",hand:"🪙",anim:"punch"},
+    {at:7700,word:"WIP",hand:"💎",anim:"hold"},
+    {at:10000,word:"ЛЕНТА РЕЙТИНГА",hand:"⭐",anim:"hold"},
+    {at:12300,word:"ЕЖЕДНЕВКИ",hand:"🎁",anim:"throw"},
     {at:14600,word:"НОВЫЕ АВАТАРКИ",hand:"🎨",anim:"fly"},
     {at:16600,word:"THE BIG UPDATE",hand:"🌟",anim:"hold"}
   ];
   var NAR = [
-    {at:2000,text:"<b>Artamon 2.6</b> — The Big Update"},
-    {at:6000,text:"<b>Лента рейтинга</b> — посты, звёзды, комментарии."},
-    {at:10000,text:"<b>Ежедневки</b> — стрик и награды каждый день."},
-    {at:14000,text:"<b>Новые аватарки и фоны</b> за достижения 🌟"}
+    {at:2000,text:"<b>Artamon 2.6.5</b> — The Big Update"},
+    {at:6000,text:"<b>Монеты и магазин</b> — зарабатывай и покупай."},
+    {at:10000,text:"<b>WIP-подписка</b> — скидка 20% и +50 монет."},
+    {at:14000,text:"<b>Лента рейтинга</b> — посты, звёзды, комментарии."}
   ];
   function start(){
     setTimeout(function(){ if(!done) finish(); }, TOTAL_MS + 3000);
@@ -3332,13 +3481,14 @@ function startPreloader(){
   pre.classList.add("on");
   var bar = $("preBar"), pctEl = $("prePct"), sub = $("preSub"), phr = $("prePhrase");
   var PHR = [
-    "⭐ Artamon 2.6 — The Big Update",
-    "📰 Лента рейтинга · Оценки 1-5 звёзд",
+    "⭐ Artamon 2.6.5 — The Big Update",
+    "🪙 Монеты и магазин",
+    "💎 WIP-подписка",
+    "⭐ Лента рейтинга · Оценки 1-5 звёзд",
     "🎁 Ежедневки · Стрик · Награды",
-    "🎨 Новые аватарки и фоны",
     "Загружаем посты…"
   ];
-  var SUB = ["initializing 2.6…","rating module","daily module","avatars","loading posts"];
+  var SUB = ["initializing 2.6.5…","shop module","wip module","rating module","daily module","loading posts"];
   var TOTAL = 2800, t0 = Date.now(), last = -1;
   function done(){
     pre.classList.remove("on");
@@ -3402,14 +3552,15 @@ function skipAge(){
 }
 
 /* ═══════════════════════════════════════════════════════
-   TUTORIAL
+   TUTORIAL (обновлён под 2.6.5)
    ═══════════════════════════════════════════════════════ */
 var TUTORIAL = (function(){
   var STEPS = [
-    {icon:"⭐",title:"Лента рейтинга",text:"Посты от админа — ставь <b>1-5 звёзд</b> и пиши комментарии."},
-    {icon:"🏆",title:"Топ постов и юзеров",text:"Смотри самые популярные посты и активных пользователей."},
-    {icon:"🎁",title:"Ежедневки",text:"Заходи каждый день — стрик растёт, награды открываются."},
-    {icon:"🎨",title:"Аватарки-награды",text:"За достижения открываются <b>эксклюзивные аватарки</b>."},
+    {icon:"🪙",title:"Монеты",text:"Зарабатывай монеты за активность. Трать их в магазине!"},
+    {icon:"🛒",title:"Магазин",text:"Покупай <b>аватарки, фоны, музыку и темы</b>."},
+    {icon:"💎",title:"WIP-подписка",text:"Скидка <b>20%</b> и <b>+50 монет</b> к ежедневке."},
+    {icon:"⭐",title:"Лента рейтинга",text:"Посты — ставь <b>1-5 звёзд</b> и комментируй."},
+    {icon:"🎁",title:"Ежедневки",text:"Заходи каждый день — стрик растёт."},
     {icon:"🛠️",title:"Runner на ремонте",text:"Прогресс сохранён. Возвращение в 2.7."}
   ];
   var cur = 0, active = false;
@@ -3437,7 +3588,7 @@ var TUTORIAL = (function(){
   function open(){
     if(active) return;
     try{
-      var lc = SAFE_STORE.get("artamon_tut_closed_v2_6");
+      var lc = SAFE_STORE.get("artamon_tut_closed_v2_6_5");
       if(lc){ var d = Date.now()-parseInt(lc,10); if(d < 180000) return; }
     }catch(e){}
     active = true;
@@ -3449,19 +3600,19 @@ var TUTORIAL = (function(){
     active = false;
     var t = $("tutorial");
     if(t) t.classList.remove("on");
-    try{ SAFE_STORE.set("artamon_tut_closed_v2_6", String(Date.now())); }catch(e){}
+    try{ SAFE_STORE.set("artamon_tut_closed_v2_6_5", String(Date.now())); }catch(e){}
   }
   return { open: open, close: close, next: function(){ render(cur+1); }, prev: function(){ render(cur-1); } };
 })();
 
 /* ═══════════════════════════════════════════════════════
-   ANNIVERSARY 2.6
+   ANNIVERSARY 2.6.5
    ═══════════════════════════════════════════════════════ */
 var ANNIVERSARY = (function(){
   var TOTAL_MS = 9000;
   var timers = [], done = false;
-  function shouldShow(){ return SAFE_STORE.get("artamon_anniv_v2_6") !== "shown"; }
-  function markShown(){ try{ SAFE_STORE.set("artamon_anniv_v2_6", "shown"); }catch(e){} }
+  function shouldShow(){ return SAFE_STORE.get("artamon_anniv_v2_6_5") !== "shown"; }
+  function markShown(){ try{ SAFE_STORE.set("artamon_anniv_v2_6_5", "shown"); }catch(e){} }
   function clearTimers(){ timers.forEach(function(t){ clearTimeout(t); clearInterval(t); }); timers = []; }
   function later(fn, ms){ timers.push(setTimeout(fn, ms)); }
   function makeConfetti(){
@@ -3532,13 +3683,397 @@ var ANNIVERSARY = (function(){
 })();
 
 /* ═══════════════════════════════════════════════════════
+   COINS — Система монет Artamon
+   ═══════════════════════════════════════════════════════ */
+var COINS = (function(){
+  var KEY = "artamon_coins_v1";
+  var WIP_KEY = "artamon_wip_v1";
+  var balance = 0;
+  var wip = { active: false, until: 0, startedAt: 0 };
+
+  function load(){
+    try{
+      var v = SAFE_STORE.get(KEY);
+      if(v !== null){
+        var n = parseInt(v, 10);
+        if(!isNaN(n) && n >= 0) balance = n;
+      }
+    }catch(e){}
+    try{
+      var w = SAFE_STORE.get(WIP_KEY);
+      if(w){
+        var p = JSON.parse(w);
+        if(p && typeof p === "object") wip = Object.assign(wip, p);
+      }
+    }catch(e){}
+    if(wip.active && wip.until < Date.now()){
+      wip.active = false;
+      save();
+    }
+  }
+  function save(){
+    try{ SAFE_STORE.set(KEY, String(balance)); }catch(e){}
+    try{ SAFE_STORE.set(WIP_KEY, JSON.stringify(wip)); }catch(e){}
+  }
+  function get(){ return balance; }
+  function add(n){
+    n = parseInt(n, 10) || 0;
+    if(n <= 0) return balance;
+    balance += n;
+    save();
+    renderAll();
+    return balance;
+  }
+  function spend(n){
+    n = parseInt(n, 10) || 0;
+    if(n <= 0) return false;
+    if(balance < n) return false;
+    balance -= n;
+    save();
+    renderAll();
+    return true;
+  }
+  function has(n){ return balance >= (parseInt(n,10)||0); }
+
+  function wipActive(){
+    if(wip.active && wip.until < Date.now()){
+      wip.active = false;
+      save();
+    }
+    return wip.active;
+  }
+  function wipDaysLeft(){
+    if(!wipActive()) return 0;
+    var ms = wip.until - Date.now();
+    return Math.max(0, Math.ceil(ms / 86400000));
+  }
+  function activateWip(days){
+    days = days || 30;
+    wip.active = true;
+    wip.startedAt = Date.now();
+    wip.until = Date.now() + days * 86400000;
+    save();
+    renderAll();
+  }
+  function getWip(){ return wip; }
+  function getDiscount(){
+    return wipActive() ? 0.8 : 1.0;
+  }
+  function applyDailyWipBonus(amount){
+    if(wipActive()) return amount + 50;
+    return amount;
+  }
+
+  function renderAll(){
+    var b = $("coinBalance");
+    if(b) b.textContent = balance;
+    var sb = $("shopBalance");
+    if(sb) sb.textContent = balance;
+    var mc = $("miShopCoins");
+    if(mc) mc.textContent = balance;
+    var wb = $("miWipBadge");
+    if(wb){ wb.style.display = wipActive() ? "" : "none"; }
+    var authC = $("authStatCoins");
+    if(authC) authC.textContent = balance;
+  }
+
+  return {
+    load: load, save: save,
+    get: get, add: add, spend: spend, has: has,
+    wipActive: wipActive, wipDaysLeft: wipDaysLeft, activateWip: activateWip,
+    getWip: getWip, getDiscount: getDiscount, applyDailyWipBonus: applyDailyWipBonus,
+    renderAll: renderAll
+  };
+})();
+
+/* ═══════════════════════════════════════════════════════
+   SHOP — Магазин
+   ═══════════════════════════════════════════════════════ */
+var SHOP = (function(){
+  var KEY = "artamon_shop_v1";
+  var owned = { avatars: [], backgrounds: [], music: [], themes: [] };
+  var currentTab = "avatars";
+
+  var CATALOG = {
+    avatars: [
+      { id:"🎃", name:"Хэллоуин", desc:"Аватарка-тыква", price:300 },
+      { id:"🎄", name:"Новогодняя", desc:"Праздничное настроение", price:300 },
+      { id:"❤", name:"Валентин", desc:"Романтика", price:500 },
+      { id:"🏆", name:"Топ-1", desc:"Для чемпионов", price:800 },
+      { id:"🦸", name:"Герой", desc:"Спасатель", price:1000 },
+      { id:"🧙", name:"Маг", desc:"Волшебник", price:1500 },
+      { id:"🐉", name:"Дракон", desc:"Легендарный", price:2500 },
+      { id:"👑", name:"Корона", desc:"Королевский", price:5000 },
+      { id:"☠", name:"Скрытая", desc:"Для самых смелых", price:10000 }
+    ],
+    backgrounds: [
+      { id:"stars", name:"Звёздный", desc:"Звёзды на фоне", price:500 },
+      { id:"particles", name:"Частицы+", desc:"Премиум-частицы", price:800 },
+      { id:"matrix", name:"Матрица", desc:"Зелёный код", price:1000 }
+    ],
+    music: [
+      { id:"neon", name:"Neon Dream", desc:"Неоновый сон", price:700 },
+      { id:"cyber", name:"Cyber Run", desc:"Кибер-бег", price:700 },
+      { id:"jazz", name:"Midnight Jazz", desc:"Полуночный джаз", price:900 },
+      { id:"cosmic", name:"Cosmic Voyage", desc:"Космическое путешествие", price:900 },
+      { id:"victory", name:"Victory Fanfare", desc:"Фанфары победы", price:1200 }
+    ],
+    themes: [
+      { id:"night", name:"Ночная", desc:"Фиолетовая тема", price:2000 }
+    ]
+  };
+
+  function load(){
+    try{
+      var s = SAFE_STORE.get(KEY);
+      if(s){
+        var p = JSON.parse(s);
+        if(p && typeof p === "object"){
+          owned = Object.assign(owned, p);
+          if(!Array.isArray(owned.avatars)) owned.avatars = [];
+          if(!Array.isArray(owned.backgrounds)) owned.backgrounds = [];
+          if(!Array.isArray(owned.music)) owned.music = [];
+          if(!Array.isArray(owned.themes)) owned.themes = [];
+        }
+      }
+    }catch(e){}
+  }
+  function save(){
+    try{ SAFE_STORE.set(KEY, JSON.stringify(owned)); }catch(e){}
+  }
+  function isOwned(cat, id){
+    return owned[cat] && owned[cat].indexOf(id) !== -1;
+  }
+  function addToOwned(cat, id){
+    if(!owned[cat]) owned[cat] = [];
+    if(owned[cat].indexOf(id) === -1) owned[cat].push(id);
+    save();
+  }
+  function getPrice(cat, id){
+    var arr = CATALOG[cat] || [];
+    var item = arr.find(function(x){ return x.id === id; });
+    if(!item) return 0;
+    return Math.round(item.price * COINS.getDiscount());
+  }
+  function buy(cat, id){
+    if(isOwned(cat, id)) return { ok:false, msg:"Уже куплено" };
+    var price = getPrice(cat, id);
+    if(!COINS.has(price)) return { ok:false, msg:"Не хватает монет" };
+    if(!COINS.spend(price)) return { ok:false, msg:"Ошибка списания" };
+    addToOwned(cat, id);
+    ACH.unlock("first_buy");
+    var totalBuys = owned.avatars.length + owned.backgrounds.length + owned.music.length + owned.themes.length;
+    if(totalBuys >= 5) ACH.unlock("shopaholic");
+    if(owned.avatars.length >= 9) ACH.unlock("collector");
+    if(COINS.get() >= 10000) ACH.unlock("millionaire");
+    applyPurchase(cat, id);
+    if(typeof ARTAMON_API !== "undefined" && ARTAMON_API.syncCoins){
+      ARTAMON_API.syncCoins(COINS.get(), owned).catch(function(){});
+    }
+    return { ok:true, msg:"Куплено!" };
+  }
+  function applyPurchase(cat, id){
+    try{
+      if(cat === "avatars"){
+        PROFILE.unlockAvatar(id);
+      } else if(cat === "backgrounds"){
+        THEME.setBg(id);
+      } else if(cat === "music"){
+        unlockTrack(id);
+      } else if(cat === "themes"){
+        // тема (заглушка)
+      }
+    }catch(e){}
+  }
+  function unlockTrack(id){
+    var el = document.querySelector('.track[data-track="' + id + '"]');
+    if(el){
+      el.classList.remove("locked");
+      var btn = el.querySelector(".track-play");
+      if(btn) btn.disabled = false;
+      var tag = el.querySelector(".track-tag");
+      if(tag){
+        tag.classList.remove("premium");
+        tag.classList.add("new");
+        tag.textContent = "OWNED";
+      }
+      var price = el.querySelector(".track-price");
+      if(price) price.style.display = "none";
+    }
+  }
+  function applyOwnedToUI(){
+    owned.music.forEach(function(id){ unlockTrack(id); });
+  }
+  function setTab(tab){ currentTab = tab; }
+  function getTab(){ return currentTab; }
+  function getOwned(){ return owned; }
+  function getCatalog(){ return CATALOG; }
+  function checkMilestones(){
+    var totalBuys = owned.avatars.length + owned.backgrounds.length + owned.music.length + owned.themes.length;
+    if(totalBuys >= 1) ACH.unlock("first_buy");
+    if(totalBuys >= 5) ACH.unlock("shopaholic");
+    if(owned.avatars.length >= 9) ACH.unlock("collector");
+  }
+
+  return {
+    load: load, save: save,
+    isOwned: isOwned, addToOwned: addToOwned, getPrice: getPrice, buy: buy,
+    setTab: setTab, getTab: getTab, getOwned: getOwned, getCatalog: getCatalog,
+    applyOwnedToUI: applyOwnedToUI, checkMilestones: checkMilestones
+  };
+})();
+
+/* ═══════════════════════════════════════════════════════
+   WIP — Подписка
+   ═══════════════════════════════════════════════════════ */
+var WIP = (function(){
+  var PRICE = 5000;
+  var DAYS = 30;
+
+  function buy(){
+    if(COINS.wipActive()) return { ok:false, msg:"Уже активна" };
+    if(!COINS.has(PRICE)) return { ok:false, msg:"Не хватает монет. Нужно 5000 🪙" };
+    if(!COINS.spend(PRICE)) return { ok:false, msg:"Ошибка" };
+    COINS.activateWip(DAYS);
+    ACH.unlock("wip_subscriber");
+    if(typeof ARTAMON_API !== "undefined" && ARTAMON_API.syncWip){
+      ARTAMON_API.syncWip(COINS.getWip()).catch(function(){});
+    }
+    return { ok:true, msg:"WIP активирована на " + DAYS + " дней!" };
+  }
+  function renderStatus(){
+    var el = $("wipStatus");
+    if(!el) return;
+    if(COINS.wipActive()){
+      var days = COINS.wipDaysLeft();
+      el.innerHTML = '<div class="wip-active">💎 WIP активна · осталось <b>' + days + '</b> дн.</div>';
+      var btn = $("wipBuyBtn");
+      if(btn){
+        btn.disabled = true;
+        btn.textContent = "✅ Активна";
+      }
+    } else {
+      el.innerHTML = '';
+      var btn2 = $("wipBuyBtn");
+      if(btn2){
+        btn2.disabled = false;
+        btn2.textContent = "Купить WIP — " + DAYS + " дней";
+      }
+    }
+  }
+  function applyDailyBonus(){
+    if(!COINS.wipActive()) return;
+    COINS.add(50);
+  }
+  return { buy: buy, renderStatus: renderStatus, applyDailyBonus: applyDailyBonus, PRICE: PRICE, DAYS: DAYS };
+})();
+
+/* ═══════════════════════════════════════════════════════
+   SHOP UI — отрисовка магазина
+   ═══════════════════════════════════════════════════════ */
+function renderShop(){
+  var list = $("shopList");
+  if(!list) return;
+  var tab = SHOP.getTab();
+  var cat = SHOP.getCatalog()[tab] || [];
+  list.innerHTML = "";
+  if(!cat.length){
+    list.innerHTML = '<div class="shop-empty">Пусто</div>';
+    return;
+  }
+  cat.forEach(function(item){
+    var isOwned = SHOP.isOwned(tab, item.id);
+    var price = SHOP.getPrice(tab, item.id);
+    var origPrice = item.price;
+    var hasDiscount = COINS.wipActive();
+    var canBuy = COINS.has(price);
+    var el = document.createElement("div");
+    el.className = "shop-item" + (isOwned ? " owned" : "");
+    var priceHtml = isOwned ? "" :
+      (hasDiscount ?
+        '<span style="text-decoration:line-through;opacity:.5;font-size:.85em;margin-right:4px;">🪙 ' + origPrice + '</span>🪙 ' + price :
+        '🪙 ' + price);
+    el.innerHTML =
+      '<div class="s-icon">' + item.id + '</div>' +
+      '<div class="s-body">' +
+        '<div class="s-name">' + item.name + '</div>' +
+        '<div class="s-desc">' + item.desc + '</div>' +
+      '</div>' +
+      '<button class="s-buy ' + (isOwned ? "owned" : "") + '" data-cat="' + tab + '" data-id="' + item.id + '" ' + ((isOwned || !canBuy) ? "disabled" : "") + '>' +
+        (isOwned ? "✓ Куплено" : priceHtml) +
+      '</button>';
+    list.appendChild(el);
+  });
+  list.querySelectorAll(".s-buy").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var cat = btn.getAttribute("data-cat");
+      var id = btn.getAttribute("data-id");
+      var res = SHOP.buy(cat, id);
+      if(res.ok){
+        try{ AUDIO.achRare(); }catch(e){}
+        toast("✅ Куплено: " + id);
+        renderShop();
+        COINS.renderAll();
+      } else {
+        try{ AUDIO.error(); }catch(e){}
+        toast("❌ " + res.msg);
+      }
+    });
+  });
+  COINS.renderAll();
+}
+
+function openShop(tab){
+  if(tab) SHOP.setTab(tab);
+  document.querySelectorAll("[data-shop]").forEach(function(t){
+    t.classList.toggle("active", t.getAttribute("data-shop") === SHOP.getTab());
+  });
+  renderShop();
+  var m = $("shopModal");
+  if(m) m.classList.add("on");
+  try{ AUDIO.click(); }catch(e){}
+}
+
+function closeShop(){
+  var m = $("shopModal");
+  if(m) m.classList.remove("on");
+  try{ AUDIO.click(); }catch(e){}
+}
+
+/* ═══════════════════════════════════════════════════════
+   WIP UI
+   ═══════════════════════════════════════════════════════ */
+function openWip(){
+  WIP.renderStatus();
+  var m = $("wipModal");
+  if(m) m.classList.add("on");
+  try{ AUDIO.click(); }catch(e){}
+}
+
+function closeWip(){
+  var m = $("wipModal");
+  if(m) m.classList.remove("on");
+  try{ AUDIO.click(); }catch(e){}
+}
+
+/* ═══════════════════════════════════════════════════════
+   INIT COINS
+   ═══════════════════════════════════════════════════════ */
+function initCoins(){
+  COINS.load();
+  SHOP.load();
+  COINS.renderAll();
+  SHOP.applyOwnedToUI();
+  SHOP.checkMilestones();
+}
+
+/* ═══════════════════════════════════════════════════════
    КОНЕЦ ЧАСТИ 3A
    ═══════════════════════════════════════════════════════ */
 </script>
-
 <script>
 /* ============================================================
-   ARTAMON 2.6 — ЧАСТЬ 3B: Ядро, Лента рейтинга, Ежедневка, Админка
+   ARTAMON 2.6.5 — ЧАСТЬ 3B: Ядро, Лента рейтинга, Ежедневка, Админка
    ============================================================ */
 
 var mainInit = false;
@@ -3555,7 +4090,7 @@ var ADMIN_SESSION = {
 };
 
 /* ═══════════════════════════════════════════════════════
-   ADMIN LOG — логи действий
+   ADMIN LOG
    ═══════════════════════════════════════════════════════ */
 var ADMIN_LOG = (function(){
   var KEY = "artamon_admin_log_v1";
@@ -3589,7 +4124,7 @@ var ADMIN_LOG = (function(){
 })();
 
 /* ═══════════════════════════════════════════════════════
-   ADMIN SETTINGS — настройки сайта
+   ADMIN SETTINGS
    ═══════════════════════════════════════════════════════ */
 var ADMIN_SETTINGS = (function(){
   var KEY = "artamon_admin_settings_v1";
@@ -3619,7 +4154,7 @@ var ADMIN_SETTINGS = (function(){
 })();
 
 /* ═══════════════════════════════════════════════════════
-   ADMIN BANS — бан-лист
+   ADMIN BANS
    ═══════════════════════════════════════════════════════ */
 var ADMIN_BANS = (function(){
   var KEY = "artamon_admin_bans_v1";
@@ -3657,7 +4192,7 @@ var ADMIN_BANS = (function(){
 })();
 
 /* ═══════════════════════════════════════════════════════
-   ADMIN USERS — список зарегистрированных пользователей
+   ADMIN USERS
    ═══════════════════════════════════════════════════════ */
 var ADMIN_USERS = (function(){
   var KEY = "artamon_admin_users_v1";
@@ -3778,10 +4313,9 @@ var RATING = (function(){
     if(!p || p.closed) return false;
     if(!p.ratings) p.ratings = {};
     p.ratings[nick] = value;
-    // userStats
     if(!userStats[nick]) userStats[nick] = { nick: nick, ratings: 0, comments: 0, stars: 0 };
-    var prev = p.ratings[nick + "__prev"];
-    userStats[nick].ratings = Math.max(userStats[nick].ratings, Object.keys(p.ratings).filter(function(k){ return k.indexOf("__") === -1; }).length);
+    var rated = Object.keys(p.ratings).filter(function(k){ return k.indexOf("__") === -1; }).length;
+    userStats[nick].ratings = Math.max(userStats[nick].ratings, rated);
     save();
     return true;
   }
@@ -3855,7 +4389,6 @@ var RATING = (function(){
   }
   function mergeFromCloud(cloudPosts, cloudStats){
     if(Array.isArray(cloudPosts)){
-      // Простое слияние — берём облачные
       posts = cloudPosts;
     }
     if(cloudStats && typeof cloudStats === "object"){
@@ -3916,7 +4449,6 @@ var DAILY = (function(){
       }
     }catch(e){}
     if(!Array.isArray(data.claimedDays)) data.claimedDays = [];
-    // Сброс если пропустил > 1 дня
     if(data.lastClaim){
       var lastD = new Date(data.lastClaim);
       var todayD = new Date(todayStr());
@@ -4039,7 +4571,6 @@ function renderFeed(box){
     box.appendChild(card);
   });
 
-  // Обработчики звёзд
   box.querySelectorAll(".stars-input").forEach(function(el){
     var postId = el.getAttribute("data-post");
     el.querySelectorAll(".star-btn").forEach(function(btn){
@@ -4065,7 +4596,6 @@ function renderFeed(box){
           return;
         }
         RATING.ratePost(postId, nick, val);
-        // обновляем только этот блок
         var p = RATING.getPost(postId);
         var cnt = RATING.ratingCount(p);
         var avg = RATING.avgRating(p).toFixed(1);
@@ -4081,7 +4611,6 @@ function renderFeed(box){
         if(stats.ratings >= 10) ACH.unlock("rating_10");
         if(stats.ratings >= 50) ACH.unlock("rating_50");
         if(stats.ratings >= 100) ACH.unlock("rating_100");
-        // Отправка в облако
         if(typeof ARTAMON_API !== "undefined" && ARTAMON_API.submitRating){
           ARTAMON_API.submitRating(postId, nick, val).catch(function(){});
         }
@@ -4089,7 +4618,6 @@ function renderFeed(box){
     });
   });
 
-  // Комментарии открыть/закрыть
   box.querySelectorAll(".post-comments-toggle").forEach(function(btn){
     btn.addEventListener("click", function(){
       var postId = btn.getAttribute("data-post");
@@ -4099,7 +4627,6 @@ function renderFeed(box){
     });
   });
 
-  // Отправка комментариев
   box.querySelectorAll(".pc-send").forEach(function(btn){
     btn.addEventListener("click", function(){
       var postId = btn.getAttribute("data-post");
@@ -4123,13 +4650,6 @@ function renderFeed(box){
       if(typeof ARTAMON_API !== "undefined" && ARTAMON_API.submitComment){
         ARTAMON_API.submitComment(postId, nick, text).catch(function(){});
       }
-    });
-  });
-
-  // Кнопка "Показать комментарии" — при пустом рендере обновим
-  box.querySelectorAll(".post-comments-toggle").forEach(function(btn){
-    btn.addEventListener("click", function(){
-      setTimeout(renderRatingContent, 100);
     });
   });
 }
@@ -4193,7 +4713,6 @@ function getUserNick(){
 
 function openRatingFeed(){
   try{ AUDIO.click(); }catch(e){}
-  // Скрыть другие view
   ["viewMain","viewMusic","viewStats","viewSettings","viewAbout"].forEach(function(id){
     var el = $(id); if(el) el.style.display = "none";
   });
@@ -4267,24 +4786,16 @@ function claimDaily(){
   haptic([50,80,50]);
   toast("🎁 Получено: " + reward.icon + " " + reward.label);
 
-  // Применяем награду
   if(reward.type === "coins"){
-    try{
-      if(window.RUNNER_V2 && window.RUNNER_V2.R){
-        window.RUNNER_V2.R.coins = (window.RUNNER_V2.R.coins || 0) + reward.val;
-        window.RUNNER_V2.saveCoins();
-      } else {
-        var c = parseInt(SAFE_STORE.get("artamon_r2_coins_v1") || "0", 10);
-        SAFE_STORE.set("artamon_r2_coins_v1", String(c + reward.val));
-      }
-    }catch(e){}
+    var bonus = COINS.wipActive() ? reward.val + 50 : reward.val;
+    COINS.add(bonus);
+    if(COINS.wipActive()) toast("💎 WIP-бонус: +50 монет!");
   } else if(reward.type === "avatar"){
     try{ PROFILE.unlockAvatar(reward.val); }catch(e){}
   } else if(reward.type === "bg"){
     try{ THEME.setBg(reward.val); }catch(e){}
   }
 
-  // Достижения
   var streak = DAILY.getData().streak;
   try{
     ACH.unlock("first_daily");
@@ -4322,7 +4833,6 @@ function tryAdminLogin(){
     var m = $("adminAuthModal");
     if(m) m.classList.remove("on");
     toast("👑 Добро пожаловать, Владелец");
-    ACH.unlock("owner_entered");
     ADMIN_LOG.add("login", "owner");
     setTimeout(openAdminPanel, 300);
   } else if(val === ADMIN_PASSWORD){
@@ -4333,7 +4843,6 @@ function tryAdminLogin(){
     var m2 = $("adminAuthModal");
     if(m2) m2.classList.remove("on");
     toast("🔐 Добро пожаловать, Админ");
-    ACH.unlock("admin_entered");
     ADMIN_LOG.add("login", "admin");
     setTimeout(openAdminPanel, 300);
   } else {
@@ -4366,7 +4875,7 @@ function renderAdminPanel(){
   var isOwner = ADMIN_SESSION.role === "owner";
   var html = "";
 
-  /* ═══ 1. СТАТИСТИКА ═══ */
+  /* 1. СТАТИСТИКА */
   var posts = RATING.getPosts();
   var totalRatings = 0, totalComments = 0;
   posts.forEach(function(p){
@@ -4381,10 +4890,9 @@ function renderAdminPanel(){
   html += '<div class="admin-stat"><div class="num">' + totalRatings + '</div><div class="lbl">Оценок</div></div>';
   html += '<div class="admin-stat"><div class="num">' + totalComments + '</div><div class="lbl">Комментариев</div></div>';
   html += '<div class="admin-stat"><div class="num">' + userCount + '</div><div class="lbl">Пользователей</div></div>';
-  html += '</div>';
-  html += '</div>';
+  html += '</div></div>';
 
-  /* ═══ 2. УПРАВЛЕНИЕ ПОСТАМИ ═══ */
+  /* 2. ПОСТЫ */
   html += '<div class="admin-card" style="margin-bottom:14px;">';
   html += '<h3><span class="num">2</span> 📰 Управление постами</h3>';
   html += '<button class="admin-action" data-action="post-create"><div class="lbl"><span>➕ Создать пост</span></div></button>';
@@ -4393,7 +4901,7 @@ function renderAdminPanel(){
   html += '<button class="admin-action" data-action="post-export"><div class="lbl"><span>📤 Экспорт постов в JSON</span></div></button>';
   html += '</div>';
 
-  /* ═══ 3. МОДЕРАЦИЯ ═══ */
+  /* 3. МОДЕРАЦИЯ */
   html += '<div class="admin-card" style="margin-bottom:14px;">';
   html += '<h3><span class="num">3</span> 🛡️ Модерация</h3>';
   html += '<button class="admin-action" data-action="ban-user"><div class="lbl"><span>🚫 Забанить пользователя</span></div></button>';
@@ -4401,7 +4909,7 @@ function renderAdminPanel(){
   html += '<button class="admin-action" data-action="comment-clean"><div class="lbl"><span>🧹 Удалить все комментарии пользователя</span></div></button>';
   html += '</div>';
 
-  /* ═══ 4. НАСТРОЙКИ САЙТА ═══ */
+  /* 4. НАСТРОЙКИ */
   var s = ADMIN_SETTINGS.get();
   html += '<div class="admin-card" style="margin-bottom:14px;">';
   html += '<h3><span class="num">4</span> ⚙️ Настройки сайта</h3>';
@@ -4409,10 +4917,9 @@ function renderAdminPanel(){
   html += '<button class="admin-action" data-action="set-welcome"><div class="lbl"><span>💬 Приветственный текст</span><span class="val">' + (s.welcomeText ? "изменён" : "стандартный") + '</span></div></button>';
   html += '<button class="admin-action" data-action="set-registration"><div class="lbl"><span>🔓 Регистрация</span><span class="val">' + (s.registrationOpen ? "ОТКРЫТА" : "ЗАКРЫТА") + '</span></div></button>';
   html += '<button class="admin-action" data-action="set-techmode"><div class="lbl"><span>🛠 Техрежим</span><span class="val">' + (s.techMode ? "ВКЛ" : "ВЫКЛ") + '</span></div></button>';
-  html += '<button class="admin-action" data-action="set-techmsg"><div class="lbl"><span>✏️ Сообщение техрежима</span></div></button>';
   html += '</div>';
 
-  /* ═══ 5. ДАННЫЕ ═══ */
+  /* 5. ДАННЫЕ */
   html += '<div class="admin-card" style="margin-bottom:14px;">';
   html += '<h3><span class="num">5</span> 💾 Данные</h3>';
   html += '<button class="admin-action" data-action="db-export"><div class="lbl"><span>📤 Экспорт всей БД</span></div></button>';
@@ -4422,7 +4929,7 @@ function renderAdminPanel(){
   }
   html += '</div>';
 
-  /* ═══ 6. ЛОГИ ═══ */
+  /* 6. ЛОГИ */
   html += '<div class="admin-card" style="margin-bottom:14px;">';
   html += '<h3><span class="num">6</span> 📜 Логи действий</h3>';
   var logs = ADMIN_LOG.getAll().slice(0, 30);
@@ -4438,36 +4945,26 @@ function renderAdminPanel(){
   html += '<button class="admin-action danger" data-action="log-clear" style="margin-top:10px;"><div class="lbl"><span>🗑 Очистить логи</span></div></button>';
   html += '</div>';
 
-  /* ═══ ТОЛЬКО ДЛЯ ВЛАДЕЛЬЦА ═══ */
+  /* ВЛАДЕЛЕЦ */
   if(isOwner){
     html += '<div class="admin-card" style="border-color:rgba(212,175,55,.5);margin-bottom:14px;">';
     html += '<h3 style="color:var(--gold-2);"><span class="num" style="background:rgba(212,175,55,.15);border-color:rgba(212,175,55,.4);color:var(--gold-2);">👑</span> Панель владельца <span class="admin-owner-tag">OWNER</span></h3>';
     html += '<button class="admin-action" data-action="owner-users"><div class="lbl"><span>👥 Список пользователей (' + userCount + ')</span></div></button>';
-    html += '<button class="admin-action" data-action="owner-add-user"><div class="lbl"><span>➕ Добавить пользователя вручную</span></div></button>';
-    html += '<button class="admin-action" data-action="owner-clear-lb"><div class="lbl"><span>🏆 Очистить лидерборд</span></div></button>';
-    html += '<button class="admin-action" data-action="owner-kv-view"><div class="lbl"><span>🔍 Просмотр KV (localStorage)</span></div></button>';
+    html += '<button class="admin-action" data-action="owner-add-user"><div class="lbl"><span>➕ Добавить пользователя</span></div></button>';
+    html += '<button class="admin-action" data-action="owner-give-coins"><div class="lbl"><span>🪙 Выдать монеты себе</span></div></button>';
+    html += '<button class="admin-action" data-action="owner-reset-coins"><div class="lbl"><span>♻️ Сбросить монеты</span></div></button>';
     html += '<button class="admin-action danger" data-action="owner-kv-wipe"><div class="lbl"><span>💥 Полная очистка localStorage</span></div></button>';
     html += '</div>';
 
     html += '<div class="admin-card" style="border-color:rgba(212,175,55,.5);margin-bottom:14px;">';
     html += '<h3 style="color:var(--gold-2);"><span class="num" style="background:rgba(212,175,55,.15);border-color:rgba(212,175,55,.4);color:var(--gold-2);">⚡</span> Система</h3>';
     html += '<button class="admin-action" data-action="owner-runner-unfreeze"><div class="lbl"><span>🔓 Снять Runner с ремонта</span><span class="val">' + (getRunnerState() === "active" ? "АКТИВЕН" : "РЕМОНТ") + '</span></div></button>';
-    html += '<button class="admin-action" data-action="owner-freeze"><div class="lbl"><span>❄️ Заморозка (никто не пишет)</span></div></button>';
-    html += '<button class="admin-action" data-action="owner-event"><div class="lbl"><span>🎉 Скрытое событие для всех</span></div></button>';
-    html += '<button class="admin-action" data-action="owner-cron"><div class="lbl"><span>⏰ Ручной запуск Cron</span></div></button>';
-    html += '</div>';
-
-    html += '<div class="admin-card" style="border-color:rgba(212,175,55,.5);margin-bottom:14px;">';
-    html += '<h3 style="color:var(--gold-2);"><span class="num" style="background:rgba(212,175,55,.15);border-color:rgba(212,175,55,.4);color:var(--gold-2);">🔐</span> Безопасность</h3>';
-    html += '<button class="admin-action" data-action="owner-change-admin-pass"><div class="lbl"><span>🔑 Сменить пароль админа</span></div></button>';
-    html += '<button class="admin-action" data-action="owner-change-owner-pass"><div class="lbl"><span>👑 Сменить пароль владельца</span></div></button>';
     html += '<button class="admin-action" data-action="owner-session-info"><div class="lbl"><span>ℹ️ Информация о сессии</span></div></button>';
     html += '</div>';
   }
 
   box.innerHTML = html;
 
-  /* ═══ ОБРАБОТЧИКИ ═══ */
   box.querySelectorAll("[data-action]").forEach(function(btn){
     btn.addEventListener("click", function(){
       try{ AUDIO.click(); }catch(e){}
@@ -4480,9 +4977,8 @@ function handleAdminAction(action){
   var isOwner = ADMIN_SESSION.role === "owner";
 
   switch(action){
-    /* ═══ ПОСТЫ ═══ */
     case "post-create": {
-      var title = prompt("Заголовок поста (анекдот/вопрос):");
+      var title = prompt("Заголовок поста:");
       if(!title) return;
       var body = prompt("Текст поста (необязательно):") || "";
       var img = prompt("URL картинки (необязательно):") || "";
@@ -4501,7 +4997,7 @@ function handleAdminAction(action){
       var list = posts.map(function(p, i){
         return (i+1) + ". " + (p.pinned ? "📌 " : "") + (p.hidden ? "🙈 " : "") + p.title;
       }).join("\n");
-      var choice = prompt("Посты:\n\n" + list + "\n\nВведи номер для действий (или отмена):");
+      var choice = prompt("Посты:\n\n" + list + "\n\nВведи номер:");
       if(!choice) return;
       var idx = parseInt(choice, 10) - 1;
       if(isNaN(idx) || !posts[idx]) return;
@@ -4543,7 +5039,6 @@ function handleAdminAction(action){
       break;
     }
 
-    /* ═══ МОДЕРАЦИЯ ═══ */
     case "ban-user": {
       var nick = prompt("Ник пользователя для бана:");
       if(!nick) return;
@@ -4559,7 +5054,7 @@ function handleAdminAction(action){
       var list = bans.map(function(b, i){
         return (i+1) + ". " + b.nick + (b.reason ? " (" + b.reason + ")" : "");
       }).join("\n");
-      var choice = prompt("Забаненные:\n\n" + list + "\n\nВведи номер для разбана (или отмена):");
+      var choice = prompt("Забаненные:\n\n" + list + "\n\nНомер для разбана:");
       if(!choice) return;
       var idx = parseInt(choice, 10) - 1;
       if(isNaN(idx) || !bans[idx]) return;
@@ -4569,7 +5064,7 @@ function handleAdminAction(action){
       break;
     }
     case "comment-clean": {
-      var nick = prompt("Ник пользователя — удалить все его комментарии:");
+      var nick = prompt("Ник — удалить все его комментарии:");
       if(!nick) return;
       var total = 0;
       RATING.getPosts().forEach(function(p){
@@ -4582,7 +5077,6 @@ function handleAdminAction(action){
       break;
     }
 
-    /* ═══ НАСТРОЙКИ ═══ */
     case "set-sitename": {
       var n = prompt("Название сайта:", ADMIN_SETTINGS.get("siteName"));
       if(n){ ADMIN_SETTINGS.set("siteName", n); toast("✅ Сохранено"); renderAdminPanel(); }
@@ -4607,13 +5101,7 @@ function handleAdminAction(action){
       renderAdminPanel();
       break;
     }
-    case "set-techmsg": {
-      var m = prompt("Сообщение техрежима:", ADMIN_SETTINGS.get("techMessage"));
-      if(m){ ADMIN_SETTINGS.set("techMessage", m); toast("✅ Сохранено"); renderAdminPanel(); }
-      break;
-    }
 
-    /* ═══ ДАННЫЕ ═══ */
     case "db-export": {
       var db = {};
       try{
@@ -4647,8 +5135,8 @@ function handleAdminAction(action){
     }
     case "db-wipe": {
       if(!isOwner) return;
-      if(!confirm("⚠️⚠️⚠️ ПОЛНАЯ ОЧИСТКА ВСЕХ ДАННЫХ ARTAMON?")) return;
-      if(!confirm("Точно? Это НЕОБРАТИМО!")) return;
+      if(!confirm("⚠️⚠️⚠️ ПОЛНАЯ ОЧИСТКА?")) return;
+      if(!confirm("Точно? НЕОБРАТИМО!")) return;
       try{
         var toRemove = [];
         for(var i=0; i<localStorage.length; i++){
@@ -4663,7 +5151,6 @@ function handleAdminAction(action){
       break;
     }
 
-    /* ═══ ЛОГИ ═══ */
     case "log-clear": {
       if(!confirm("Очистить логи?")) return;
       ADMIN_LOG.clear();
@@ -4672,7 +5159,6 @@ function handleAdminAction(action){
       break;
     }
 
-    /* ═══ ВЛАДЕЛЕЦ ═══ */
     case "owner-users": {
       if(!isOwner) return;
       var users = ADMIN_USERS.getAll();
@@ -4680,7 +5166,7 @@ function handleAdminAction(action){
       var list = users.map(function(u, i){
         return (i+1) + ". " + u.nick + " (⭐" + (u.ratings||0) + " 💬" + (u.comments||0) + ")";
       }).join("\n");
-      var choice = prompt("Пользователи:\n\n" + list + "\n\nВведи номер для действий:");
+      var choice = prompt("Пользователи:\n\n" + list + "\n\nНомер для действий:");
       if(!choice) return;
       var idx = parseInt(choice, 10) - 1;
       if(isNaN(idx) || !users[idx]) return;
@@ -4705,32 +5191,26 @@ function handleAdminAction(action){
       renderAdminPanel();
       break;
     }
-    case "owner-clear-lb": {
+    case "owner-give-coins": {
       if(!isOwner) return;
-      if(!confirm("Очистить локальный лидерборд?")) return;
-      SAFE_STORE.remove("artamon_r2_history_v1");
-      SAFE_STORE.remove("artamon_r2_record_v1");
-      toast("🗑 Очищено");
+      var amount = parseInt(prompt("Сколько монет выдать?", "1000"), 10);
+      if(isNaN(amount) || amount <= 0) return;
+      COINS.add(amount);
+      toast("🪙 Выдано: " + amount);
+      renderAdminPanel();
       break;
     }
-    case "owner-kv-view": {
+    case "owner-reset-coins": {
       if(!isOwner) return;
-      var keys = [];
-      try{
-        for(var i=0; i<localStorage.length; i++){
-          var k = localStorage.key(i);
-          if(k && k.indexOf("artamon_") === 0){
-            var v = localStorage.getItem(k) || "";
-            keys.push(k + " = " + v.slice(0, 60) + (v.length > 60 ? "..." : ""));
-          }
-        }
-      }catch(e){}
-      alert("KV (" + keys.length + "):\n\n" + keys.join("\n\n"));
+      if(!confirm("Сбросить монеты до 0?")) return;
+      COINS.spend(COINS.get());
+      toast("♻️ Монеты сброшены");
+      renderAdminPanel();
       break;
     }
     case "owner-kv-wipe": {
       if(!isOwner) return;
-      if(!confirm("💥 Очистить ВСЁ localStorage (не только artamon_)?")) return;
+      if(!confirm("💥 Очистить ВСЁ localStorage?")) return;
       if(!confirm("Уверен?")) return;
       try{ localStorage.clear(); toast("💥 Очищено. Перезагрузка..."); setTimeout(function(){ location.reload(); }, 1500); }
       catch(e){}
@@ -4744,40 +5224,6 @@ function handleAdminAction(action){
       renderAdminPanel();
       break;
     }
-    case "owner-freeze": {
-      if(!isOwner) return;
-      var cur3 = SAFE_STORE.get("artamon_freeze") === "1";
-      SAFE_STORE.set("artamon_freeze", cur3 ? "0" : "1");
-      toast(cur3 ? "✅ Разморожено" : "❄️ Заморожено");
-      break;
-    }
-    case "owner-event": {
-      if(!isOwner) return;
-      var msg = prompt("Событие для всех пользователей:");
-      if(!msg) return;
-      SAFE_STORE.set("artamon_event", msg);
-      toast("🎉 Событие отправлено");
-      break;
-    }
-    case "owner-cron": {
-      if(!isOwner) return;
-      toast("⏰ Cron запущен (эмуляция)");
-      break;
-    }
-    case "owner-change-admin-pass": {
-      if(!isOwner) return;
-      var np = prompt("Новый пароль админа (текущий в коде — менять только правкой):");
-      if(!np) return;
-      alert("⚠️ Пароли заданы в коде.\n\nЧтобы сменить — открой index.html и найди:\n\nvar ADMIN_PASSWORD = \"...\"");
-      break;
-    }
-    case "owner-change-owner-pass": {
-      if(!isOwner) return;
-      var np2 = prompt("Новый пароль владельца:");
-      if(!np2) return;
-      alert("⚠️ Пароли заданы в коде.\n\nЧтобы сменить — открой index.html и найди:\n\nvar OWNER_PASSWORD = \"...\"");
-      break;
-    }
     case "owner-session-info": {
       if(!isOwner) return;
       var mins = Math.floor((Date.now() - ADMIN_SESSION.enteredAt) / 60000);
@@ -4788,7 +5234,7 @@ function handleAdminAction(action){
 }
 
 /* ═══════════════════════════════════════════════════════
-   RUNNER STATE — заморозка
+   RUNNER STATE
    ═══════════════════════════════════════════════════════ */
 function getRunnerState(){
   try{ return SAFE_STORE.get("artamon_runner_state") || "repair"; }
@@ -5197,6 +5643,7 @@ function initMain(mode){
   makeBubbles();
   renderAll(); renderStats();
   try{ PROFILE.renderAll(); PROFILE.initInputs(); }catch(e){}
+  try{ initCoins(); }catch(e){}
 
   setTimeout(function(){
     try{ SAFE_STORE.set("artamon_mode_v1", currentMode); }catch(e){}
@@ -5226,6 +5673,11 @@ function boot(){
   try{ ADMIN_USERS.load(); }catch(e){}
   try{ RATING.load(); }catch(e){}
   try{ DAILY.load(); }catch(e){}
+  try{ COINS.load(); }catch(e){}
+  try{ SHOP.load(); }catch(e){}
+  try{ COINS.renderAll(); }catch(e){}
+  try{ SHOP.applyOwnedToUI(); }catch(e){}
+  try{ SHOP.checkMilestones(); }catch(e){}
 
   try{
     if($("ageSubmit")) $("ageSubmit").addEventListener("click", function(e){ e.preventDefault(); submitAge(); });
@@ -5276,6 +5728,57 @@ document.addEventListener("click", function(e){
     try{ AUDIO.click(); toast(I18N.t("toast.bgChanged")); }catch(err){}
     return;
   }
+  var shopTab = el.closest("[data-shop]");
+  if(shopTab && el.closest("#shopModal")){
+    e.preventDefault();
+    try{ AUDIO.click(); }catch(err){}
+    SHOP.setTab(shopTab.getAttribute("data-shop"));
+    document.querySelectorAll("[data-shop]").forEach(function(t){
+      t.classList.toggle("active", t === shopTab);
+    });
+    renderShop();
+    return;
+  }
+  if(el.closest("#shopClose")){
+    closeShop();
+    return;
+  }
+  if(el.closest("#wipClose")){
+    closeWip();
+    return;
+  }
+  if(el.closest("#wipBuyBtn")){
+    var res = WIP.buy();
+    if(res.ok){
+      try{ AUDIO.achEpic(); }catch(err){}
+      toast("💎 " + res.msg);
+      WIP.renderStatus();
+      COINS.renderAll();
+    } else {
+      try{ AUDIO.error(); }catch(err){}
+      toast("❌ " + res.msg);
+    }
+    return;
+  }
+  if(el.closest("#coinBadge")){
+    e.preventDefault();
+    openShop();
+    return;
+  }
+  if(el.closest("#miShop")){
+    try{ AUDIO.click(); }catch(err){}
+    $("drawer").classList.remove("on");
+    $("overlay").classList.remove("on");
+    openShop();
+    return;
+  }
+  if(el.closest("#miWip")){
+    try{ AUDIO.click(); }catch(err){}
+    $("drawer").classList.remove("on");
+    $("overlay").classList.remove("on");
+    openWip();
+    return;
+  }
   var socialLink = el.closest("a.social-item");
   if(socialLink){
     e.preventDefault(); e.stopPropagation();
@@ -5287,7 +5790,7 @@ document.addEventListener("click", function(e){
   }
   if(el.closest("#shareBtn")){
     try{ AUDIO.click(); }catch(err){}
-    if(navigator.share){ navigator.share({title:"Artamon 2.6", text:"Загляни!", url:location.href}).catch(function(){}); }
+    if(navigator.share){ navigator.share({title:"Artamon 2.6.5", text:"Загляни!", url:location.href}).catch(function(){}); }
     else { try{ navigator.clipboard.writeText(location.href); }catch(err){} toast("Скопировано"); }
     return;
   }
@@ -5352,7 +5855,7 @@ document.addEventListener("click", function(e){
     try{ AUDIO.click(); }catch(err){}
     $("drawer").classList.remove("on");
     $("overlay").classList.remove("on");
-    SAFE_STORE.remove("artamon_tut_closed_v2_6");
+    SAFE_STORE.remove("artamon_tut_closed_v2_6_5");
     TUTORIAL.open();
     return;
   }
@@ -5446,7 +5949,8 @@ document.addEventListener("click", function(e){
         "artamon_settings_v1","artamon_mode_v1","artamon_visits_v1","artamon_age_v1",
         "artamon_achievements_v1","artamon_last_seen_version_v1","artamon_save_v1",
         "artamon_lang_v1","artamon_theme_v1","artamon_bg_v1","artamon_profile_v1",
-        "artamon_history_v1","artamon_dm_on_v1","artamon_anniv_v2_6","artamon_tut_closed_v2_6"
+        "artamon_history_v1","artamon_dm_on_v1","artamon_anniv_v2_6_5","artamon_tut_closed_v2_6_5",
+        "artamon_coins_v1","artamon_wip_v1","artamon_shop_v1"
       ].forEach(function(k){ SAFE_STORE.remove(k); });
     }catch(err){}
     setTimeout(function(){ location.reload(); }, 800);
@@ -5516,37 +6020,12 @@ document.addEventListener("keydown", function(e){
     $("runnerRepairModal").classList.remove("on");
     $("dailyArtamon").classList.remove("on");
     $("adminAuthModal").classList.remove("on");
+    $("shopModal").classList.remove("on");
+    $("wipModal").classList.remove("on");
     var am = $("authModal");
     if(am && am.classList.contains("on") && typeof AUTH_UI !== "undefined") AUTH_UI.close();
   }
 });
-
-/* ═══════════════════════════════════════════════════════
-   ОТКРЫТИЕ RUNNER (для обратной совместимости)
-   ═══════════════════════════════════════════════════════ */
-function openRunner(){
-  if(getRunnerState() === "active"){
-    if(window.RUNNER_V2 && typeof window.RUNNER_V2.openMenu === "function"){
-      window.RUNNER_V2.openMenu();
-      return;
-    }
-    toast("⏳ Runner загружается...");
-    var tries = 0;
-    var iv = setInterval(function(){
-      tries++;
-      if(window.RUNNER_V2 && typeof window.RUNNER_V2.openMenu === "function"){
-        clearInterval(iv);
-        window.RUNNER_V2.openMenu();
-      } else if(tries >= 20){
-        clearInterval(iv);
-        toast("❌ Runner не загрузился");
-      }
-    }, 200);
-  } else {
-    $("runnerRepairModal").classList.add("on");
-  }
-}
-window.ARTAMON_OPEN_RUNNER = openRunner;
 
 /* ═══════════════════════════════════════════════════════
    PWA INSTALL
@@ -5604,10 +6083,9 @@ if("serviceWorker" in navigator){
    КОНЕЦ ЧАСТИ 3B
    ═══════════════════════════════════════════════════════ */
 </script>
-
 <script>
 /* ============================================================
-   ARTAMON 2.6 — ЧАСТЬ 4: API-клиент, Auth UI, финал
+   ARTAMON 2.6.5 — ЧАСТЬ 4: API-клиент, Auth UI, синхронизация монет
    ============================================================ */
 
 var ARTAMON_API = (function(){
@@ -5705,6 +6183,33 @@ var ARTAMON_API = (function(){
     });
   }
 
+  /* ═══ СИНХРОНИЗАЦИЯ МОНЕТ (добавлено в 2.6.5) ═══ */
+  function syncCoins(coins, owned){
+    var acc = loadAccount();
+    if(!acc || !acc.token) return Promise.resolve(null);
+    return req("/api/sync-coins", {
+      method:"POST",
+      body:{
+        nick: acc.nick, token: acc.token,
+        coins: parseInt(coins, 10) || 0,
+        owned: owned || {}
+      }
+    }).catch(function(){ return null; });
+  }
+
+  /* ═══ СИНХРОНИЗАЦИЯ WIP (добавлено в 2.6.5) ═══ */
+  function syncWip(wip){
+    var acc = loadAccount();
+    if(!acc || !acc.token) return Promise.resolve(null);
+    return req("/api/sync-wip", {
+      method:"POST",
+      body:{
+        nick: acc.nick, token: acc.token,
+        wip: wip || {}
+      }
+    }).catch(function(){ return null; });
+  }
+
   function submit(dist, bosses, coins){
     var acc = loadAccount();
     if(!acc || !acc.token) return Promise.resolve(null);
@@ -5761,6 +6266,7 @@ var ARTAMON_API = (function(){
   function collectLocalProgress(){
     var progress = {
       ratings: 0, comments: 0, streak: 0, achCount: 0,
+      coins: 0, wip: null, owned: null,
       posts: [], userStats: {}
     };
     try{
@@ -5772,6 +6278,15 @@ var ARTAMON_API = (function(){
     }catch(e){}
     try{
       progress.streak = DAILY.getData().streak || 0;
+    }catch(e){}
+    try{
+      progress.coins = COINS.get();
+    }catch(e){}
+    try{
+      progress.wip = COINS.getWip();
+    }catch(e){}
+    try{
+      progress.owned = SHOP.getOwned();
     }catch(e){}
     try{
       progress.posts = RATING.getPosts().slice(0, 50);
@@ -5790,6 +6305,33 @@ var ARTAMON_API = (function(){
         RATING.mergeFromCloud(cloud.posts, cloud.userStats || {});
       }
     }catch(e){}
+    /* Синхронизация монет */
+    try{
+      if(typeof cloud.coins === "number" && cloud.coins > COINS.get()){
+        COINS.add(cloud.coins - COINS.get());
+      }
+    }catch(e){}
+    /* Синхронизация WIP */
+    try{
+      if(cloud.wip && cloud.wip.active && cloud.wip.until > Date.now()){
+        if(!COINS.wipActive()){
+          COINS.activateWip(30);
+        }
+      }
+    }catch(e){}
+    /* Синхронизация купленного */
+    try{
+      if(cloud.owned && typeof cloud.owned === "object"){
+        ["avatars","backgrounds","music","themes"].forEach(function(cat){
+          if(Array.isArray(cloud.owned[cat])){
+            cloud.owned[cat].forEach(function(id){
+              SHOP.addToOwned(cat, id);
+            });
+          }
+        });
+        SHOP.applyOwnedToUI();
+      }
+    }catch(e){}
   }
 
   return {
@@ -5800,6 +6342,8 @@ var ARTAMON_API = (function(){
     login: login,
     logout: logout,
     sync: sync,
+    syncCoins: syncCoins,
+    syncWip: syncWip,
     submit: submit,
     leaderboard: leaderboard,
     profile: profile,
@@ -5882,6 +6426,7 @@ var AUTH_UI = (function(){
     if($("authStatComments")) $("authStatComments").textContent = (st && st.comments) || 0;
     if($("authStatStreak")) $("authStatStreak").textContent = DAILY.getData().streak || 0;
     if($("authStatAch")) $("authStatAch").textContent = ACH.countUnlocked();
+    if($("authStatCoins")) $("authStatCoins").textContent = COINS.get();
   }
 
   function open(tab){
@@ -6112,6 +6657,23 @@ var AUTO_SYNC = (function(){
 window.AUTO_SYNC = AUTO_SYNC;
 
 /* ═══════════════════════════════════════════════════════
+   АВТО-СИНХРОНИЗАЦИЯ МОНЕТ И WIP
+   ═══════════════════════════════════════════════════════ */
+(function(){
+  var lastSyncCoins = 0;
+  setInterval(function(){
+    if(!ARTAMON_API.isLoggedIn()) return;
+    var now = Date.now();
+    if(now - lastSyncCoins < 30000) return;
+    lastSyncCoins = now;
+    try{
+      ARTAMON_API.syncCoins(COINS.get(), SHOP.getOwned()).catch(function(){});
+      ARTAMON_API.syncWip(COINS.getWip()).catch(function(){});
+    }catch(e){}
+  }, 30000);
+})();
+
+/* ═══════════════════════════════════════════════════════
    ФИНАЛЬНАЯ ИНИЦИАЛИЗАЦИЯ
    ═══════════════════════════════════════════════════════ */
 (function(){
@@ -6120,7 +6682,8 @@ window.AUTO_SYNC = AUTO_SYNC;
     try{ updateUserBtn(); }catch(e){}
     try{ renderRatingContent(); }catch(e){}
     try{ renderDaily(); }catch(e){}
-    // Тихо подтягиваем посты из облака (если воркер доступен)
+    try{ COINS.renderAll(); }catch(e){}
+    try{ WIP.renderStatus(); }catch(e){}
     try{
       ARTAMON_API.fetchPosts().then(function(data){
         if(data && data.posts && data.posts.length){
@@ -6162,12 +6725,12 @@ window.AUTO_SYNC = AUTO_SYNC;
   }
 })();
 
-console.log("✅ Artamon 2.6 загружен полностью. Пароли: admin-artamon-25 / Owner-Artamon-Menu");
+console.log("✅ Artamon 2.6.5 загружен полностью.");
+console.log("Пароли: admin-artamon-25 / Owner-Artamon-Menu");
+console.log("Версия: 2.6.5 — The Big Update");
+console.log("Что нового: магазин, монеты, WIP-подписка, синхронизация.");
 
 /* ═══════════════════════════════════════════════════════
    КОНЕЦ ЧАСТИ 4
    ═══════════════════════════════════════════════════════ */
 </script>
-
-</body>
-</html>
