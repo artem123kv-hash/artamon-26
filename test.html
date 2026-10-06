@@ -1,67 +1,806 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>API Test</title></head>
-<body style="font-family:sans-serif;padding:20px;background:#111;color:#eee;">
-<h1>Artamon API Test</h1>
-<button onclick="testRoot()">1. Проверить воркер</button>
-<button onclick="testRegister()">2. Тест регистрации</button>
-<button onclick="testLogin()">3. Тест входа</button>
-<pre id="out" style="background:#000;color:#0f0;padding:15px;border-radius:8px;margin-top:20px;white-space:pre-wrap;">Нажми кнопку...</pre>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artamon — API Monitor</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  background: #0a0a0a;
+  color: #e8e6e1;
+  padding: 20px;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+.container { max-width: 900px; margin: 0 auto; }
+h1 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #f6e6a8, #d4af37 45%, #8f6f1a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 6px;
+}
+.subtitle {
+  color: #8a8a8a;
+  font-size: .8rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.section {
+  background: linear-gradient(180deg, rgba(23,23,23,.95), rgba(15,15,15,.95));
+  border: 1px solid #2a2a2a;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.section h2 {
+  font-size: .85rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #d4af37;
+  margin-bottom: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section h2 .num {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  background: rgba(212,175,55,.15);
+  border: 1px solid rgba(212,175,55,.4);
+  border-radius: 6px;
+  font-size: .68rem;
+}
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+button {
+  font-family: inherit;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #d4af37;
+  background: rgba(212,175,55,.1);
+  color: #d4af37;
+  cursor: pointer;
+  transition: .15s;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+button:hover:not(:disabled) { background: rgba(212,175,55,.22); }
+button:disabled { opacity: .4; cursor: not-allowed; }
+button.danger { border-color: #e06a6a; color: #e06a6a; background: rgba(224,106,106,.1); }
+button.danger:hover:not(:disabled) { background: rgba(224,106,106,.22); }
+button.success { border-color: #4ade80; color: #4ade80; background: rgba(74,222,128,.1); }
+button.ghost { border-color: #2a2a2a; color: #8a8a8a; background: transparent; }
+button.ghost:hover:not(:disabled) { border-color: #d4af37; color: #d4af37; }
+button .em { font-size: 1.1rem; }
+
+#out {
+  background: #000;
+  border: 1px solid #1a1a1a;
+  border-radius: 10px;
+  padding: 14px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: .78rem;
+  line-height: 1.6;
+  color: #d4d4d4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 500px;
+  overflow-y: auto;
+  min-height: 120px;
+}
+#out .ok { color: #4ade80; font-weight: 700; }
+#out .err { color: #f87171; font-weight: 700; }
+#out .warn { color: #fbbf24; font-weight: 700; }
+#out .info { color: #60a5fa; font-weight: 700; }
+#out .dim { color: #5c5c5c; }
+#out .line { margin-bottom: 4px; }
+#out .ts { color: #5c5c5c; margin-right: 8px; }
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.status-card {
+  background: rgba(0,0,0,.4);
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 12px 10px;
+  text-align: center;
+  transition: .2s;
+}
+.status-card .icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+.status-card .label { font-size: .68rem; color: #8a8a8a; letter-spacing: .06em; text-transform: uppercase; }
+.status-card.ok { border-color: #4ade80; background: rgba(74,222,128,.08); }
+.status-card.err { border-color: #f87171; background: rgba(248,113,113,.08); }
+.status-card.pending { border-color: #fbbf24; animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+
+.token-info {
+  background: rgba(74,222,128,.08);
+  border: 1px solid rgba(74,222,128,.4);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: .78rem;
+  color: #4ade80;
+  margin-bottom: 14px;
+  display: none;
+}
+.token-info.on { display: block; }
+.token-info b { color: #f6e6a8; }
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>⚡ Artamon API Monitor</h1>
+  <div class="subtitle">v2.6.5 · Диагностика воркера</div>
+
+  <div class="section">
+    <h2><span class="num">0</span> Статус подключения</h2>
+    <div class="status-grid" id="statusGrid">
+      <div class="status-card" data-check="root">
+        <span class="icon">🌐</span>
+        <div class="label">Воркер</div>
+      </div>
+      <div class="status-card" data-check="register">
+        <span class="icon">📝</span>
+        <div class="label">Регистрация</div>
+      </div>
+      <div class="status-card" data-check="login">
+        <span class="icon">🔑</span>
+        <div class="label">Вход</div>
+      </div>
+      <div class="status-card" data-check="sync">
+        <span class="icon">🔄</span>
+        <div class="label">Синх.</div>
+      </div>
+      <div class="status-card" data-check="coins">
+        <span class="icon">🪙</span>
+        <div class="label">Монеты</div>
+      </div>
+      <div class="status-card" data-check="wip">
+        <span class="icon">💎</span>
+        <div class="label">WIP</div>
+      </div>
+      <div class="status-card" data-check="posts">
+        <span class="icon">📰</span>
+        <div class="label">Посты</div>
+      </div>
+      <div class="status-card" data-check="rate">
+        <span class="icon">⭐</span>
+        <div class="label">Оценки</div>
+      </div>
+      <div class="status-card" data-check="comment">
+        <span class="icon">💬</span>
+        <div class="label">Коммент.</div>
+      </div>
+      <div class="status-card" data-check="stats">
+        <span class="icon">📊</span>
+        <div class="label">Стат-ка</div>
+      </div>
+      <div class="status-card" data-check="profile">
+        <span class="icon">👤</span>
+        <div class="label">Профиль</div>
+      </div>
+      <div class="status-card" data-check="leaderboard">
+        <span class="icon">🏆</span>
+        <div class="label">Топ</div>
+      </div>
+    </div>
+    <div class="token-info" id="tokenInfo"></div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">1</span> Быстрая проверка</h2>
+    <div class="buttons">
+      <button onclick="runAll()"><span class="em">🚀</span> Прогнать все тесты</button>
+      <button onclick="testRoot()" class="ghost"><span class="em">🌐</span> Только воркер</button>
+      <button onclick="clearLog()" class="ghost"><span class="em">🗑</span> Очистить лог</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">2</span> Авторизация</h2>
+    <div class="buttons">
+      <button onclick="testRegister()"><span class="em">📝</span> Регистрация (тест)</button>
+      <button onclick="testLogin()"><span class="em">🔑</span> Вход (тест)</button>
+      <button onclick="testLogout()" class="danger"><span class="em">🚪</span> Выход</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">3</span> Синхронизация</h2>
+    <div class="buttons">
+      <button onclick="testSync()"><span class="em">🔄</span> Общая синхр.</button>
+      <button onclick="testSyncCoins()"><span class="em">🪙</span> Монеты</button>
+      <button onclick="testSyncWip()"><span class="em">💎</span> WIP</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">4</span> Лента рейтинга</h2>
+    <div class="buttons">
+      <button onclick="testGetPosts()"><span class="em">📰</span> Получить посты</button>
+      <button onclick="testCreatePost()"><span class="em">✍️</span> Создать пост</button>
+      <button onclick="testRate()"><span class="em">⭐</span> Поставить оценку</button>
+      <button onclick="testComment()"><span class="em">💬</span> Оставить коммент.</button>
+      <button onclick="testUserStats()"><span class="em">📊</span> Статистика</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">5</span> Прочее</h2>
+    <div class="buttons">
+      <button onclick="testProfile()"><span class="em">👤</span> Профиль</button>
+      <button onclick="testLeaderboard()"><span class="em">🏆</span> Лидерборд</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">6</span> Лог</h2>
+    <div id="out">Готов к работе. Нажми «Прогнать все тесты».</div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">7</span> Действия</h2>
+    <div class="actions">
+      <button onclick="copyLog()" class="ghost"><span class="em">📋</span> Скопировать лог</button>
+      <button onclick="downloadLog()" class="ghost"><span class="em">💾</span> Скачать лог</button>
+    </div>
+  </div>
+
+</div>
 
 <script>
+/* ═══════════════════════════════════════════════════════
+   КОНФИГ
+   ═══════════════════════════════════════════════════════ */
 const API = "https://artamon-api.artem123kv.workers.dev";
+
+/* Состояние */
+const state = {
+  testNick: null,
+  testPass: "test1234",
+  token: null,
+  createdPostId: null,
+  coins: 100,
+  wip: { active: true, until: Date.now() + 30*86400000, startedAt: Date.now() },
+  owned: { avatars: ["🎃"], backgrounds: [], music: [], themes: [] }
+};
+
+/* ═══════════════════════════════════════════════════════
+   ЛОГ
+   ═══════════════════════════════════════════════════════ */
 const out = document.getElementById("out");
 
-function log(msg) {
-  out.textContent += "\n" + msg;
-  console.log(msg);
+function ts() {
+  const d = new Date();
+  return String(d.getHours()).padStart(2,"0") + ":" +
+         String(d.getMinutes()).padStart(2,"0") + ":" +
+         String(d.getSeconds()).padStart(2,"0");
 }
 
+function log(msg, cls) {
+  const line = document.createElement("div");
+  line.className = "line";
+  const c = cls ? " " + cls : "";
+  line.innerHTML = '<span class="ts">' + ts() + '</span><span class="' + c + '">' + msg + '</span>';
+  out.appendChild(line);
+  out.scrollTop = out.scrollHeight;
+  console.log("[" + ts() + "]", msg);
+}
+
+function logDivider() {
+  log("─────────────────────────────", "dim");
+}
+
+function clearLog() {
+  out.innerHTML = "";
+  log("Лог очищен", "dim");
+}
+
+function copyLog() {
+  navigator.clipboard.writeText(out.innerText).then(() => {
+    log("✅ Лог скопирован в буфер", "ok");
+  }).catch(() => {
+    log("❌ Не удалось скопировать", "err");
+  });
+}
+
+function downloadLog() {
+  const blob = new Blob([out.innerText], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "artamon-log-" + Date.now() + ".txt";
+  a.click();
+  URL.revokeObjectURL(url);
+  log("💾 Лог скачан", "ok");
+}
+
+/* ═══════════════════════════════════════════════════════
+   СТАТУС-КАРТОЧКИ
+   ═══════════════════════════════════════════════════════ */
+function setStatus(name, status) {
+  const card = document.querySelector('[data-check="' + name + '"]');
+  if (!card) return;
+  card.classList.remove("ok", "err", "pending");
+  if (status) card.classList.add(status);
+}
+
+/* ═══════════════════════════════════════════════════════
+   ОБЩИЙ ЗАПРОС
+   ═══════════════════════════════════════════════════════ */
+async function callAPI(path, opts = {}) {
+  opts = opts || {};
+  const url = API + path;
+  const init = {
+    method: opts.method || "GET",
+    headers: Object.assign({ "Content-Type": "application/json" }, opts.headers || {})
+  };
+  if (opts.body !== undefined) init.body = JSON.stringify(opts.body);
+
+  log("→ " + init.method + " " + path, "info");
+  if (opts.body) log("   body: " + JSON.stringify(opts.body), "dim");
+
+  try {
+    const r = await fetch(url, init);
+    const text = await r.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : {}; } catch(e) { data = { raw: text }; }
+
+    const statusCls = r.ok ? "ok" : "err";
+    log("   ← " + r.status + " " + r.statusText, statusCls);
+    log("   " + JSON.stringify(data), statusCls);
+
+    return { ok: r.ok, status: r.status, data };
+  } catch (e) {
+    log("   ❌ СЕТЬ: " + e.message, "err");
+    return { ok: false, status: 0, data: null, error: e.message };
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   ТЕСТЫ
+   ═══════════════════════════════════════════════════════ */
+
+/* 1. Проверка воркера */
 async function testRoot() {
-  out.textContent = "→ GET /";
-  try {
-    const r = await fetch(API + "/");
-    const t = await r.text();
-    log("Status: " + r.status);
-    log("Body: " + t);
-  } catch (e) {
-    log("❌ ОШИБКА: " + e.message);
+  logDivider();
+  log("🌐 ТЕСТ 1: Воркер жив?", "info");
+  setStatus("root", "pending");
+  const r = await callAPI("/");
+  if (r.ok && r.data && r.data.ok) {
+    setStatus("root", "ok");
+    log("✅ Воркер работает! Версия: " + (r.data.version || "?"));
+    return true;
+  } else {
+    setStatus("root", "err");
+    log("❌ Воркер не отвечает корректно", "err");
+    return false;
   }
 }
 
+/* 2. Регистрация */
 async function testRegister() {
-  out.textContent = "→ POST /api/register";
-  const nick = "test" + Math.floor(Math.random()*99999);
-  log("Ник: " + nick);
-  try {
-    const r = await fetch(API + "/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nick: nick, password: "test1234" })
-    });
-    const t = await r.text();
-    log("Status: " + r.status);
-    log("Body: " + t);
-  } catch (e) {
-    log("❌ ОШИБКА: " + e.message);
+  logDivider();
+  const nick = "test" + Math.floor(Math.random() * 999999);
+  state.testNick = nick;
+  log("📝 ТЕСТ: Регистрация → " + nick, "info");
+  setStatus("register", "pending");
+
+  const r = await callAPI("/api/register", {
+    method: "POST",
+    body: { nick: nick, password: state.testPass }
+  });
+
+  if (r.ok && r.data && r.data.token) {
+    state.token = r.data.token;
+    setStatus("register", "ok");
+    log("✅ Регистрация прошла! Токен получен.", "ok");
+    showTokenInfo();
+    return true;
+  } else {
+    setStatus("register", "err");
+    log("❌ Регистрация провалилась: " + (r.data && r.data.error || "?"), "err");
+    return false;
   }
 }
 
+/* 3. Вход */
 async function testLogin() {
-  out.textContent = "→ POST /api/login (заведомо неверный)";
-  try {
-    const r = await fetch(API + "/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nick: "nonexistent", password: "xxx" })
-    });
-    const t = await r.text();
-    log("Status: " + r.status);
-    log("Body: " + t);
-  } catch (e) {
-    log("❌ ОШИБКА: " + e.message);
+  logDivider();
+  if (!state.testNick) {
+    log("⚠️ Сначала нужна регистрация (тест 2)", "warn");
+    return false;
+  }
+  log("🔑 ТЕСТ: Вход → " + state.testNick, "info");
+  setStatus("login", "pending");
+
+  const r = await callAPI("/api/login", {
+    method: "POST",
+    body: { nick: state.testNick, password: state.testPass }
+  });
+
+  if (r.ok && r.data && r.data.token) {
+    state.token = r.data.token;
+    setStatus("login", "ok");
+    log("✅ Вход прошёл! Токен обновлён.", "ok");
+    showTokenInfo();
+    return true;
+  } else {
+    setStatus("login", "err");
+    log("❌ Вход провалился: " + (r.data && r.data.error || "?"), "err");
+    return false;
   }
 }
+
+/* 4. Выход */
+async function testLogout() {
+  logDivider();
+  log("🚪 ТЕСТ: Выход", "info");
+  if (!state.token) { log("⚠️ Нет токена", "warn"); return; }
+  const r = await callAPI("/api/logout", {
+    method: "POST",
+    body: { token: state.token }
+  });
+  if (r.ok) {
+    state.token = null;
+    log("✅ Выход выполнен", "ok");
+    hideTokenInfo();
+  } else {
+    log("❌ Выход провалился", "err");
+  }
+}
+
+/* 5. Общая синхронизация */
+async function testSync() {
+  logDivider();
+  if (!state.token || !state.testNick) { log("⚠️ Нужна авторизация (тест 2 или 3)", "warn"); return false; }
+  log("🔄 ТЕСТ: Синхронизация", "info");
+  setStatus("sync", "pending");
+
+  const r = await callAPI("/api/sync", {
+    method: "POST",
+    body: {
+      nick: state.testNick,
+      token: state.token,
+      localProgress: {
+        ratings: 5,
+        comments: 3,
+        streak: 2,
+        achCount: 10,
+        coins: state.coins,
+        wip: state.wip,
+        owned: state.owned
+      }
+    }
+  });
+
+  if (r.ok && r.data && r.data.progress) {
+    setStatus("sync", "ok");
+    log("✅ Синхронизация прошла! Прогресс получен.", "ok");
+    return true;
+  } else {
+    setStatus("sync", "err");
+    log("❌ Синхронизация провалилась", "err");
+    return false;
+  }
+}
+
+/* 6. Синхронизация монет */
+async function testSyncCoins() {
+  logDivider();
+  if (!state.token || !state.testNick) { log("⚠️ Нужна авторизация", "warn"); return false; }
+  log("🪙 ТЕСТ: Синхронизация монет", "info");
+  setStatus("coins", "pending");
+
+  const r = await callAPI("/api/sync-coins", {
+    method: "POST",
+    body: {
+      nick: state.testNick,
+      token: state.token,
+      coins: state.coins,
+      owned: state.owned
+    }
+  });
+
+  if (r.ok) {
+    setStatus("coins", "ok");
+    log("✅ Монеты синхронизированы! Баланс: " + (r.data.coins || "?"), "ok");
+    return true;
+  } else {
+    setStatus("coins", "err");
+    log("❌ Синхронизация монет провалилась", "err");
+    return false;
+  }
+}
+
+/* 7. Синхронизация WIP */
+async function testSyncWip() {
+  logDivider();
+  if (!state.token || !state.testNick) { log("⚠️ Нужна авторизация", "warn"); return false; }
+  log("💎 ТЕСТ: Синхронизация WIP", "info");
+  setStatus("wip", "pending");
+
+  const r = await callAPI("/api/sync-wip", {
+    method: "POST",
+    body: {
+      nick: state.testNick,
+      token: state.token,
+      wip: state.wip
+    }
+  });
+
+  if (r.ok) {
+    setStatus("wip", "ok");
+    log("✅ WIP синхронизирован!", "ok");
+    return true;
+  } else {
+    setStatus("wip", "err");
+    log("❌ Синхронизация WIP провалилась", "err");
+    return false;
+  }
+}
+
+/* 8. Получить посты */
+async function testGetPosts() {
+  logDivider();
+  log("📰 ТЕСТ: Получить посты", "info");
+  setStatus("posts", "pending");
+
+  const r = await callAPI("/api/posts");
+  if (r.ok && r.data && Array.isArray(r.data.posts)) {
+    setStatus("posts", "ok");
+    log("✅ Посты получены! Кол-во: " + r.data.posts.length, "ok");
+    return true;
+  } else {
+    setStatus("posts", "err");
+    log("❌ Не удалось получить посты", "err");
+    return false;
+  }
+}
+
+/* 9. Создать пост */
+async function testCreatePost() {
+  logDivider();
+  if (!state.token || !state.testNick) { log("⚠️ Нужна авторизация", "warn"); return false; }
+  log("✍️ ТЕСТ: Создать пост", "info");
+
+  const r = await callAPI("/api/post", {
+    method: "POST",
+    body: {
+      nick: state.testNick,
+      token: state.token,
+      title: "Тестовый пост " + new Date().toLocaleTimeString(),
+      body: "Это автоматический тестовый пост от API Monitor.",
+      img: "",
+      pinned: false
+    }
+  });
+
+  if (r.ok && r.data && r.data.post) {
+    state.createdPostId = r.data.post.id;
+    log("✅ Пост создан! ID: " + r.data.post.id, "ok");
+    return true;
+  } else {
+    log("❌ Не удалось создать пост", "err");
+    return false;
+  }
+}
+
+/* 10. Поставить оценку */
+async function testRate() {
+  logDivider();
+  if (!state.createdPostId) {
+    log("⚠️ Сначала создай пост (тест 9)", "warn");
+    return false;
+  }
+  log("⭐ ТЕСТ: Поставить оценку 5★", "info");
+  setStatus("rate", "pending");
+
+  const r = await callAPI("/api/rate", {
+    method: "POST",
+    body: {
+      postId: state.createdPostId,
+      nick: state.testNick,
+      value: 5
+    }
+  });
+
+  if (r.ok) {
+    setStatus("rate", "ok");
+    log("✅ Оценка поставлена!", "ok");
+    return true;
+  } else {
+    setStatus("rate", "err");
+    log("❌ Не удалось поставить оценку", "err");
+    return false;
+  }
+}
+
+/* 11. Оставить комментарий */
+async function testComment() {
+  logDivider();
+  if (!state.createdPostId) {
+    log("⚠️ Сначала создай пост (тест 9)", "warn");
+    return false;
+  }
+  log("💬 ТЕСТ: Оставить комментарий", "info");
+  setStatus("comment", "pending");
+
+  const r = await callAPI("/api/comment", {
+    method: "POST",
+    body: {
+      postId: state.createdPostId,
+      nick: state.testNick,
+      text: "Тестовый комментарий от Monitor"
+    }
+  });
+
+  if (r.ok) {
+    setStatus("comment", "ok");
+    log("✅ Комментарий оставлен!", "ok");
+    return true;
+  } else {
+    setStatus("comment", "err");
+    log("❌ Не удалось оставить комментарий", "err");
+    return false;
+  }
+}
+
+/* 12. Статистика */
+async function testUserStats() {
+  logDivider();
+  log("📊 ТЕСТ: Статистика пользователей", "info");
+  setStatus("stats", "pending");
+
+  const r = await callAPI("/api/userstats");
+  if (r.ok && r.data) {
+    setStatus("stats", "ok");
+    const count = Object.keys(r.data.stats || {}).length;
+    log("✅ Статистика получена! Пользователей: " + count, "ok");
+    return true;
+  } else {
+    setStatus("stats", "err");
+    log("❌ Не удалось получить статистику", "err");
+    return false;
+  }
+}
+
+/* 13. Профиль */
+async function testProfile() {
+  logDivider();
+  if (!state.testNick) { log("⚠️ Нужна регистрация", "warn"); return false; }
+  log("👤 ТЕСТ: Профиль " + state.testNick, "info");
+  setStatus("profile", "pending");
+
+  const r = await callAPI("/api/profile?nick=" + encodeURIComponent(state.testNick));
+  if (r.ok && r.data && r.data.nick) {
+    setStatus("profile", "ok");
+    log("✅ Профиль получен! Монет: " + (r.data.coins || 0), "ok");
+    return true;
+  } else {
+    setStatus("profile", "err");
+    log("❌ Не удалось получить профиль", "err");
+    return false;
+  }
+}
+
+/* 14. Лидерборд */
+async function testLeaderboard() {
+  logDivider();
+  log("🏆 ТЕСТ: Лидерборд", "info");
+  setStatus("leaderboard", "pending");
+
+  const r = await callAPI("/api/leaderboard");
+  if (r.ok) {
+    setStatus("leaderboard", "ok");
+    log("✅ Лидерборд получен!", "ok");
+    return true;
+  } else {
+    setStatus("leaderboard", "err");
+    log("❌ Не удалось получить лидерборд", "err");
+    return false;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   ПРОГНАТЬ ВСЕ
+   ═══════════════════════════════════════════════════════ */
+async function runAll() {
+  logDivider();
+  log("🚀 ЗАПУСК ПОЛНОГО ТЕСТА", "info");
+  log("API: " + API, "dim");
+  logDivider();
+
+  let passed = 0, failed = 0;
+  const results = [];
+
+  async function step(name, fn) {
+    try {
+      const ok = await fn();
+      results.push({ name, ok });
+      if (ok) passed++; else failed++;
+    } catch (e) {
+      log("❌ Исключение в " + name + ": " + e.message, "err");
+      results.push({ name, ok: false });
+      failed++;
+    }
+  }
+
+  await step("Воркер", testRoot);
+  await step("Регистрация", testRegister);
+  await step("Вход", testLogin);
+  await step("Синхронизация", testSync);
+  await step("Монеты", testSyncCoins);
+  await step("WIP", testSyncWip);
+  await step("Посты (GET)", testGetPosts);
+  await step("Пост (POST)", testCreatePost);
+  await step("Оценка", testRate);
+  await step("Комментарий", testComment);
+  await step("Статистика", testUserStats);
+  await step("Профиль", testProfile);
+  await step("Лидерборд", testLeaderboard);
+
+  logDivider();
+  log("📊 ИТОГО: ✅ " + passed + " / ❌ " + failed, passed > failed ? "ok" : "err");
+
+  results.forEach(r => {
+    log((r.ok ? "✅ " : "❌ ") + r.name, r.ok ? "ok" : "err");
+  });
+
+  logDivider();
+  if (failed === 0) {
+    log("🎉 ВСЁ РАБОТАЕТ! Воркер полностью готов.", "ok");
+  } else {
+    log("⚠️ " + failed + " тестов провалено. Проверь логи выше.", "warn");
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   UI
+   ═══════════════════════════════════════════════════════ */
+function showTokenInfo() {
+  const el = document.getElementById("tokenInfo");
+  el.classList.add("on");
+  el.innerHTML = "🔑 Ник: <b>" + (state.testNick || "—") + "</b> · Токен: <b>" +
+    (state.token ? state.token.slice(0, 16) + "..." : "—") + "</b>";
+}
+
+function hideTokenInfo() {
+  document.getElementById("tokenInfo").classList.remove("on");
+}
+
+/* Автозапуск проверки воркера при загрузке */
+window.addEventListener("load", function() {
+  setTimeout(testRoot, 500);
+});
 </script>
 </body>
 </html>
