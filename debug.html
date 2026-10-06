@@ -2,53 +2,220 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Debug v4</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Artamon Debug</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #0a0a0a; color: #eee; font-family: monospace; padding: 14px; font-size: 13px; }
-h3 { color: #d4af37; margin-bottom: 12px; text-align: center; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  background: #0a0a0a;
+  color: #e8e6e1;
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  padding: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Заголовок */
+.header {
+  text-align: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #2a2a2a;
+}
+.header h1 {
+  font-size: 1.15rem;
+  color: #d4af37;
+  letter-spacing: .08em;
+  margin-bottom: 4px;
+}
+.header .version {
+  font-size: .7rem;
+  color: #5c5c5c;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+/* Кнопки */
 button {
-  display: block; width: 100%; padding: 14px; margin-bottom: 8px;
-  background: #d4af37; color: #000; border: none; border-radius: 10px;
-  font-weight: 800; font-size: 14px; font-family: inherit; cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  background: linear-gradient(180deg, #1a1a1a, #141414);
+  color: #e8e6e1;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: .88rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: .15s;
 }
-button:active { transform: scale(.98); }
-#out {
-  background: #000; color: #4ade80; padding: 12px; border-radius: 10px;
-  white-space: pre-wrap; font-size: 11.5px; line-height: 1.6;
-  min-height: 200px; max-height: 75vh; overflow-y: auto; margin-top: 12px;
+button:hover { border-color: #d4af37; }
+button:active { transform: scale(.99); }
+button .icon {
+  font-size: 1.4rem;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+button .label {
+  flex: 1;
+}
+button .label .sub {
+  display: block;
+  font-size: .7rem;
+  color: #8a8a8a;
+  font-weight: 400;
+  margin-top: 2px;
+}
+button.primary {
+  background: linear-gradient(180deg, #f6e6a8, #d4af37);
+  color: #0a0a0a;
+  border-color: #f6e6a8;
+  font-weight: 800;
+}
+button.primary .label .sub { color: rgba(0,0,0,.6); }
+
+/* Прогресс */
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  font-size: .8rem;
+  color: #8a8a8a;
+}
+.progress .spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #2a2a2a;
+  border-top-color: #d4af37;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Лог */
+.log {
+  background: #000;
+  border: 1px solid #1a1a1a;
+  border-radius: 12px;
+  padding: 14px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: #d4d4d4;
+  white-space: pre-wrap;
   word-break: break-word;
+  max-height: 70vh;
+  overflow-y: auto;
+  min-height: 100px;
+  margin-top: 12px;
 }
-.red { color: #f87171; }
-.yel { color: #fbbf24; }
-.blu { color: #60a5fa; }
-.gry { color: #6b6b6b; }
-.wht { color: #fff; font-weight: bold; }
-.grn { color: #4ade80; }
+.log .line {
+  padding: 2px 0;
+}
+.log .divider {
+  color: #333;
+  margin: 6px 0;
+}
+.log .title {
+  color: #d4af37;
+  font-weight: 700;
+  font-size: 12.5px;
+  margin-top: 8px;
+}
+.log .ok { color: #4ade80; font-weight: 700; }
+.log .err { color: #f87171; font-weight: 700; }
+.log .warn { color: #fbbf24; font-weight: 700; }
+.log .info { color: #60a5fa; font-weight: 700; }
+.log .dim { color: #6b6b6b; }
+
+/* Подсветка проблемной строки */
+.log .error-line {
+  background: rgba(248,113,113,.15);
+  color: #f87171;
+  font-weight: 800;
+  padding: 4px 6px;
+  border-left: 3px solid #f87171;
+  border-radius: 4px;
+  margin: 2px 0;
+}
+.log .context-line {
+  color: #8a8a8a;
+  padding-left: 8px;
+  border-left: 2px solid #2a2a2a;
+}
+
+/* Скроллбар */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #d4af37; }
 </style>
 </head>
 <body>
 
-<h3>Artamon Debug v4</h3>
+<div class="header">
+  <h1>🔍 Artamon Debug</h1>
+  <div class="version">Version 5.0</div>
+</div>
 
-<button onclick="testJS()">🎯 Найти ошибку в JS (умный поиск)</button>
-<button onclick="testHTML()">📄 Проверить HTML</button>
-<button onclick="testAPI()">🌐 Проверить воркер</button>
-<button onclick="clearSW()">🧹 Очистить кэш</button>
+<button class="primary" onclick="testJS()">
+  <span class="icon">🎯</span>
+  <span class="label">
+    Найти ошибку в JS
+    <span class="sub">Умный поиск с точной строкой</span>
+  </span>
+</button>
 
-<div id="out">Нажми кнопку 1...</div>
+<button onclick="testHTML()">
+  <span class="icon">📄</span>
+  <span class="label">
+    Проверить HTML
+    <span class="sub">Теги, скрипты, размер файла</span>
+  </span>
+</button>
+
+<button onclick="testAPI()">
+  <span class="icon">🌐</span>
+  <span class="label">
+    Проверить воркер
+    <span class="sub">Доступность и версия API</span>
+  </span>
+</button>
+
+<button onclick="clearSW()">
+  <span class="icon">🧹</span>
+  <span class="label">
+    Очистить кэш и перезагрузить
+    <span class="sub">Удалить Service Worker</span>
+  </span>
+</button>
+
+<div class="log" id="out">Нажми кнопку выше...</div>
 
 <script>
 var out = document.getElementById("out");
 
 function log(msg, cls) {
   var d = document.createElement("div");
-  if (cls) d.className = cls;
+  d.className = "line" + (cls ? " " + cls : "");
   d.textContent = msg;
   out.appendChild(d);
   out.scrollTop = out.scrollHeight;
 }
+
 function clear() { out.innerHTML = ""; }
 
 /* ═══════════════════════════════════════════════════════
@@ -56,169 +223,220 @@ function clear() { out.innerHTML = ""; }
    ═══════════════════════════════════════════════════════ */
 function testJS() {
   clear();
-  log("=== УМНЫЙ ПОИСК ОШИБКИ В JS ===", "blu");
+  log("═══ УМНЫЙ ПОИСК ОШИБКИ В JS ═══", "title");
   log("");
-  
+
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (xhr.readyState !== 4) return;
-    if (xhr.status !== 200) { log("Файл не найден", "red"); return; }
-    
+    if (xhr.status !== 200) { log("Файл не найден. Статус: " + xhr.status, "err"); return; }
+
     var h = xhr.responseText;
     var openTag = "<" + "script>";
     var closeTag = "<" + "/" + "script>";
     var parts = h.split(openTag);
     var total = parts.length - 1;
-    log("Найдено скриптов: " + total, "grn");
+
+    log("📦 Найдено скриптов: " + total, "ok");
     log("");
-    
+
     for (var i = 1; i < parts.length; i++) {
       var chunk = parts[i].split(closeTag)[0] || "";
-      log("═══ Скрипт #" + i + " (" + chunk.length + " симв.) ═══", "blu");
-      
+      log("─── Скрипт #" + i + " (" + chunk.length.toLocaleString() + " симв.) ───", "title");
+
       // Проверяем весь скрипт сразу
       try {
         new Function(chunk);
-        log("✅ Синтаксис OK", "grn");
+        log("✅ Синтаксис OK", "ok");
         log("");
         continue;
       } catch(e) {
-        log("❌ ОШИБКА: " + e.message, "red");
+        log("❌ ОШИБКА: " + e.message, "err");
       }
-      
-      // Ищем точную строку через механизм JS-движка
-      var lineNum = findExactLine(chunk, e);
+
+      // Ищем точную строку
+      log("🔍 Поиск точной строки...", "info");
+      var lineNum = findExactLine(chunk);
       var lines = chunk.split("\n");
-      
-      log("Всего строк в скрипте: " + lines.length, "gry");
+
+      log("   Всего строк: " + lines.length, "dim");
       log("");
-      
+
       if (lineNum > 0 && lineNum <= lines.length) {
-        log("🎯 ПРОБЛЕМНАЯ СТРОКА: #" + lineNum, "wht");
+        log("🎯 ПРОБЛЕМНАЯ СТРОКА: #" + lineNum, "err");
         log("");
+
+        // Показать контекст
         var start = Math.max(0, lineNum - 5);
         var end = Math.min(lines.length, lineNum + 4);
+
+        log("Контекст:", "info");
         for (var j = start; j < end; j++) {
-          var mark = (j === lineNum - 1) ? ">>> " : "    ";
-          var cls = (j === lineNum - 1) ? "red" : "gry";
-          log(mark + "[" + (j + 1) + "] " + lines[j], cls);
+          var lineText = lines[j] || "(пустая строка)";
+          if (j === lineNum - 1) {
+            log(">>> [" + (j + 1) + "] " + lineText, "error-line");
+          } else {
+            log("    [" + (j + 1) + "] " + lineText, "context-line");
+          }
         }
         log("");
-        log("👆 Проверь эту строку — там ошибка!", "yel");
+        log("👆 Ошибка в строке с >>>", "warn");
       } else {
-        log("⚠️ Не удалось определить строку автоматически.", "yel");
-        log("Делаю ручной перебор...", "gry");
+        log("⚠️ Не удалось найти точную строку автоматически", "warn");
         log("");
-        
-        // Ручной перебор: покажем первые 30 строк и последние 30 строк
-        log("=== ПЕРВЫЕ 20 СТРОК ===", "blu");
-        for (var k = 0; k < Math.min(20, lines.length); k++) {
-          log("[" + (k + 1) + "] " + lines[k], "gry");
+        log("Показываю первые 25 строк:", "info");
+        for (var k = 0; k < Math.min(25, lines.length); k++) {
+          log("[" + (k + 1) + "] " + (lines[k] || ""), "context-line");
         }
         log("");
-        log("=== ПОСЛЕДНИЕ 20 СТРОК ===", "blu");
-        for (var m = Math.max(0, lines.length - 20); m < lines.length; m++) {
-          log("[" + (m + 1) + "] " + lines[m], "gry");
+        log("И последние 25 строк:", "info");
+        for (var m = Math.max(0, lines.length - 25); m < lines.length; m++) {
+          log("[" + (m + 1) + "] " + (lines[m] || ""), "context-line");
         }
       }
       log("");
     }
+
+    log("═══ ПРОВЕРКА ЗАВЕРШЕНА ═══", "title");
   };
   xhr.open("GET", "./index_v2.html?v=" + Date.now(), true);
   xhr.send();
 }
 
 /* ═══════════════════════════════════════════════════════
-   ТОЧНОЕ ОПРЕДЕЛЕНИЕ СТРОКИ — через eval в блоке
+   Точное определение строки — БЕЗ использования e
    ═══════════════════════════════════════════════════════ */
-function findExactLine(code, err) {
+function findExactLine(code) {
   var lines = code.split("\n");
-  
-  // Способ 1: если в e.stack есть номер строки — используем его
-  if (err && err.stack) {
-    var match = err.stack.match(/<anonymous>:(\d+)/);
-    if (match) {
-      return parseInt(match[1], 10);
-    }
-  }
-  
-  // Способ 2: пошаговая проверка через закрытие
-  // Пробуем каждые N строк, увеличивая N
   var total = lines.length;
-  
-  // Сначала проверим: возможно, ошибка в самом конце (незакрытая скобка)
-  // Тогда любой префикс упадёт — но падать будет по-разному
-  var lastValid = 0;
-  var firstInvalid = total;
-  
-  // Бинарный поиск
-  var lo = 1, hi = total;
-  while (lo < hi) {
+  if (total === 0) return 0;
+
+  // Бинарный поиск первой невалидной строки
+  var lo = 1;
+  var hi = total;
+  var firstInvalid = 0;
+
+  while (lo <= hi) {
     var mid = Math.floor((lo + hi) / 2);
     var testCode = lines.slice(0, mid).join("\n");
-    var valid = false;
+
+    var isValid = false;
     try {
-      new Function(testCode + "\n;"); // добавляем ; чтобы избежать ложных ошибок
-      valid = true;
-    } catch(e) {}
-    
-    if (valid) {
+      new Function(testCode);
+      isValid = true;
+    } catch(err) {
+      isValid = false;
+    }
+
+    if (isValid) {
       lo = mid + 1;
-      lastValid = mid;
     } else {
-      hi = mid;
       firstInvalid = mid;
+      hi = mid - 1;
     }
   }
-  
-  // Если нашли первую невалидную строку
-  if (firstInvalid > 0 && firstInvalid <= total) {
-    // Проверим, не ложное ли это срабатывание — из-за незакрытой функции в начале
-    // Откроем контекст: 5 строк до и после
-    return firstInvalid;
-  }
-  
-  // Финальный fallback: ищем первую строку с незакрытой кавычкой или скобкой
-  return 0;
+
+  return firstInvalid;
 }
 
 /* ═══════════════════════════════════════════════════════
-   HTML
+   ПРОВЕРКА HTML
    ═══════════════════════════════════════════════════════ */
 function testHTML() {
   clear();
-  log("=== ПРОВЕРКА index_v2.html ===", "blu");
+  log("═══ ПРОВЕРКА index_v2.html ═══", "title");
+  log("");
+
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (xhr.readyState !== 4) return;
-    if (xhr.status !== 200) { log("Файл не найден", "red"); return; }
+    if (xhr.status !== 200) { log("❌ Файл не найден", "err"); return; }
+
     var h = xhr.responseText;
-    log("Файл: " + h.length + " символов", "grn");
+    log("📄 Размер: " + h.length.toLocaleString() + " символов", "ok");
+    log("📏 Строк: " + h.split("\n").length, "dim");
+    log("");
+
     var sOpen = h.split("<" + "script>").length - 1;
     var sClose = h.split("<" + "/" + "script>").length - 1;
-    log("Скриптов: " + sOpen + " / " + sClose, sOpen === sClose ? "grn" : "red");
+
+    log("📦 Открывающих <script>: " + sOpen, sOpen >= 3 ? "ok" : "err");
+    log("📦 Закрывающих <script>: " + sClose, sClose === sOpen ? "ok" : "err");
+
+    if (sOpen !== sClose) {
+      log("❌ Скрипты НЕ сбалансированы!", "err");
+    } else {
+      log("✅ Скрипты закрыты корректно", "ok");
+    }
+    log("");
+
+    // Проверка ключевых элементов
+    var checks = [
+      ["id=\"intro\"", "Интро"],
+      ["id=\"anniversary\"", "Юбилей"],
+      ["id=\"mainSite\"", "Основной сайт"],
+      ["id=\"preloader\"", "Прелоадер"],
+      ["SAFE_STORE", "Хранилище"],
+      ["INTRO", "Модуль интро"],
+      ["COINS", "Монеты"],
+      ["ARTAMON_API", "API"],
+      ["WHEEL", "Колесо"],
+      ["QUESTS", "Квесты"],
+      ["FRIENDS", "Друзья"],
+      ["SUPPORT", "Поддержка"]
+    ];
+
+    log("Проверка ключевых элементов:", "info");
+    var found = 0;
+    for (var i = 0; i < checks.length; i++) {
+      var ok = h.indexOf(checks[i][0]) !== -1;
+      log("  " + (ok ? "✅" : "❌") + " " + checks[i][1], ok ? "ok" : "err");
+      if (ok) found++;
+    }
+    log("");
+    log("Найдено: " + found + " / " + checks.length, found === checks.length ? "ok" : "warn");
+
+    if (h.length < 200000) {
+      log("");
+      log("⚠️ Файл маленький — возможно, не все 5 частей вставлены", "warn");
+    }
   };
   xhr.open("GET", "./index_v2.html?v=" + Date.now(), true);
   xhr.send();
 }
 
 /* ═══════════════════════════════════════════════════════
-   API
+   ПРОВЕРКА ВОРКЕРА
    ═══════════════════════════════════════════════════════ */
 function testAPI() {
   clear();
-  log("=== ВОРКЕР ===", "blu");
+  log("═══ ПРОВЕРКА ВОРКЕРА ═══", "title");
+  log("");
+
   var xhr = new XMLHttpRequest();
   var t = Date.now();
+
   xhr.onreadystatechange = function() {
     if (xhr.readyState !== 4) return;
+    var ms = Date.now() - t;
+
     if (xhr.status === 200) {
-      log("Отвечает (" + (Date.now() - t) + " мс)", "grn");
-      log("Ответ: " + xhr.responseText);
+      log("✅ Воркер отвечает (" + ms + " мс)", "ok");
+      log("Ответ: " + xhr.responseText, "info");
+      try {
+        var d = JSON.parse(xhr.responseText);
+        if (d.version) {
+          log("📌 Версия: " + d.version, d.version === "2.7.0" ? "ok" : "warn");
+        }
+      } catch(e) {}
+    } else if (xhr.status === 0) {
+      log("❌ Воркер НЕ ОТВЕЧАЕТ", "err");
+      log("Проверь, задеплоен ли воркер", "warn");
     } else {
-      log("HTTP " + xhr.status, "red");
+      log("⚠️ HTTP " + xhr.status, "warn");
     }
   };
+
   xhr.open("GET", "https://artamon-api.artem123kv.workers.dev/", true);
   xhr.send();
 }
@@ -228,27 +446,39 @@ function testAPI() {
    ═══════════════════════════════════════════════════════ */
 function clearSW() {
   clear();
-  log("=== ОЧИСТКА КЭША ===", "blu");
+  log("═══ ОЧИСТКА КЭША ═══", "title");
+  log("");
+
   if (!("serviceWorker" in navigator)) {
-    log("SW не поддерживается", "yel");
+    log("⚠️ Service Worker не поддерживается", "warn");
     return;
   }
+
   navigator.serviceWorker.getRegistrations().then(function(regs) {
+    log("Найдено Service Workers: " + regs.length, "info");
     return Promise.all(regs.map(function(r) { return r.unregister(); }));
   }).then(function() {
+    log("✅ Service Workers удалены", "ok");
     if (window.caches) {
       return caches.keys().then(function(names) {
+        log("Найдено кэшей: " + names.length, "info");
         return Promise.all(names.map(function(n) { return caches.delete(n); }));
       });
     }
   }).then(function() {
-    log("✅ Кэш очищен", "grn");
-    log("Перезагрузка через 2 сек...", "yel");
-    setTimeout(function() { location.href = "./index_v2.html?v=" + Date.now(); }, 2000);
-  }).catch(function(e) { log("Ошибка: " + e.message, "red"); });
+    log("✅ Кэши удалены", "ok");
+    log("");
+    log("🔄 Перезагрузка через 2 секунды...", "warn");
+    setTimeout(function() {
+      location.href = "./index_v2.html?v=" + Date.now();
+    }, 2000);
+  }).catch(function(e) {
+    log("❌ Ошибка: " + e.message, "err");
+  });
 }
 
-log("Debug v4 загружен. Нажми кнопку 1.", "grn");
+log("✅ Debug v5 загружен", "ok");
+log("Нажми кнопку выше, чтобы начать проверку", "dim");
 </script>
 
 </body>
