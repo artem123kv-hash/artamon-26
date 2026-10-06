@@ -1,27 +1,65 @@
 {
-  "name": "Artamon 2.6 — Лента рейтинга",
+  "name": "Artamon 2.6.5 — The Big Update",
   "short_name": "Artamon",
-  "description": "Artamon 2.6 — Лента рейтинга, ежедневки, новые аватарки",
-  "start_url": "/Artamon-oprosnik/",
-  "scope": "/Artamon-oprosnik/",
+  "description": "Artamon 2.6.5 — опросы, боты, лента рейтинга, магазин, WIP-подписка",
+  "version": "2.6.5",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#050505",
   "theme_color": "#d4af37",
   "lang": "ru",
-  "categories": ["games", "social", "entertainment"],
+  "dir": "ltr",
+  "categories": ["entertainment", "social", "games"],
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Лента рейтинга",
+      "short_name": "Рейтинг",
+      "description": "Открыть ленту постов",
+      "url": "./index.html#rating",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Ежедневка",
+      "short_name": "Ежедневка",
+      "description": "Забрать ежедневную награду",
+      "url": "./index.html#daily",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Магазин",
+      "short_name": "Магазин",
+      "description": "Открыть магазин Artamon",
+      "url": "./index.html#shop",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false
 }
