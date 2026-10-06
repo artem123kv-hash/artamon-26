@@ -16,22 +16,23 @@ button {
 button:active { transform: scale(.98); }
 #out {
   background: #000; color: #4ade80; padding: 12px; border-radius: 10px;
-  white-space: pre-wrap; font-size: 12px; line-height: 1.6;
-  min-height: 200px; max-height: 65vh; overflow-y: auto; margin-top: 12px;
+  white-space: pre-wrap; font-size: 11.5px; line-height: 1.6;
+  min-height: 200px; max-height: 70vh; overflow-y: auto; margin-top: 12px;
   word-break: break-word;
 }
 .red { color: #f87171; }
 .yel { color: #fbbf24; }
 .blu { color: #60a5fa; }
 .gry { color: #6b6b6b; }
+.wht { color: #fff; font-weight: bold; }
 </style>
 </head>
 <body>
 
-<h3>Artamon Debug</h3>
+<h3>Artamon Debug v3</h3>
 
 <button onclick="testHTML()">1. Проверить index_v2.html</button>
-<button onclick="testJS()">2. Проверить JS</button>
+<button onclick="testJS()">2. Найти ошибку в JS (с точной строкой)</button>
 <button onclick="testAPI()">3. Проверить воркер</button>
 <button onclick="clearSW()">4. Очистить кэш и перезагрузить</button>
 
@@ -47,10 +48,7 @@ function log(msg, cls) {
   out.appendChild(d);
   out.scrollTop = out.scrollHeight;
 }
-
-function clear() {
-  out.innerHTML = "";
-}
+function clear() { out.innerHTML = ""; }
 
 /* ТЕСТ 1: HTML */
 function testHTML() {
@@ -59,47 +57,25 @@ function testHTML() {
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (xhr.readyState !== 4) return;
-    if (xhr.status !== 200) {
-      log("Файл не найден. Статус: " + xhr.status, "red");
-      return;
-    }
+    if (xhr.status !== 200) { log("Файл не найден. Статус: " + xhr.status, "red"); return; }
     var h = xhr.responseText;
     log("Файл загружен: " + h.length + " символов");
     log("");
-    log("Проверка тегов и элементов:");
-    log("DOCTYPE: " + (h.indexOf("DOCTYPE") !== -1 ? "OK" : "NET"), h.indexOf("DOCTYPE") !== -1 ? "" : "red");
-    log("html закрыт: " + (h.indexOf("</html>") !== -1 ? "OK" : "NET"), h.indexOf("</html>") !== -1 ? "" : "red");
-    log("intro: " + (h.indexOf("id=\"intro\"") !== -1 ? "OK" : "NET"), h.indexOf("id=\"intro\"") !== -1 ? "" : "red");
-    log("anniversary: " + (h.indexOf("id=\"anniversary\"") !== -1 ? "OK" : "NET"), h.indexOf("id=\"anniversary\"") !== -1 ? "" : "red");
-    log("mainSite: " + (h.indexOf("id=\"mainSite\"") !== -1 ? "OK" : "NET"), h.indexOf("id=\"mainSite\"") !== -1 ? "" : "red");
-    log("preloader: " + (h.indexOf("id=\"preloader\"") !== -1 ? "OK" : "NET"), h.indexOf("id=\"preloader\"") !== -1 ? "" : "red");
-    log("SAFE_STORE: " + (h.indexOf("SAFE_STORE") !== -1 ? "OK" : "NET"), h.indexOf("SAFE_STORE") !== -1 ? "" : "red");
-    log("INTRO: " + (h.indexOf("INTRO") !== -1 ? "OK" : "NET"), h.indexOf("INTRO") !== -1 ? "" : "red");
-    log("COINS: " + (h.indexOf("COINS") !== -1 ? "OK" : "NET"), h.indexOf("COINS") !== -1 ? "" : "red");
-    log("ARTAMON_API: " + (h.indexOf("ARTAMON_API") !== -1 ? "OK" : "NET"), h.indexOf("ARTAMON_API") !== -1 ? "" : "red");
-    log("WHEEL: " + (h.indexOf("WHEEL") !== -1 ? "OK" : "NET"), h.indexOf("WHEEL") !== -1 ? "" : "red");
-    log("QUESTS: " + (h.indexOf("QUESTS") !== -1 ? "OK" : "NET"), h.indexOf("QUESTS") !== -1 ? "" : "red");
-    log("FRIENDS: " + (h.indexOf("FRIENDS") !== -1 ? "OK" : "NET"), h.indexOf("FRIENDS") !== -1 ? "" : "red");
-    log("SUPPORT: " + (h.indexOf("SUPPORT") !== -1 ? "OK" : "NET"), h.indexOf("SUPPORT") !== -1 ? "" : "red");
-    log("");
     var sOpen = h.split("<" + "script>").length - 1;
     var sClose = h.split("<" + "/" + "script>").length - 1;
-    log("Открывающих script: " + sOpen);
-    log("Закрывающих script: " + sClose);
+    log("Скриптов: " + sOpen + " открыто / " + sClose + " закрыто");
     if (sOpen !== sClose) log("СКРИПТЫ НЕ СБАЛАНСИРОВАНЫ!", "red");
     else log("Скрипты закрыты корректно", "");
-    log("");
-    if (h.length < 200000) log("Файл маленький (< 200KB) - проверь все 5 частей", "yel");
-    else log("Размер файла нормальный", "");
+    log("Размер: " + (h.length < 200000 ? "маленький" : "нормальный"), h.length < 200000 ? "yel" : "");
   };
   xhr.open("GET", "./index_v2.html?v=" + Date.now(), true);
   xhr.send();
 }
 
-/* ТЕСТ 2: JS */
+/* ТЕСТ 2: JS — с поиском точной строки */
 function testJS() {
   clear();
-  log("=== ПРОВЕРКА СИНТАКСИСА JS ===");
+  log("=== ПОИСК ОШИБКИ В JS ===");
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (xhr.readyState !== 4) return;
@@ -111,29 +87,101 @@ function testJS() {
     var total = parts.length - 1;
     log("Найдено скриптов: " + total);
     log("");
-    var errors = 0;
+    
     for (var i = 1; i < parts.length; i++) {
       var chunk = parts[i].split(closeTag)[0] || "";
-      log("--- Скрипт #" + i + " (" + chunk.length + " симв.) ---", "blu");
-      var preview = chunk.slice(0, 80).replace(/\s+/g, " ");
+      log("═══════ Скрипт #" + i + " (" + chunk.length + " симв.) ═══════", "blu");
+      var preview = chunk.slice(0, 70).replace(/\s+/g, " ");
       log("Начало: " + preview + "...", "gry");
+      
+      // Сначала проверим весь скрипт
       try {
         new Function(chunk);
         log("Синтаксис OK", "");
+        continue;
       } catch(e) {
-        errors++;
         log("ОШИБКА: " + e.message, "red");
+      }
+      
+      // Ищем проблему построчно
+      log("");
+      log("Поиск проблемной строки...", "yel");
+      var lines = chunk.split("\n");
+      log("Всего строк: " + lines.length);
+      
+      // Бинарный поиск: проверяем блоки кода
+      var errorLine = findErrorLine(lines);
+      if (errorLine > 0) {
+        log("");
+        log("🎯 ПРОБЛЕМНАЯ СТРОКА: #" + errorLine, "wht");
+        log("");
+        // Показать контекст: 3 строки до и после
+        var start = Math.max(0, errorLine - 4);
+        var end = Math.min(lines.length, errorLine + 3);
+        for (var j = start; j < end; j++) {
+          var mark = (j === errorLine - 1) ? ">>> " : "    ";
+          var cls = (j === errorLine - 1) ? "red" : "gry";
+          log(mark + "[" + (j+1) + "] " + lines[j], cls);
+        }
+        log("");
+        log("Проверь эту строку — там ошибка!", "yel");
+      } else {
+        log("Не удалось точно определить строку.", "red");
+        log("Скорее всего, ошибка в конце скрипта — не закрыта кавычка или скобка.", "yel");
       }
       log("");
     }
-    log("=== ИТОГО ===", "blu");
-    log("Скриптов: " + total);
-    log("Ошибок: " + errors, errors > 0 ? "red" : "");
-    if (errors === 0) log("JS КОРРЕКТНЫЙ", "");
-    else log("ЕСТЬ ОШИБКИ - смотри выше", "red");
   };
   xhr.open("GET", "./index_v2.html?v=" + Date.now(), true);
   xhr.send();
+}
+
+/* Поиск проблемной строки через бинарный поиск */
+function findErrorLine(lines) {
+  var total = lines.length;
+  if (total === 0) return 0;
+  
+  // Сначала ищем первую строку, где ошибка проявляется
+  // Пробуем по частям: от начала до N строк
+  var lo = 1, hi = total;
+  var lastGood = 0;
+  var firstBad = total;
+  
+  // Простой линейный поиск — от 10% до 100%
+  var step = Math.max(1, Math.floor(total / 20));
+  for (var end = step; end <= total; end += step) {
+    var testCode = lines.slice(0, end).join("\n");
+    // Добавим закрывающие конструкции для теста
+    try {
+      new Function(testCode);
+      lastGood = end;
+    } catch(e) {
+      firstBad = end;
+      break;
+    }
+  }
+  
+  if (lastGood === 0 && firstBad === total) {
+    // Ошибка в самом начале или в конце
+    // Проверим от 1 до total с шагом 1 в первой части
+    for (var k = 1; k <= Math.min(100, total); k++) {
+      try { new Function(lines.slice(0, k).join("\n")); lastGood = k; }
+      catch(e) { return k; }
+    }
+    return total;
+  }
+  
+  // Уточняем между lastGood и firstBad
+  for (var k = lastGood + 1; k <= firstBad; k++) {
+    try {
+      new Function(lines.slice(0, k).join("\n"));
+    } catch(e) {
+      return k;
+    }
+  }
+  
+  // Если ничего не нашли — проблема в конце файла
+  return total;
 }
 
 /* ТЕСТ 3: API */
@@ -150,14 +198,12 @@ function testAPI() {
       log("Ответ: " + xhr.responseText);
       try {
         var d = JSON.parse(xhr.responseText);
-        if (d.version) log("Версия воркера: " + d.version, d.version === "2.7.0" ? "" : "yel");
+        if (d.version) log("Версия: " + d.version, d.version === "2.7.0" ? "" : "yel");
       } catch(e) {}
     } else if (xhr.status === 0) {
       log("Воркер НЕ ОТВЕЧАЕТ", "red");
-      log("Проверь, задеплоен ли воркер в Cloudflare", "yel");
     } else {
       log("HTTP " + xhr.status, "yel");
-      log("Ответ: " + xhr.responseText);
     }
   };
   xhr.open("GET", "https://artamon-api.artem123kv.workers.dev/", true);
@@ -173,14 +219,13 @@ function clearSW() {
     return;
   }
   navigator.serviceWorker.getRegistrations().then(function(regs) {
-    log("Найдено регистраций SW: " + regs.length);
-    var promises = regs.map(function(r) { return r.unregister(); });
-    return Promise.all(promises);
+    log("Найдено SW: " + regs.length);
+    return Promise.all(regs.map(function(r) { return r.unregister(); }));
   }).then(function() {
-    log("Service Workers удалены");
+    log("SW удалены");
     if (window.caches) {
       return caches.keys().then(function(names) {
-        log("Найдено кэшей: " + names.length);
+        log("Кэшей: " + names.length);
         return Promise.all(names.map(function(n) { return caches.delete(n); }));
       });
     }
@@ -188,15 +233,11 @@ function clearSW() {
     log("Кэши удалены");
     log("");
     log("Перезагрузка через 2 секунды...", "yel");
-    setTimeout(function() {
-      location.href = "./index_v2.html?v=" + Date.now();
-    }, 2000);
-  }).catch(function(e) {
-    log("Ошибка: " + e.message, "red");
-  });
+    setTimeout(function() { location.href = "./index_v2.html?v=" + Date.now(); }, 2000);
+  }).catch(function(e) { log("Ошибка: " + e.message, "red"); });
 }
 
-log("Debug загружен. Нажми кнопку 1.");
+log("Debug v3 загружен. Нажми кнопку 1.");
 </script>
 
 </body>
