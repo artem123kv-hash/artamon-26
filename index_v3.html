@@ -5124,3 +5124,227 @@ console.log("✅ Artamon 2.7 загружен полностью.");
 console.log("Версия: 2.7.0 — The Big Update");
 console.log("Что нового: колесо, квесты, друзья, поддержка, уведомления.");
   </script>
+<script>
+// ============================================================
+// ARTAMON 2.7 — ЧАСТЬ 5 (обработчики экранов)
+// ============================================================
+
+// Ожидание загрузки DOM
+function _bindScreenButtons(){
+  
+  // Кнопка "Начать" на экране приветствия
+  var welcomeBtn = document.getElementById("welcomeBtn");
+  if(welcomeBtn && !welcomeBtn._bound){
+    welcomeBtn._bound = true;
+    welcomeBtn.addEventListener("click", function(){
+      try { AUDIO.click(); }catch(e){}
+      var w = document.getElementById("scrWelcome");
+      if(w) w.classList.remove("on");
+      setTimeout(function(){
+        if(AGE.hasAge()){
+          var m = document.getElementById("scrModes");
+          if(m) m.classList.add("on");
+        } else {
+          showAgeScreen();
+        }
+      }, 200);
+    });
+  }
+
+  // Кнопка "Продолжить" на экране возраста
+  var ageSubmit = document.getElementById("ageSubmit");
+  if(ageSubmit && !ageSubmit._bound){
+    ageSubmit._bound = true;
+    ageSubmit.addEventListener("click", function(e){
+      if(e) e.preventDefault();
+      submitAge();
+    });
+  }
+
+  // Кнопка "Мне 18+" 
+  var ageSkip = document.getElementById("ageSkip");
+  if(ageSkip && !ageSkip._bound){
+    ageSkip._bound = true;
+    ageSkip.addEventListener("click", function(e){
+      if(e) e.preventDefault();
+      skipAge();
+    });
+  }
+
+  // Режим: Одиночный
+  var modeSolo = document.getElementById("modeSolo");
+  if(modeSolo && !modeSolo._bound){
+    modeSolo._bound = true;
+    modeSolo.addEventListener("click", function(){
+      try { AUDIO.click(); }catch(e){}
+      try { SAFE_STORE.set("artamon_mode_v1", "solo"); }catch(e){}
+      BOTS_ENGINE.stop();
+      var m = document.getElementById("scrModes");
+      if(m) m.classList.remove("on");
+      var ms = document.getElementById("mainSite");
+      if(ms){
+        ms.style.display = "block";
+        setTimeout(function(){ ms.classList.add("show"); }, 30);
+      }
+      initMain("solo");
+      setTimeout(TUTORIAL.open, 700);
+    });
+  }
+
+  // Режим: С ботами
+  var modeBots = document.getElementById("modeBots");
+  if(modeBots && !modeBots._bound){
+    modeBots._bound = true;
+    modeBots.addEventListener("click", function(){
+      try { AUDIO.click(); }catch(e){}
+      try { SAFE_STORE.set("artamon_mode_v1", "bots"); }catch(e){}
+      ACH.unlock("bots_friend");
+      var m = document.getElementById("scrModes");
+      if(m) m.classList.remove("on");
+      var ms = document.getElementById("mainSite");
+      if(ms){
+        ms.style.display = "block";
+        setTimeout(function(){ ms.classList.add("show"); }, 30);
+      }
+      initMain("bots");
+      setTimeout(tryStartBots, 500);
+      setTimeout(TUTORIAL.open, 700);
+    });
+  }
+
+  // Кнопка меню (бургер)
+  var menuBtn = document.getElementById("menuBtn");
+  if(menuBtn && !menuBtn._bound){
+    menuBtn._bound = true;
+    menuBtn.addEventListener("click", function(){
+      try { AUDIO.click(); }catch(e){}
+      var d = document.getElementById("drawer");
+      var o = document.getElementById("overlay");
+      if(d) d.classList.toggle("on");
+      if(o) o.classList.toggle("on");
+    });
+  }
+
+  // Поделиться
+  var shareBtn = document.getElementById("shareBtn");
+  if(shareBtn && !shareBtn._bound){
+    shareBtn._bound = true;
+    shareBtn.addEventListener("click", function(){
+      try { AUDIO.click(); }catch(e){}
+      if(navigator.share){
+        navigator.share({ title:"Artamon 2.7", text:"Загляни!", url:location.href }).catch(function(){});
+      } else {
+        try { navigator.clipboard.writeText(location.href); }catch(e){}
+        toast("Скопировано");
+      }
+    });
+  }
+
+  // Скопировать ссылку
+  var copyLinkBtn = document.getElementById("copyLinkBtn");
+  if(copyLinkBtn && !copyLinkBtn._bound){
+    copyLinkBtn._bound = true;
+    copyLinkBtn.addEventListener("click", function(){
+      try { AUDIO.click(); }catch(e){}
+      try { navigator.clipboard.writeText(location.href); }catch(e){}
+      toast("Скопировано");
+    });
+  }
+
+  // Язык: переключение
+  var langBtns = document.querySelectorAll(".lang-switch button");
+  for(var i = 0; i < langBtns.length; i++){
+    (function(btn){
+      if(btn._bound) return;
+      btn._bound = true;
+      btn.addEventListener("click", function(e){
+        if(e) e.preventDefault();
+        try { AUDIO.click(); }catch(err){}
+        I18N.set(btn.getAttribute("data-lang"));
+      });
+    })(langBtns[i]);
+  }
+
+  // Темы
+  var themeOpts = document.querySelectorAll(".theme-opt");
+  for(var j = 0; j < themeOpts.length; j++){
+    (function(el){
+      if(el._bound) return;
+      el._bound = true;
+      el.addEventListener("click", function(e){
+        if(e) e.preventDefault();
+        THEME.setTheme(el.getAttribute("data-theme"));
+        ACH.unlock("theme_changed");
+        try { AUDIO.click(); toast(I18N.t("toast.themeChanged")); }catch(err){}
+      });
+    })(themeOpts[j]);
+  }
+
+  // Фоны
+  var bgOpts = document.querySelectorAll(".bg-opt");
+  for(var k = 0; k < bgOpts.length; k++){
+    (function(el){
+      if(el._bound) return;
+      el._bound = true;
+      el.addEventListener("click", function(e){
+        if(e) e.preventDefault();
+        THEME.setBg(el.getAttribute("data-bg"));
+        ACH.unlock("bg_changed");
+        try { AUDIO.click(); toast(I18N.t("toast.bgChanged")); }catch(err){}
+      });
+    })(bgOpts[k]);
+  }
+
+  // Туториал
+  var tutNext = document.getElementById("tutNext");
+  if(tutNext && !tutNext._bound){
+    tutNext._bound = true;
+    tutNext.addEventListener("click", function(){ TUTORIAL.next(); });
+  }
+  var tutPrev = document.getElementById("tutPrev");
+  if(tutPrev && !tutPrev._bound){
+    tutPrev._bound = true;
+    tutPrev.addEventListener("click", function(){ TUTORIAL.prev(); });
+  }
+  var tutSkip = document.getElementById("tutSkip");
+  if(tutSkip && !tutSkip._bound){
+    tutSkip._bound = true;
+    tutSkip.addEventListener("click", function(){ TUTORIAL.close(); });
+  }
+
+  // Лента рейтинга: табы
+  var rTabs = document.querySelectorAll("[data-rtab2]");
+  for(var m = 0; m < rTabs.length; m++){
+    (function(t){
+      if(t._bound) return;
+      t._bound = true;
+      t.addEventListener("click", function(e){
+        if(e) e.preventDefault();
+        try { AUDIO.click(); }catch(err){}
+        var tab = t.getAttribute("data-rtab2");
+        RATING.setTab(tab);
+        var all = document.querySelectorAll("[data-rtab2]");
+        for(var n = 0; n < all.length; n++){
+          all[n].classList.toggle("active", all[n] === t);
+        }
+        renderRatingContent();
+      });
+    })(rTabs[m]);
+  }
+}
+
+// Запускаем через 500 мс после загрузки (и повторяем через 2 сек, на всякий случай)
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", function(){
+    setTimeout(_bindScreenButtons, 500);
+    setTimeout(_bindScreenButtons, 2000);
+  });
+} else {
+  setTimeout(_bindScreenButtons, 500);
+  setTimeout(_bindScreenButtons, 2000);
+}
+
+console.log("✅ Artamon 2.7 — Часть 5 (обработчики) загружена");
+</script>
+</body>
+</html>
