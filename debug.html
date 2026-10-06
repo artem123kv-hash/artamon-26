@@ -2,521 +2,118 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🔍 Artamon Debug</title>
+<title>🔍 Debug</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: #0a0a0a;
-  color: #e8e6e1;
-  font-family: -apple-system, "Segoe UI", system-ui, monospace;
-  padding: 14px;
-  font-size: 13px;
-  line-height: 1.5;
-  min-height: 100vh;
-}
-h1 {
-  font-size: 1.1rem;
-  color: #d4af37;
-  margin-bottom: 14px;
-  text-align: center;
-  letter-spacing: .06em;
-}
-.card {
-  background: #141414;
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 10px;
-}
-.card h2 {
-  font-size: .78rem;
-  color: #d4af37;
-  margin-bottom: 8px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-button {
-  background: linear-gradient(180deg, #f6e6a8, #d4af37);
-  color: #0a0a0a;
-  border: none;
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: .82rem;
-  font-weight: 800;
-  cursor: pointer;
-  font-family: inherit;
-  width: 100%;
-  margin-bottom: 6px;
-  letter-spacing: .04em;
-}
-button:active { transform: scale(.98); }
-.out {
-  background: #000;
-  border: 1px solid #1a1a1a;
-  border-radius: 10px;
-  padding: 12px;
-  font-family: ui-monospace, Menlo, monospace;
-  font-size: 11.5px;
-  line-height: 1.65;
-  white-space: pre-wrap;
-  word-break: break-word;
-  color: #d4d4d4;
-  max-height: 65vh;
-  overflow-y: auto;
-  min-height: 100px;
-}
-.ok { color: #4ade80; font-weight: 700; }
-.err { color: #f87171; font-weight: 700; }
-.warn { color: #fbbf24; font-weight: 700; }
-.info { color: #60a5fa; font-weight: 700; }
-.dim { color: #6b6b6b; }
-.big { font-size: 14px; }
-iframe {
-  width: 100%;
-  height: 360px;
-  border: 2px solid #d4af37;
-  border-radius: 10px;
-  margin-top: 10px;
-  background: #000;
-}
+body { background:#0a0a0a; color:#eee; font-family:monospace; padding:14px; font-size:13px; }
+button { display:block; width:100%; padding:14px; margin-bottom:8px; background:#d4af37; color:#000; border:none; border-radius:10px; font-weight:800; font-size:14px; }
+#out { background:#000; color:#0f0; padding:12px; border-radius:10px; white-space:pre-wrap; font-size:12px; min-height:200px; max-height:60vh; overflow-y:auto; margin-top:12px; }
 </style>
 </head>
 <body>
 
-<h1>🔍 Artamon Debug</h1>
+<h3 style="color:#d4af37;">🔍 Artamon Debug</h3>
 
-<div class="card">
-  <h2>Автоматическая проверка</h2>
-  <button onclick="runAll()">🚀 ЗАПУСТИТЬ ВСЁ</button>
-</div>
+<button onclick="testHTML()">1. Проверить index_v2.html</button>
+<button onclick="testJS()">2. Проверить JS</button>
+<button onclick="testAPI()">3. Проверить воркер</button>
 
-<div class="card">
-  <h2>Одиночные тесты</h2>
-  <button onclick="testHTML()">📄 Только HTML</button>
-  <button onclick="testJS()">🔧 Только JS</button>
-  <button onclick="testAPI()">🌐 Только API</button>
-  <button onclick="testIframe()">🎮 Только iframe</button>
-  <button onclick="testLocal()">💾 LocalStorage</button>
-  <button onclick="clearSW()">🧹 Очистить кэш SW</button>
-</div>
-
-<div class="card">
-  <h2>Результаты</h2>
-  <div class="out" id="out">Нажми любую кнопку выше...</div>
-</div>
+<div id="out">Нажми кнопку...</div>
 
 <script>
-/* ═══════════════════════════════════════════════════════
-   ПРОСТОЙ ЛОГГЕР — работает даже если всё падает
-   ═══════════════════════════════════════════════════════ */
 var out = document.getElementById("out");
-var logCount = 0;
+function log(t) { out.textContent += "\n" + t; out.scrollTop = out.scrollHeight; }
+function clear() { out.textContent = ""; }
 
-function log(msg, cls) {
-  try {
-    logCount++;
-    var d = document.createElement("div");
-    if (cls) d.className = cls;
-    d.textContent = msg;
-    out.appendChild(d);
-    out.scrollTop = out.scrollHeight;
-  } catch(e) {
-    console.error("Log error:", e);
-  }
-}
-
-function clearLog() {
-  out.innerHTML = "";
-  logCount = 0;
-}
-
-/* ═══════════════════════════════════════════════════════
-   1. ПРОВЕРКА HTML
-   ═══════════════════════════════════════════════════════ */
 function testHTML() {
-  clearLog();
-  log("═══ ПРОВЕРКА HTML ═══", "info");
-  log("");
-
+  clear();
+  log("=== ПРОВЕРКА index_v2.html ===");
   var xhr = new XMLHttpRequest();
-  var url = "./index_v2.html?nocache=" + Date.now();
-
   xhr.onreadystatechange = function() {
     if (xhr.readyState !== 4) return;
-
-    if (xhr.status === 0) {
-      log("❌ Не удалось отправить запрос.", "err");
-      log("Возможно, файла нет или GitHub Pages не обновлён.", "warn");
-      return;
-    }
-    if (xhr.status >= 400) {
-      log("❌ HTTP " + xhr.status + " — файл не найден", "err");
-      return;
-    }
-
-    var html = xhr.responseText || "";
-    log("✅ Файл загружен: " + html.length.toLocaleString() + " символов", "ok");
+    if (xhr.status !== 200) { log("❌ Файл не найден (" + xhr.status + ")"); return; }
+    var html = xhr.responseText;
+    log("✅ Загружен: " + html.length + " символов");
     log("");
-
-    var checks = [
-      ["<!DOCTYPE html>", html.indexOf("<!DOCTYPE html>") !== -1],
-      ["<html", html.indexOf("<html") !== -1],
-      ["</html>", html.indexOf("</html>") !== -1],
-      ["<head>", html.indexOf("<head>") !== -1],
-      ["</head>", html.indexOf("</head>") !== -1],
-      ["<body", html.indexOf("<body") !== -1],
-      ["</body>", html.indexOf("</body>") !== -1],
-      ["<style>", html.indexOf("<style>") !== -1],
-      ["</style>", html.indexOf("</style>") !== -1],
-      ["#intro", html.indexOf('id="intro"') !== -1],
-      ["#introCanvas", html.indexOf('id="introCanvas"') !== -1],
-      ["#anniversary", html.indexOf('id="anniversary"') !== -1],
-      ["#mainSite", html.indexOf('id="mainSite"') !== -1],
-      ["#preloader", html.indexOf('id="preloader"') !== -1],
-      ["SAFE_STORE", html.indexOf("SAFE_STORE") !== -1],
-      ["ANNIVERSARY", html.indexOf("ANNIVERSARY") !== -1],
-      ["INTRO", html.indexOf("INTRO") !== -1],
-      ["ARTAMON_API", html.indexOf("ARTAMON_API") !== -1],
-      ["BOTS_ENGINE", html.indexOf("BOTS_ENGINE") !== -1],
-      ["COINS", html.indexOf("COINS") !== -1],
-      ["WHEEL", html.indexOf("WHEEL") !== -1],
-      ["QUESTS", html.indexOf("QUESTS") !== -1],
-      ["FRIENDS", html.indexOf("FRIENDS") !== -1],
-      ["SUPPORT", html.indexOf("SUPPORT") !== -1]
-    ];
-
-    var ok = 0, err = 0;
-    for (var i = 0; i < checks.length; i++) {
-      if (checks[i][1]) { log("  ✅ " + checks[i][0], "ok"); ok++; }
-      else { log("  ❌ " + checks[i][0] + " — НЕТ!", "err"); err++; }
-    }
-
+    log("<!DOCTYPE html>: " + (html.indexOf("<!DOCTYPE html>") !== -1 ? "✅" : "❌"));
+    log("</html>: " + (html.indexOf("</html>") !== -1 ? "✅" : "❌"));
+    log("id=intro: " + (html.indexOf('id="intro"') !== -1 ? "✅" : "❌"));
+    log("id=anniversary: " + (html.indexOf('id="anniversary"') !== -1 ? "✅" : "❌"));
+    log("id=mainSite: " + (html.indexOf('id="mainSite"') !== -1 ? "✅" : "❌"));
+    log("SAFE_STORE: " + (html.indexOf("SAFE_STORE") !== -1 ? "✅" : "❌"));
+    log("INTRO: " + (html.indexOf("INTRO") !== -1 ? "✅" : "❌"));
+    log("COINS: " + (html.indexOf("COINS") !== -1 ? "✅" : "❌"));
+    log("ARTAMON_API: " + (html.indexOf("ARTAMON_API") !== -1 ? "✅" : "❌"));
+    log("WHEEL: " + (html.indexOf("WHEEL") !== -1 ? "✅" : "❌"));
     log("");
-    log("Итого: " + ok + " ОК, " + err + " ошибок", err === 0 ? "ok" : "err");
-
     var opens = (html.match(/<script>/g) || []).length;
     var closes = (html.match(/<\/script>/g) || []).length;
-    log("");
-    log("<script>: " + opens + " / </script>: " + closes, opens === closes ? "ok" : "err");
-
-    if (opens !== closes) {
-      log("⚠️ Скрипты НЕ ЗАКРЫТЫ — страница сломана!", "err");
-    }
-
-    if (html.length < 200000) {
-      log("⚠️ Файл слишком маленький — возможно, не все 5 частей вставлены.", "warn");
-    } else {
-      log("✅ Размер файла нормальный.", "ok");
-    }
+    log("<script>: " + opens + " / </script>: " + closes);
+    if (opens !== closes) log("❌ СКРИПТЫ НЕ ЗАКРЫТЫ!");
+    else log("✅ Скрипты закрыты корректно");
+    if (html.length < 200000) log("⚠️ Файл маленький — проверь, все ли 5 частей");
+    else log("✅ Размер нормальный");
   };
-
-  xhr.onerror = function() {
-    log("❌ Ошибка сети при загрузке index_v2.html", "err");
-  };
-
-  try {
-    xhr.open("GET", url, true);
-    xhr.send();
-  } catch(e) {
-    log("❌ Исключение: " + e.message, "err");
-  }
-}
-
-/* ═══════════════════════════════════════════════════════
-   2. ПРОВЕРКА JS
-   ═══════════════════════════════════════════════════════ */
-function testJS() {
-  clearLog();
-  log("═══ ПРОВЕРКА JS ═══", "info");
-  log("");
-
-  var xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState !== 4) return;
-    if (xhr.status !== 200) {
-      log("❌ Файл не загрузился (" + xhr.status + ")", "err");
-      return;
-    }
-
-    var html = xhr.responseText || "";
-    var regex = /<script>([\s\S]*?)<\/script>/g;
-    var match;
-    var num = 0;
-    var errors = 0;
-
-    try {
-      while ((match = regex.exec(html)) !== null) {
-        num++;
-        var code = match[1];
-        log("─── Скрипт #" + num + " (" + code.length.toLocaleString() + " симв.) ───", "info");
-
-        var preview = code.slice(0, 80).replace(/\s+/g, " ");
-        log("  Начало: " + preview + "...", "dim");
-
-        try {
-          new Function(code);
-          log("  ✅ Синтаксис ОК", "ok");
-        } catch(e) {
-          errors++;
-          log("  ❌ ОШИБКА: " + e.message, "err");
-        }
-        log("");
-      }
-    } catch(e) {
-      log("❌ Ошибка при разборе: " + e.message, "err");
-    }
-
-    log("═══════════════", "info");
-    log("Скриптов: " + num, num >= 4 ? "ok" : "warn");
-    log("Ошибок: " + errors, errors === 0 ? "ok" : "err");
-
-    if (errors === 0 && num >= 4) {
-      log("");
-      log("🎉 JS корректный! Если игра не работает — проблема в canvas/SW.", "ok");
-    }
-  };
-  xhr.open("GET", "./index_v2.html?nocache=" + Date.now(), true);
+  xhr.open("GET", "./index_v2.html?v=" + Date.now(), true);
   xhr.send();
 }
 
-/* ═══════════════════════════════════════════════════════
-   3. ПРОВЕРКА API
-   ═══════════════════════════════════════════════════════ */
-function testAPI() {
-  clearLog();
-  log("═══ ПРОВЕРКА ВОРКЕРА ═══", "info");
-  log("");
-
-  var API = "https://artamon-api.artem123kv.workers.dev";
-
+function testJS() {
+  clear();
+  log("=== ПРОВЕРКА JS ===");
   var xhr = new XMLHttpRequest();
-  var start = Date.now();
-
   xhr.onreadystatechange = function() {
     if (xhr.readyState !== 4) return;
-    var time = Date.now() - start;
-
-    if (xhr.status === 200) {
-      log("✅ Воркер отвечает (" + time + " мс)", "ok");
-      log("Ответ: " + xhr.responseText, "ok");
-      try {
-        var data = JSON.parse(xhr.responseText);
-        if (data.version) {
-          log("Версия: " + data.version, data.version === "2.7.0" ? "ok" : "warn");
-        }
-      } catch(e) {}
-    } else if (xhr.status === 0) {
-      log("❌ Воркер НЕ ОТВЕЧАЕТ", "err");
-      log("Проверь, задеплоен ли воркер в Cloudflare.", "warn");
-    } else {
-      log("⚠️ HTTP " + xhr.status, "warn");
-      log("Ответ: " + xhr.responseText, "warn");
-    }
-  };
-
-  xhr.onerror = function() {
-    log("❌ Ошибка сети (CORS или воркер недоступен)", "err");
-  };
-
-  try {
-    xhr.open("GET", API + "/", true);
-    xhr.send();
-  } catch(e) {
-    log("❌ Исключение: " + e.message, "err");
-  }
-}
-
-/* ═══════════════════════════════════════════════════════
-   4. IFRAME
-   ═══════════════════════════════════════════════════════ */
-function testIframe() {
-  clearLog();
-  log("═══ ЗАГРУЗКА index_v2.html ═══", "info");
-  log("");
-
-  var iframe = document.createElement("iframe");
-  iframe.src = "./index_v2.html?nocache=" + Date.now();
-
-  iframe.onload = function() {
-    log("✅ iframe загрузился", "ok");
-    setTimeout(function() {
-      try {
-        var doc = iframe.contentDocument || iframe.contentWindow.document;
-        if (!doc) { log("⚠️ Нет доступа к содержимому", "warn"); return; }
-
-        log("Заголовок: " + (doc.title || "—"), "dim");
-
-        var checks = [
-          ["#intro", doc.getElementById("intro")],
-          ["#introCanvas", doc.getElementById("introCanvas")],
-          ["#anniversary", doc.getElementById("anniversary")],
-          ["#preloader", doc.getElementById("preloader")],
-          ["#mainSite", doc.getElementById("mainSite")],
-          ["#botBio", doc.getElementById("botBio")],
-          ["#adminBroadcast", doc.getElementById("adminBroadcast")]
-        ];
-
-        checks.forEach(function(c) {
-          log("  " + c[0] + ": " + (c[1] ? "✅ есть" : "❌ нет"), c[1] ? "ok" : "err");
-        });
-
-        // Проверим, что intro видно
-        var intro = doc.getElementById("intro");
-        if (intro) {
-          var style = window.getComputedStyle(intro);
-          log("", "");
-          log("#intro display: " + style.display, "dim");
-          log("#intro opacity: " + style.opacity, "dim");
-        }
-
-      } catch(e) {
-        log("⚠️ Ошибка чтения: " + e.message, "warn");
-      }
-    }, 3000);
-  };
-
-  iframe.onerror = function() { log("❌ iframe упал", "err"); };
-
-  out.appendChild(iframe);
-}
-
-/* ═══════════════════════════════════════════════════════
-   5. LOCALSTORAGE
-   ═══════════════════════════════════════════════════════ */
-function testLocal() {
-  clearLog();
-  log("═══ LOCALSTORAGE ═══", "info");
-  log("");
-
-  try {
-    var keys = Object.keys(localStorage).filter(function(k) {
-      return k.indexOf("artamon_") === 0;
-    });
-
-    if (!keys.length) {
-      log("Ключей Artamon нет.", "warn");
-      return;
-    }
-
-    log("Найдено ключей: " + keys.length, "ok");
-    log("");
-
-    keys.forEach(function(k) {
-      var v = localStorage.getItem(k) || "";
-      var preview = v.slice(0, 60);
-      log("  " + k, "info");
-      log("    = " + preview + (v.length > 60 ? "..." : ""), "dim");
-    });
-
-  } catch(e) {
-    log("❌ Ошибка: " + e.message, "err");
-  }
-}
-
-/* ═══════════════════════════════════════════════════════
-   6. ОЧИСТКА SERVICE WORKER
-   ═══════════════════════════════════════════════════════ */
-function clearSW() {
-  clearLog();
-  log("═══ ОЧИСТКА КЭША ═══", "info");
-  log("");
-
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function(regs) {
-      log("Найдено регистраций SW: " + regs.length, "info");
-      var promises = regs.map(function(r) { return r.unregister(); });
-      return Promise.all(promises);
-    }).then(function() {
-      log("✅ Service Workers удалены", "ok");
-      if (window.caches) {
-        return caches.keys().then(function(names) {
-          log("Найдено кэшей: " + names.length, "info");
-          return Promise.all(names.map(function(n) { return caches.delete(n); }));
-        });
-      }
-    }).then(function() {
-      log("✅ Кэши удалены", "ok");
+    if (xhr.status !== 200) { log("❌ Файл не найден"); return; }
+    var html = xhr.responseText;
+    var re = /<script>([\s\S]*?)<\/script>/g;
+    var m, n = 0, err = 0;
+    while ((m = re.exec(html)) !== null) {
+      n++;
       log("");
-      log("🔄 Обнови страницу (Ctrl+Shift+R)", "warn");
-    }).catch(function(e) {
-      log("⚠️ " + e.message, "warn");
-    });
-  } else {
-    log("Service Worker не поддерживается", "warn");
-  }
+      log("--- Скрипт #" + n + " (" + m[1].length + " симв.) ---");
+      log("Начало: " + m[1].slice(0, 70).replace(/\s+/g, " "));
+      try {
+        new Function(m[1]);
+        log("✅ Синтаксис ОК");
+      } catch(e) {
+        err++;
+        log("❌ ОШИБКА: " + e.message);
+      }
+    }
+    log("");
+    log("=== ИТОГО ===");
+    log("Скриптов: " + n);
+    log("Ошибок: " + err);
+    if (err === 0) log("🎉 JS КОРРЕКТНЫЙ");
+    else log("❌ ЕСТЬ ОШИБКИ — смотри выше");
+  };
+  xhr.open("GET", "./index_v2.html?v=" + Date.now(), true);
+  xhr.send();
 }
 
-/* ═══════════════════════════════════════════════════════
-   ЗАПУСТИТЬ ВСЁ
-   ═══════════════════════════════════════════════════════ */
-function runAll() {
-  clearLog();
-  log("🚀 ЗАПУСК ВСЕХ ТЕСТОВ", "info");
-  log("");
-
-  try {
-    log("▶ 1/4. HTML...", "info");
-    testHTML();
-  } catch(e) {
-    log("❌ HTML: " + e.message, "err");
-  }
-
-  setTimeout(function() {
-    try {
-      log("", "");
-      log("▶ 2/4. JS...", "info");
-      testJS();
-    } catch(e) {
-      log("❌ JS: " + e.message, "err");
+function testAPI() {
+  clear();
+  log("=== ПРОВЕРКА ВОРКЕРА ===");
+  var xhr = new XMLHttpRequest();
+  var t = Date.now();
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState !== 4) return;
+    if (xhr.status === 200) {
+      log("✅ Воркер отвечает (" + (Date.now() - t) + " мс)");
+      log("Ответ: " + xhr.responseText);
+    } else if (xhr.status === 0) {
+      log("❌ Воркер НЕ ОТВЕЧАЕТ");
+    } else {
+      log("⚠️ HTTP " + xhr.status);
+      log("Ответ: " + xhr.responseText);
     }
-  }, 2000);
-
-  setTimeout(function() {
-    try {
-      log("", "");
-      log("▶ 3/4. API...", "info");
-      testAPI();
-    } catch(e) {
-      log("❌ API: " + e.message, "err");
-    }
-  }, 4000);
-
-  setTimeout(function() {
-    try {
-      log("", "");
-      log("▶ 4/4. iframe...", "info");
-      testIframe();
-    } catch(e) {
-      log("❌ iframe: " + e.message, "err");
-    }
-  }, 6000);
+  };
+  xhr.open("GET", "https://artamon-api.artem123kv.workers.dev/", true);
+  xhr.send();
 }
 
-/* ═══════════════════════════════════════════════════════
-   АВТОЗАПУСК ИНФОРМАЦИИ ПРИ ЗАГРУЗКЕ
-   ═══════════════════════════════════════════════════════ */
-window.addEventListener("load", function() {
-  log("✅ Debug-страница загрузилась", "ok");
-  log("");
-  log("Проверка окружения:", "info");
-  log("  User-Agent: " + navigator.userAgent.slice(0, 80), "dim");
-  log("  URL: " + location.href, "dim");
-  log("  SW поддержка: " + ("serviceWorker" in navigator), "dim");
-  log("  LocalStorage: " + (function() {
-    try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); return "✅"; }
-    catch(e) { return "❌"; }
-  })(), "dim");
-  log("");
-  log("💡 Нажми «🚀 ЗАПУСТИТЬ ВСЁ» для полной проверки.", "warn");
-});
-
-/* Ловим ошибки */
-window.onerror = function(msg, src, line, col) {
-  log("❌ JS-ошибка: " + msg + " (" + src + ":" + line + ")", "err");
-};
-
-console.log("Debug loaded OK");
+log("✅ Debug-страница загрузилась");
+log("Нажми любую кнопку выше.");
 </script>
 </body>
 </html>
