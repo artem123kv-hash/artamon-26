@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>API Test</title></head>
+<body style="font-family:sans-serif;padding:20px;background:#111;color:#eee;">
+<h1>Artamon API Test</h1>
+<button onclick="testRoot()">1. Проверить воркер</button>
+<button onclick="testRegister()">2. Тест регистрации</button>
+<button onclick="testLogin()">3. Тест входа</button>
+<pre id="out" style="background:#000;color:#0f0;padding:15px;border-radius:8px;margin-top:20px;white-space:pre-wrap;">Нажми кнопку...</pre>
+
+<script>
+const API = "https://artamon-api.artem123kv.workers.dev";
+const out = document.getElementById("out");
+
+function log(msg) {
+  out.textContent += "\n" + msg;
+  console.log(msg);
+}
+
+async function testRoot() {
+  out.textContent = "→ GET /";
+  try {
+    const r = await fetch(API + "/");
+    const t = await r.text();
+    log("Status: " + r.status);
+    log("Body: " + t);
+  } catch (e) {
+    log("❌ ОШИБКА: " + e.message);
+  }
+}
+
+async function testRegister() {
+  out.textContent = "→ POST /api/register";
+  const nick = "test" + Math.floor(Math.random()*99999);
+  log("Ник: " + nick);
+  try {
+    const r = await fetch(API + "/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nick: nick, password: "test1234" })
+    });
+    const t = await r.text();
+    log("Status: " + r.status);
+    log("Body: " + t);
+  } catch (e) {
+    log("❌ ОШИБКА: " + e.message);
+  }
+}
+
+async function testLogin() {
+  out.textContent = "→ POST /api/login (заведомо неверный)";
+  try {
+    const r = await fetch(API + "/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nick: "nonexistent", password: "xxx" })
+    });
+    const t = await r.text();
+    log("Status: " + r.status);
+    log("Body: " + t);
+  } catch (e) {
+    log("❌ ОШИБКА: " + e.message);
+  }
+}
+</script>
+</body>
+</html>
