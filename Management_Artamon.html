@@ -2164,5 +2164,1281 @@ document.addEventListener("DOMContentLoaded", function(){
 window.closeModal = closeModal;
 console.log("✅ Owner Admin v2.7.1 загружена");
 </script>
+
+</script>
+<script>
+// ============================================================
+// ARTAMON ADMIN v2.7.1 — РАСШИРЕНИЯ (Сообщение 3/4-B)
+// ============================================================
+
+// ---------- МАССОВЫЕ ОПЕРАЦИИ В ЮЗЕРАХ ----------
+// Расширим renderUsers: добавим чекбоксы и панель действий
+
+var bulkSelected = {};
+
+// Перезаписываем старый renderUsers
+(function(){
+  var origRenderUsers = window.renderUsers;
+  window.renderUsers = function(){
+    var box = $("usersList");
+    if(!box) return;
+
+    // Панель массовых действий (создаём один раз)
+    var bulkPanel = $("bulkPanel");
+    if(!bulkPanel){
+      var container = box.parentNode;
+      bulkPanel = document.createElement("div");
+      bulkPanel.id = "bulkPanel";
+      bulkPanel.className = "section";
+      bulkPanel.style.cssText = "display:none;padding:12px;background:linear-gradient(180deg,rgba(212,175,55,.15),rgba(212,175,55,.05));border:1.5px solid var(--gold-2);";
+      bulkPanel.innerHTML =
+        '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">' +
+          '<div><b style="color:var(--gold-2);">Выбрано: <span id="bulkCount">0</span></b></div>' +
+          '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+            '<button class="btn sm success" id="bulkGiveCoins">🪙 Выдать</button>' +
+            '<button class="btn sm danger" id="bulkBan">🚫 Забанить</button>' +
+            '<button class="btn sm warn" id="bulkMute">🔕 Мут</button>' +
+            '<button class="btn sm ghost" id="bulkClear">Очистить</button>' +
+          '</div>' +
+        '</div>';
+      container.insertBefore(bulkPanel, box);
+    }
+
+    // Обычная отрисовка
+    var search = ($("userSearch").value || "").toLowerCase().trim();
+    var filter = $("userFilter").value || "all";
+    var sort = $("userSort").value || "date";
+
+    var list = state.users.slice();
+    if(search) list = list.filter(function(u){ return u.nick.toLowerCase().indexOf(search) !== -1; });
+    if(filter === "banned") list = list.filter(function(u){ return u.banned; });
+    else if(filter === "muted") list = list.filter(function(u){ return u.muted; });
+    else if(filter === "wip") list = list.filter(function(u){ return u.wip && u.wip.active; });
+    else if(filter === "rich") list = list.filter(function(u){ return (u.coins || 0) >= 1000; });
+
+    if(sort === "coins") list.sort(function(a,b){ return (b.coins||0) - (a.coins||0); });
+    else if(sort === "ratings") list.sort(function(a,b){ return (b.ratings||0) - (a.ratings||0); });
+    else list.sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
+
+    if(!list.length){
+      box.innerHTML = '<div class="empty"><span class="empty-icon">👥</span>Нет пользователей</div>';
+      updateBulkPanel();
+      return;
+    }
+
+    box.innerHTML = "";
+    list.forEach(function(u){
+      var card = document.createElement("div");
+      card.className = "user-card";
+      if(u.banned) card.classList.add("banned");
+      if(u.muted) card.classList.add("muted");
+
+      var wipActive = u.wip && u.wip.active;
+      var wipDays = wipActive ? Math.ceil((u.wip.until - Date.now()) / 86400000) : 0;
+      var ownedAvatars = (u.owned && u.owned.avatars) || [];
+      var avatar = ownedAvatars.length ? ownedAvatars[ownedAvatars.length - 1] : "👤";
+
+      var badges = [];
+      if(u.banned) badges.push('<span class="badge ban">🚫 БАН</span>');
+      if(u.muted) badges.push('<span class="badge mute">🔕 МУТ</span>');
+      if(wipActive) badges.push('<span class="badge wip">💎 ' + wipDays + 'д</span>');
+
+      var checked = bulkSelected[u.nick] ? "checked" : "";
+
+      card.innerHTML =
+        '<input type="checkbox" data-bulk-nick="' + escapeHtml(u.nick) + '" ' + checked + ' style="width:20px;height:20px;accent-color:var(--gold-2);cursor:pointer;flex-shrink:0;">' +
+        '<div class="user-avatar">' + avatar + '</div>' +
+        '<div class="user-info">' +
+          '<div class="user-nick">' + escapeHtml(u.nick) + '</div>' +
+          '<div class="user-meta">' +
+            '<span>🪙 <b>' + (u.coins || 0) + '</b></span>' +
+            '<span>⭐ <b>' + (u.ratings || 0) + '</b></span>' +
+            '<span>💬 <b>' + (u.comments || 0) + '</b></span>' +
+            '<span>📅 ' + fmtDateShort(u.createdAt) + '</span>' +
+            badges.join(" ") +
+          '</div>' +
+        '</div>' +
+        '<div class="user-actions">' +
+          '<button class="btn sm" data-action="manage" data-nick="' + escapeHtml(u.nick) + '">⚙️</button>' +
+          '<button class="btn sm ' + (u.banned ? 'success' : 'danger') + '" data-action="' + (u.banned ? 'unban' : 'ban') + '" data-nick="' + escapeHtml(u.nick) + '">' + (u.banned ? '✅' : '🚫') + '</button>' +
+        '</div>';
+      box.appendChild(card);
+    });
+
+    // Чекбоксы
+    box.querySelectorAll("[data-bulk-nick]").forEach(function(cb){
+      cb.addEventListener("change", function(){
+        var nick = cb.getAttribute("data-bulk-nick");
+        if(cb.checked) bulkSelected[nick] = true;
+        else delete bulkSelected[nick];
+        updateBulkPanel();
+      });
+    });
+
+    // Кнопки управления
+    box.querySelectorAll("[data-action]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var action = btn.getAttribute("data-action");
+        var nick = btn.getAttribute("data-nick");
+        if(action === "manage") openUserManage(nick);
+        else if(action === "ban") quickBan(nick);
+        else if(action === "unban") quickUnban(nick);
+      });
+    });
+
+    updateBulkPanel();
+  };
+})();
+
+function updateBulkPanel(){
+  var panel = $("bulkPanel");
+  if(!panel) return;
+  var count = Object.keys(bulkSelected).length;
+  if(count === 0){
+    panel.style.display = "none";
+  } else {
+    panel.style.display = "block";
+    if($("bulkCount")) $("bulkCount").textContent = count;
+  }
+}
+
+// Обработчики кнопок массовых операций
+document.addEventListener("click", function(e){
+  if(e.target.id === "bulkClear"){
+    bulkSelected = {};
+    renderUsers();
+  } else if(e.target.id === "bulkGiveCoins"){
+    var nicks = Object.keys(bulkSelected);
+    if(!nicks.length) return;
+    var amount = parseInt(prompt("Сколько монет выдать каждому?", "100"), 10);
+    if(!amount || amount <= 0) return;
+    if(!confirm("Выдать " + amount + " монет " + nicks.length + " игрокам?")) return;
+    (async function(){
+      var done = 0, err = 0;
+      for(var i = 0; i < nicks.length; i++){
+        try {
+          await api("/api/admin/give-coins", { nick: nicks[i], amount: amount, mode: "add" });
+          done++;
+        } catch(e){ err++; }
+      }
+      toast("✅ Выдано: " + done + (err ? ", ошибок: " + err : ""), "success");
+      bulkSelected = {};
+      loadUsers();
+    })();
+  } else if(e.target.id === "bulkBan"){
+    var nicks = Object.keys(bulkSelected);
+    if(!nicks.length) return;
+    var hours = parseInt(prompt("На сколько часов забанить? (0 = навсегда)", "24"), 10);
+    if(isNaN(hours)) return;
+    var reason = prompt("Причина:", "Массовый бан") || "Массовый бан";
+    if(!confirm("Забанить " + nicks.length + " игроков на " + (hours || "всегда") + "?")) return;
+    (async function(){
+      var done = 0, err = 0;
+      for(var i = 0; i < nicks.length; i++){
+        try {
+          await api("/api/admin/ban", { nick: nicks[i], hours: hours, reason: reason });
+          done++;
+        } catch(e){ err++; }
+      }
+      toast("🚫 Забанено: " + done + (err ? ", ошибок: " + err : ""), "success");
+      bulkSelected = {};
+      loadUsers(); loadBans();
+    })();
+  } else if(e.target.id === "bulkMute"){
+    var nicks = Object.keys(bulkSelected);
+    if(!nicks.length) return;
+    var hours = parseInt(prompt("На сколько часов замутить?", "1"), 10);
+    if(!hours || hours <= 0) return;
+    if(!confirm("Замутить " + nicks.length + " игроков на " + hours + "ч?")) return;
+    (async function(){
+      var done = 0, err = 0;
+      for(var i = 0; i < nicks.length; i++){
+        try {
+          await api("/api/admin/mute", { nick: nicks[i], hours: hours });
+          done++;
+        } catch(e){ err++; }
+      }
+      toast("🔕 Замучено: " + done + (err ? ", ошибок: " + err : ""), "success");
+      bulkSelected = {};
+      loadUsers();
+    })();
+  }
+});
+
+// ---------- ЭКСПОРТ CSV ДЛЯ ТИКЕТОВ / ЛОГОВ / ПРОМО / БАНОВ ----------
+function exportCSV(filename, headers, rows){
+  var csv = headers.join(",") + "\n" + rows.map(function(r){
+    return r.map(function(v){
+      var s = String(v == null ? "" : v).replace(/"/g, '""');
+      if(s.indexOf(",") !== -1 || s.indexOf("\n") !== -1 || s.indexOf('"') !== -1) s = '"' + s + '"';
+      return s;
+    }).join(",");
+  }).join("\n");
+  var blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = filename + "-" + new Date().toISOString().slice(0,10) + ".csv";
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("📤 " + filename + ".csv скачан", "success");
+}
+
+// Кнопки экспорта — добавим в существующие панели
+document.addEventListener("click", function(e){
+  if(e.target.id === "exportTicketsCsv"){
+    if(!state.tickets.length) return toast("Нет тикетов", "error");
+    exportCSV("artamon-tickets",
+      ["ID", "Ник", "Тема", "Категория", "Статус", "Создан", "Ответов"],
+      state.tickets.map(function(t){
+        return [t.id, t.nick, t.subject, t.category, t.status, fmtDate(t.createdAt), (t.replies || []).length];
+      })
+    );
+  } else if(e.target.id === "exportLogsCsv"){
+    (async function(){
+      try {
+        var r = await api("/api/admin/logs");
+        var logs = r.logs || [];
+        if(!logs.length) return toast("Нет логов", "error");
+        exportCSV("artamon-logs",
+          ["Время", "Роль", "Действие", "Детали"],
+          logs.map(function(l){ return [fmtDate(l.time), l.role, l.action, l.detail]; })
+        );
+      } catch(err){ toast("❌ " + err.message, "error"); }
+    })();
+  } else if(e.target.id === "exportPromosCsv"){
+    if(!state.promos.length) return toast("Нет промокодов", "error");
+    exportCSV("artamon-promos",
+      ["Код", "Монеты", "WIP (дней)", "Аватарка", "Использован", "Истекает"],
+      state.promos.map(function(p){
+        return [p.code, p.coins, p.wipDays, p.avatar, (p.usedBy || []).length, fmtDate(p.expiresAt)];
+      })
+    );
+  } else if(e.target.id === "exportBansCsv"){
+    if(!state.bans.length) return toast("Нет банов", "error");
+    exportCSV("artamon-bans",
+      ["Ник", "Причина", "Забанен", "До"],
+      state.bans.map(function(b){
+        return [b.nick, b.reason, fmtDate(b.bannedAt), b.until > 0 ? fmtDate(b.until) : "∞"];
+      })
+    );
+  }
+});
+
+// Автоматически добавим кнопки экспорта в существующие секции при переключении
+(function(){
+  var origSwitchTab = window.switchTab;
+  window.switchTab = function(tab){
+    origSwitchTab.apply(this, arguments);
+    setTimeout(function(){
+      // Экспорт тикетов
+      if(tab === "tickets"){
+        var box = $("ticketsList");
+        if(box && !$("exportTicketsCsv")){
+          var header = box.previousElementSibling;
+          if(header){
+            var actions = header.querySelector(".section-actions");
+            if(actions && !actions.querySelector("#exportTicketsCsv")){
+              var btn = document.createElement("button");
+              btn.className = "btn ghost sm";
+              btn.id = "exportTicketsCsv";
+              btn.textContent = "📤 CSV";
+              actions.appendChild(btn);
+            }
+          }
+        }
+      }
+      // Экспорт банов
+      if(tab === "bans"){
+        var tbl = $("bansBody");
+        if(tbl && !$("exportBansCsv")){
+          var header2 = tbl.closest("table").previousElementSibling;
+          if(header2){
+            var actions2 = header2.querySelector(".section-actions");
+            if(actions2 && !actions2.querySelector("#exportBansCsv")){
+              var btn2 = document.createElement("button");
+              btn2.className = "btn ghost sm";
+              btn2.id = "exportBansCsv";
+              btn2.textContent = "📤 CSV";
+              actions2.appendChild(btn2);
+            }
+          }
+        }
+      }
+      // Экспорт промо
+      if(tab === "promos"){
+        var promoBox = $("promosList");
+        if(promoBox && !$("exportPromosCsv")){
+          var header3 = promoBox.previousElementSibling;
+          if(header3){
+            var actions3 = header3.querySelector(".section-actions");
+            if(actions3 && !actions3.querySelector("#exportPromosCsv")){
+              var btn3 = document.createElement("button");
+              btn3.className = "btn ghost sm";
+              btn3.id = "exportPromosCsv";
+              btn3.textContent = "📤 CSV";
+              actions3.appendChild(btn3);
+            }
+          }
+        }
+      }
+      // Экспорт логов (в Инструментах)
+      if(tab === "tools"){
+        var toolsBox = $("toolsOutput");
+        if(toolsBox && !$("exportLogsCsv")){
+          var header4 = toolsBox.previousElementSibling;
+          if(header4){
+            var actions4 = header4.querySelector(".section-actions");
+            if(actions4 && !actions4.querySelector("#exportLogsCsv")){
+              var btn4 = document.createElement("button");
+              btn4.className = "btn ghost sm";
+              btn4.id = "exportLogsCsv";
+              btn4.textContent = "📤 CSV логов";
+              actions4.appendChild(btn4);
+            }
+          }
+        }
+      }
+    }, 200);
+  };
+})();
+
+// ---------- ИСТОРИЯ ТЕХРЕЖИМА ----------
+async function loadTechHistory(){
+  try {
+    var r = await api("/api/admin/logs");
+    var logs = r.logs || [];
+    var techLogs = logs.filter(function(l){
+      return l.action && (l.action.indexOf("tech-on") !== -1 || l.action.indexOf("tech-off") !== -1);
+    });
+    return techLogs;
+  } catch(e){ return []; }
+}
+
+// Добавим кнопку "История" в tech-панель
+(function(){
+  var techPanel = document.querySelector(".tech-panel");
+  if(techPanel){
+    var btn = document.createElement("button");
+    btn.className = "btn ghost sm";
+    btn.id = "techHistoryBtn";
+    btn.textContent = "📜 История";
+    btn.style.marginTop = "10px";
+    techPanel.appendChild(btn);
+
+    btn.addEventListener("click", async function(){
+      var history = await loadTechHistory();
+      var html = "";
+      if(!history.length){
+        html = '<div class="empty">История пуста</div>';
+      } else {
+        html = '<div class="log-list">';
+        history.forEach(function(l){
+          html += '<div class="log-item">' +
+            '<div><span class="log-time">' + timeAgo(l.time) + '</span>' +
+            '<span class="log-action">' + escapeHtml(l.action) + '</span></div>' +
+            '<div class="log-detail">' + escapeHtml(l.detail) + '</div></div>';
+        });
+        html += '</div>';
+      }
+      openModal("📜 История техрежима", html);
+    });
+  }
+})();
+
+// ---------- ГЕНЕРАТОР ПРОМОКОДОВ ПО МАСКЕ ----------
+(function(){
+  var promosHeader = null;
+  // Найдём в разметке header промо
+  setTimeout(function(){
+    var promoBox = $("promosList");
+    if(!promoBox) return;
+    var header = promoBox.previousElementSibling;
+    if(!header) return;
+    var actions = header.querySelector(".section-actions");
+    if(!actions) return;
+    if(actions.querySelector("#advancedPromoBtn")) return;
+
+    var btn = document.createElement("button");
+    btn.className = "btn ghost sm";
+    btn.id = "advancedPromoBtn";
+    btn.textContent = "⚙️ Продвинутый";
+    actions.appendChild(btn);
+
+    btn.addEventListener("click", function(){
+      openModal("⚙️ Продвинутый генератор промокодов",
+        '<div class="form-group"><label class="form-label">Префикс кода</label>' +
+          '<input type="text" class="form-input" id="apPrefix" value="ART" maxlength="10" style="text-transform:uppercase;"></div>' +
+        '<div class="form-group"><label class="form-label">Длина случайной части</label>' +
+          '<input type="number" class="form-input" id="apLength" value="6" min="3" max="20"></div>' +
+        '<div class="form-group"><label class="form-label">Сколько штук</label>' +
+          '<input type="number" class="form-input" id="apCount" value="10" min="1" max="100"></div>' +
+        '<div class="form-group"><label class="form-label">🪙 Монет в каждом</label>' +
+          '<input type="number" class="form-input" id="apCoins" value="500" min="0"></div>' +
+        '<div class="form-group"><label class="form-label">💎 WIP дней в каждом</label>' +
+          '<input type="number" class="form-input" id="apWip" value="0" min="0"></div>' +
+        '<div class="form-group"><label class="form-label">📅 Срок действия (дней)</label>' +
+          '<input type="number" class="form-input" id="apExpire" value="30" min="1"></div>' +
+        '<div class="form-actions">' +
+          '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
+          '<button class="btn success" id="apGenerate">🎲 Сгенерировать</button></div>'
+      );
+
+      $("apGenerate").addEventListener("click", async function(){
+        var prefix = ($("apPrefix").value || "ART").toUpperCase().trim();
+        var len = parseInt($("apLength").value, 10) || 6;
+        var count = parseInt($("apCount").value, 10) || 10;
+        var coins = parseInt($("apCoins").value, 10) || 0;
+        var wipDays = parseInt($("apWip").value, 10) || 0;
+        var expires = parseInt($("apExpire").value, 10) || 30;
+
+        if(count < 1 || count > 100) return toast("От 1 до 100 штук", "error");
+        if(coins <= 0 && wipDays <= 0) return toast("Нужна хоть одна награда", "error");
+
+        closeModal();
+        toast("⏳ Генерация " + count + " промокодов...", "info");
+
+        var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        var done = 0, err = 0;
+        var codes = [];
+        for(var i = 0; i < count; i++){
+          var rand = "";
+          for(var j = 0; j < len; j++) rand += chars[Math.floor(Math.random() * chars.length)];
+          var code = prefix + rand;
+          codes.push(code);
+          try {
+            await api("/api/admin/promo-create", {
+              code: code, coins: coins, wipDays: wipDays, expiresInDays: expires
+            });
+            done++;
+          } catch(e){ err++; }
+        }
+        toast("🎲 Готово! Создано: " + done + (err ? ", ошибок: " + err : ""), "success");
+        loadPromos();
+
+        // Показать список для копирования
+        openModal("✅ Созданные промокоды (" + done + ")",
+          '<div style="background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px;font-family:ui-monospace,monospace;font-size:.85rem;line-height:1.8;max-height:400px;overflow-y:auto;white-space:pre;">' +
+            codes.join("\n") +
+          '</div>' +
+          '<div class="form-actions">' +
+            '<button class="btn ghost" onclick="closeModal()">Закрыть</button>' +
+            '<button class="btn success" id="apCopyAll">📋 Копировать все</button></div>'
+        );
+        $("apCopyAll").addEventListener("click", function(){
+          try {
+            navigator.clipboard.writeText(codes.join("\n"));
+            toast("📋 Скопировано " + codes.length + " кодов", "success");
+          } catch(e){ toast("❌ Ошибка копирования", "error"); }
+        });
+      });
+    });
+  }, 500);
+})();
+
+// ---------- ПЛАНИРОВЩИК ТЕХРЕЖИМА ----------
+(function(){
+  var techPanel = document.querySelector(".tech-panel");
+  if(!techPanel) return;
+
+  var scheduler = document.createElement("div");
+  scheduler.style.cssText = "margin-top:12px;padding-top:12px;border-top:1px solid rgba(251,191,36,.3);";
+  scheduler.innerHTML =
+    '<label class="form-label">⏰ Планировщик (включить через N минут)</label>' +
+    '<div class="form-row">' +
+      '<input type="number" class="form-input" id="techTimerMin" placeholder="Минут" value="30" min="1" max="1440">' +
+      '<button class="btn warn sm" id="techTimerStart">▶️ Запустить</button>' +
+      '<button class="btn ghost sm" id="techTimerCancel">⏹ Отмена</button>' +
+    '</div>' +
+    '<div class="form-hint" id="techTimerInfo">Неактивно</div>';
+  techPanel.appendChild(scheduler);
+
+  var timerHandle = null;
+  var timerEndsAt = 0;
+
+  $("techTimerStart").addEventListener("click", function(){
+    var mins = parseInt($("techTimerMin").value, 10) || 30;
+    if(mins < 1 || mins > 1440) return toast("От 1 до 1440 минут", "error");
+
+    if(!confirm("Включить техрежим через " + mins + " мин?\n\n⚠️ Работает только пока эта вкладка открыта!")) return;
+
+    timerEndsAt = Date.now() + mins * 60000;
+    if(timerHandle) clearInterval(timerHandle);
+
+    timerHandle = setInterval(async function(){
+      var left = timerEndsAt - Date.now();
+      if(left <= 0){
+        clearInterval(timerHandle);
+        timerHandle = null;
+        $("techTimerInfo").textContent = "Активация...";
+        try {
+          var msg = ($("techMessage").value || "").trim() || "🛠 Идут технические работы. Мы скоро вернёмся!";
+          await api("/api/admin/tech-toggle", { enable: true, message: msg });
+          toast("🛠 Техрежим включён по расписанию!", "warn");
+          loadTechStatus();
+          $("techTimerInfo").textContent = "✅ Активировано";
+        } catch(e){
+          toast("❌ " + e.message, "error");
+          $("techTimerInfo").textContent = "❌ Ошибка";
+        }
+        return;
+      }
+      var mins = Math.floor(left / 60000);
+      var secs = Math.floor((left % 60000) / 1000);
+      $("techTimerInfo").textContent = "⏳ Осталось: " + mins + ":" + (secs < 10 ? "0" : "") + secs;
+    }, 1000);
+
+    toast("⏰ Планировщик запущен на " + mins + " мин", "success");
+  });
+
+  $("techTimerCancel").addEventListener("click", function(){
+    if(timerHandle){
+      clearInterval(timerHandle);
+      timerHandle = null;
+      $("techTimerInfo").textContent = "Отменено";
+      toast("⏹ Планировщик отменён", "info");
+    }
+  });
+})();
+
+// ---------- ФИЛЬТР И ПОИСК В ЛОГАХ ----------
+// Расширим viewLogs — добавим UI фильтра
+(function(){
+  var toolsBox = $("toolsOutput");
+  if(!toolsBox) return;
+
+  var logsPanel = document.createElement("div");
+  logsPanel.id = "logsFilterPanel";
+  logsPanel.style.cssText = "display:none;margin-top:12px;padding:12px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;";
+  logsPanel.innerHTML =
+    '<div class="search-bar" style="margin-bottom:8px;">' +
+      '<input type="text" class="search-input" id="logsSearch" placeholder="🔍 Поиск по действию или нику...">' +
+      '<select class="search-input" id="logsTypeFilter" style="flex:0;min-width:140px;">' +
+        '<option value="all">Все действия</option>' +
+        '<option value="ban">Баны</option>' +
+        '<option value="mute">Муты</option>' +
+        '<option value="coins">Монеты</option>' +
+        '<option value="post">Посты</option>' +
+        '<option value="tech">Техрежим</option>' +
+        '<option value="login">Логины</option>' +
+      '</select>' +
+    '</div>' +
+    '<div id="logsList" class="log-list"></div>';
+  toolsBox.parentNode.appendChild(logsPanel);
+})();
+
+// Перехватим кнопку viewLogs
+document.addEventListener("click", function(e){
+  if(e.target.id === "viewLogs"){
+    setTimeout(async function(){
+      var panel = $("logsFilterPanel");
+      if(panel) panel.style.display = "block";
+      await renderLogsFiltered();
+    }, 300);
+  }
+});
+
+async function renderLogsFiltered(){
+  var box = $("logsList");
+  if(!box) return;
+  box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
+  try {
+    var r = await api("/api/admin/logs");
+    var logs = r.logs || [];
+    state.logs = logs;
+    applyLogsFilter();
+  } catch(e){
+    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+function applyLogsFilter(){
+  var box = $("logsList");
+  if(!box) return;
+  var search = ($("logsSearch") ? $("logsSearch").value : "").toLowerCase().trim();
+  var type = $("logsTypeFilter") ? $("logsTypeFilter").value : "all";
+
+  var list = state.logs.slice();
+  if(search) list = list.filter(function(l){
+    return (l.action || "").toLowerCase().indexOf(search) !== -1 ||
+           (l.detail || "").toLowerCase().indexOf(search) !== -1;
+  });
+  if(type !== "all"){
+    list = list.filter(function(l){
+      var a = (l.action || "").toLowerCase();
+      if(type === "ban") return a.indexOf("ban") !== -1;
+      if(type === "mute") return a.indexOf("mute") !== -1;
+      if(type === "coins") return a.indexOf("coin") !== -1;
+      if(type === "post") return a.indexOf("post") !== -1;
+      if(type === "tech") return a.indexOf("tech") !== -1;
+      if(type === "login") return a.indexOf("login") !== -1;
+      return true;
+    });
+  }
+
+  if(!list.length){
+    box.innerHTML = '<div class="empty">Нет записей</div>';
+    return;
+  }
+  box.innerHTML = "";
+  list.slice(0, 200).forEach(function(l){
+    var el = document.createElement("div");
+    el.className = "log-item";
+    el.innerHTML =
+      '<div><span class="log-time">' + timeAgo(l.time) + '</span>' +
+      '<span class="log-action">' + escapeHtml(l.action) + '</span>' +
+      '<span style="font-size:.66rem;color:var(--txt-3);">[' + escapeHtml(l.role || "?") + ']</span></div>' +
+      '<div class="log-detail">' + escapeHtml(l.detail) + '</div>';
+    box.appendChild(el);
+  });
+}
+
+document.addEventListener("input", function(e){
+  if(e.target.id === "logsSearch") applyLogsFilter();
+});
+document.addEventListener("change", function(e){
+  if(e.target.id === "logsTypeFilter") applyLogsFilter();
+});
+
+// ---------- ПРОВЕРКА ДУБЛИКАТОВ НИКОВ ----------
+(function(){
+  var usersBox = $("usersList");
+  if(!usersBox) return;
+  var header = usersBox.previousElementSibling;
+  if(!header) return;
+  var actions = header.querySelector(".section-actions");
+  if(!actions || actions.querySelector("#checkDupes")) return;
+
+  var btn = document.createElement("button");
+  btn.className = "btn ghost sm";
+  btn.id = "checkDupes";
+  btn.textContent = "🔍 Дубликаты";
+  actions.appendChild(btn);
+
+  btn.addEventListener("click", async function(){
+    if(!state.users.length){
+      try { var r = await api("/api/admin/users"); state.users = r.users || []; }
+      catch(e){ return toast("❌ " + e.message, "error"); }
+    }
+    var map = {};
+    state.users.forEach(function(u){
+      var k = u.nick.toLowerCase();
+      map[k] = (map[k] || 0) + 1;
+    });
+    var dupes = Object.keys(map).filter(function(k){ return map[k] > 1; });
+
+    if(!dupes.length){
+      openModal("🔍 Дубликаты", '<div class="empty"><span class="empty-icon">✅</span>Дубликатов не найдено</div>');
+    } else {
+      var html = '<div style="font-size:.85rem;margin-bottom:12px;">Найдено <b style="color:var(--danger);">' + dupes.length + '</b> дубликатов:</div>';
+      html += '<div class="log-list">';
+      dupes.forEach(function(d){
+        var users = state.users.filter(function(u){ return u.nick.toLowerCase() === d; });
+        html += '<div class="log-item" style="border-left-color:var(--danger);">' +
+          '<div style="font-weight:800;color:var(--danger);">' + escapeHtml(d) + ' (' + users.length + ')</div>' +
+          users.map(function(u){ return '<div style="font-size:.72rem;color:var(--txt-3);">ID: ' + escapeHtml(u.id) + ' · Создан: ' + fmtDateShort(u.createdAt) + '</div>'; }).join("") +
+        '</div>';
+      });
+      html += '</div>';
+      openModal("🔍 Дубликаты", html);
+    }
+  });
+})();
+
+// ---------- «МЁРТВЫЕ» АККАУНТЫ ----------
+(function(){
+  var usersBox = $("usersList");
+  if(!usersBox) return;
+  var header = usersBox.previousElementSibling;
+  if(!header) return;
+  var actions = header.querySelector(".section-actions");
+  if(!actions || actions.querySelector("#deadAccounts")) return;
+
+  var btn = document.createElement("button");
+  btn.className = "btn ghost sm";
+  btn.id = "deadAccounts";
+  btn.textContent = "💀 Мёртвые";
+  actions.appendChild(btn);
+
+  btn.addEventListener("click", function(){
+    var days = parseInt(prompt("Не заходили сколько дней? (по createdAt)", "30"), 10);
+    if(!days || days < 1) return;
+    if(!state.users.length) return toast("Сначала загрузи список", "error");
+
+    var cutoff = Date.now() - days * 86400000;
+    var dead = state.users.filter(function(u){
+      return (u.createdAt || 0) < cutoff;
+    });
+
+    var html = '<div style="font-size:.85rem;margin-bottom:12px;">Аккаунтов старше <b>' + days + '</b> дней: <b style="color:var(--danger);">' + dead.length + '</b></div>';
+    if(dead.length){
+      html += '<div class="log-list" style="max-height:400px;">';
+      dead.slice(0, 100).forEach(function(u){
+        html += '<div class="log-item" style="border-left-color:var(--txt-3);">' +
+          '<div><b>' + escapeHtml(u.nick) + '</b> <span style="font-size:.7rem;color:var(--txt-3);">🪙 ' + (u.coins||0) + '</span></div>' +
+          '<div style="font-size:.7rem;color:var(--txt-3);">Создан: ' + fmtDate(u.createdAt) + '</div>' +
+        '</div>';
+      });
+      if(dead.length > 100) html += '<div style="text-align:center;padding:10px;color:var(--txt-3);">...и ещё ' + (dead.length - 100) + '</div>';
+      html += '</div>';
+    } else {
+      html += '<div class="empty">Мёртвых аккаунтов нет</div>';
+    }
+    openModal("💀 Мёртвые аккаунты", html);
+  });
+})();
+
+// ---------- СРАВНЕНИЕ ЮЗЕРОВ ----------
+(function(){
+  var usersBox = $("usersList");
+  if(!usersBox) return;
+  var header = usersBox.previousElementSibling;
+  if(!header) return;
+  var actions = header.querySelector(".section-actions");
+  if(!actions || actions.querySelector("#compareUsers")) return;
+
+  var btn = document.createElement("button");
+  btn.className = "btn ghost sm";
+  btn.id = "compareUsers";
+  btn.textContent = "⚖️ Сравнить";
+  actions.appendChild(btn);
+
+  btn.addEventListener("click", function(){
+    openModal("⚖️ Сравнить пользователей",
+      '<div class="form-group"><label class="form-label">Ник #1</label>' +
+        '<input type="text" class="form-input" id="cmp1" placeholder="Ник"></div>' +
+      '<div class="form-group"><label class="form-label">Ник #2</label>' +
+        '<input type="text" class="form-input" id="cmp2" placeholder="Ник"></div>' +
+      '<div class="form-actions">' +
+        '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
+        '<button class="btn success" id="cmpGo">⚖️ Сравнить</button></div>'
+    );
+    $("cmpGo").addEventListener("click", async function(){
+      var n1 = $("cmp1").value.trim();
+      var n2 = $("cmp2").value.trim();
+      if(!n1 || !n2) return toast("Введи оба ника", "error");
+      try {
+        var r1 = await api("/api/admin/user-detail", { nick: n1 });
+        var r2 = await api("/api/admin/user-detail", { nick: n2 });
+        var u1 = r1.user, u2 = r2.user;
+        var rows = [
+          ["🪙 Монеты", u1.coins || 0, u2.coins || 0],
+          ["⭐ Оценки", u1.ratings || 0, u2.ratings || 0],
+          ["💬 Комментарии", u1.comments || 0, u2.comments || 0],
+          ["📅 Дата регистрации", fmtDateShort(u1.createdAt), fmtDateShort(u2.createdAt)],
+          ["🎨 Аватарок", (u1.ownedAvatars || []).length, (u2.ownedAvatars || []).length],
+          ["💎 WIP", u1.wipUntil > Date.now() ? "Да" : "Нет", u2.wipUntil > Date.now() ? "Да" : "Нет"],
+          ["🚫 Бан", u1.banned ? "Да" : "Нет", u2.banned ? "Да" : "Нет"],
+          ["🔕 Мут", u1.muted && u1.mutedUntil > Date.now() ? "Да" : "Нет", u2.muted && u2.mutedUntil > Date.now() ? "Да" : "Нет"],
+        ];
+        var html = '<div class="table-wrap"><table>' +
+          '<thead><tr><th>Метрика</th><th>' + escapeHtml(u1.nick) + '</th><th>' + escapeHtml(u2.nick) + '</th></tr></thead><tbody>';
+        rows.forEach(function(row){
+          var v1 = String(row[1]), v2 = String(row[2]);
+          var isNum = !isNaN(parseFloat(v1)) && !isNaN(parseFloat(v2));
+          var hl1 = "", hl2 = "";
+          if(isNum){
+            var n1v = parseFloat(v1), n2v = parseFloat(v2);
+            if(n1v > n2v) hl1 = 'style="color:var(--success);font-weight:800;"';
+            else if(n2v > n1v) hl2 = 'style="color:var(--success);font-weight:800;"';
+          }
+          html += '<tr><td>' + row[0] + '</td><td ' + hl1 + '>' + escapeHtml(v1) + '</td><td ' + hl2 + '>' + escapeHtml(v2) + '</td></tr>';
+        });
+        html += '</tbody></table></div>';
+        openModal("⚖️ " + u1.nick + " vs " + u2.nick, html);
+      } catch(e){ toast("❌ " + e.message, "error"); }
+    });
+  });
+})();
+
+// ---------- АВТОБЭКАП РАЗ В ЧАС ----------
+(function(){
+  var LAST_BACKUP_KEY = "artamon_last_backup_v1";
+  var ONE_HOUR = 60 * 60 * 1000;
+
+  async function tryAutoBackup(){
+    try {
+      var last = parseInt(localStorage.getItem(LAST_BACKUP_KEY) || "0", 10);
+      if(Date.now() - last < ONE_HOUR) return;
+      var r = await api("/api/admin/kv-dump");
+      var data = JSON.stringify(r.dump, null, 2);
+      var blob = new Blob([data], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = "artamon-autobackup-" + new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19) + ".json";
+      a.click();
+      URL.revokeObjectURL(url);
+      localStorage.setItem(LAST_BACKUP_KEY, String(Date.now()));
+      toast("💾 Автобэкап создан", "success");
+    } catch(e){}
+  }
+
+  // Проверяем сразу и потом каждые 10 минут
+  if(state.password){
+    setTimeout(tryAutoBackup, 5000);
+    setInterval(tryAutoBackup, 10 * 60 * 1000);
+  }
+
+  // Также при логине
+  var origTryLogin = window.tryLogin;
+  window.tryLogin = async function(){
+    await origTryLogin.apply(this, arguments);
+    if(state.password){
+      setTimeout(tryAutoBackup, 10000);
+    }
+  };
+})();
+
+// ---------- КОМПАКТНЫЙ РЕЖИМ ----------
+(function(){
+  var compact = false;
+  var btn = document.createElement("button");
+  btn.className = "btn ghost sm";
+  btn.id = "compactToggle";
+  btn.textContent = "📏 Компактно";
+  btn.style.cssText = "position:fixed;bottom:20px;left:20px;z-index:100;";
+  document.body.appendChild(btn);
+
+  btn.addEventListener("click", function(){
+    compact = !compact;
+    if(compact){
+      document.body.style.setProperty("--compact", "1");
+      var style = document.getElementById("compactStyle");
+      if(!style){
+        style = document.createElement("style");
+        style.id = "compactStyle";
+        style.textContent = ".user-card{padding:6px 10px!important;} .user-avatar{width:32px!important;height:32px!important;font-size:1.1rem!important;} .section{padding:10px!important;} .stat-card{padding:10px!important;} .stat-card .num{font-size:1.3rem!important;}";
+        document.head.appendChild(style);
+      }
+      btn.textContent = "📏 Обычно";
+      toast("📏 Компактный режим", "success");
+    } else {
+      var style = document.getElementById("compactStyle");
+      if(style) style.remove();
+      btn.textContent = "📏 Компактно";
+      toast("📏 Обычный режим", "success");
+    }
+    try { localStorage.setItem("artamon_compact", compact ? "1" : "0"); }catch(e){}
+  });
+
+  // Восстановить при загрузке
+  try {
+    if(localStorage.getItem("artamon_compact") === "1"){
+      setTimeout(function(){ btn.click(); }, 1000);
+    }
+  }catch(e){}
+})();
+
+// ---------- ГОРЯЧИЕ КЛАВИШИ ----------
+document.addEventListener("keydown", function(e){
+  // Не срабатывают, если фокус в input/textarea
+  if(e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT") return;
+  if(e.ctrlKey || e.metaKey || e.altKey) return;
+
+  if(e.key === "Escape"){
+    closeModal();
+  } else if(e.key === "b" || e.key === "B" || e.key === "и" || e.key === "И"){
+    // Быстрый бан — открыть вкладку Баны
+    switchTab("bans");
+    setTimeout(function(){ var el = $("banNick"); if(el) el.focus(); }, 200);
+  } else if(e.key === "m" || e.key === "M" || e.key === "ь" || e.key === "Ь"){
+    // Быстрый мут
+    switchTab("bans");
+    setTimeout(function(){ var el = $("muteNick"); if(el) el.focus(); }, 200);
+  } else if(e.key === "u" || e.key === "U" || e.key === "г" || e.key === "Г"){
+    // Пользователи
+    switchTab("users");
+  } else if(e.key === "t" || e.key === "T" || e.key === "е" || e.key === "Е"){
+    // Тикеты
+    switchTab("tickets");
+  }
+});
+
+console.log("✅ Расширения 3/4-B загружены: bulk, CSV, история техрежима, генератор, планировщик, фильтры, дубликаты, мёртвые, сравнение, автобэкап, компактный, горячие клавиши");
+</script>
+<script>
+// ============================================================
+// ARTAMON ADMIN v2.7.1 — ФИНАЛЬНЫЕ ФИШКИ
+// Часть 2/2: Уведомления, Konami, Быстрые команды, Бэкап
+// ============================================================
+
+// ---------- УВЕДОМЛЕНИЯ НА ДЕСКТОПЕ ----------
+var NOTIF_PERMISSION_KEY = "artamon_notif_requested_v1";
+var lastSeenTicketsCount = null;
+var lastSeenBansCount = null;
+
+function requestNotificationPermission(){
+  if(!("Notification" in window)) return;
+  if(Notification.permission === "granted") return;
+  if(localStorage.getItem(NOTIF_PERMISSION_KEY) === "1") return;
+  Notification.requestPermission().then(function(p){
+    localStorage.setItem(NOTIF_PERMISSION_KEY, "1");
+    if(p === "granted") toast("🔔 Уведомления включены", "success");
+  }).catch(function(){});
+}
+
+function desktopNotify(title, body){
+  if(!("Notification" in window)) return;
+  if(Notification.permission !== "granted") return;
+  try {
+    var n = new Notification(title, {
+      body: body,
+      icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>",
+    });
+    setTimeout(function(){ n.close(); }, 8000);
+  } catch(e){}
+}
+
+// Периодическая проверка тикетов/банов
+async function checkForUpdates(){
+  if(!state.password) return;
+  try {
+    var r = await api("/api/admin/stats");
+    var s = r.stats || {};
+    var ticketsOpen = s.ticketsOpen || 0;
+    var bansCount = s.bansCount || 0;
+
+    if(lastSeenTicketsCount !== null && ticketsOpen > lastSeenTicketsCount){
+      desktopNotify("🎫 Новый тикет!", "Открытых тикетов: " + ticketsOpen);
+      toast("🎫 Новый тикет!", "warn");
+    }
+    if(lastSeenBansCount !== null && bansCount > lastSeenBansCount){
+      desktopNotify("🚫 Новый бан", "Забанено: " + bansCount);
+    }
+    lastSeenTicketsCount = ticketsOpen;
+    lastSeenBansCount = bansCount;
+  } catch(e){}
+}
+
+// После логина
+(function(){
+  var origTryLogin = window.tryLogin;
+  window.tryLogin = async function(){
+    await origTryLogin.apply(this, arguments);
+    if(state.password){
+      requestNotificationPermission();
+      // Первая инициализация без уведомлений
+      setTimeout(async function(){
+        try {
+          var r = await api("/api/admin/stats");
+          var s = r.stats || {};
+          lastSeenTicketsCount = s.ticketsOpen || 0;
+          lastSeenBansCount = s.bansCount || 0;
+        } catch(e){}
+      }, 2000);
+      // Проверка раз в 2 минуты
+      setInterval(checkForUpdates, 120000);
+    }
+  };
+})();
+
+// ---------- KONAMI CODE ПАСХАЛКА ----------
+(function(){
+  var code = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];
+  var pos = 0;
+  document.addEventListener("keydown", function(e){
+    if(e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+    var key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if(key === code[pos].toLowerCase()){
+      pos++;
+      if(pos === code.length){
+        pos = 0;
+        activateKonami();
+      }
+    } else {
+      pos = 0;
+    }
+  });
+
+  function activateKonami(){
+    // Пасхалка: показать секретную панель
+    var html =
+      '<div style="text-align:center;padding:20px 0;">' +
+        '<div style="font-size:4rem;margin-bottom:16px;">🎉</div>' +
+        '<div style="font-size:1.4rem;font-weight:900;color:var(--gold-2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;">' +
+          'Секретная панель!' +
+        '</div>' +
+        '<div style="font-size:.85rem;color:var(--txt-2);line-height:1.6;margin-bottom:20px;">' +
+          'Ты нашёл пасхалку 🥳<br>Вот тебе немного статистики:<br><br>' +
+          '<b style="color:var(--gold-2);">Пользователей:</b> ' + state.users.length + '<br>' +
+          '<b style="color:var(--gold-2);">Тикетов:</b> ' + state.tickets.length + '<br>' +
+          '<b style="color:var(--gold-2);">Промокодов:</b> ' + state.promos.length + '<br>' +
+          '<b style="color:var(--gold-2);">Банов:</b> ' + state.bans.length +
+        '</div>' +
+        '<div style="font-family:ui-monospace,monospace;font-size:.72rem;color:var(--txt-3);padding:12px;background:var(--bg-2);border-radius:8px;">' +
+          '↑↑↓↓←→←→BA<br>Разработано для Artamon 2.7' +
+        '</div>' +
+      '</div>';
+    openModal("🥚 Пасхалка", html);
+    toast("🎉 Konami code!", "success");
+    document.body.style.animation = "pulse 0.5s 3";
+    setTimeout(function(){ document.body.style.animation = ""; }, 1600);
+  }
+})();
+
+// ---------- БЫСТРЫЕ КОМАНДЫ ----------
+// Вверху страницы — командная строка (Ctrl+K)
+(function(){
+  var cmdBar = document.createElement("div");
+  cmdBar.id = "cmdBar";
+  cmdBar.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:9500;display:none;align-items:flex-start;justify-content:center;padding:100px 20px 20px;";
+  cmdBar.innerHTML =
+    '<div style="max-width:600px;width:100%;background:var(--card-1);border:2px solid var(--gold-2);border-radius:16px;padding:20px;">' +
+      '<div style="font-size:.7rem;color:var(--txt-3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">Быстрая команда</div>' +
+      '<input type="text" id="cmdInput" class="form-input" placeholder="/ban nick причина | /mute nick hours | /coins nick amount | /nick old new | /help" style="font-family:ui-monospace,monospace;font-size:1rem;margin-bottom:14px;">' +
+      '<div id="cmdHint" style="font-size:.78rem;color:var(--txt-2);line-height:1.6;margin-bottom:14px;">' +
+        '<b>/ban</b> ник [часы] [причина] — забанить<br>' +
+        '<b>/mute</b> ник [часы] — замутить<br>' +
+        '<b>/coins</b> ник число — выдать монеты<br>' +
+        '<b>/nick</b> старый новый — сменить ник<br>' +
+        '<b>/help</b> — справка' +
+      '</div>' +
+      '<div class="form-actions" style="margin-top:0;">' +
+        '<button class="btn ghost" id="cmdCancel">Отмена (Esc)</button>' +
+        '<button class="btn success" id="cmdRun">▶️ Выполнить</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(cmdBar);
+
+  var cmdInput = $("cmdInput");
+
+  function openCmd(){
+    cmdBar.style.display = "flex";
+    setTimeout(function(){ cmdInput.focus(); }, 50);
+  }
+  function closeCmd(){
+    cmdBar.style.display = "none";
+    cmdInput.value = "";
+  }
+
+  $("cmdCancel").addEventListener("click", closeCmd);
+  cmdBar.addEventListener("click", function(e){
+    if(e.target === cmdBar) closeCmd();
+  });
+
+  cmdInput.addEventListener("keydown", function(e){
+    if(e.key === "Enter") runCmd();
+    if(e.key === "Escape") closeCmd();
+  });
+  $("cmdRun").addEventListener("click", runCmd);
+
+  async function runCmd(){
+    var line = cmdInput.value.trim();
+    if(!line) return;
+    var parts = line.split(/\s+/);
+    var cmd = parts[0].toLowerCase();
+
+    try {
+      if(cmd === "/help"){
+        toast("ℹ️ Доступно: /ban /mute /coins /nick /help", "info");
+        return;
+      }
+      if(cmd === "/ban"){
+        var nick = parts[1];
+        var hours = parseInt(parts[2], 10) || 24;
+        var reason = parts.slice(3).join(" ") || "Без причины";
+        if(!nick) return toast("Укажи ник", "error");
+        await api("/api/admin/ban", { nick: nick, hours: hours, reason: reason });
+        toast("🚫 " + nick + " забанен на " + hours + "ч", "success");
+        closeCmd();
+        if(state.currentTab === "users") loadUsers();
+        if(state.currentTab === "bans") loadBans();
+        loadStats();
+      } else if(cmd === "/mute"){
+        var nick2 = parts[1];
+        var hours2 = parseInt(parts[2], 10) || 1;
+        if(!nick2) return toast("Укажи ник", "error");
+        await api("/api/admin/mute", { nick: nick2, hours: hours2 });
+        toast("🔕 " + nick2 + " в муте на " + hours2 + "ч", "success");
+        closeCmd();
+        if(state.currentTab === "users") loadUsers();
+        loadStats();
+      } else if(cmd === "/coins"){
+        var nick3 = parts[1];
+        var amount = parseInt(parts[2], 10);
+        if(!nick3 || !amount) return toast("Формат: /coins ник число", "error");
+        await api("/api/admin/give-coins", { nick: nick3, amount: amount, mode: "add" });
+        toast("🪙 +" + amount + " к " + nick3, "success");
+        closeCmd();
+        if(state.currentTab === "users") loadUsers();
+        loadStats();
+      } else if(cmd === "/nick"){
+        var oldN = parts[1];
+        var newN = parts[2];
+        if(!oldN || !newN) return toast("Формат: /nick старый новый", "error");
+        await api("/api/admin/change-nick", { oldNick: oldN, newNick: newN });
+        toast("✏️ Ник изменён", "success");
+        closeCmd();
+        if(state.currentTab === "users") loadUsers();
+      } else {
+        toast("❌ Неизвестная команда. /help", "error");
+      }
+    } catch(e){
+      toast("❌ " + e.message, "error");
+    }
+  }
+
+  // Ctrl+K / Cmd+K — открыть
+  document.addEventListener("keydown", function(e){
+    if((e.ctrlKey || e.metaKey) && e.key === "k"){
+      e.preventDefault();
+      openCmd();
+    }
+    if(e.key === "Escape" && cmdBar.style.display === "flex"){
+      closeCmd();
+    }
+  });
+
+  // Кнопка в topbar
+  setTimeout(function(){
+    var topbar = document.querySelector(".topbar");
+    if(!topbar) return;
+    var btn = document.createElement("button");
+    btn.className = "btn ghost sm";
+    btn.id = "cmdBarBtn";
+    btn.innerHTML = "⌘K";
+    btn.style.cssText = "margin-right:8px;font-family:ui-monospace,monospace;";
+    btn.title = "Быстрая команда (Ctrl+K)";
+    btn.addEventListener("click", openCmd);
+    topbar.insertBefore(btn, topbar.firstChild.nextSibling);
+  }, 800);
+})();
+
+// ---------- МИНИ-ГРАФИК АКТИВНОСТИ ЗА 30 ДНЕЙ ----------
+// Добавим в раздел "Статистика" мини-график (упрощённый, без новой ручки)
+(function(){
+  var origSwitchTab = window.switchTab;
+  window.switchTab = function(tab){
+    origSwitchTab.apply(this, arguments);
+    if(tab === "stats"){
+      setTimeout(renderActivityChart, 300);
+    }
+  };
+
+  async function renderActivityChart(){
+    var content = document.querySelector('.tab-content[data-tab="stats"]');
+    if(!content) return;
+    if($("activityChartSection")) return;
+
+    var section = document.createElement("div");
+    section.className = "section";
+    section.id = "activityChartSection";
+    section.innerHTML =
+      '<div class="section-header">' +
+        '<div class="section-title">📊 Активность (7 дней)</div>' +
+        '<button class="btn ghost sm" id="reloadActivityChart">🔄</button>' +
+      '</div>' +
+      '<div class="chart-container" id="activityChart" style="height:160px;">' +
+        '<div class="loading"><div class="spinner"></div>Загрузка...</div>' +
+      '</div>';
+
+    content.insertBefore(section, content.firstChild);
+
+    $("reloadActivityChart").addEventListener("click", loadActivityData);
+    await loadActivityData();
+  }
+
+  async function loadActivityData(){
+    var box = $("activityChart");
+    if(!box) return;
+    box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
+    try {
+      var r = await api("/api/admin/registrations-chart");
+      var chart = r.chart || [];
+      if(!chart.length){ box.innerHTML = '<div class="empty">Нет данных</div>'; return; }
+      var max = Math.max.apply(null, chart.map(function(c){ return c.count; }).concat([1]));
+      box.innerHTML = chart.map(function(c){
+        var h = Math.max((c.count / max) * 100, 4);
+        return '<div class="chart-bar" style="height:' + h + '%">' +
+          '<div class="chart-value">' + c.count + '</div>' +
+          '<div class="chart-label">' + c.date.slice(5) + '</div>' +
+        '</div>';
+      }).join("");
+    } catch(e){
+      box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
+    }
+  }
+})();
+
+// ---------- ЭКСПОРТ ВСЕЙ БД В ОДИН КЛИК ----------
+(function(){
+  var origSwitchTab = window.switchTab;
+  window.switchTab = function(tab){
+    origSwitchTab.apply(this, arguments);
+    if(tab === "data"){
+      setTimeout(function(){
+        var section = document.querySelector('.tab-content[data-tab="data"] .section');
+        if(!section || $("exportFullBtn")) return;
+        var actions = section.querySelector(".section-actions");
+        if(!actions) return;
+        var btn = document.createElement("button");
+        btn.className = "btn success";
+        btn.id = "exportFullBtn";
+        btn.textContent = "📦 Полный экспорт (все данные)";
+        actions.appendChild(btn);
+
+        btn.addEventListener("click", async function(){
+          if(!confirm("Скачать полный экспорт всех данных?\n\nЭто может занять несколько секунд.")) return;
+          try {
+            var results = {};
+            var endpoints = [
+              ["users", "/api/admin/users"],
+              ["bans", "/api/admin/bans"],
+              ["posts", "/api/admin/posts"],
+              ["promos", "/api/admin/promo-list"],
+              ["tickets", "/api/admin/tickets"],
+              ["broadcasts", "/api/admin/broadcast-list"],
+              ["logs", "/api/admin/logs"],
+              ["stats", "/api/admin/stats"],
+            ];
+            for(var i = 0; i < endpoints.length; i++){
+              try {
+                var r = await api(endpoints[i][1]);
+                results[endpoints[i][0]] = r;
+              } catch(e){ results[endpoints[i][0]] = { error: e.message }; }
+            }
+            var full = {
+              exportedAt: new Date().toISOString(),
+              version: "2.7.1",
+              data: results
+            };
+            var blob = new Blob([JSON.stringify(full, null, 2)], { type: "application/json" });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = "artamon-full-export-" + new Date().toISOString().slice(0,10) + ".json";
+            a.click();
+            URL.revokeObjectURL(url);
+            toast("📦 Полный экспорт скачан", "success");
+          } catch(e){
+            toast("❌ " + e.message, "error");
+          }
+        });
+      }, 300);
+    }
+  };
+})();
+
+// ---------- ПОДСВЕТКА "СВОИХ" ЮЗЕРОВ ----------
+// Юзеры с тегом "👤 свой" подсвечиваются зелёным слева
+(function(){
+  setInterval(function(){
+    var tags = getTags();
+    document.querySelectorAll(".user-card").forEach(function(card){
+      var nickEl = card.querySelector(".user-nick");
+      if(!nickEl) return;
+      var nick = nickEl.textContent.trim().replace(" ⭐", "");
+      var userTags = tags[nick] || [];
+      if(userTags.indexOf("👤 свой") !== -1 || userTags.indexOf("💎 VIP") !== -1){
+        card.style.borderLeftColor = "var(--success)";
+        card.style.borderLeftWidth = "3px";
+      }
+    });
+  }, 2000);
+})();
+
+console.log("✅ Финальные фишки 3/4-C загружены: заметки, теги, избранные, уведомления, Konami, команды, мини-график, полный экспорт");
+</script>
 </body>
 </html>
