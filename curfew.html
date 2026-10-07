@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#f87171">
+<title>🚨 Комендантский час — Artamon</title>
+<style>
+:root {
+  --bg-0: #050507;
+  --bg-1: #0a0505;
+  --bg-2: #1a0a0a;
+  --red: #f87171;
+  --red-bright: #fca5a5;
+  --red-dark: #991b1b;
+  --txt-1: #e8e8f0;
+  --txt-2: #8888a0;
+  --txt-3: #555568;
+  --border: #4a2020;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+  min-height: 100vh;
+  background: var(--bg-0);
+  color: var(--txt-1);
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  line-height: 1.5;
+  overflow: hidden;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(248,113,113,.12) 0%, transparent 55%),
+    radial-gradient(circle at 50% 80%, rgba(153,27,27,.15) 0%, transparent 60%),
+    var(--bg-0);
+  position: relative;
+}
+/* Пульсирующие круги */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  border: 2px solid rgba(248,113,113,.15);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: pulse-circle 3s ease-out infinite;
+}
+body::before { width: 300px; height: 300px; animation-delay: 0s; }
+body::after  { width: 300px; height: 300px; animation-delay: 1.5s; }
+@keyframes pulse-circle {
+  0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(3);   opacity: 0; }
+}
+
+.card {
+  max-width: 520px;
+  width: 100%;
+  background: linear-gradient(180deg, rgba(26,10,10,.96), rgba(10,5,5,.96));
+  border: 2px solid var(--red);
+  border-radius: 24px;
+  padding: 40px 30px;
+  text-align: center;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.7),
+    0 0 60px rgba(248,113,113,.2),
+    inset 0 1px 0 rgba(255,255,255,.05);
+  animation: card-appear .6s cubic-bezier(.5, 1.5, .5, 1);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+@keyframes card-appear {
+  from { opacity: 0; transform: translateY(30px) scale(.92); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Верхняя полоса */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+    transparent, var(--red), var(--red-bright), var(--red), transparent);
+  animation: stripe-shift 2s linear infinite;
+  background-size: 200% 100%;
+}
+@keyframes stripe-shift {
+  0%   { background-position: -100% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.siren {
+  font-size: 5.5rem;
+  display: block;
+  margin-bottom: 20px;
+  animation: siren-pulse 1.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(248,113,113,.7));
+  line-height: 1;
+}
+@keyframes siren-pulse {
+  0%, 100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 30px rgba(248,113,113,.7)); }
+  50%      { transform: scale(1.15) rotate(-6deg); filter: drop-shadow(0 0 50px rgba(248,113,113,1)); }
+}
+
+.badge {
+  display: inline-block;
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(180deg, var(--red), var(--red-dark));
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 0 20px rgba(248,113,113,.5);
+  animation: badge-flash 1.6s ease-in-out infinite;
+}
+@keyframes badge-flash {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: .6; }
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #fef2f2, var(--red-bright) 50%, var(--red-dark));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 14px;
+  line-height: 1.15;
+  text-shadow: 0 0 40px rgba(248,113,113,.4);
+}
+
+.reason-box {
+  background: rgba(248,113,113,.08);
+  border: 1px solid rgba(248,113,113,.3);
+  border-left: 3px solid var(--red);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  text-align: left;
+}
+.reason-label {
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 6px;
+}
+.reason-text {
+  font-size: .92rem;
+  color: var(--txt-1);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.message {
+  font-size: 1rem;
+  color: var(--txt-1);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.info-cell {
+  background: rgba(0,0,0,.4);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  text-align: left;
+}
+.info-cell .lbl {
+  font-size: .6rem;
+  color: var(--txt-3);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.info-cell .val {
+  font-size: .8rem;
+  color: var(--txt-1);
+  font-weight: 700;
+  font-family: ui-monospace, monospace;
+}
+.info-cell .val.red { color: var(--red-bright); }
+.info-cell .val.green { color: #4ade80; }
+
+.timer {
+  background: linear-gradient(180deg, rgba(248,113,113,.15), rgba(248,113,113,.03));
+  border: 1.5px solid var(--red);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.timer .lbl {
+  font-size: .68rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--txt-2);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.timer .val {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--red-bright);
+  font-family: ui-monospace, monospace;
+  letter-spacing: .05em;
+  text-shadow: 0 0 20px rgba(248,113,113,.5);
+}
+.timer .val.ended { color: #4ade80; text-shadow: 0 0 20px rgba(74,222,128,.5); }
+
+.status-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: .74rem;
+  color: var(--txt-3);
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+.status-line .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--txt-3);
+}
+.status-line .dot.on {
+  background: #4ade80;
+  box-shadow: 0 0 10px #4ade80;
+  animation: pulse-dot 2s infinite;
+}
+.status-line .dot.off {
+  background: var(--red);
+  box-shadow: 0 0 10px var(--red);
+}
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.3); }
+}
+
+.footer {
+  margin-top: 24px;
+  font-size: .68rem;
+  color: var(--txt-3);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.footer b {
+  background: linear-gradient(180deg, var(--red-bright), var(--red));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 900;
+}
+
+/* Мобильный */
+@media (max-width: 480px) {
+  .card { padding: 32px 20px; }
+  .siren { font-size: 4rem; }
+  .title { font-size: 1.3rem; }
+  .timer .val { font-size: 1.5rem; }
+  .info-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <span class="siren">🚨</span>
+  <span class="badge">Emergency Mode</span>
+  <h1 class="title">Комендантский час</h1>
+
+  <div class="reason-box" id="reasonBox" style="display: none;">
+    <div class="reason-label">📌 Причина</div>
+    <div class="reason-text" id="reasonText">—</div>
+  </div>
+
+  <div class="message" id="messageText">Загружаем информацию...</div>
+
+  <div class="timer" id="timerBox" style="display: none;">
+    <div class="lbl">⏰ Автоматическое открытие через</div>
+    <div class="val" id="timerValue">--:--:--</div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-cell">
+      <div class="lbl">Статус</div>
+      <div class="val red" id="statusValue">ЗАКРЫТО</div>
+    </div>
+    <div class="info-cell">
+      <div class="lbl">Включён</div>
+      <div class="val" id="enabledAtValue">—</div>
+    </div>
+  </div>
+
+  <div class="status-line">
+    <span class="dot off" id="netDot"></span>
+    <span id="netText">Проверка соединения...</span>
+  </div>
+
+  <div class="footer">
+    Powered by <b>Artamon v2.7</b>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CURFEW.HTML — заглушка комендантского часа
+// ============================================================
+
+var API = "https://artamon-api.artem123kv.workers.dev";
+var CHECK_INTERVAL = 15000; // каждые 15 сек
+var GAME_URL = "index_v4.html"; // куда редиректить при выключении
+
+var timerHandle = null;
+
+function updateNetDot(online) {
+  var dot = document.getElementById("netDot");
+  var txt = document.getElementById("netText");
+  if (online) {
+    dot.className = "dot on";
+    txt.textContent = "Сервер отвечает";
+  } else {
+    dot.className = "dot off";
+    txt.textContent = "Сервер недоступен";
+  }
+}
+
+function formatTime(ts) {
+  var d = new Date(ts);
+  return d.toLocaleString("ru-RU");
+}
+
+function formatCountdown(ms) {
+  if (ms <= 0) return "00:00:00";
+  var total = Math.floor(ms / 1000);
+  var h = Math.floor(total / 3600);
+  var m = Math.floor((total % 3600) / 60);
+  var s = total % 60;
+  function pad(n) { return n < 10 ? "0" + n : String(n); }
+  return pad(h) + ":" + pad(m) + ":" + pad(s);
+}
+
+function startCountdown(until) {
+  var box = document.getElementById("timerBox");
+  var val = document.getElementById("timerValue");
+  if (!until || until <= 0) {
+    box.style.display = "none";
+    if (timerHandle) { clearInterval(timerHandle); timerHandle = null; }
+    return;
+  }
+  box.style.display = "block";
+
+  function tick() {
+    var left = until - Date.now();
+    if (left <= 0) {
+      val.textContent = "00:00:00";
+      val.className = "val ended";
+      if (timerHandle) { clearInterval(timerHandle); timerHandle = null; }
+      return;
+    }
+    val.textContent = formatCountdown(left);
+    val.className = "val";
+  }
+  tick();
+  if (timerHandle) clearInterval(timerHandle);
+  timerHandle = setInterval(tick, 1000);
+}
+
+async function checkCurfew() {
+  try {
+    var r = await fetch(API + "/api/curfew-status?t=" + Date.now(), { cache: "no-store" });
+    var d = await r.json();
+    updateNetDot(true);
+
+    if (!d.ok) {
+      document.getElementById("messageText").textContent = "⚠️ Ошибка сервера. Попробуйте позже.";
+      return;
+    }
+
+    // Комендантский час выключен — можно вернуться в игру
+    if (!d.curfew) {
+      document.getElementById("messageText").textContent = "✅ Комендантский час завершён! Загружаем игру...";
+      document.getElementById("statusValue").textContent = "ОТКРЫТО";
+      document.getElementById("statusValue").className = "val green";
+      setTimeout(function() {
+        window.location.href = GAME_URL;
+      }, 1500);
+      return;
+    }
+
+    // Комендантский час включён
+    document.getElementById("messageText").textContent =
+      d.message || "🚨 Комендантский час. Игра временно закрыта.";
+
+    if (d.reason) {
+      document.getElementById("reasonBox").style.display = "block";
+      document.getElementById("reasonText").textContent = d.reason;
+    } else {
+      document.getElementById("reasonBox").style.display = "none";
+    }
+
+    document.getElementById("enabledAtValue").textContent =
+      d.enabledAt ? formatTime(d.enabledAt) : "—";
+
+    startCountdown(d.until || 0);
+
+  } catch (e) {
+    updateNetDot(false);
+    document.getElementById("messageText").textContent = "⚠️ Не удалось связаться с сервером. Проверьте интернет.";
+  }
+}
+
+// Первая проверка
+checkCurfew();
+
+// Автопроверка каждые 15 сек
+setInterval(checkCurfew, CHECK_INTERVAL);
+
+// При возврате на вкладку — сразу проверяем
+document.addEventListener("visibilitychange", function() {
+  if (!document.hidden) checkCurfew();
+});
+</script>
+</body>
+</html>
