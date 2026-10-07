@@ -1,0 +1,2156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#d4af37">
+<title>🔍 Artamon Debug v8</title>
+<style>
+:root {
+  --bg-0: #050507;
+  --bg-1: #0a0a10;
+  --bg-2: #12121a;
+  --bg-3: #1a1a24;
+  --border: #252532;
+  --border-light: #353545;
+  --txt-1: #e8e8f0;
+  --txt-2: #8888a0;
+  --txt-3: #555568;
+  --gold: #d4af37;
+  --gold-bright: #f6e6a8;
+  --gold-dark: #8f6f1a;
+  --ok: #4ade80;
+  --err: #f87171;
+  --warn: #fbbf24;
+  --info: #60a5fa;
+  --purple: #a78bfa;
+  --cyan: #22d3ee;
+}
+body[data-theme="light"] {
+  --bg-0: #f8fafc;
+  --bg-1: #f1f5f9;
+  --bg-2: #ffffff;
+  --bg-3: #f8fafc;
+  --border: #e2e8f0;
+  --border-light: #cbd5e1;
+  --txt-1: #0f172a;
+  --txt-2: #475569;
+  --txt-3: #94a3b8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+  min-height: 100vh;
+  background: var(--bg-1);
+  color: var(--txt-1);
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  transition: background .3s, color .3s;
+}
+body {
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(212,175,55,.10) 0%, transparent 45%),
+    radial-gradient(circle at 80% 100%, rgba(96,165,250,.06) 0%, transparent 45%);
+  background-attachment: fixed;
+  padding: 16px 14px 60px;
+}
+
+/* ===== ЗВЁЗДЫ НА ФОНЕ ===== */
+.stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: var(--gold);
+  border-radius: 50%;
+  opacity: 0;
+  animation: star-fade 4s infinite;
+}
+@keyframes star-fade {
+  0%, 100% { opacity: 0; }
+  50% { opacity: .6; }
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 20px 16px;
+  margin-bottom: 18px;
+  background: linear-gradient(180deg, rgba(212,175,55,.08), transparent);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  animation: slide-down .5s ease-out;
+}
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,.15), transparent);
+  animation: shine 3s ease-in-out infinite;
+}
+@keyframes shine {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+.header h1 {
+  position: relative;
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold) 50%, var(--gold-dark));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 4px;
+  text-shadow: 0 0 30px rgba(212,175,55,.3);
+}
+.header .version {
+  position: relative;
+  font-size: .68rem;
+  color: var(--txt-3);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.header .net-status {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 4px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: .68rem;
+  color: var(--txt-2);
+  font-weight: 600;
+  letter-spacing: .06em;
+}
+.header .net-status .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--txt-3);
+  transition: all .3s;
+}
+.header .net-status .dot.on {
+  background: var(--ok);
+  box-shadow: 0 0 10px var(--ok);
+  animation: pulse-dot 2s infinite;
+}
+.header .net-status .dot.off {
+  background: var(--err);
+  box-shadow: 0 0 10px var(--err);
+}
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+}
+.theme-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--bg-2);
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: .2s;
+  z-index: 2;
+}
+.theme-btn:hover {
+  border-color: var(--gold);
+  transform: rotate(180deg);
+}
+
+/* ===== GROUP TITLES ===== */
+.group-title {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 4px 12px;
+  font-size: .68rem;
+  font-weight: 900;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0;
+  animation: fade-in .5s ease forwards;
+}
+.group-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border), transparent);
+}
+@keyframes fade-in {
+  to { opacity: 1; }
+}
+
+/* ===== BUTTONS ===== */
+.btn-card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 15px 16px;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--bg-3) 0%, var(--bg-2) 100%);
+  color: var(--txt-1);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: .88rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: all .2s cubic-bezier(.4, 0, .2, 1);
+  overflow: hidden;
+  animation: slide-up .4s ease-out backwards;
+}
+.btn-card:nth-child(1) { animation-delay: .05s; }
+.btn-card:nth-child(2) { animation-delay: .1s; }
+.btn-card:nth-child(3) { animation-delay: .15s; }
+.btn-card:nth-child(4) { animation-delay: .2s; }
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.btn-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,.12), transparent);
+  transform: translateX(-100%);
+  transition: transform .6s;
+}
+.btn-card:hover::before { transform: translateX(100%); }
+.btn-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(212,175,55,.2);
+}
+.btn-card:active { transform: scale(.98); }
+.btn-card:disabled { opacity: .5; cursor: wait; }
+
+.btn-card .icon {
+  font-size: 1.5rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(212,175,55,.1);
+  flex-shrink: 0;
+  transition: .3s;
+}
+.btn-card:hover .icon {
+  background: rgba(212,175,55,.2);
+  transform: scale(1.1) rotate(-5deg);
+}
+.btn-card .label { flex: 1; min-width: 0; }
+.btn-card .label .sub {
+  display: block;
+  font-size: .7rem;
+  color: var(--txt-2);
+  font-weight: 400;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ВАРИАНТЫ */
+.btn-card.primary {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold) 60%, var(--gold-dark));
+  color: #0a0a0a;
+  border-color: var(--gold-bright);
+  font-weight: 900;
+  box-shadow: 0 8px 24px rgba(212,175,55,.3);
+}
+.btn-card.primary:hover {
+  box-shadow: 0 12px 32px rgba(212,175,55,.5);
+}
+.btn-card.primary .icon { background: rgba(0,0,0,.15); }
+.btn-card.primary:hover .icon { background: rgba(0,0,0,.25); }
+.btn-card.primary .label .sub { color: rgba(0,0,0,.65); }
+
+.btn-card.danger {
+  background: linear-gradient(135deg, #2a1010, #1a0808);
+  border-color: #4a2020;
+  color: #fecaca;
+}
+.btn-card.danger:hover {
+  border-color: var(--err);
+  box-shadow: 0 8px 24px rgba(248,113,113,.25);
+}
+.btn-card.danger .icon { background: rgba(248,113,113,.15); }
+
+.btn-card.success {
+  background: linear-gradient(135deg, #0f2a10, #081a08);
+  border-color: #204a20;
+  color: #bbf7d0;
+}
+.btn-card.success:hover {
+  border-color: var(--ok);
+  box-shadow: 0 8px 24px rgba(74,222,128,.25);
+}
+.btn-card.success .icon { background: rgba(74,222,128,.15); }
+
+.btn-card.info {
+  background: linear-gradient(135deg, #0f1a2a, #081018);
+  border-color: #20405a;
+  color: #bfdbfe;
+}
+.btn-card.info:hover {
+  border-color: var(--info);
+  box-shadow: 0 8px 24px rgba(96,165,250,.25);
+}
+.btn-card.info .icon { background: rgba(96,165,250,.15); }
+
+/* ===== PROGRESS ===== */
+.progress {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
+  border: 1.5px solid var(--gold);
+  border-radius: 14px;
+  font-size: .82rem;
+  color: var(--txt-1);
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+.progress.on { display: flex; animation: slide-up .3s ease; }
+.progress::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 30%;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  animation: loading-bar 1.5s linear infinite;
+}
+@keyframes loading-bar {
+  0% { left: -30%; }
+  100% { left: 100%; }
+}
+.progress .spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== LOG ===== */
+.log-container {
+  position: relative;
+  z-index: 1;
+  margin-top: 16px;
+}
+.log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 14px 14px 0 0;
+  font-size: .7rem;
+  color: var(--txt-2);
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.log-header .log-actions {
+  display: flex;
+  gap: 6px;
+}
+.log-header button {
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--txt-2);
+  font-size: .65rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s;
+  letter-spacing: .06em;
+}
+.log-header button:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.log {
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: 0 0 14px 14px;
+  padding: 14px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: #d4d4d4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 60vh;
+  overflow-y: auto;
+  min-height: 140px;
+  position: relative;
+}
+body[data-theme="light"] .log {
+  background: #0a0a0a;
+  color: #d4d4d4;
+  border-color: var(--border-light);
+}
+.log .line {
+  padding: 2px 0;
+  opacity: 0;
+  animation: line-appear .3s ease forwards;
+}
+@keyframes line-appear {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.log .title {
+  color: var(--gold);
+  font-weight: 800;
+  font-size: 12.5px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #1a1a1a;
+  letter-spacing: .05em;
+}
+.log .title:first-child {
+  margin-top: 0;
+  border-top: none;
+  padding-top: 0;
+}
+.log .ok { color: var(--ok); font-weight: 700; }
+.log .err { color: var(--err); font-weight: 700; }
+.log .warn { color: var(--warn); font-weight: 700; }
+.log .info { color: var(--info); font-weight: 700; }
+.log .purple { color: var(--purple); font-weight: 700; }
+.log .cyan { color: var(--cyan); font-weight: 700; }
+.log .dim { color: #6b6b6b; }
+.log .error-line {
+  background: rgba(248,113,113,.18);
+  color: var(--err);
+  font-weight: 800;
+  padding: 6px 10px;
+  border-left: 3px solid var(--err);
+  border-radius: 6px;
+  margin: 4px 0;
+  display: block;
+}
+.log .context-line {
+  color: #8a8a8a;
+  padding-left: 12px;
+  border-left: 2px solid var(--border);
+  display: block;
+}
+.log .success-line {
+  background: rgba(74,222,128,.12);
+  color: var(--ok);
+  padding: 6px 10px;
+  border-left: 3px solid var(--ok);
+  border-radius: 6px;
+  margin: 4px 0;
+  display: block;
+}
+.log .info-line {
+  background: rgba(96,165,250,.12);
+  color: var(--info);
+  padding: 6px 10px;
+  border-left: 3px solid var(--info);
+  border-radius: 6px;
+  margin: 4px 0;
+  display: block;
+}
+.log .warn-line {
+  background: rgba(251,191,36,.12);
+  color: var(--warn);
+  padding: 6px 10px;
+  border-left: 3px solid var(--warn);
+  border-radius: 6px;
+  margin: 4px 0;
+  display: block;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 24px 14px 14px;
+  font-size: .68rem;
+  color: var(--txt-3);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.footer b {
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 900;
+}
+
+/* ===== TOAST ===== */
+#toasts {
+  position: fixed;
+  top: 20px;
+  right: 16px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  max-width: 320px;
+}
+.toast {
+  background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
+  border: 1.5px solid var(--gold);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--txt-1);
+  transform: translateX(140%);
+  opacity: 0;
+  transition: all .35s cubic-bezier(.5,1.5,.5,1);
+  pointer-events: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,.5);
+}
+.toast.show { transform: translateX(0); opacity: 1; }
+.toast.success { border-color: var(--ok); color: var(--ok); }
+.toast.error { border-color: var(--err); color: var(--err); }
+.toast.warn { border-color: var(--warn); color: var(--warn); }
+.toast.info { border-color: var(--info); color: var(--info); }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-0); }
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+  transition: .2s;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  body { padding: 12px 10px 50px; }
+  .header { padding: 16px 12px; }
+  .header h1 { font-size: 1.2rem; }
+  .btn-card { padding: 13px 14px; gap: 12px; }
+  .btn-card .icon { width: 32px; height: 32px; font-size: 1.3rem; }
+  .btn-card .label .sub { font-size: .65rem; }
+  .log { font-size: 11px; padding: 12px; }
+}
+
+/* ===== UTIL ===== */
+.hidden { display: none !important; }
+</style>
+</head>
+<body data-theme="dark">
+
+<!-- ЗВЁЗДЫ ФОНА -->
+<div class="stars" id="stars"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <button class="theme-btn" id="themeBtn" title="Тема">🌙</button>
+  <h1>🔍 Artamon Debug</h1>
+  <div class="version">Version 8.0 · Nova</div>
+  <div class="net-status">
+    <span class="dot" id="netDot"></span>
+    <span id="netText">Проверка...</span>
+  </div>
+</div>
+
+<!-- ГРУППА: ДИАГНОСТИКА -->
+<div class="group-title">🩺 Диагностика</div>
+
+<button class="btn-card primary" onclick="testJS()">
+  <span class="icon">🎯</span>
+  <span class="label">
+    Найти ошибку в JS
+    <span class="sub">Авто-поиск + точная строка</span>
+  </span>
+</button>
+
+<button class="btn-card" onclick="testHTML()">
+  <span class="icon">📄</span>
+  <span class="label">
+    Проверить HTML
+    <span class="sub">Теги, скрипты, ключевые элементы</span>
+  </span>
+</button>
+
+<button class="btn-card" onclick="testSize()">
+  <span class="icon">📊</span>
+  <span class="label">
+    Анализ размера
+    <span class="sub">CSS / HTML / JS</span>
+  </span>
+</button>
+
+<button class="btn-card" onclick="searchInFile()">
+  <span class="icon">🔎</span>
+  <span class="label">
+    Поиск по коду
+    <span class="sub">Найти подстроку с контекстом</span>
+  </span>
+</button>
+
+<button class="btn-card" onclick="validateCSS()">
+  <span class="icon">🎨</span>
+  <span class="label">
+    Проверить CSS
+    <span class="sub">Скобки, свойства</span>
+  </span>
+</button>
+
+<button class="btn-card" onclick="findDuplicateIds()">
+  <span class="icon">🆔</span>
+  <span class="label">
+    Дубликаты id
+    <span class="sub">Одинаковые id в HTML</span>
+  </span>
+</button>
+
+<!-- ГРУППА: СЕТЬ И API -->
+<div class="group-title">🌐 Сеть и API</div>
+
+<button class="btn-card info" onclick="testWorker()">
+  <span class="icon">🌐</span>
+  <span class="label">
+    Проверить воркер
+    <span class="sub">Безопасный пинг корня API</span>
+  </span>
+</button>
+
+<button class="btn-card info" onclick="testAllEndpoints()">
+  <span class="icon">🧪</span>
+  <span class="label">
+    Тест всех эндпоинтов
+    <span class="sub">14+ ручек воркера</span>
+  </span>
+</button>
+
+<button class="btn-card info" onclick="testPing()">
+  <span class="icon">📡</span>
+  <span class="label">
+    Ping воркера
+    <span class="sub">5 запросов, среднее</span>
+  </span>
+</button>
+
+<button class="btn-card info" onclick="checkExternalResources()">
+  <span class="icon">🔗</span>
+  <span class="label">
+    Внешние ресурсы
+    <span class="sub">CDN, шрифты, ссылки</span>
+  </span>
+</button>
+
+<!-- ГРУППА: ОКРУЖЕНИЕ -->
+<div class="group-title">💻 Окружение</div>
+
+<button class="btn-card" onclick="deviceInfo()">
+  <span class="icon">📱</span>
+  <span class="label">
+    Устройство
+    <span class="sub">UA, экран, память</span>
+  </span>
+</button>
+
+<button class="btn-card" onclick="storageInfo()">
+  <span class="icon">💾</span>
+  <span class="label">
+    localStorage
+    <span class="sub">Что лежит в хранилище</span>
+  </span>
+</button>
+
+<button class="btn-card" onclick="testFeatureSupport()">
+  <span class="icon">🔬</span>
+  <span class="label">
+    Поддержка фич
+    <span class="sub">fetch, SW, уведомления</span>
+  </span>
+</button>
+
+<button class="btn-card" onclick="analyzeMetaTags()">
+  <span class="icon">🏷</span>
+  <span class="label">
+    Meta-теги игры
+    <span class="sub">viewport, og:, theme-color</span>
+  </span>
+</button>
+
+<!-- ГРУППА: АНАЛИЗ КОДА -->
+<div class="group-title">🔬 Анализ кода</div>
+
+<button class="btn-card" onclick="findConsoleLogs()">
+  <span class="icon">📝</span>
+  <span class="label">
+    console.log
+    <span class="sub">Все вызовы логирования</span>
+  </span>
+</button>
+
+<button class="btn-card" onclick="findTodos()">
+  <span class="icon">📌</span>
+  <span class="label">
+    TODO / FIXME
+    <span class="sub">Комментарии-напоминания</span>
+  </span>
+</button>
+
+<button class="btn-card" onclick="countEmojis()">
+  <span class="icon">😀</span>
+  <span class="label">
+    Эмодзи в файле
+    <span class="sub">Сколько и каких</span>
+  </span>
+</button>
+
+<button class="btn-card" onclick="findUnsafePatterns()">
+  <span class="icon">⚠️</span>
+  <span class="label">
+    Небезопасные паттерны
+    <span class="sub">eval, innerHTML, http://</span>
+  </span>
+</button>
+
+<button class="btn-card" onclick="analyzeColors()">
+  <span class="icon">🎨</span>
+  <span class="label">
+    Цветовая палитра
+    <span class="sub">Все цвета в CSS</span>
+  </span>
+</button>
+
+<!-- ГРУППА: ДЕЙСТВИЯ -->
+<div class="group-title">⚙️ Действия</div>
+
+<button class="btn-card success" onclick="exportLog()">
+  <span class="icon">📤</span>
+  <span class="label">
+    Экспорт лога
+    <span class="sub">Скачать .txt</span>
+  </span>
+</button>
+
+<button class="btn-card info" onclick="showHistory()">
+  <span class="icon">📜</span>
+  <span class="label">
+    История действий
+    <span class="sub">Что делал в Debug</span>
+  </span>
+</button>
+
+<button class="btn-card danger" onclick="clearCache()">
+  <span class="icon">🧹</span>
+  <span class="label">
+    Очистить кэш (SW)
+    <span class="sub">Service Worker + Cache</span>
+  </span>
+</button>
+
+<button class="btn-card danger" onclick="hardReset()">
+  <span class="icon">💣</span>
+  <span class="label">
+    Полный сброс localStorage
+    <span class="sub">Осторожно: удалит сохранения</span>
+  </span>
+</button>
+
+<button class="btn-card" onclick="clearLog()">
+  <span class="icon">🗑</span>
+  <span class="label">
+    Очистить лог
+    <span class="sub">Стереть вывод</span>
+  </span>
+</button>
+
+<!-- PROGRESS -->
+<div class="progress" id="progress">
+  <div class="spinner"></div>
+  <span id="progressText">Работаю...</span>
+</div>
+
+<!-- LOG -->
+<div class="log-container">
+  <div class="log-header">
+    <span>📋 Лог</span>
+    <div class="log-actions">
+      <button onclick="copyLog()">📋 Копировать</button>
+      <button onclick="scrollLogToTop()">⬆ Вверх</button>
+      <button onclick="scrollLogToBottom()">⬇ Вниз</button>
+    </div>
+  </div>
+  <div class="log" id="out"></div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  Powered by <b>Artamon v2.7</b> · Debug v8 Nova
+</div>
+
+<!-- TOASTS -->
+<div id="toasts"></div>
+
+<script>
+// ============================================================
+// ARTAMON DEBUG v8.0 "Nova"
+// Безопасный — НЕ вызывает /api/tech-status (не уходит в tech.html)
+// ============================================================
+
+var API_BASE = "https://artamon-api.artem123kv.workers.dev";
+var out = document.getElementById("out");
+
+// Возможные пути к файлу игры
+var GAME_FILE_CANDIDATES = [
+  "./index_v4.html",
+  "./index_v4.HTML",
+  "./index.html",
+  "./index.htm",
+  "../index_v4.html",
+  "../index.html",
+  "/index_v4.html",
+  "/index.html",
+  "./game/index_v4.html",
+  "./game/index.html",
+  "./artamon/index_v4.html",
+  "./artamon/index.html",
+  "./src/index_v4.html",
+  "./public/index_v4.html",
+  "./dist/index_v4.html",
+];
+
+var GAME_FILE_FOUND = null;
+var GAME_FILE_CONTENT = null;
+
+// Безопасные обёртки тегов, чтобы не сломать HTML
+var TAG_SCRIPT_OPEN = "<" + "script";
+var TAG_SCRIPT_CLOSE = "<" + "/" + "script>";
+var TAG_STYLE_OPEN = "<" + "style";
+var TAG_STYLE_CLOSE = "<" + "/" + "style>";
+
+// ============================================================
+// ЛОГИРОВАНИЕ
+// ============================================================
+function log(msg, cls) {
+  var d = document.createElement("div");
+  d.className = "line" + (cls ? " " + cls : "");
+  d.textContent = msg;
+  out.appendChild(d);
+  out.scrollTop = out.scrollHeight;
+}
+
+function clearLog() {
+  out.innerHTML = "";
+  log("🗑 Лог очищен", "dim");
+}
+
+function showProgress(text) {
+  document.getElementById("progress").classList.add("on");
+  document.getElementById("progressText").textContent = text || "Работаю...";
+}
+
+function hideProgress() {
+  document.getElementById("progress").classList.remove("on");
+}
+
+function copyLog() {
+  var text = out.textContent || "";
+  if (!text) return toast("Лог пуст", "warn");
+  try {
+    navigator.clipboard.writeText(text);
+    toast("📋 Скопировано в буфер", "success");
+  } catch(e) {
+    toast("❌ Не удалось скопировать", "error");
+  }
+}
+
+function scrollLogToTop() {
+  out.scrollTop = 0;
+}
+
+function scrollLogToBottom() {
+  out.scrollTop = out.scrollHeight;
+}
+
+// ============================================================
+// TOASTS
+// ============================================================
+function toast(msg, type) {
+  type = type || "info";
+  var el = document.createElement("div");
+  el.className = "toast " + type;
+  el.textContent = msg;
+  document.getElementById("toasts").appendChild(el);
+  setTimeout(function() { el.classList.add("show"); }, 30);
+  setTimeout(function() {
+    el.classList.remove("show");
+    setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 400);
+  }, 3500);
+}
+
+// ============================================================
+// ИСТОРИЯ ДЕЙСТВИЙ
+// ============================================================
+var HISTORY_KEY = "artamon_debug_v8_history";
+function addHistory(action) {
+  try {
+    var h = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    h.unshift({ action: action, ts: Date.now() });
+    if (h.length > 20) h = h.slice(0, 20);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
+  } catch(e) {}
+}
+
+function showHistory() {
+  clearLog();
+  log("═══ ИСТОРИЯ ДЕЙСТВИЙ ═══", "title");
+  log("");
+  addHistory("Просмотр истории");
+  try {
+    var h = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    if (!h.length) { log("История пуста", "dim"); return; }
+    h.forEach(function(item) {
+      var d = new Date(item.ts);
+      var time = d.toLocaleString("ru-RU");
+      log(time + "  ·  " + item.action, "info");
+    });
+  } catch(e) {
+    log("❌ " + e.message, "err");
+  }
+}
+
+// ============================================================
+// АВТО-ПОИСК ФАЙЛА ИГРЫ
+// ============================================================
+function findGameFile(callback) {
+  var i = 0;
+  function tryNext() {
+    if (i >= GAME_FILE_CANDIDATES.length) { callback(null); return; }
+    var path = GAME_FILE_CANDIDATES[i];
+    i++;
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status === 200) {
+        GAME_FILE_FOUND = path;
+        callback(path);
+      } else {
+        tryNext();
+      }
+    };
+    try {
+      xhr.open("GET", path + "?t=" + Date.now(), true);
+      xhr.send();
+    } catch(e) { tryNext(); }
+  }
+  tryNext();
+}
+
+function loadGameFile(callback) {
+  if (GAME_FILE_CONTENT) { callback(GAME_FILE_CONTENT, GAME_FILE_FOUND); return; }
+  if (GAME_FILE_FOUND) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status === 200) {
+        GAME_FILE_CONTENT = xhr.responseText;
+        callback(GAME_FILE_CONTENT, GAME_FILE_FOUND);
+      } else { callback(null, null); }
+    };
+    xhr.open("GET", GAME_FILE_FOUND + "?t=" + Date.now(), true);
+    xhr.send();
+    return;
+  }
+  showProgress("🔍 Ищу файл игры...");
+  findGameFile(function(found) {
+    hideProgress();
+    if (!found) { callback(null, null); return; }
+    loadGameFile(callback);
+  });
+}
+
+// ============================================================
+// 1. УМНЫЙ ПОИСК ОШИБКИ В JS
+// ============================================================
+function testJS() {
+  clearLog();
+  log("═══ УМНЫЙ ПОИСК ОШИБКИ В JS ═══", "title");
+  log("");
+  log("🔍 Ищу файл игры...", "info");
+  addHistory("Поиск ошибки в JS");
+
+  loadGameFile(function(h, path) {
+    if (!h) {
+      log("❌ Файл игры НЕ НАЙДЕН ни по одному пути", "err");
+      log("");
+      log("Проверенные пути:", "warn");
+      GAME_FILE_CANDIDATES.forEach(function(p) { log("  " + p, "dim"); });
+      toast("Файл игры не найден", "error");
+      return;
+    }
+
+    log("✅ Найден: " + path, "ok");
+    log("📄 Размер: " + h.length.toLocaleString() + " символов", "dim");
+    log("📏 Строк: " + h.split("\n").length, "dim");
+    log("");
+
+    var parts = h.split(TAG_SCRIPT_OPEN + ">");
+    var total = parts.length - 1;
+
+    log("📦 Найдено скриптов: " + total, "ok");
+    log("");
+
+    var errorCount = 0;
+
+    for (var i = 1; i < parts.length; i++) {
+      var chunk = parts[i].split(TAG_SCRIPT_CLOSE)[0] || "";
+      var chunkLines = chunk.split("\n").length;
+      log("─── Скрипт #" + i + " (" + chunk.length.toLocaleString() + " симв., " + chunkLines + " строк) ───", "title");
+
+      try {
+        new Function(chunk);
+        log("✅ Синтаксис OK", "ok");
+        log("");
+        continue;
+      } catch (e) {
+        log("❌ ОШИБКА: " + e.message, "err");
+        errorCount++;
+      }
+
+      log("🔍 Поиск точной строки...", "info");
+      var lineNum = findExactLine(chunk);
+      var lines = chunk.split("\n");
+
+      if (lineNum > 0 && lineNum <= lines.length) {
+        log("🎯 ПРОБЛЕМНАЯ СТРОКА: #" + lineNum, "err");
+        log("");
+
+        var start = Math.max(0, lineNum - 5);
+        var end = Math.min(lines.length, lineNum + 4);
+
+        log("Контекст:", "info");
+        for (var j = start; j < end; j++) {
+          var lineText = lines[j] || "(пустая строка)";
+          var lineNo = (j + 1).toString().padStart(4, " ");
+          if (j === lineNum - 1) {
+            log(">>> [" + lineNo + "] " + lineText, "error-line");
+          } else {
+            log("    [" + lineNo + "] " + lineText, "context-line");
+          }
+        }
+        log("");
+        log("👆 Ошибка в строке с >>>", "warn");
+      } else {
+        log("⚠️ Не удалось найти точную строку", "warn");
+        log("Показываю первые 20 строк:", "info");
+        for (var k = 0; k < Math.min(20, lines.length); k++) {
+          log("[" + (k + 1) + "] " + (lines[k] || ""), "context-line");
+        }
+      }
+      log("");
+    }
+
+    log("═══ ИТОГ ═══", "title");
+    if (errorCount === 0) {
+      log("✅ Все " + total + " скриптов валидны", "ok");
+      toast("Все скрипты OK", "success");
+    } else {
+      log("❌ Найдено ошибок: " + errorCount + " из " + total, "err");
+      toast("Найдено ошибок: " + errorCount, "error");
+    }
+  });
+}
+
+function findExactLine(code) {
+  var lines = code.split("\n");
+  var total = lines.length;
+  if (total === 0) return 0;
+  var lo = 1, hi = total, firstInvalid = 0;
+  while (lo <= hi) {
+    var mid = Math.floor((lo + hi) / 2);
+    var testCode = lines.slice(0, mid).join("\n");
+    var isValid = false;
+    try { new Function(testCode); isValid = true; } catch (err) { isValid = false; }
+    if (isValid) lo = mid + 1;
+    else { firstInvalid = mid; hi = mid - 1; }
+  }
+  return firstInvalid;
+}
+
+// ============================================================
+// 2. ПРОВЕРКА HTML
+// ============================================================
+function testHTML() {
+  clearLog();
+  log("═══ ПРОВЕРКА HTML ═══", "title");
+  log("");
+  log("🔍 Ищу файл игры...", "info");
+  addHistory("Проверка HTML");
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); toast("Файл не найден", "error"); return; }
+    log("✅ Найден: " + path, "ok");
+    log("");
+
+    var size = h.length;
+    var lines = h.split("\n").length;
+    log("📄 Размер: " + size.toLocaleString() + " символов", size > 100000 ? "ok" : "warn");
+    log("📏 Строк: " + lines, "dim");
+    log("");
+
+    var sOpen = h.split(TAG_SCRIPT_OPEN).length - 1;
+    var sClose = h.split(TAG_SCRIPT_CLOSE).length - 1;
+
+    log("📦 Открывающих <" + "script: " + sOpen, sOpen >= 3 ? "ok" : "err");
+    log("📦 Закрывающих <" + "/" + "script>: " + sClose, sClose === sOpen ? "ok" : "err");
+
+    if (sOpen !== sClose) {
+      log("❌ Скрипты НЕ сбалансированы! Разница: " + (sOpen - sClose), "err");
+    } else {
+      log("✅ Скрипты закрыты корректно", "ok");
+    }
+    log("");
+
+    var checks = [
+      ['id="intro"', "Интро"],
+      ['id="anniversary"', "Юбилей"],
+      ['id="mainSite"', "Основной сайт"],
+      ['id="preloader"', "Прелоадер"],
+      ["SAFE_STORE", "Хранилище"],
+      ["INTRO", "Модуль интро"],
+      ["COINS", "Монеты"],
+      ["ARTAMON_API", "API"],
+      ["WHEEL", "Колесо"],
+      ["QUESTS", "Квесты"],
+      ["FRIENDS", "Друзья"],
+      ["SUPPORT", "Поддержка"],
+    ];
+
+    log("Проверка ключевых элементов:", "info");
+    var found = 0;
+    for (var i = 0; i < checks.length; i++) {
+      var ok = h.indexOf(checks[i][0]) !== -1;
+      log("  " + (ok ? "✅" : "❌") + " " + checks[i][1], ok ? "ok" : "err");
+      if (ok) found++;
+    }
+    log("");
+    var pct = Math.round((found / checks.length) * 100);
+    log("Найдено: " + found + " / " + checks.length + " (" + pct + "%)", pct === 100 ? "ok" : pct > 70 ? "warn" : "err");
+    toast("Найдено: " + found + "/" + checks.length, pct === 100 ? "success" : "warn");
+  });
+}
+
+// ============================================================
+// 3. АНАЛИЗ РАЗМЕРА
+// ============================================================
+function testSize() {
+  clearLog();
+  log("═══ АНАЛИЗ РАЗМЕРА ═══", "title");
+  log("");
+  addHistory("Анализ размера");
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); toast("Файл не найден", "error"); return; }
+    var total = h.length;
+    log("📄 " + path, "ok");
+    log("📊 Общий: " + total.toLocaleString() + " символов", "info");
+    log("");
+
+    var headEnd = h.indexOf("</head>");
+    var bodyStart = h.indexOf("<body");
+    var bodyEnd = h.lastIndexOf("</body>");
+
+    if (headEnd > 0) log("HEAD: " + headEnd.toLocaleString() + " симв. (" + Math.round(headEnd / total * 100) + "%)", "dim");
+    if (bodyEnd > 0) log("BODY: " + (bodyEnd - bodyStart).toLocaleString() + " симв. (" + Math.round((bodyEnd - bodyStart) / total * 100) + "%)", "dim");
+    log("");
+
+    var styleMatches = h.match(new RegExp(TAG_STYLE_OPEN + "[^>]*>[\\s\\S]*?" + TAG_STYLE_CLOSE, "g")) || [];
+    var cssSize = styleMatches.reduce(function(a, s) { return a + s.length; }, 0);
+    log("🎨 CSS: " + cssSize.toLocaleString() + " симв., блоков: " + styleMatches.length, "info");
+
+    var scriptMatches = h.match(new RegExp(TAG_SCRIPT_OPEN + "[^>]*>[\\s\\S]*?" + TAG_SCRIPT_CLOSE, "g")) || [];
+    var jsSize = scriptMatches.reduce(function(a, s) { return a + s.length; }, 0);
+    log("⚙️ JS: " + jsSize.toLocaleString() + " симв., блоков: " + scriptMatches.length, "info");
+    log("");
+
+    log("─── Размеры скриптов ───", "title");
+    var parts = h.split(TAG_SCRIPT_OPEN + ">");
+    for (var i = 1; i < parts.length; i++) {
+      var chunk = parts[i].split(TAG_SCRIPT_CLOSE)[0] || "";
+      var ln = chunk.split("\n").length;
+      var bar = "█".repeat(Math.min(40, Math.round(chunk.length / 2000)));
+      log("  #" + i + " " + chunk.length.toLocaleString().padStart(7) + " симв.  " + ln.toString().padStart(4) + " строк  " + bar, "dim");
+    }
+
+    log("");
+    if (total > 500000) log("⚠️ Файл > 500КБ — стоит разделить на модули", "warn");
+    else log("✅ Размер в норме", "ok");
+    toast("Размер: " + Math.round(total / 1024) + " КБ", "info");
+  });
+}
+
+// ============================================================
+// 4. ПОИСК ПО КОДУ
+// ============================================================
+function searchInFile() {
+  var q = prompt("Что искать в файле игры?", "ARTAMON_API");
+  if (!q) return;
+  clearLog();
+  log("═══ ПОИСК: " + q + " ═══", "title");
+  log("");
+  addHistory("Поиск: " + q);
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); toast("Файл не найден", "error"); return; }
+    log("📄 " + path, "dim");
+    log("");
+
+    var lines = h.split("\n");
+    var count = 0;
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].indexOf(q) !== -1) {
+        count++;
+        if (count <= 30) {
+          var pos = lines[i].indexOf(q);
+          var before = lines[i].slice(Math.max(0, pos - 30), pos);
+          var after = lines[i].slice(pos + q.length, pos + q.length + 30);
+          log("[" + (i + 1) + "] ..." + before + "⟨" + q + "⟩" + after + "...", "info-line");
+        }
+      }
+    }
+    log("");
+    if (count === 0) { log("❌ Ничего не найдено", "err"); toast("Не найдено", "error"); }
+    else if (count > 30) { log("✅ Найдено: " + count + " (показаны 30)", "ok"); toast("Найдено: " + count, "success"); }
+    else { log("✅ Найдено: " + count, "ok"); toast("Найдено: " + count, "success"); }
+  });
+}
+
+// ============================================================
+// 5. ПРОВЕРКА CSS
+// ============================================================
+function validateCSS() {
+  clearLog();
+  log("═══ ПРОВЕРКА CSS ═══", "title");
+  log("");
+  addHistory("Проверка CSS");
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); toast("Файл не найден", "error"); return; }
+
+    var styleMatches = h.match(new RegExp(TAG_STYLE_OPEN + "[^>]*>([\\s\\S]*?)" + TAG_STYLE_CLOSE, "g")) || [];
+    log("📦 Найдено CSS-блоков: " + styleMatches.length, "info");
+    log("");
+
+    var totalOk = true;
+    styleMatches.forEach(function(block, idx) {
+      var css = block.replace(new RegExp("^" + TAG_STYLE_OPEN + "[^>]*>"), "").replace(new RegExp(TAG_STYLE_CLOSE + "$"), "");
+
+      var open = (css.match(/\{/g) || []).length;
+      var close = (css.match(/\}/g) || []).length;
+
+      log("─── Блок #" + (idx + 1) + " (" + css.length + " симв.) ───", "title");
+      log("  { : " + open, open > 0 ? "dim" : "warn");
+      log("  } : " + close, close > 0 ? "dim" : "warn");
+
+      if (open !== close) {
+        log("  ❌ Скобки НЕ сбалансированы! Разница: " + (open - close), "err");
+        totalOk = false;
+      } else {
+        log("  ✅ Скобки сбалансированы", "ok");
+      }
+
+      var openComm = (css.match(/\/\*/g) || []).length;
+      var closeComm = (css.match(/\*\//g) || []).length;
+      if (openComm !== closeComm) {
+        log("  ❌ Комментарии /* */ не сбалансированы", "err");
+        totalOk = false;
+      }
+
+      var rules = (css.match(/[^{}]+\{[^{}]*\}/g) || []).length;
+      log("  📐 Правил: " + rules, "dim");
+      log("");
+    });
+
+    log("═══ ИТОГ ═══", "title");
+    log(totalOk ? "✅ CSS корректен" : "❌ Есть проблемы", totalOk ? "ok" : "err");
+    toast(totalOk ? "CSS корректен" : "Найдены проблемы", totalOk ? "success" : "error");
+  });
+}
+
+// ============================================================
+// 6. ДУБЛИКАТЫ id
+// ============================================================
+function findDuplicateIds() {
+  clearLog();
+  log("═══ ДУБЛИКАТЫ id ═══", "title");
+  log("");
+  addHistory("Поиск дубликатов id");
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); toast("Файл не найден", "error"); return; }
+
+    var re = /id\s*=\s*["']([^"']+)["']/g;
+    var map = {};
+    var m;
+    while ((m = re.exec(h)) !== null) {
+      var id = m[1];
+      map[id] = (map[id] || 0) + 1;
+    }
+
+    var dupes = Object.keys(map).filter(function(k) { return map[k] > 1; });
+
+    log("📦 Всего id: " + Object.keys(map).length, "info");
+    log("");
+
+    if (!dupes.length) {
+      log("✅ Дубликатов нет", "ok");
+      toast("Дубликатов нет", "success");
+      return;
+    }
+
+    log("❌ Найдено " + dupes.length + " дубликатов:", "err");
+    dupes.forEach(function(id) {
+      log("  " + id + " — " + map[id] + " раз", "error-line");
+    });
+    toast("Найдено дубликатов: " + dupes.length, "error");
+  });
+}
+
+// ============================================================
+// 7. БЕЗОПАСНАЯ ПРОВЕРКА ВОРКЕРА (БЕЗ /api/tech-status!)
+// ============================================================
+function testWorker() {
+  clearLog();
+  log("═══ ПРОВЕРКА ВОРКЕРА ═══", "title");
+  log("");
+  log("ℹ️ Проверяю корень API (безопасно)", "dim");
+  log("ℹ️ НЕ вызываю /api/tech-status (чтобы не уйти в tech.html)", "dim");
+  log("");
+  addHistory("Проверка воркера");
+
+  var t = Date.now();
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState !== 4) return;
+    var ms = Date.now() - t;
+
+    if (xhr.status === 200) {
+      log("✅ Воркер отвечает (" + ms + " мс)", "ok");
+      log("");
+      log("Ответ:", "info");
+      try {
+        var d = JSON.parse(xhr.responseText);
+        log(JSON.stringify(d, null, 2), "dim");
+      } catch(e) {
+        log(xhr.responseText.slice(0, 300), "dim");
+      }
+      toast("Воркер OK (" + ms + "ms)", "success");
+    } else if (xhr.status === 404) {
+      log("✅ Воркер отвечает (" + ms + " мс)", "ok");
+      log("⚠️ Корень вернул 404 — это нормально", "dim");
+      log("💡 Воркер работает, просто не отвечает на /", "info");
+      toast("Воркер OK", "success");
+    } else if (xhr.status === 0) {
+      log("❌ Воркер НЕ ОТВЕЧАЕТ", "err");
+      log("Проверь, задеплоен ли он на Cloudflare", "warn");
+      toast("Воркер недоступен", "error");
+    } else {
+      log("⚠️ HTTP " + xhr.status, "warn");
+      toast("HTTP " + xhr.status, "warn");
+    }
+  };
+  xhr.open("GET", API_BASE + "/?t=" + Date.now(), true);
+  xhr.send();
+}
+
+// ============================================================
+// 8. ТЕСТ ВСЕХ ЭНДПОИНТОВ (БЕЗ tech-status!)
+// ============================================================
+function testAllEndpoints() {
+  clearLog();
+  log("═══ ТЕСТ ВСЕХ ЭНДПОИНТОВ ═══", "title");
+  log("");
+  log("ℹ️ Проверяю эндпоинты БЕЗ /api/tech-status", "dim");
+  log("");
+  addHistory("Тест всех эндпоинтов");
+
+  var password = prompt("Введи пароль owner для admin-ручек (или пусто):", "");
+  if (password === null) return;
+
+  var tests = [
+    { method: "GET",  path: "/api/leaderboard", name: "Leaderboard" },
+    { method: "GET",  path: "/api/posts", name: "Public posts" },
+    { method: "POST", path: "/api/admin/login", name: "Admin login", body: { password: password } },
+    { method: "POST", path: "/api/admin/stats", name: "Admin stats", needPass: true },
+    { method: "POST", path: "/api/admin/users", name: "Admin users", needPass: true },
+    { method: "POST", path: "/api/admin/bans", name: "Admin bans", needPass: true },
+    { method: "POST", path: "/api/admin/posts", name: "Admin posts", needPass: true },
+    { method: "POST", path: "/api/admin/promo-list", name: "Promo list", needPass: true },
+    { method: "POST", path: "/api/admin/broadcast-list", name: "Broadcast list", needPass: true },
+    { method: "POST", path: "/api/admin/tickets", name: "Tickets", needPass: true },
+    { method: "POST", path: "/api/admin/logs", name: "Logs", needPass: true },
+    { method: "POST", path: "/api/admin/registrations-chart", name: "Reg chart", needPass: true },
+  ];
+
+  var done = 0, errors = 0, total = tests.length;
+  showProgress("Тестирую... (0/" + total + ")");
+
+  function runNext(idx) {
+    if (idx >= tests.length) {
+      hideProgress();
+      log("");
+      log("═══ ИТОГ ═══", "title");
+      log("Всего: " + total, "info");
+      log("Успешно: " + done, done === total ? "ok" : "warn");
+      log("Ошибок: " + errors, errors === 0 ? "ok" : "err");
+      toast("Готово: " + done + "/" + total, done === total ? "success" : "warn");
+      return;
+    }
+    var test = tests[idx];
+    document.getElementById("progressText").textContent = "Тестирую... (" + (idx + 1) + "/" + total + ")";
+    var xhr = new XMLHttpRequest();
+    var t = Date.now();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState !== 4) return;
+      var ms = Date.now() - t;
+      var status = xhr.status;
+      var icon, cls;
+      if (status === 200) { icon = "✅"; cls = "ok"; done++; }
+      else if (status === 403) { icon = "🔒"; cls = "warn"; errors++; }
+      else if (status === 503) { icon = "⚠️"; cls = "warn"; errors++; }
+      else if (status === 0) { icon = "❌"; cls = "err"; errors++; }
+      else { icon = "⚠️"; cls = "warn"; errors++; }
+
+      var preview = "";
+      try {
+        var d = JSON.parse(xhr.responseText);
+        if (d.error) preview = " · " + d.error;
+        else if (d.ok) preview = " · OK";
+      } catch(e) {}
+
+      log(icon + " [" + status + "] " + test.name.padEnd(22) + " (" + ms + "ms)" + preview, cls);
+      runNext(idx + 1);
+    };
+    xhr.open(test.method, API_BASE + test.path + "?t=" + Date.now(), true);
+    if (test.method === "POST") {
+      xhr.setRequestHeader("Content-Type", "application/json");
+      var body = test.body || {};
+      if (test.needPass && password) body.password = password;
+      xhr.send(JSON.stringify(body));
+    } else {
+      xhr.send();
+    }
+  }
+  runNext(0);
+}
+
+// ============================================================
+// 9. PING ВОРКЕРА
+// ============================================================
+function testPing() {
+  clearLog();
+  log("═══ PING ВОРКЕРА ═══", "title");
+  log("");
+  addHistory("Ping воркера");
+
+  var times = [];
+  var count = 5;
+
+  function ping(i) {
+    if (i >= count) {
+      var avg = times.reduce(function(a, b) { return a + b; }, 0) / times.length;
+      var min = Math.min.apply(null, times);
+      var max = Math.max.apply(null, times);
+      log("");
+      log("═══ ИТОГ ═══", "title");
+      log("Средний: " + Math.round(avg) + " мс", avg < 300 ? "ok" : avg < 1000 ? "warn" : "err");
+      log("Минимум: " + min + " мс", "dim");
+      log("Максимум: " + max + " мс", "dim");
+      toast("Средний пинг: " + Math.round(avg) + "ms", avg < 500 ? "success" : "warn");
+      return;
+    }
+    var t = Date.now();
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState !== 4) return;
+      var ms = Date.now() - t;
+      times.push(ms);
+      var cls = ms < 300 ? "ok" : ms < 1000 ? "warn" : "err";
+      var dot = ".".repeat(i + 1) + " ".repeat(count - i - 1);
+      log("Пинг " + (i + 1) + ": [" + dot + "] " + ms + " мс", cls);
+      ping(i + 1);
+    };
+    xhr.open("GET", API_BASE + "/?t=" + Date.now(), true);
+    xhr.send();
+  }
+  ping(0);
+}
+
+// ============================================================
+// 10. ВНЕШНИЕ РЕСУРСЫ
+// ============================================================
+function checkExternalResources() {
+  clearLog();
+  log("═══ ВНЕШНИЕ РЕСУРСЫ ═══", "title");
+  log("");
+  addHistory("Внешние ресурсы");
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); toast("Файл не найден", "error"); return; }
+
+    var re = /(?:src|href)\s*=\s*["']([^"']+)["']/g;
+    var all = [];
+    var m;
+    while ((m = re.exec(h)) !== null) all.push(m[1]);
+
+    var external = all.filter(function(u) { return /^https?:\/\//i.test(u); });
+    var internal = all.filter(function(u) {
+      return !/^https?:\/\//i.test(u) && u.indexOf("data:") !== 0 && u.indexOf("#") !== 0 && u.indexOf("javascript:") !== 0;
+    });
+
+    log("📦 Всего ссылок: " + all.length, "info");
+    log("🔗 Внешних: " + external.length, "dim");
+    log("📁 Внутренних: " + internal.length, "dim");
+    log("");
+
+    if (external.length) {
+      log("─── Домены ───", "title");
+      var domains = {};
+      external.forEach(function(u) {
+        try {
+          var d = new URL(u).hostname;
+          domains[d] = (domains[d] || 0) + 1;
+        } catch(e) {}
+      });
+      Object.keys(domains).forEach(function(d) {
+        log("  " + d + " — " + domains[d] + " шт.", "dim");
+      });
+    }
+    toast("Внешних ресурсов: " + external.length, "info");
+  });
+}
+
+// ============================================================
+// 11. УСТРОЙСТВО
+// ============================================================
+function deviceInfo() {
+  clearLog();
+  log("═══ УСТРОЙСТВО ═══", "title");
+  log("");
+  addHistory("Инфо об устройстве");
+
+  log("🌐 Браузер", "title");
+  log("  UA: " + navigator.userAgent, "dim");
+  log("  Язык: " + navigator.language, "dim");
+  log("  Платформа: " + (navigator.platform || "—"), "dim");
+  log("  Онлайн: " + (navigator.onLine ? "✅ Да" : "❌ Нет"), navigator.onLine ? "ok" : "err");
+  log("");
+
+  log("📱 Экран", "title");
+  log("  Размер: " + screen.width + " × " + screen.height + " px", "dim");
+  log("  Окно: " + window.innerWidth + " × " + window.innerHeight + " px", "dim");
+  log("  DPR: " + (window.devicePixelRatio || 1), "dim");
+  if (screen.orientation) log("  Ориентация: " + screen.orientation.type, "dim");
+  log("");
+
+  log("💾 Память", "title");
+  if (performance.memory) {
+    log("  JS heap: " + Math.round(performance.memory.usedJSHeapSize / 1048576) + " МБ", "dim");
+  } else {
+    log("  performance.memory недоступен", "dim");
+  }
+  log("");
+
+  log("⏱ Время", "title");
+  log("  Локальное: " + new Date().toLocaleString("ru-RU"), "dim");
+  log("  TZ: " + (Intl.DateTimeFormat().resolvedOptions().timeZone || "—"), "dim");
+  log("");
+
+  log("🌍 URL", "title");
+  log("  Origin: " + location.origin, "dim");
+  log("  Path: " + location.pathname, "dim");
+  toast("Инфо об устройстве получено", "success");
+}
+
+// ============================================================
+// 12. LOCALSTORAGE
+// ============================================================
+function storageInfo() {
+  clearLog();
+  log("═══ LOCALSTORAGE ═══", "title");
+  log("");
+  addHistory("LocalStorage");
+
+  try {
+    var total = 0;
+    var keys = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      var v = localStorage.getItem(k) || "";
+      total += k.length + v.length;
+      keys.push({ key: k, size: v.length, value: v });
+    }
+
+    keys.sort(function(a, b) { return b.size - a.size; });
+
+    log("📦 Всего ключей: " + keys.length, "info");
+    log("📊 Общий размер: " + (total / 1024).toFixed(2) + " КБ", "info");
+    log("");
+
+    if (!keys.length) { log("ℹ️ Пусто", "dim"); toast("Пусто", "info"); return; }
+
+    log("─── Ключи ───", "title");
+    keys.slice(0, 50).forEach(function(item) {
+      log("  " + item.key.padEnd(40) + " " + item.size.toString().padStart(8) + " б", "dim");
+    });
+    if (keys.length > 50) log("  ... и ещё " + (keys.length - 50), "dim");
+
+    log("");
+    log("─── Artamon-ключи ───", "title");
+    var artamon = keys.filter(function(k) { return k.key.indexOf("artamon") !== -1; });
+    if (!artamon.length) log("Нет ключей с 'artamon'", "dim");
+    else artamon.forEach(function(item) {
+      var preview = item.value.length > 100 ? item.value.slice(0, 100) + "..." : item.value;
+      log("  " + item.key, "info");
+      log("    = " + preview, "dim");
+    });
+    toast("Ключей: " + keys.length, "success");
+  } catch(e) {
+    log("❌ " + e.message, "err");
+    toast("Ошибка localStorage", "error");
+  }
+}
+
+// ============================================================
+// 13. ПОДДЕРЖКА ФИЧ
+// ============================================================
+function testFeatureSupport() {
+  clearLog();
+  log("═══ ПОДДЕРЖКА ФИЧ ═══", "title");
+  log("");
+  addHistory("Тест фич");
+
+  var features = [
+    ["fetch", typeof fetch === "function"],
+    ["XMLHttpRequest", typeof XMLHttpRequest === "function"],
+    ["Promise", typeof Promise === "function"],
+    ["async/await", (function() { try { return (async function(){})(), true; } catch(e) { return false; } })()],
+    ["localStorage", (function() { try { localStorage.setItem("_t", "1"); localStorage.removeItem("_t"); return true; } catch(e) { return false; } })()],
+    ["sessionStorage", typeof sessionStorage !== "undefined"],
+    ["Service Worker", "serviceWorker" in navigator],
+    ["Cache API", "caches" in window],
+    ["Notification", "Notification" in window],
+    ["IndexedDB", "indexedDB" in window],
+    ["WebSocket", "WebSocket" in window],
+    ["Canvas", !!document.createElement("canvas").getContext],
+    ["Web Audio", "AudioContext" in window || "webkitAudioContext" in window],
+    ["Geolocation", "geolocation" in navigator],
+    ["Clipboard", "clipboard" in navigator],
+    ["Share API", "share" in navigator],
+    ["Vibration", "vibrate" in navigator],
+    ["Touch events", "ontouchstart" in window],
+    ["Pointer events", "PointerEvent" in window],
+    ["CSS Grid", CSS.supports && CSS.supports("display", "grid")],
+    ["CSS Flex", CSS.supports && CSS.supports("display", "flex")],
+    ["CSS Variables", CSS.supports && CSS.supports("--x", "0")],
+    ["backdrop-filter", CSS.supports && CSS.supports("backdrop-filter", "blur(1px)")],
+    ["WebAssembly", typeof WebAssembly !== "undefined"],
+  ];
+
+  var yes = 0;
+  features.forEach(function(f) {
+    if (f[1]) yes++;
+    log((f[1] ? "✅" : "❌") + " " + f[0], f[1] ? "ok" : "dim");
+  });
+  log("");
+  log("Поддерживается: " + yes + " / " + features.length, yes === features.length ? "ok" : "info");
+  toast("Фич: " + yes + "/" + features.length, "info");
+}
+
+// ============================================================
+// 14. META-ТЕГИ
+// ============================================================
+function analyzeMetaTags() {
+  clearLog();
+  log("═══ META-ТЕГИ ═══", "title");
+  log("");
+  addHistory("Meta-теги");
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); toast("Файл не найден", "error"); return; }
+
+    var re = /<meta\s+([^>]+)>/gi;
+    var metas = [];
+    var m;
+    while ((m = re.exec(h)) !== null) metas.push(m[1]);
+
+    log("📦 Найдено meta-тегов: " + metas.length, "info");
+    log("");
+
+    var important = ["viewport", "theme-color", "description", "og:title", "og:description", "og:image"];
+    var found = {};
+
+    metas.forEach(function(mt) {
+      var nameMatch = mt.match(/name\s*=\s*["']([^"']+)["']/i);
+      var propMatch = mt.match(/property\s*=\s*["']([^"']+)["']/i);
+      var contentMatch = mt.match(/content\s*=\s*["']([^"']+)["']/i);
+      var name = (nameMatch ? nameMatch[1] : (propMatch ? propMatch[1] : "?")).toLowerCase();
+      var content = contentMatch ? contentMatch[1] : "";
+      found[name] = content;
+    });
+
+    important.forEach(function(k) {
+      if (found[k] !== undefined) {
+        var val = found[k].length > 60 ? found[k].slice(0, 60) + "..." : found[k];
+        log("✅ " + k + " = " + val, "ok");
+      } else {
+        log("❌ " + k + " — отсутствует", "warn");
+      }
+    });
+
+    log("");
+    var titleMatch = h.match(/<title>([^<]*)<\/title>/i);
+    log("📌 Title: " + (titleMatch ? titleMatch[1] : "(нет)"), "info");
+    toast("Meta: " + metas.length, "success");
+  });
+}
+
+// ============================================================
+// 15. CONSOLE.LOG
+// ============================================================
+function findConsoleLogs() {
+  clearLog();
+  log("═══ CONSOLE.LOG ═══", "title");
+  log("");
+  addHistory("Поиск console.log");
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); toast("Файл не найден", "error"); return; }
+
+    var re = /console\.(log|warn|error|info|debug|trace)\s*\(/g;
+    var count = { log: 0, warn: 0, error: 0, info: 0, debug: 0, trace: 0 };
+    var m;
+    while ((m = re.exec(h)) !== null) count[m[1]]++;
+
+    var total = Object.keys(count).reduce(function(a, k) { return a + count[k]; }, 0);
+    log("📦 Всего вызовов: " + total, "info");
+    log("");
+    log("  console.log:   " + count.log, count.log > 30 ? "warn" : "dim");
+    log("  console.warn:  " + count.warn, "dim");
+    log("  console.error: " + count.error, count.error > 5 ? "warn" : "dim");
+    log("  console.info:  " + count.info, "dim");
+    log("  console.debug: " + count.debug, "dim");
+    log("  console.trace: " + count.trace, "dim");
+    log("");
+
+    if (total > 50) log("⚠️ Много логов — стоит убрать перед релизом", "warn");
+    else log("✅ Количество логов в норме", "ok");
+    toast("Логов: " + total, "info");
+  });
+}
+
+// ============================================================
+// 16. TODO / FIXME
+// ============================================================
+function findTodos() {
+  clearLog();
+  log("═══ TODO / FIXME ═══", "title");
+  log("");
+  addHistory("Поиск TODO/FIXME");
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); toast("Файл не найден", "error"); return; }
+
+    var lines = h.split("\n");
+    var re = /\/\/\s*(TODO|FIXME|XXX|HACK|BUG|NOTE)[\s:]/i;
+    var found = [];
+
+    for (var i = 0; i < lines.length; i++) {
+      var m = lines[i].match(re);
+      if (m) found.push({ line: i + 1, type: m[1].toUpperCase(), text: lines[i].trim() });
+    }
+
+    log("📦 Найдено: " + found.length, "info");
+    log("");
+
+    if (!found.length) {
+      log("✅ TODO/FIXME не найдено", "ok");
+      toast("Ничего не найдено", "success");
+      return;
+    }
+
+    var byType = {};
+    found.forEach(function(f) { byType[f.type] = (byType[f.type] || 0) + 1; });
+    Object.keys(byType).forEach(function(t) {
+      log("  " + t + ": " + byType[t], "warn");
+    });
+    log("");
+
+    log("─── Список ───", "title");
+    found.slice(0, 30).forEach(function(f) {
+      log("[" + f.line + "] " + f.type + " — " + f.text.slice(0, 80), "info-line");
+    });
+    toast("Найдено: " + found.length, "warn");
+  });
+}
+
+// ============================================================
+// 17. ЭМОДЗИ
+// ============================================================
+function countEmojis() {
+  clearLog();
+  log("═══ ЭМОДЗИ ═══", "title");
+  log("");
+  addHistory("Подсчёт эмодзи");
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); toast("Файл не найден", "error"); return; }
+
+    var emojiRe = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{27BF}]|[\u{1F1E6}-\u{1F1FF}]/gu;
+    var matches = h.match(emojiRe) || [];
+
+    log("📦 Всего эмодзи: " + matches.length, "info");
+    log("📄 На 1000 символов: " + Math.round(matches.length / h.length * 1000), "dim");
+    log("");
+
+    var map = {};
+    matches.forEach(function(e) { map[e] = (map[e] || 0) + 1; });
+    var sorted = Object.keys(map).sort(function(a, b) { return map[b] - map[a]; });
+
+    log("─── Топ-15 ───", "title");
+    sorted.slice(0, 15).forEach(function(e, i) {
+      var bar = "█".repeat(Math.min(30, map[e]));
+      log("  " + (i + 1).toString().padStart(2) + ". " + e + "  " + map[e].toString().padStart(4) + "  " + bar, "dim");
+    });
+
+    log("");
+    log("─── Уникальных: " + sorted.length + " ───", "info");
+    toast("Эмодзи: " + matches.length, "success");
+  });
+}
+
+// ============================================================
+// 18. НЕБЕЗОПАСНЫЕ ПАТТЕРНЫ
+// ============================================================
+function findUnsafePatterns() {
+  clearLog();
+  log("═══ НЕБЕЗОПАСНЫЕ ПАТТЕРНЫ ═══", "title");
+  log("");
+  addHistory("Поиск небезопасных паттернов");
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); toast("Файл не найден", "error"); return; }
+
+    var patterns = [
+      { re: /\beval\s*\(/g, name: "eval()", level: "high" },
+      { re: /new\s+Function\s*\(/g, name: "new Function()", level: "high" },
+      { re: /document\.write\s*\(/g, name: "document.write()", level: "med" },
+      { re: /\.innerHTML\s*=/g, name: ".innerHTML =", level: "med" },
+      { re: /\.outerHTML\s*=/g, name: ".outerHTML =", level: "med" },
+      { re: /http:\/\//g, name: "http:// (не HTTPS)", level: "med" },
+      { re: /javascript:/g, name: "javascript: URL", level: "high" },
+      { re: /setTimeout\s*\(\s*["']/g, name: 'setTimeout("строка")', level: "med" },
+      { re: /setInterval\s*\(\s*["']/g, name: 'setInterval("строка")', level: "med" },
+    ];
+
+    var found = [];
+    patterns.forEach(function(p) {
+      var m = h.match(p.re);
+      if (m) found.push({ name: p.name, count: m.length, level: p.level });
+    });
+
+    if (!found.length) {
+      log("✅ Небезопасных паттернов не найдено", "ok");
+      toast("Чисто!", "success");
+      return;
+    }
+
+    log("❌ Найдено " + found.length + " типов:", "err");
+    log("");
+
+    found.sort(function(a, b) { return b.count - a.count; });
+    found.forEach(function(f) {
+      var icon = f.level === "high" ? "🔴" : f.level === "med" ? "🟡" : "🟢";
+      log("  " + icon + " " + f.name + " — " + f.count + " раз", f.level === "high" ? "err" : f.level === "med" ? "warn" : "dim");
+    });
+
+    log("");
+    log("─── Пояснение ───", "title");
+    log("🔴 high = серьёзная уязвимость", "err");
+    log("🟡 med  = потенциальная проблема", "warn");
+    log("🟢 low  = не критично", "dim");
+    toast("Найдено: " + found.length + " типов", "warn");
+  });
+}
+
+// ============================================================
+// 19. ЦВЕТОВАЯ ПАЛИТРА
+// ============================================================
+function analyzeColors() {
+  clearLog();
+  log("═══ ЦВЕТА ═══", "title");
+  log("");
+  addHistory("Анализ цветов");
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); toast("Файл не найден", "error"); return; }
+
+    var hex = h.match(/#[0-9a-f]{3,8}\b/gi) || [];
+    var rgb = h.match(/rgba?\s*\([^)]+\)/gi) || [];
+    var hsl = h.match(/hsla?\s*\([^)]+\)/gi) || [];
+
+    log("🎨 HEX: " + hex.length, "info");
+    log("🎨 RGB/RGBA: " + rgb.length, "info");
+    log("🎨 HSL/HSLA: " + hsl.length, "info");
+    log("");
+
+    var map = {};
+    hex.forEach(function(c) { map[c.toLowerCase()] = (map[c.toLowerCase()] || 0) + 1; });
+    var sorted = Object.keys(map).sort(function(a, b) { return map[b] - map[a]; });
+
+    log("─── Топ-20 HEX ───", "title");
+    sorted.slice(0, 20).forEach(function(c) {
+      var bar = "█".repeat(Math.min(20, map[c]));
+      log("  " + c + "  " + map[c].toString().padStart(4) + "  " + bar, "dim");
+    });
+
+    log("");
+    log("─── Уникальных: " + sorted.length + " ───", "info");
+    if (sorted.length > 100) log("⚠️ Много цветов — стоит унифицировать", "warn");
+    toast("HEX цветов: " + hex.length, "info");
+  });
+}
+
+// ============================================================
+// 20. ОЧИСТКА КЭША
+// ============================================================
+function clearCache() {
+  clearLog();
+  log("═══ ОЧИСТКА КЭША ═══", "title");
+  log("");
+  addHistory("Очистка кэша");
+
+  var didSomething = false;
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(regs) {
+      log("Найдено Service Workers: " + regs.length, "info");
+      return Promise.all(regs.map(function(r) { return r.unregister(); }));
+    }).then(function() {
+      log("✅ Service Workers удалены", "ok");
+      didSomething = true;
+      if (window.caches) {
+        return caches.keys().then(function(names) {
+          log("Найдено кэшей: " + names.length, "info");
+          return Promise.all(names.map(function(n) { return caches.delete(n); }));
+        });
+      }
+    }).then(function() {
+      log("✅ Кэши удалены", "ok");
+      log("");
+      log("💡 Перезагрузи страницу вручную для применения", "info");
+      toast("Кэш очищен", "success");
+    }).catch(function(e) {
+      log("❌ " + e.message, "err");
+      toast("Ошибка", "error");
+    });
+  } else {
+    log("⚠️ Service Worker не поддерживается", "warn");
+    toast("SW не поддерживается", "warn");
+  }
+}
+
+// ============================================================
+// 21. HARD RESET
+// ============================================================
+function hardReset() {
+  if (!confirm("⚠️ УДАЛИТЬ ВСЁ ИЗ localStorage?\n\nСотрёт сохранения игры, темы, настройки.\n\nПродолжить?")) return;
+  if (!confirm("Точно? Действие необратимо!")) return;
+
+  clearLog();
+  log("═══ ПОЛНЫЙ СБРОС ═══", "title");
+  log("");
+  addHistory("Hard reset");
+
+  try {
+    var count = localStorage.length;
+    localStorage.clear();
+    log("✅ Удалено ключей: " + count, "ok");
+    log("");
+    log("💡 Обнови страницу", "info");
+    toast("Удалено ключей: " + count, "success");
+  } catch(e) {
+    log("❌ " + e.message, "err");
+    toast("Ошибка", "error");
+  }
+}
+
+// ============================================================
+// 22. ЭКСПОРТ ЛОГА
+// ============================================================
+function exportLog() {
+  var text = out.textContent || "";
+  if (!text || text.length < 10) {
+    toast("Лог пуст", "warn");
+    return;
+  }
+  addHistory("Экспорт лога");
+
+  var header = "=== ARTAMON DEBUG v8 LOG ===\n" +
+               "Дата: " + new Date().toLocaleString("ru-RU") + "\n" +
+               "URL: " + location.href + "\n" +
+               "UA: " + navigator.userAgent + "\n" +
+               "================================\n\n";
+  var blob = new Blob([header + text], { type: "text/plain;charset=utf-8" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "artamon-debug-" + new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19) + ".txt";
+  a.click();
+  URL.revokeObjectURL(url);
+  log("📤 Лог скачан", "ok");
+  toast("Лог скачан", "success");
+}
+
+// ============================================================
+// ТЕМА
+// ============================================================
+function applyTheme(theme) {
+  document.body.setAttribute("data-theme", theme);
+  try { localStorage.setItem("artamon_debug_theme", theme); } catch(e) {}
+  var btn = document.getElementById("themeBtn");
+  if (btn) btn.textContent = theme === "light" ? "☀️" : "🌙";
+}
+
+function toggleTheme() {
+  var cur = document.body.getAttribute("data-theme");
+  applyTheme(cur === "light" ? "dark" : "light");
+  toast("Тема: " + (cur === "light" ? "Тёмная" : "Светлая"), "info");
+}
+
+// ============================================================
+// СТАТУС СЕТИ
+// ============================================================
+function updateNetStatus() {
+  var dot = document.getElementById("netDot");
+  var txt = document.getElementById("netText");
+  if (navigator.onLine) {
+    dot.className = "dot on";
+    txt.textContent = "Онлайн";
+  } else {
+    dot.className = "dot off";
+    txt.textContent = "Офлайн";
+  }
+}
+window.addEventListener("online", updateNetStatus);
+window.addEventListener("offline", updateNetStatus);
+
+// ============================================================
+// ГЛОБАЛЬНЫЕ ОШИБКИ
+// ============================================================
+window.addEventListener("error", function(e) {
+  log("❗ Uncaught: " + (e.message || e.error) + " @ " + (e.filename || "?") + ":" + (e.lineno || "?"), "err");
+});
+window.addEventListener("unhandledrejection", function(e) {
+  log("❗ Promise rejection: " + (e.reason && e.reason.message ? e.reason.message : e.reason), "err");
+});
+
+// ============================================================
+// ЗВЁЗДЫ НА ФОНЕ
+// ============================================================
+(function createStars() {
+  var container = document.getElementById("stars");
+  if (!container) return;
+  var count = 40;
+  for (var i = 0; i < count; i++) {
+    var star = document.createElement("div");
+    star.className = "star";
+    star.style.left = Math.random() * 100 + "%";
+    star.style.top = Math.random() * 100 + "%";
+    star.style.animationDelay = Math.random() * 4 + "s";
+    star.style.animationDuration = (3 + Math.random() * 3) + "s";
+    container.appendChild(star);
+  }
+})();
+
+// ============================================================
+// ИНИЦИАЛИЗАЦИЯ
+// ============================================================
+(function init() {
+  // Тема
+  var savedTheme = "dark";
+  try { savedTheme = localStorage.getItem("artamon_debug_theme") || "dark"; } catch(e) {}
+  applyTheme(savedTheme);
+
+  // Кнопка темы
+  var themeBtn = document.getElementById("themeBtn");
+  if (themeBtn) themeBtn.addEventListener("click", toggleTheme);
+
+  updateNetStatus();
+
+  // Приветствие
+  log("✅ Artamon Debug v8 Nova загружен", "ok");
+  log("🔍 Автопоиск файла игры готов", "info");
+  log("⚠️ Ручка /api/tech-status НЕ вызывается", "warn");
+  log("ℹ️ Это защита от перехода в tech.html", "dim");
+  log("");
+  log("Подсказка: нажми любую кнопку выше.", "dim");
+  log("");
+  log("Проверяемые пути к файлу игры:", "dim");
+  GAME_FILE_CANDIDATES.forEach(function(p) { log("  " + p, "dim"); });
+})();
+</script>
+
+</body>
+</html>
