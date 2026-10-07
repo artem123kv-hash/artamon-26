@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#d4af37">
+<title>🎰 Artamon Upgrader</title>
+<style>
+:root {
+  --bg-0: #050507;
+  --bg-1: #0a0a12;
+  --bg-2: #12121a;
+  --bg-3: #1a1a24;
+  --border: #252532;
+  --txt-1: #e8e8f0;
+  --txt-2: #8888a0;
+  --txt-3: #555568;
+  --gold: #d4af37;
+  --gold-bright: #f6e6a8;
+  --gold-dark: #8f6f1a;
+  --ok: #4ade80;
+  --err: #f87171;
+  --warn: #fbbf24;
+  --info: #60a5fa;
+
+  /* Редкости */
+  --common: #8a8a9a;
+  --rare: #4a90e2;
+  --epic: #a855f7;
+  --legendary: #f59e0b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+  min-height: 100vh;
+  background: var(--bg-0);
+  color: var(--txt-1);
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+body {
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(212,175,55,.08) 0%, transparent 45%),
+    radial-gradient(circle at 80% 100%, rgba(168,85,247,.06) 0%, transparent 45%);
+  background-attachment: fixed;
+  padding-bottom: 80px;
+}
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, select { font-family: inherit; }
+.hidden { display: none !important; }
+
+/* ===== HEADER ===== */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(10,10,18,.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-logo {
+  font-size: 1.6rem;
+  filter: drop-shadow(0 0 8px rgba(212,175,55,.6));
+  animation: logo-spin 8s linear infinite;
+}
+@keyframes logo-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.topbar-title {
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold) 60%, var(--gold-dark));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  flex: 1;
+}
+.topbar-balance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: linear-gradient(180deg, rgba(212,175,55,.15), rgba(212,175,55,.05));
+  border: 1.5px solid rgba(212,175,55,.4);
+  border-radius: 20px;
+  font-size: .85rem;
+  font-weight: 800;
+  color: var(--gold-bright);
+  white-space: nowrap;
+}
+.topbar-balance .coin { font-size: 1rem; }
+.topbar-balance.updating { animation: balance-pulse .5s ease; }
+@keyframes balance-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: .74rem;
+  color: var(--txt-2);
+}
+.topbar-user b { color: var(--gold); font-weight: 800; }
+
+/* ===== LAYOUT ===== */
+#app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* ===== TABS ===== */
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex: 1;
+  min-width: 90px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--txt-2);
+  transition: .2s;
+  white-space: nowrap;
+  text-align: center;
+}
+.tab-btn:hover { color: var(--txt-1); background: rgba(255,255,255,.03); }
+.tab-btn.active {
+  background: linear-gradient(180deg, rgba(212,175,55,.25), rgba(212,175,55,.08));
+  color: var(--gold-bright);
+  box-shadow: inset 0 0 0 1px rgba(212,175,55,.4);
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fade-in .3s ease; }
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== UPGRADE CIRCLE ===== */
+.upgrade-stage {
+  background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px 18px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.upgrade-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(212,175,55,.05), transparent 65%);
+  pointer-events: none;
+}
+
+/* Верхняя часть: ставка | колесо | цель */
+.upgrade-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 560px) {
+  .upgrade-top { grid-template-columns: 1fr; gap: 12px; }
+}
+
+.slot {
+  background: var(--bg-2);
+  border: 2px dashed var(--border);
+  border-radius: 16px;
+  padding: 16px 12px;
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  transition: all .25s;
+  cursor: pointer;
+  position: relative;
+}
+.slot:hover {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, rgba(212,175,55,.05), var(--bg-2));
+}
+.slot.filled {
+  border-style: solid;
+  border-color: var(--gold);
+  background: linear-gradient(180deg, rgba(212,175,55,.08), var(--bg-2));
+  cursor: default;
+}
+.slot.filled.rarity-common { border-color: var(--common); }
+.slot.filled.rarity-rare { border-color: var(--rare); box-shadow: 0 0 20px rgba(74,144,226,.3); }
+.slot.filled.rarity-epic { border-color: var(--epic); box-shadow: 0 0 25px rgba(168,85,247,.35); }
+.slot.filled.rarity-legendary { border-color: var(--legendary); box-shadow: 0 0 30px rgba(245,158,11,.4); }
+
+.slot-hint {
+  font-size: .65rem;
+  color: var(--txt-3);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.slot-empty-icon { font-size: 2.2rem; opacity: .35; }
+.slot-icon { font-size: 3rem; line-height: 1; filter: drop-shadow(0 4px 12px rgba(0,0,0,.5)); }
+.slot-name { font-size: .82rem; font-weight: 800; }
+.slot-price {
+  font-size: .76rem;
+  color: var(--txt-2);
+  font-weight: 700;
+}
+.slot-price .coin { color: var(--gold); }
+.slot-rarity {
+  font-size: .58rem;
+  font-weight: 900;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.r-common { color: var(--common); background: rgba(138,138,154,.15); }
+.r-rare { color: var(--rare); background: rgba(74,144,226,.15); }
+.r-epic { color: var(--epic); background: rgba(168,85,247,.15); }
+.r-legendary { color: var(--legendary); background: rgba(245,158,11,.15); }
+
+.slot-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(248,113,113,.2);
+  color: var(--err);
+  font-size: 1rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .2s;
+}
+.slot-remove:hover { background: var(--err); color: #fff; }
+
+/* КРУГ */
+.circle-wrap {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  flex-shrink: 0;
+}
+@media (max-width: 560px) {
+  .circle-wrap { width: 180px; height: 180px; margin: 0 auto; }
+}
+.circle-wrap svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  filter: drop-shadow(0 0 20px rgba(212,175,55,.3));
+}
+.circle-bg {
+  fill: none;
+  stroke: rgba(255,255,255,.05);
+  stroke-width: 14;
+}
+.circle-track {
+  fill: none;
+  stroke: var(--err);
+  stroke-width: 14;
+  transition: stroke .3s;
+}
+.circle-win {
+  fill: none;
+  stroke: var(--ok);
+  stroke-width: 14;
+  stroke-linecap: butt;
+  transition: stroke-dasharray .5s ease;
+  filter: drop-shadow(0 0 8px var(--ok));
+}
+.circle-tick {
+  stroke: rgba(255,255,255,.15);
+  stroke-width: 2;
+}
+.circle-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+.circle-chance {
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: var(--ok);
+  letter-spacing: -.02em;
+  line-height: 1;
+  text-shadow: 0 0 24px rgba(74,222,128,.4);
+  transition: color .3s;
+}
+.circle-chance.low { color: var(--err); text-shadow: 0 0 24px rgba(248,113,113,.4); }
+.circle-chance.mid { color: var(--warn); text-shadow: 0 0 24px rgba(251,191,36,.4); }
+.circle-chance.high { color: var(--ok); text-shadow: 0 0 24px rgba(74,222,128,.4); }
+.circle-label {
+  font-size: .62rem;
+  color: var(--txt-2);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-top: 6px;
+}
+.circle-multiplier {
+  font-size: .8rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: .05em;
+  margin-top: 4px;
+  text-shadow: 0 0 12px rgba(212,175,55,.5);
+}
+
+/* МАРКЕР */
+.circle-pointer {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.6rem;
+  filter: drop-shadow(0 0 8px var(--gold));
+  transition: none;
+  z-index: 5;
+  pointer-events: none;
+}
+.circle-pointer.spinning {
+  transition: transform 4s cubic-bezier(.15, .85, .25, 1);
+}
+.circle-pointer.win { color: var(--ok); filter: drop-shadow(0 0 12px var(--ok)); }
+.circle-pointer.lose { color: var(--err); filter: drop-shadow(0 0 12px var(--err)); }
+
+/* МНОЖИТЕЛИ */
+.multipliers {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 16px 0;
+  position: relative;
+  z-index: 1;
+}
+.mult-btn {
+  padding: 10px 16px;
+  background: var(--bg-2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: .82rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  color: var(--txt-2);
+  transition: .2s;
+  min-width: 60px;
+}
+.mult-btn:hover { border-color: var(--gold); color: var(--gold); }
+.mult-btn.active {
+  background: linear-gradient(180deg, rgba(212,175,55,.2), rgba(212,175,55,.05));
+  border-color: var(--gold);
+  color: var(--gold-bright);
+  box-shadow: 0 0 16px rgba(212,175,55,.3);
+}
+
+/* КНОПКА КРУТИТЬ */
+.spin-btn {
+  width: 100%;
+  padding: 18px;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold) 50%, var(--gold-dark));
+  color: #0a0a0a;
+  border: 2px solid var(--gold-bright);
+  box-shadow: 0 8px 32px rgba(212,175,55,.4);
+  transition: .25s;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+.spin-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+  transform: translateX(-100%);
+  transition: transform .6s;
+}
+.spin-btn:hover:not(:disabled)::before { transform: translateX(100%); }
+.spin-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(212,175,55,.6); }
+.spin-btn:active:not(:disabled) { transform: scale(.98); }
+.spin-btn:disabled { opacity: .5; cursor: not-allowed; }
+.spin-btn .btn-icon { font-size: 1.4rem; }
+
+/* ВЫИГРЫШ */
+.payout-preview {
+  text-align: center;
+  margin-bottom: 14px;
+  font-size: .82rem;
+  color: var(--txt-2);
+  position: relative;
+  z-index: 1;
+}
+.payout-preview b { color: var(--gold-bright); font-weight: 900; font-size: 1.1rem; }
+.payout-preview .green { color: var(--ok); }
+.payout-preview .red { color: var(--err); }
+
+/* ===== РЕЗУЛЬТАТ ===== */
+.result-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0,0,0,.85);
+  backdrop-filter: blur(10px);
+}
+.result-overlay.on { display: flex; animation: fade-in .3s ease; }
+.result-card {
+  max-width: 420px;
+  width: 100%;
+  padding: 36px 24px;
+  background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+  border: 3px solid var(--gold);
+  border-radius: 24px;
+  text-align: center;
+  animation: pop-in .5s cubic-bezier(.5, 1.5, .5, 1);
+  position: relative;
+  overflow: hidden;
+}
+@keyframes pop-in {
+  from { transform: scale(.6); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.result-card.win {
+  border-color: var(--ok);
+  box-shadow: 0 0 80px rgba(74,222,128,.5), inset 0 0 40px rgba(74,222,128,.05);
+}
+.result-card.lose {
+  border-color: var(--err);
+  box-shadow: 0 0 80px rgba(248,113,113,.5), inset 0 0 40px rgba(248,113,113,.05);
+}
+.result-card.jackpot {
+  border-color: var(--legendary);
+  box-shadow: 0 0 100px rgba(245,158,11,.7), inset 0 0 60px rgba(245,158,11,.08);
+  animation: pop-in .5s cubic-bezier(.5, 1.5, .5, 1), jackpot-glow 1.5s ease infinite alternate;
+}
+@keyframes jackpot-glow {
+  from { box-shadow: 0 0 80px rgba(245,158,11,.5); }
+  to   { box-shadow: 0 0 140px rgba(245,158,11,.9); }
+}
+
+.result-emoji {
+  font-size: 5rem;
+  display: block;
+  margin-bottom: 16px;
+  line-height: 1;
+  filter: drop-shadow(0 0 30px currentColor);
+}
+.result-emoji.win { color: var(--ok); animation: bounce .7s ease; }
+.result-emoji.lose { color: var(--err); animation: shake .7s ease; }
+.result-emoji.jackpot { color: var(--legendary); animation: bounce .7s ease, pulse-glow 1s infinite; }
+@keyframes bounce {
+  0%   { transform: translateY(0) scale(1); }
+  30%  { transform: translateY(-30px) scale(1.3); }
+  60%  { transform: translateY(0) scale(1); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-12px) rotate(-5deg); }
+  40% { transform: translateX(12px) rotate(5deg); }
+  60% { transform: translateX(-8px) rotate(-3deg); }
+  80% { transform: translateX(8px) rotate(3deg); }
+}
+@keyframes pulse-glow {
+  0%, 100% { filter: drop-shadow(0 0 20px currentColor); }
+  50% { filter: drop-shadow(0 0 60px currentColor); }
+}
+
+.result-title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.result-title.win { color: var(--ok); }
+.result-title.lose { color: var(--err); }
+.result-title.jackpot {
+  background: linear-gradient(180deg, #fef3c7, var(--legendary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.result-subtitle {
+  font-size: .92rem;
+  color: var(--txt-2);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.result-reward {
+  padding: 16px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+.result-reward .coin { color: var(--gold-bright); font-size: 1.4rem; }
+.result-reward .green { color: var(--ok); }
+.result-reward .red { color: var(--err); }
+
+/* КОНФЕТТИ */
+.confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 14px;
+  top: -20px;
+  animation: confetti-fall 3s linear forwards;
+}
+@keyframes confetti-fall {
+  to { transform: translateY(600px) rotate(720deg); opacity: 0; }
+}
+
+/* ===== ПРЕДМЕТЫ ===== */
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+.item-card {
+  background: var(--bg-2);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 10px;
+  text-align: center;
+  transition: .25s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.item-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, currentColor 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.item-card.rarity-common { color: var(--common); }
+.item-card.rarity-rare { color: var(--rare); }
+.item-card.rarity-epic { color: var(--epic); }
+.item-card.rarity-legendary { color: var(--legendary); }
+.item-card:hover {
+  transform: translateY(-4px);
+  border-color: currentColor;
+  box-shadow: 0 10px 30px rgba(0,0,0,.5), 0 0 20px currentColor;
+}
+.item-card:hover::before { opacity: .1; }
+
+.item-icon {
+  font-size: 2.6rem;
+  line-height: 1;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,.6));
+  position: relative;
+  z-index: 1;
+}
+.item-name {
+  font-size: .78rem;
+  font-weight: 800;
+  color: var(--txt-1);
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
+}
+.item-rarity-badge {
+  display: inline-block;
+  font-size: .55rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 1;
+}
+.item-price {
+  font-size: .74rem;
+  font-weight: 700;
+  color: var(--txt-2);
+  position: relative;
+  z-index: 1;
+}
+.item-price .coin { color: var(--gold); }
+
+.item-count {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--gold);
+  color: #0a0a0a;
+  font-size: .7rem;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 10px;
+  min-width: 24px;
+  text-align: center;
+  z-index: 2;
+}
+
+.item-sell {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  font-size: .6rem;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(74,222,128,.15);
+  color: var(--ok);
+  letter-spacing: .06em;
+  opacity: 0;
+  transition: .2s;
+  z-index: 2;
+}
+.item-card:hover .item-sell { opacity: 1; }
+.item-sell:hover { background: rgba(74,222,128,.4); color: #fff; }
+
+/* ===== СЕКЦИИ ===== */
+.section {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.section-title {
+  font-size: .85rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* ===== MODAL ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0,0,0,.8);
+  backdrop-filter: blur(8px);
+}
+.modal.on { display: flex; animation: fade-in .2s ease; }
+.modal-box {
+  max-width: 560px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+  border: 2px solid var(--gold);
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  animation: pop-in .35s ease;
+}
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(248,113,113,.15);
+  color: var(--err);
+  font-size: 1.3rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .2s;
+}
+.modal-close:hover { background: var(--err); color: #fff; }
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  margin-bottom: 18px;
+  padding-right: 40px;
+}
+
+/* ===== FORM ===== */
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: block;
+  font-size: .68rem;
+  color: var(--txt-2);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+.form-input {
+  width: 100%;
+  background: var(--bg-3);
+  border: 1.5px solid var(--border);
+  color: var(--txt-1);
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: .9rem;
+  outline: none;
+  transition: .2s;
+}
+.form-input:focus { border-color: var(--gold); }
+
+/* ===== КНОПКИ ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 18px;
+  border-radius: 10px;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  transition: .2s;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+}
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn.primary {
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold) 60%, var(--gold-dark));
+  color: #0a0a0a;
+  border-color: var(--gold-bright);
+}
+.btn.primary:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(212,175,55,.4); }
+.btn.ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--txt-2);
+}
+.btn.ghost:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.btn.danger {
+  background: rgba(248,113,113,.1);
+  border-color: rgba(248,113,113,.5);
+  color: var(--err);
+}
+.btn.danger:hover:not(:disabled) { background: rgba(248,113,113,.25); }
+.btn.sm { padding: 7px 12px; font-size: .7rem; }
+.btn.full { width: 100%; }
+
+/* ===== EMPTY ===== */
+.empty {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--txt-3);
+  font-style: italic;
+}
+.empty-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 12px;
+  opacity: .4;
+  font-style: normal;
+}
+
+/* ===== TOAST ===== */
+#toasts {
+  position: fixed;
+  top: 70px;
+  right: 16px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  max-width: 320px;
+}
+.toast {
+  background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+  border: 1.5px solid var(--gold);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--txt-1);
+  transform: translateX(140%);
+  opacity: 0;
+  transition: all .35s cubic-bezier(.5, 1.5, .5, 1);
+  pointer-events: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,.5);
+}
+.toast.show { transform: translateX(0); opacity: 1; }
+.toast.success { border-color: var(--ok); color: var(--ok); }
+.toast.error { border-color: var(--err); color: var(--err); }
+.toast.warn { border-color: var(--warn); color: var(--warn); }
+.toast.info { border-color: var(--info); color: var(--info); }
+
+/* ===== LOADING ===== */
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--txt-2);
+}
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center;
+  padding: 24px 16px;
+  font-size: .68rem;
+  color: var(--txt-3);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.footer b { color: var(--gold); }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-0); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .topbar-title { font-size: .85rem; }
+  .topbar-balance { padding: 6px 10px; font-size: .74rem; }
+  .topbar-user { display: none; }
+  .tab-btn { padding: 9px 10px; font-size: .68rem; min-width: 70px; }
+  .section { padding: 14px; }
+  .items-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+  .item-icon { font-size: 2.2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span class="topbar-logo">🎰</span>
+  <span class="topbar-title">Artamon Upgrader</span>
+  <div class="topbar-user" id="userInfo">
+    👤 <b id="userNick">—</b>
+  </div>
+  <div class="topbar-balance" id="balanceBox">
+    <span class="coin">🪙</span>
+    <span id="balanceDisplay">0</span>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="upgrade">🎯 Апгрейд</button>
+    <button class="tab-btn" data-tab="inventory">🎒 Инвентарь</button>
+    <button class="tab-btn" data-tab="shop">🛒 Магазин</button>
+    <button class="tab-btn" data-tab="history">📜 История</button>
+    <button class="tab-btn" data-tab="bonuses">✨ Бонусы</button>
+  </div>
+
+  <!-- ===== UPGRADE ===== -->
+  <div class="tab-content active" data-tab="upgrade">
+    <div class="upgrade-stage">
+
+      <!-- ВЕРХ: ставка / круг / цель -->
+      <div class="upgrade-top">
+        <!-- СТАВКА -->
+        <div class="slot" id="betSlot" onclick="openBetPicker()">
+          <span class="slot-hint">Нажми</span>
+          <span class="slot-empty-icon">➕</span>
+          <span class="slot-hint">Твой предмет</span>
+        </div>
+
+        <!-- КРУГ -->
+        <div class="circle-wrap">
+          <svg viewBox="0 0 200 200">
+            <circle class="circle-bg" cx="100" cy="100" r="85"></circle>
+            <circle class="circle-track" cx="100" cy="100" r="85" id="circleTrack"></circle>
+            <circle class="circle-win" cx="100" cy="100" r="85" id="circleWin"></circle>
+            <!-- Тики -->
+            <g id="ticks"></g>
+          </svg>
+          <div class="circle-center">
+            <div class="circle-chance" id="chanceValue">0%</div>
+            <div class="circle-label">шанс</div>
+            <div class="circle-multiplier" id="multiplierLabel">x2.0</div>
+          </div>
+          <div class="circle-pointer" id="circlePointer">📍</div>
+        </div>
+
+        <!-- ЦЕЛЬ -->
+        <div class="slot" id="targetSlot" onclick="openTargetPicker()">
+          <span class="slot-hint">Нажми</span>
+          <span class="slot-empty-icon">🎯</span>
+          <span class="slot-hint">Цель</span>
+        </div>
+      </div>
+
+      <!-- МНОЖИТЕЛИ -->
+      <div class="multipliers">
+        <button class="mult-btn" data-mult="1.5">x1.5</button>
+        <button class="mult-btn" data-mult="2">x2</button>
+        <button class="mult-btn active" data-mult="3">x3</button>
+        <button class="mult-btn" data-mult="5">x5</button>
+        <button class="mult-btn" data-mult="10">x10</button>
+      </div>
+
+      <!-- ПРЕВЬЮ ВЫПЛАТЫ -->
+      <div class="payout-preview" id="payoutPreview">
+        Выбери предмет для начала
+      </div>
+
+      <!-- КНОПКА -->
+      <button class="spin-btn" id="spinBtn" disabled>
+        <span class="btn-icon">🎰</span>
+        <span>КРУТИТЬ</span>
+      </button>
+
+    </div>
+
+    <!-- ИНФО -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">ℹ️ Как играть</div>
+      </div>
+      <div style="font-size:.82rem;color:var(--txt-2);line-height:1.7;">
+        1. Выбери <b style="color:var(--gold);">предмет</b> для ставки (слева)<br>
+        2. Выбери <b style="color:var(--gold);">цель</b> апгрейда (справа)<br>
+        3. Настрой <b style="color:var(--gold);">множитель</b> ставки<br>
+        4. Нажми <b style="color:var(--gold);">КРУТИТЬ</b> — указатель побежит по кругу<br>
+        5. Попадёшь в <b style="color:var(--ok);">зелёную зону</b> — победа!<br>
+        <br>
+        <b style="color:var(--gold);">Комиссия: 5%</b> · Шанс = 1 / множитель × 0.95
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== INVENTORY ===== -->
+  <div class="tab-content" data-tab="inventory">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🎒 Инвентарь</div>
+        <div id="invCount" style="font-size:.78rem;color:var(--txt-2);"></div>
+      </div>
+      <div class="items-grid" id="inventoryGrid">
+        <div class="empty">
+          <span class="empty-icon">🎒</span>
+          Инвентарь пуст
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SHOP ===== -->
+  <div class="tab-content" data-tab="shop">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🛒 Магазин</div>
+      </div>
+      <div class="items-grid" id="shopGrid">
+        <div class="loading"><div class="spinner"></div>Загрузка...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HISTORY ===== -->
+  <div class="tab-content" data-tab="history">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">📜 История апгрейдов</div>
+        <button class="btn ghost sm" onclick="clearHistory()">🗑 Очистить</button>
+      </div>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <!-- ===== BONUSES ===== -->
+  <div class="tab-content" data-tab="bonuses">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">✨ Твои бонусы</div>
+      </div>
+      <div id="bonusList"></div>
+      <div style="text-align:center;margin-top:16px;font-size:.82rem;color:var(--txt-2);">
+        Суммарный бонус: <b id="totalBonus" style="color:var(--gold);font-size:1.2rem;">+0%</b>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  Powered by <b>Artamon v2.8</b> · Upgrader v1.0
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-title" id="modalTitle">—</div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- RESULT OVERLAY -->
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-card" id="resultCard">
+    <div class="confetti" id="confetti"></div>
+    <span class="result-emoji" id="resultEmoji">🎉</span>
+    <div class="result-title" id="resultTitle">ПОБЕДА!</div>
+    <div class="result-subtitle" id="resultSubtitle">Ты апгрейднул предмет!</div>
+    <div class="result-reward" id="resultReward"></div>
+    <button class="btn primary full" onclick="closeResult()">ПРОДОЛЖИТЬ</button>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="toasts"></div>
+
+<script>
+// ============================================================
+// ARTAMON UPGRADER v1.0
+// Часть 2/2 — JavaScript
+// ============================================================
+
+var API = "https://artamon-api.artem123kv.workers.dev";
+var STORAGE_KEY = "artamon_upgrader_v1";
+var SESSION_KEY = "artamon_session_v1"; // как в игре (может отличаться)
+
+// ============================================================
+// ПРЕДМЕТЫ (20 штук)
+// ============================================================
+var ITEMS = [
+  // COMMON (5) — +1% к монетам
+  { id: "wrench",    icon: "🔧", name: "Гаечный ключ",  rarity: "common",    price: 100,   bonus: 1 },
+  { id: "hammer",    icon: "🔨", name: "Молот",          rarity: "common",    price: 150,   bonus: 1 },
+  { id: "dagger",    icon: "🗡", name: "Кинжал",         rarity: "common",    price: 200,   bonus: 1 },
+  { id: "toolbox",   icon: "🧰", name: "Ящик инструментов", rarity: "common", price: 250,   bonus: 1 },
+  { id: "pickaxe",   icon: "⛏", name: "Кирка",          rarity: "common",    price: 300,   bonus: 1 },
+  // RARE (5) — +3% к монетам
+  { id: "sword",     icon: "⚔️", name: "Меч",            rarity: "rare",      price: 800,   bonus: 3 },
+  { id: "shield",    icon: "🛡", name: "Щит",            rarity: "rare",      price: 1200,  bonus: 3 },
+  { id: "bow",       icon: "🏹", name: "Лук",            rarity: "rare",      price: 1600,  bonus: 3 },
+  { id: "gun",       icon: "🔫", name: "Пистолет",        rarity: "rare",      price: 2200,  bonus: 3 },
+  { id: "bomb",      icon: "💣", name: "Бомба",           rarity: "rare",      price: 2800,  bonus: 3 },
+  // EPIC (5) — +7% к монетам
+  { id: "diamond",   icon: "💎", name: "Алмаз",          rarity: "epic",      price: 6000,  bonus: 7 },
+  { id: "crystal",   icon: "🔮", name: "Кристалл",        rarity: "epic",      price: 9000,  bonus: 7 },
+  { id: "crown",     icon: "👑", name: "Корона",          rarity: "epic",      price: 13000, bonus: 7 },
+  { id: "fleur",     icon: "⚜️", name: "Лилии",           rarity: "epic",      price: 18000, bonus: 7 },
+  { id: "wand",      icon: "🪄", name: "Волшебная палочка", rarity: "epic",    price: 24000, bonus: 7 },
+  // LEGENDARY (5) — +15% к монетам
+  { id: "dragon",    icon: "🐉", name: "Дракон",          rarity: "legendary", price: 50000, bonus: 15 },
+  { id: "fire",      icon: "🔥", name: "Вечное пламя",    rarity: "legendary", price: 75000, bonus: 15 },
+  { id: "star",      icon: "⭐", name: "Звезда",          rarity: "legendary", price: 100000, bonus: 15 },
+  { id: "comet",     icon: "☄️", name: "Комета",          rarity: "legendary", price: 150000, bonus: 15 },
+  { id: "trophy",    icon: "🏆", name: "Трофей",          rarity: "legendary", price: 250000, bonus: 15 },
+];
+
+// ============================================================
+// СОСТОЯНИЕ
+// ============================================================
+var state = {
+  balance: 0,
+  inventory: {},       // { itemId: count }
+  history: [],         // [{ from, to, mult, win, ts }]
+  multiplier: 3,       // текущий множитель
+  betItem: null,       // предмет ставки (объект item)
+  targetItem: null,    // предмет цели
+  spinning: false,
+  user: null,          // данные игрока (nick, id)
+};
+
+// ============================================================
+// ХРАНИЛИЩЕ
+// ============================================================
+function loadState() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    var d = JSON.parse(raw);
+    state.balance = d.balance || 0;
+    state.inventory = d.inventory || {};
+    state.history = d.history || [];
+  } catch(e) {
+    console.warn("Не удалось загрузить состояние:", e);
+  }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      balance: state.balance,
+      inventory: state.inventory,
+      history: state.history.slice(0, 50),
+    }));
+    syncBalanceToGame();
+  } catch(e) {
+    console.warn("Не удалось сохранить:", e);
+  }
+}
+
+// Пробуем получить данные игрока из localStorage игры
+function loadUserFromGame() {
+  // Пробуем разные возможные ключи, которые использует игра
+  var keys = [
+    "artamon_user_v1",
+    "artamon_user",
+    "artamon_profile_v1",
+    "artamon_account_v1",
+    "artamon_current_user",
+  ];
+  for (var i = 0; i < keys.length; i++) {
+    try {
+      var raw = localStorage.getItem(keys[i]);
+      if (raw) {
+        var u = JSON.parse(raw);
+        if (u && (u.nick || u.nickname)) {
+          state.user = {
+            id: u.id || "",
+            nick: u.nick || u.nickname,
+          };
+          // Пробуем получить баланс из игры
+          if (typeof u.coins === "number") {
+            state.balance = u.coins;
+          }
+          return true;
+        }
+      }
+    } catch(e) {}
+  }
+  return false;
+}
+
+// Синхронизация баланса обратно в игру
+function syncBalanceToGame() {
+  if (!state.user) return;
+  var keys = [
+    "artamon_user_v1",
+    "artamon_user",
+    "artamon_profile_v1",
+    "artamon_account_v1",
+    "artamon_current_user",
+  ];
+  for (var i = 0; i < keys.length; i++) {
+    try {
+      var raw = localStorage.getItem(keys[i]);
+      if (raw) {
+        var u = JSON.parse(raw);
+        if (u && (u.nick || u.nickname)) {
+          u.coins = state.balance;
+          localStorage.setItem(keys[i], JSON.stringify(u));
+          return;
+        }
+      }
+    } catch(e) {}
+  }
+}
+
+// ============================================================
+// УТИЛИТЫ
+// ============================================================
+function $(id) { return document.getElementById(id); }
+function $$(sel) { return document.querySelectorAll(sel); }
+function escapeHtml(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function(c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+function getItem(id) {
+  for (var i = 0; i < ITEMS.length; i++) if (ITEMS[i].id === id) return ITEMS[i];
+  return null;
+}
+function formatMoney(n) {
+  return Math.floor(n).toLocaleString("ru-RU");
+}
+function rarityClass(r) {
+  return "rarity-" + r;
+}
+function rarityShort(r) {
+  return { common: "COMMON", rare: "RARE", epic: "EPIC", legendary: "LEGENDARY" }[r] || r;
+}
+function timeAgo(ts) {
+  var diff = Date.now() - ts;
+  var min = Math.floor(diff / 60000);
+  if (min < 1) return "только что";
+  if (min < 60) return min + " мин назад";
+  var hrs = Math.floor(min / 60);
+  if (hrs < 24) return hrs + " ч назад";
+  var days = Math.floor(hrs / 24);
+  return days + " дн назад";
+}
+
+function toast(msg, type) {
+  type = type || "info";
+  var el = document.createElement("div");
+  el.className = "toast " + type;
+  el.textContent = msg;
+  $("toasts").appendChild(el);
+  setTimeout(function(){ el.classList.add("show"); }, 30);
+  setTimeout(function(){
+    el.classList.remove("show");
+    setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 400);
+  }, 3500);
+}
+
+// ============================================================
+// ЗВУКИ (Web Audio API)
+// ============================================================
+var audioCtx = null;
+function initAudio() {
+  if (audioCtx) return;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  } catch(e) {}
+}
+function playTone(freq, duration, type, volume) {
+  if (!audioCtx) return;
+  try {
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.type = type || "sine";
+    osc.frequency.value = freq;
+    gain.gain.value = volume || 0.1;
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + duration);
+  } catch(e) {}
+}
+function playSpin() {
+  // Тик-тик-тик
+  var count = 25;
+  for (var i = 0; i < count; i++) {
+    (function(idx) {
+      setTimeout(function() {
+        playTone(600 + Math.random() * 200, 0.04, "square", 0.06);
+      }, idx * 140);
+    })(i);
+  }
+}
+function playWin() {
+  // Восходящий аккорд
+  var notes = [523, 659, 784, 1047]; // C5 E5 G5 C6
+  notes.forEach(function(f, i) {
+    setTimeout(function() { playTone(f, 0.4, "triangle", 0.15); }, i * 120);
+  });
+}
+function playLose() {
+  // Нисходящий
+  var notes = [400, 300, 200];
+  notes.forEach(function(f, i) {
+    setTimeout(function() { playTone(f, 0.3, "sawtooth", 0.1); }, i * 150);
+  });
+}
+function playJackpot() {
+  // Много нот
+  var notes = [523, 659, 784, 1047, 1319, 1568, 2093];
+  notes.forEach(function(f, i) {
+    setTimeout(function() { playTone(f, 0.5, "triangle", 0.18); }, i * 100);
+  });
+}
+function playClick() {
+  playTone(800, 0.03, "sine", 0.05);
+}
+
+// ============================================================
+// UI ОБНОВЛЕНИЕ
+// ============================================================
+function updateBalance() {
+  var el = $("balanceDisplay");
+  if (el) el.textContent = formatMoney(state.balance);
+  var box = $("balanceBox");
+  if (box) {
+    box.classList.add("updating");
+    setTimeout(function() { box.classList.remove("updating"); }, 500);
+  }
+}
+
+function updateUser() {
+  if (state.user) {
+    $("userNick").textContent = state.user.nick;
+  }
+}
+
+function renderBetSlot() {
+  var slot = $("betSlot");
+  if (!slot) return;
+  if (state.betItem) {
+    slot.className = "slot filled " + rarityClass(state.betItem.rarity);
+    slot.innerHTML =
+      '<button class="slot-remove" onclick="event.stopPropagation();removeBet()">×</button>' +
+      '<span class="slot-icon">' + state.betItem.icon + '</span>' +
+      '<span class="slot-name">' + escapeHtml(state.betItem.name) + '</span>' +
+      '<span class="slot-rarity r-' + state.betItem.rarity + '">' + rarityShort(state.betItem.rarity) + '</span>' +
+      '<span class="slot-price"><span class="coin">🪙</span> ' + formatMoney(state.betItem.price) + '</span>';
+  } else {
+    slot.className = "slot";
+    slot.innerHTML =
+      '<span class="slot-hint">Нажми</span>' +
+      '<span class="slot-empty-icon">➕</span>' +
+      '<span class="slot-hint">Твой предмет</span>';
+  }
+}
+
+function renderTargetSlot() {
+  var slot = $("targetSlot");
+  if (!slot) return;
+  if (state.targetItem) {
+    slot.className = "slot filled " + rarityClass(state.targetItem.rarity);
+    slot.innerHTML =
+      '<button class="slot-remove" onclick="event.stopPropagation();removeTarget()">×</button>' +
+      '<span class="slot-icon">' + state.targetItem.icon + '</span>' +
+      '<span class="slot-name">' + escapeHtml(state.targetItem.name) + '</span>' +
+      '<span class="slot-rarity r-' + state.targetItem.rarity + '">' + rarityShort(state.targetItem.rarity) + '</span>' +
+      '<span class="slot-price"><span class="coin">🪙</span> ' + formatMoney(state.targetItem.price) + '</span>';
+  } else {
+    slot.className = "slot";
+    slot.innerHTML =
+      '<span class="slot-hint">Нажми</span>' +
+      '<span class="slot-empty-icon">🎯</span>' +
+      '<span class="slot-hint">Цель</span>';
+  }
+}
+
+function updateChance() {
+  if (!state.betItem || !state.targetItem) {
+    $("chanceValue").textContent = "0%";
+    $("chanceValue").className = "circle-chance";
+    $("multiplierLabel").textContent = "x" + state.multiplier;
+    $("payoutPreview").innerHTML = "Выбери предмет для начала";
+    updateSpinBtn();
+    updateCircle(0);
+    return;
+  }
+
+  var chance = calculateChance();
+  $("chanceValue").textContent = chance.toFixed(2) + "%";
+  $("chanceValue").className = "circle-chance" + (chance < 20 ? " low" : chance < 50 ? " mid" : " high");
+  $("multiplierLabel").textContent = "x" + state.multiplier;
+
+  // Превращаем множитель в шанс (для круга)
+  // Если юзер выбрал множитель x3, шанс будет 1/3*0.95 = 31.67%
+  // Реальный шанс апгрейда = min(0.95 / mult, 0.95)
+  updateCircle(Math.min(95, 100 / state.multiplier * 0.95));
+
+  // Превью выплаты
+  var winAmount = Math.floor(state.betItem.price * state.multiplier);
+  $("payoutPreview").innerHTML =
+    'Победишь: <b class="green">+ ' + formatMoney(winAmount) + ' 🪙</b> · ' +
+    'Проиграешь: <b class="red">− ' + formatMoney(state.betItem.price) + ' 🪙</b>';
+
+  updateSpinBtn();
+}
+
+function updateCircle(winPercent) {
+  var circle = $("circleWin");
+  if (!circle) return;
+  var r = 85;
+  var circumference = 2 * Math.PI * r;
+  var winLength = circumference * (winPercent / 100);
+  circle.style.strokeDasharray = winLength + " " + circumference;
+  // Начинаем зелёную зону сверху (после поворота -90deg)
+  circle.style.strokeDashoffset = 0;
+}
+
+function updateSpinBtn() {
+  var btn = $("spinBtn");
+  if (!btn) return;
+  if (state.spinning) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="btn-icon">⏳</span><span>КРУТИТСЯ...</span>';
+    return;
+  }
+  var ok = state.betItem && state.targetItem;
+  btn.disabled = !ok;
+  btn.innerHTML = '<span class="btn-icon">🎰</span><span>КРУТИТЬ</span>';
+}
+
+// ============================================================
+// РАСЧЁТ ШАНСА
+// ============================================================
+function calculateChance() {
+  if (!state.betItem || !state.targetItem) return 0;
+  // Шанс по множителю (юзер сам выбрал)
+  var chance = (100 / state.multiplier) * 0.95;
+  return Math.min(chance, 95);
+}
+
+// ============================================================
+// ВЫБОР ПРЕДМЕТОВ
+// ============================================================
+function openBetPicker() {
+  if (state.spinning) return;
+  if (state.betItem) return; // уже выбран
+  openPicker("Выбери предмет для ставки", function(item) {
+    // Проверяем есть ли предмет в инвентаре
+    if ((state.inventory[item.id] || 0) <= 0) {
+      toast("❌ У тебя нет " + item.icon + " " + item.name, "error");
+      return;
+    }
+    state.betItem = item;
+    // Автоматически подбираем цель — следующий предмет по цене
+    if (!state.targetItem) {
+      autoPickTarget(item);
+    }
+    renderBetSlot();
+    renderTargetSlot();
+    updateChance();
+    playClick();
+    closeModal();
+  }, "inventory");
+}
+
+function openTargetPicker() {
+  if (state.spinning) return;
+  openPicker("Выбери цель апгрейда", function(item) {
+    if (state.betItem && item.price <= state.betItem.price) {
+      toast("⚠️ Цель должна быть дороже ставки", "warn");
+      return;
+    }
+    state.targetItem = item;
+    // Пересчитываем множитель
+    if (state.betItem) {
+      var realMult = item.price / state.betItem.price;
+      state.multiplier = realMult;
+    }
+    renderTargetSlot();
+    updateChance();
+    playClick();
+    closeModal();
+  }, "shop");
+}
+
+function autoPickTarget(betItem) {
+  // Ищем следующий по цене предмет
+  for (var i = 0; i < ITEMS.length; i++) {
+    if (ITEMS[i].price > betItem.price) {
+      state.targetItem = ITEMS[i];
+      state.multiplier = ITEMS[i].price / betItem.price;
+      return;
+    }
+  }
+}
+
+function removeBet() {
+  if (state.spinning) return;
+  state.betItem = null;
+  renderBetSlot();
+  updateChance();
+}
+
+function removeTarget() {
+  if (state.spinning) return;
+  state.targetItem = null;
+  renderTargetSlot();
+  updateChance();
+}
+
+function openPicker(title, callback, mode) {
+  var html = '<div class="items-grid">';
+  ITEMS.forEach(function(item) {
+    var have = state.inventory[item.id] || 0;
+    var disabled = (mode === "inventory" && have === 0) || (mode === "shop" && state.betItem && item.price <= state.betItem.price);
+    html +=
+      '<div class="item-card rarity-' + item.rarity + '" style="' + (disabled ? 'opacity:.4;pointer-events:none;' : '') + '" data-item-id="' + item.id + '">' +
+        (have > 0 ? '<div class="item-count">' + have + '</div>' : '') +
+        '<div class="item-icon">' + item.icon + '</div>' +
+        '<div class="item-name">' + escapeHtml(item.name) + '</div>' +
+        '<span class="item-rarity-badge r-' + item.rarity + '">' + rarityShort(item.rarity) + '</span>' +
+        '<div class="item-price"><span class="coin">🪙</span> ' + formatMoney(item.price) + '</div>' +
+      '</div>';
+  });
+  html += '</div>';
+  openModal(title, html);
+
+  $$("#modalBody .item-card").forEach(function(card) {
+    card.addEventListener("click", function() {
+      var id = card.getAttribute("data-item-id");
+      var item = getItem(id);
+      if (item) callback(item);
+    });
+  });
+}
+
+// ============================================================
+// АПГРЕЙД
+// ============================================================
+function doUpgrade() {
+  if (state.spinning) return;
+  if (!state.betItem || !state.targetItem) return;
+  if ((state.inventory[state.betItem.id] || 0) <= 0) {
+    toast("❌ Нет предмета", "error");
+    return;
+  }
+
+  initAudio();
+  state.spinning = true;
+  updateSpinBtn();
+
+  // Убираем предмет из инвентаря
+  state.inventory[state.betItem.id]--;
+  if (state.inventory[state.betItem.id] <= 0) delete state.inventory[state.betItem.id];
+
+  var chance = calculateChance();
+  var win = Math.random() * 100 < chance;
+
+  // Анимируем указатель
+  var targetAngle = win ? (Math.random() * chance + 1) : (chance + 1 + Math.random() * (100 - chance - 1));
+  var pointer = $("circlePointer");
+  pointer.classList.remove("win", "lose", "spinning");
+  pointer.style.transform = "translateX(-50%) rotate(0deg)";
+
+  playSpin();
+
+  setTimeout(function() {
+    pointer.classList.add("spinning");
+    pointer.style.transform = "translateX(-50%) rotate(" + (360 * 3 + targetAngle * 3.6) + "deg)";
+  }, 50);
+
+  // Через 4 секунды — результат
+  setTimeout(function() {
+    state.spinning = false;
+    pointer.classList.remove("spinning");
+
+    if (win) {
+      pointer.classList.add("win");
+      state.inventory[state.targetItem.id] = (state.inventory[state.targetItem.id] || 0) + 1;
+      playWin();
+      showResult("win", state.betItem, state.targetItem);
+      toast("🎉 ПОБЕДА! Получен " + state.targetItem.icon, "success");
+    } else {
+      pointer.classList.add("lose");
+      playLose();
+      showResult("lose", state.betItem, state.targetItem);
+      toast("💀 Проигрыш. Потерян " + state.betItem.icon, "error");
+    }
+
+    state.history.unshift({
+      from: state.betItem.id,
+      to: state.targetItem.id,
+      mult: state.multiplier,
+      win: win,
+      ts: Date.now(),
+    });
+    if (state.history.length > 50) state.history = state.history.slice(0, 50);
+
+    state.betItem = null;
+    state.targetItem = null;
+
+    saveState();
+    renderBetSlot();
+    renderTargetSlot();
+    renderInventory();
+    renderHistory();
+    updateChance();
+    updateSpinBtn();
+  }, 4100);
+}
+
+// ============================================================
+// RESULT OVERLAY
+// ============================================================
+function showResult(type, fromItem, toItem) {
+  var overlay = $("resultOverlay");
+  var card = $("resultCard");
+  var emoji = $("resultEmoji");
+  var title = $("resultTitle");
+  var subtitle = $("resultSubtitle");
+  var reward = $("resultReward");
+
+  card.className = "result-card " + type;
+  emoji.className = "result-emoji " + type;
+  title.className = "result-title " + type;
+
+  if (type === "win") {
+    emoji.textContent = "🎉";
+    title.textContent = "ПОБЕДА!";
+    subtitle.textContent = "Ты апгрейднул " + fromItem.name + " до " + toItem.name + "!";
+    reward.innerHTML = '<span>' + fromItem.icon + '</span> → <span>' + toItem.icon + '</span> · <span class="green">+' + formatMoney(toItem.price) + ' 🪙</span>';
+    spawnConfetti();
+  } else {
+    emoji.textContent = "💀";
+    title.textContent = "ПРОИГРЫШ";
+    subtitle.textContent = "Предмет " + fromItem.name + " сгорел";
+    reward.innerHTML = '<span>' + fromItem.icon + '</span> → <span class="red">−' + formatMoney(fromItem.price) + ' 🪙</span>';
+  }
+
+  overlay.classList.add("on");
+}
+
+function closeResult() {
+  $("resultOverlay").classList.remove("on");
+}
+
+function spawnConfetti() {
+  var box = $("confetti");
+  if (!box) return;
+  box.innerHTML = "";
+  var colors = ["#d4af37", "#4ade80", "#f6e6a8", "#f59e0b", "#60a5fa"];
+  for (var i = 0; i < 30; i++) {
+    var p = document.createElement("div");
+    p.className = "confetti-piece";
+    p.style.left = Math.random() * 100 + "%";
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.animationDelay = Math.random() * 0.5 + "s";
+    p.style.animationDuration = (2 + Math.random() * 2) + "s";
+    box.appendChild(p);
+  }
+}
+
+// ============================================================
+// ИНВЕНТАРЬ / МАГАЗИН / ИСТОРИЯ / БОНУСЫ
+// ============================================================
+function renderInventory() {
+  var grid = $("inventoryGrid");
+  if (!grid) return;
+  var entries = Object.keys(state.inventory).filter(function(id) { return state.inventory[id] > 0; });
+  $("invCount").textContent = entries.length ? "Всего: " + entries.reduce(function(a, id) { return a + state.inventory[id]; }, 0) + " шт." : "";
+
+  if (!entries.length) {
+    grid.innerHTML = '<div class="empty"><span class="empty-icon">🎒</span>Инвентарь пуст<br><br>Купи предметы в магазине или выиграй в апгрейде</div>';
+    return;
+  }
+  grid.innerHTML = "";
+  entries.forEach(function(id) {
+    var item = getItem(id);
+    if (!item) return;
+    var count = state.inventory[id];
+    var card = document.createElement("div");
+    card.className = "item-card rarity-" + item.rarity;
+    card.innerHTML =
+      '<div class="item-count">' + count + '</div>' +
+      '<div class="item-icon">' + item.icon + '</div>' +
+      '<div class="item-name">' + escapeHtml(item.name) + '</div>' +
+      '<span class="item-rarity-badge r-' + item.rarity + '">' + rarityShort(item.rarity) + '</span>' +
+      '<div class="item-price"><span class="coin">🪙</span> ' + formatMoney(item.price) + '</div>' +
+      '<button class="item-sell" data-sell="' + id + '">+ ' + formatMoney(Math.floor(item.price * 0.7)) + ' 🪙</button>';
+    grid.appendChild(card);
+  });
+  grid.querySelectorAll("[data-sell]").forEach(function(btn) {
+    btn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      sellItem(btn.getAttribute("data-sell"));
+    });
+  });
+}
+
+function sellItem(id) {
+  var item = getItem(id);
+  if (!item) return;
+  if ((state.inventory[id] || 0) <= 0) return;
+  var price = Math.floor(item.price * 0.7);
+  if (!confirm("Продать " + item.icon + " " + item.name + " за " + formatMoney(price) + " 🪙?")) return;
+  state.inventory[id]--;
+  if (state.inventory[id] <= 0) delete state.inventory[id];
+  state.balance += price;
+  saveState();
+  updateBalance();
+  renderInventory();
+  renderBonuses();
+  toast("💰 Продано за " + formatMoney(price) + " 🪙", "success");
+}
+
+function renderShop() {
+  var grid = $("shopGrid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  ITEMS.forEach(function(item) {
+    var card = document.createElement("div");
+    card.className = "item-card rarity-" + item.rarity;
+    var canBuy = state.balance >= item.price;
+    if (!canBuy) card.style.opacity = ".5";
+    card.innerHTML =
+      '<div class="item-icon">' + item.icon + '</div>' +
+      '<div class="item-name">' + escapeHtml(item.name) + '</div>' +
+      '<span class="item-rarity-badge r-' + item.rarity + '">' + rarityShort(item.rarity) + '</span>' +
+      '<div class="item-price"><span class="coin">🪙</span> ' + formatMoney(item.price) + '</div>';
+    grid.appendChild(card);
+    card.addEventListener("click", function() {
+      buyItem(item);
+    });
+  });
+}
+
+function buyItem(item) {
+  if (state.balance < item.price) {
+    toast("❌ Недостаточно монет", "error");
+    return;
+  }
+  if (!confirm("Купить " + item.icon + " " + item.name + " за " + formatMoney(item.price) + " 🪙?")) return;
+  state.balance -= item.price;
+  state.inventory[item.id] = (state.inventory[item.id] || 0) + 1;
+  saveState();
+  updateBalance();
+  renderInventory();
+  renderShop();
+  renderBonuses();
+  toast("✅ Куплен " + item.icon + " " + item.name, "success");
+}
+
+function renderHistory() {
+  var box = $("historyList");
+  if (!box) return;
+  if (!state.history.length) {
+    box.innerHTML = '<div class="empty"><span class="empty-icon">📜</span>История пуста</div>';
+    return;
+  }
+  box.innerHTML = "";
+  state.history.forEach(function(h) {
+    var from = getItem(h.from);
+    var to = getItem(h.to);
+    if (!from || !to) return;
+    var el = document.createElement("div");
+    el.style.cssText = "display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg-2);border-radius:10px;margin-bottom:6px;border-left:3px solid " + (h.win ? "var(--ok)" : "var(--err)") + ";";
+    el.innerHTML =
+      '<div style="display:flex;align-items:center;gap:6px;font-size:1.3rem;">' +
+        '<span>' + from.icon + '</span><span style="color:var(--txt-3);font-size:.9rem;">→</span><span>' + to.icon + '</span>' +
+      '</div>' +
+      '<div style="flex:1;font-size:.78rem;">' +
+        '<div style="font-weight:700;">' + escapeHtml(from.name) + ' → ' + escapeHtml(to.name) + '</div>' +
+        '<div style="color:var(--txt-3);font-size:.68rem;">x' + h.mult.toFixed(2) + ' · ' + timeAgo(h.ts) + '</div>' +
+      '</div>' +
+      '<div style="font-size:.68rem;font-weight:900;padding:3px 8px;border-radius:6px;background:' + (h.win ? "rgba(74,222,128,.15)" : "rgba(248,113,113,.15)") + ';color:' + (h.win ? "var(--ok)" : "var(--err)") + ';">' +
+        (h.win ? "WIN" : "LOSE") +
+      '</div>';
+    box.appendChild(el);
+  });
+}
+
+function clearHistory() {
+  if (!confirm("Очистить историю?")) return;
+  state.history = [];
+  saveState();
+  renderHistory();
+  toast("🗑 История очищена", "info");
+}
+
+function renderBonuses() {
+  var box = $("bonusList");
+  if (!box) return;
+  var total = 0;
+  var entries = Object.keys(state.inventory);
+  if (!entries.length) {
+    box.innerHTML = '<div class="empty"><span class="empty-icon">✨</span>У тебя нет предметов<br><br>Купи предметы в магазине или выиграй в апгрейде</div>';
+    $("totalBonus").textContent = "+0%";
+    return;
+  }
+  box.innerHTML = "";
+  entries.forEach(function(id) {
+    var item = getItem(id);
+    if (!item) return;
+    var count = state.inventory[id];
+    var bonus = item.bonus * count;
+    total += bonus;
+    var el = document.createElement("div");
+    el.style.cssText = "display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg-2);border-radius:10px;margin-bottom:6px;border-left:3px solid var(--" + item.rarity + ");";
+    el.innerHTML =
+      '<div style="font-size:1.8rem;">' + item.icon + '</div>' +
+      '<div style="flex:1;">' +
+        '<div style="font-weight:800;font-size:.85rem;">' + escapeHtml(item.name) + ' ×' + count + '</div>' +
+        '<div style="font-size:.7rem;color:var(--txt-3);">' + rarityShort(item.rarity) + '</div>' +
+      '</div>' +
+      '<div style="font-weight:900;color:var(--gold-bright);font-size:1.1rem;">+' + bonus + '%</div>';
+    box.appendChild(el);
+  });
+  $("totalBonus").textContent = "+" + total + "%";
+}
+
+// ============================================================
+// МОДАЛКА
+// ============================================================
+function openModal(title, html) {
+  $("modalTitle").textContent = title;
+  $("modalBody").innerHTML = html;
+  $("modal").classList.add("on");
+}
+function closeModal() {
+  $("modal").classList.remove("on");
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(tab) {
+  $$(".tab-btn").forEach(function(b) {
+    b.classList.toggle("active", b.getAttribute("data-tab") === tab);
+  });
+  $$(".tab-content").forEach(function(c) {
+    c.classList.toggle("active", c.getAttribute("data-tab") === tab);
+  });
+  if (tab === "inventory") renderInventory();
+  else if (tab === "shop") renderShop();
+  else if (tab === "history") renderHistory();
+  else if (tab === "bonuses") renderBonuses();
+  playClick();
+}
+
+// ============================================================
+// ИНИЦИАЛИЗАЦИЯ
+// ============================================================
+function init() {
+  // Загружаем состояние
+  loadState();
+  var hasUser = loadUserFromGame();
+
+  // Если у игрока нет монет и его нет в игре — даём стартовый капитал
+  if (!hasUser && state.balance === 0) {
+    state.balance = 1000;
+    saveState();
+  } else if (hasUser && state.balance === 0 && state.user) {
+    // Если игрок есть, но у него 0 монет — даём 1000
+    state.balance = 1000;
+    saveState();
+  }
+
+  updateBalance();
+  updateUser();
+
+  // Рисуем тики на круге
+  var ticksGroup = $("ticks");
+  if (ticksGroup) {
+    for (var i = 0; i < 60; i++) {
+      var angle = (i * 360 / 60) * Math.PI / 180;
+      var x1 = 100 + Math.cos(angle) * 78;
+      var y1 = 100 + Math.sin(angle) * 78;
+      var x2 = 100 + Math.cos(angle) * 82;
+      var y2 = 100 + Math.sin(angle) * 82;
+      var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", x1);
+      line.setAttribute("y1", y1);
+      line.setAttribute("x2", x2);
+      line.setAttribute("y2", y2);
+      line.setAttribute("class", "circle-tick");
+      ticksGroup.appendChild(line);
+    }
+  }
+
+  // Прослушки
+  $("spinBtn").addEventListener("click", doUpgrade);
+  $("modal").addEventListener("click", function(e) {
+    if (e.target === $("modal")) closeModal();
+  });
+  $$(".tab-btn").forEach(function(b) {
+    b.addEventListener("click", function() { switchTab(b.getAttribute("data-tab")); });
+  });
+  $$(".mult-btn").forEach(function(b) {
+    b.addEventListener("click", function() {
+      if (state.spinning) return;
+      var m = parseFloat(b.getAttribute("data-mult"));
+      state.multiplier = m;
+      $$(".mult-btn").forEach(function(x) { x.classList.remove("active"); });
+      b.classList.add("active");
+      updateChance();
+      playClick();
+    });
+  });
+
+  // Первая отрисовка
+  renderBetSlot();
+  renderTargetSlot();
+  renderInventory();
+  renderShop();
+  renderHistory();
+  renderBonuses();
+  updateChance();
+  updateSpinBtn();
+
+  console.log("[Artamon Upgrader] загружен. Юзер:", state.user);
+}
+
+document.addEventListener("DOMContentLoaded", init);
+window.closeModal = closeModal;
+window.openBetPicker = openBetPicker;
+window.openTargetPicker = openTargetPicker;
+window.removeBet = removeBet;
+window.removeTarget = removeTarget;
+window.closeResult = closeResult;
+window.clearHistory = clearHistory;
+</script>
+
+</body>
+</html>
