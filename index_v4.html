@@ -956,6 +956,56 @@ footer .admin-dot { display:inline-block; width:8px; height:8px; border-radius:5
 </style>
 </head>
 <body class="intro-lock" data-theme="gold" data-bg="aurora">
+<script>
+// ============================================================
+// Техрежим — перехват 503 от API + редирект на tech.html
+// ============================================================
+(function(){
+  var API = "https://artamon-api.artem123kv.workers.dev";
+  var TECH_URL = "tech.html";  // ← путь до tech.html (в той же папке, что index_v4.html)
+
+  // 1. Проверка при загрузке страницы
+  fetch(API + "/api/tech-status?t=" + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d && d.tech){
+        try { sessionStorage.setItem("artamon_tech_message", d.message || ""); } catch(e){}
+        window.location.href = TECH_URL;
+      }
+    })
+    .catch(function(){ /* API недоступен — не блокируем игру */ });
+
+  // 2. Перехват fetch — любой запрос с 503 {tech:true} → редирект
+  var origFetch = window.fetch;
+  window.fetch = function(){
+    return origFetch.apply(this, arguments).then(function(response){
+      if(response.status === 503){
+        var cloned = response.clone();
+        cloned.json().then(function(d){
+          if(d && d.tech){
+            try { sessionStorage.setItem("artamon_tech_message", d.message || ""); } catch(e){}
+            window.location.href = TECH_URL;
+          }
+        }).catch(function(){});
+      }
+      return response;
+    });
+  };
+
+  // 3. Периодическая проверка (раз в 30 сек) — если игрок уже в игре
+  setInterval(function(){
+    fetch(API + "/api/tech-status?t=" + Date.now())
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d && d.tech){
+          try { sessionStorage.setItem("artamon_tech_message", d.message || ""); } catch(e){}
+          window.location.href = TECH_URL;
+        }
+      })
+      .catch(function(){});
+  }, 30000);
+})();
+</script>
 
 <!-- ФОН -->
 <canvas class="bgCanvas" id="bgStars"></canvas>
