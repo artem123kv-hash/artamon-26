@@ -956,35 +956,75 @@ footer .admin-dot { display:inline-block; width:8px; height:8px; border-radius:5
 </style>
 </head>
 <body class="intro-lock" data-theme="gold" data-bg="aurora">
-<script>
+  <script>
 // ============================================================
-// Техрежим — перехват 503 от API + редирект на tech.html
+// ARTAMON v2.8 — Перехват техрежима и комендантского часа
+// Вставить в САМОЕ НАЧАЛО <body> в index_v4.html
 // ============================================================
 (function(){
+  "use strict";
+
   var API = "https://artamon-api.artem123kv.workers.dev";
-  var TECH_URL = "tech.html";  // ← путь до tech.html (в той же папке, что index_v4.html)
+  var TECH_URL = "tech.html";       // заглушка техрежима
+  var CURFEW_URL = "curfew.html";   // заглушка комендантского часа
+  var CHECK_INTERVAL = 15000;       // 15 секунд
 
-  // 1. Проверка при загрузке страницы
-  fetch(API + "/api/tech-status?t=" + Date.now())
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if(d && d.tech){
-        try { sessionStorage.setItem("artamon_tech_message", d.message || ""); } catch(e){}
-        window.location.href = TECH_URL;
+  var redirected = false;
+
+  // -------- Редирект с защитой от повторов --------
+  function goTo(url, message) {
+    if (redirected) return;
+    redirected = true;
+    try { sessionStorage.setItem("artamon_redirect_message", message || ""); } catch(e) {}
+    window.location.href = url;
+  }
+
+  // -------- Проверка статуса --------
+  async function checkStatus() {
+    try {
+      // Сначала проверяем комендантский час (он приоритетнее)
+      var rCurfew = await fetch(API + "/api/curfew-status?t=" + Date.now(), { cache: "no-store" });
+      var dCurfew = await rCurfew.json();
+      if (dCurfew && dCurfew.curfew) {
+        try {
+          sessionStorage.setItem("artamon_curfew_message", dCurfew.message || "");
+          sessionStorage.setItem("artamon_curfew_reason", dCurfew.reason || "");
+        } catch(e) {}
+        goTo(CURFEW_URL, dCurfew.message);
+        return;
       }
-    })
-    .catch(function(){ /* API недоступен — не блокируем игру */ });
 
-  // 2. Перехват fetch — любой запрос с 503 {tech:true} → редирект
+      // Затем — техрежим
+      var rTech = await fetch(API + "/api/tech-status?t=" + Date.now(), { cache: "no-store" });
+      var dTech = await rTech.json();
+      if (dTech && dTech.tech) {
+        try { sessionStorage.setItem("artamon_tech_message", dTech.message || ""); } catch(e) {}
+        goTo(TECH_URL, dTech.message);
+        return;
+      }
+    } catch (e) {
+      // Сеть упала — не блокируем игру
+    }
+  }
+
+  // -------- Перехват fetch: ловим 503 tech:true --------
   var origFetch = window.fetch;
-  window.fetch = function(){
+  window.fetch = function() {
     return origFetch.apply(this, arguments).then(function(response){
-      if(response.status === 503){
+      if (response.status === 503) {
         var cloned = response.clone();
         cloned.json().then(function(d){
-          if(d && d.tech){
-            try { sessionStorage.setItem("artamon_tech_message", d.message || ""); } catch(e){}
-            window.location.href = TECH_URL;
+          if (d && d.tech) {
+            if (d.curfew) {
+              try {
+                sessionStorage.setItem("artamon_curfew_message", d.message || "");
+                sessionStorage.setItem("artamon_curfew_reason", d.reason || "");
+              } catch(e) {}
+              goTo(CURFEW_URL, d.message);
+            } else {
+              try { sessionStorage.setItem("artamon_tech_message", d.message || ""); } catch(e) {}
+              goTo(TECH_URL, d.message);
+            }
           }
         }).catch(function(){});
       }
@@ -992,20 +1032,51 @@ footer .admin-dot { display:inline-block; width:8px; height:8px; border-radius:5
     });
   };
 
-  // 3. Периодическая проверка (раз в 30 сек) — если игрок уже в игре
-  setInterval(function(){
-    fetch(API + "/api/tech-status?t=" + Date.now())
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if(d && d.tech){
-          try { sessionStorage.setItem("artamon_tech_message", d.message || ""); } catch(e){}
-          window.location.href = TECH_URL;
-        }
-      })
-      .catch(function(){});
-  }, 30000);
+  // -------- Перехват XHR (если игра использует XMLHttpRequest) --------
+  var origOpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function() {
+    var xhr = this;
+    this.addEventListener("load", function(){
+      if (xhr.status === 503) {
+        try {
+          var d = JSON.parse(xhr.responseText);
+          if (d && d.tech) {
+            if (d.curfew) {
+              try {
+                sessionStorage.setItem("artamon_curfew_message", d.message || "");
+                sessionStorage.setItem("artamon_curfew_reason", d.reason || "");
+              } catch(e) {}
+              goTo(CURFEW_URL, d.message);
+            } else {
+              try { sessionStorage.setItem("artamon_tech_message", d.message || ""); } catch(e) {}
+              goTo(TECH_URL, d.message);
+            }
+          }
+        } catch(e){}
+      }
+    });
+    return origOpen.apply(this, arguments);
+  };
+
+  // -------- Первая проверка при загрузке --------
+  checkStatus();
+
+  // -------- Периодическая проверка раз в 15 сек --------
+  setInterval(checkStatus, CHECK_INTERVAL);
+
+  // -------- Проверка при возврате на вкладку --------
+  document.addEventListener("visibilitychange", function(){
+    if (!document.hidden) checkStatus();
+  });
+
+  // -------- Проверка при возврате на страницу (bfcache) --------
+  window.addEventListener("pageshow", function(e){
+    if (e.persisted) checkStatus();
+  });
+
+  console.log("[Artamon] Tech/Curfew guard активен");
 })();
-</script>
+  </script>
 
 <!-- ФОН -->
 <canvas class="bgCanvas" id="bgStars"></canvas>
