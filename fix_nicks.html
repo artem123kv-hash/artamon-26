@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔧 Фикс индексов ников</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background: #0a0a10;
+  color: #e8e8f0;
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: radial-gradient(circle at 50% 30%, rgba(212,175,55,.1), transparent 60%);
+}
+.box {
+  max-width: 520px;
+  width: 100%;
+  background: linear-gradient(180deg, #12121a, #0a0a10);
+  border: 2px solid #d4af37;
+  border-radius: 20px;
+  padding: 32px 24px;
+  text-align: center;
+}
+.icon { font-size: 4rem; display: block; margin-bottom: 16px; }
+h1 { font-size: 1.4rem; color: #f6e6a8; margin-bottom: 8px; }
+.sub { font-size: .85rem; color: #8888a0; margin-bottom: 24px; line-height: 1.6; }
+button {
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: .95rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: .2s;
+  border: 2px solid #f6e6a8;
+  background: linear-gradient(180deg, #f6e6a8, #d4af37);
+  color: #0a0a0a;
+}
+button:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212,175,55,.4); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.result {
+  margin-top: 20px;
+  padding: 16px;
+  background: #1a1a24;
+  border: 1px solid #252532;
+  border-radius: 12px;
+  font-family: ui-monospace, monospace;
+  font-size: .82rem;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 400px;
+  overflow-y: auto;
+  color: #8888a0;
+  min-height: 60px;
+}
+.result.ok { color: #4ade80; border-color: rgba(74,222,128,.4); }
+.result.err { color: #f87171; border-color: rgba(248,113,113,.4); }
+</style>
+</head>
+<body>
+<div class="box">
+  <span class="icon">🔧</span>
+  <h1>Восстановить индексы ников</h1>
+  <div class="sub">
+    Пройдёт по всем игрокам и создаст<br>
+    потерянные <b>nick:*</b> индексы.<br>
+    После этого старые аккаунты залогинятся.
+  </div>
+
+  <button id="runBtn" onclick="run()">🔧 ЗАПУСТИТЬ ФИКС</button>
+
+  <div class="result" id="result">Нажми кнопку...</div>
+</div>
+
+<script>
+var API = "https://artamon-api.artem123kv.workers.dev";
+var PASS = "artamon-admin-2026";
+
+var resultEl = document.getElementById("result");
+var btn = document.getElementById("runBtn");
+
+function show(text, cls) {
+  resultEl.className = "result " + (cls || "");
+  resultEl.textContent = text;
+}
+
+async function run() {
+  btn.disabled = true;
+  show("Работаю... Это может занять несколько секунд.", "");
+
+  try {
+    var r = await fetch(API + "/api/admin/rebuild-nick-index", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: PASS })
+    });
+    var d = await r.json();
+
+    if (!d.ok) {
+      show("❌ Ошибка: " + (d.error || "неизвестная"), "err");
+      btn.disabled = false;
+      return;
+    }
+
+    var lines = [];
+    lines.push("✅ ГОТОВО!");
+    lines.push("");
+    lines.push("Всего игроков: " + d.total);
+    lines.push("Создано индексов: " + d.created);
+    lines.push("Исправлено конфликтов: " + d.fixed);
+    lines.push("Пропущено (без ника): " + d.skipped);
+    lines.push("");
+    lines.push("Детали:");
+    (d.details || []).forEach(function(item) {
+      lines.push("  " + item.status + ": " + item.nick + " (id=" + item.id + ")");
+    });
+    lines.push("");
+    lines.push("🎉 Теперь заходи в игру с ником hostik и старым паролем!");
+
+    show(lines.join("\n"), "ok");
+  } catch(e) {
+    show("❌ Ошибка сети: " + e.message, "err");
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
