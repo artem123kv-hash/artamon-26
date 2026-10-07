@@ -3,40 +3,106 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Artamon Debug</title>
+<meta name="theme-color" content="#d4af37">
+<title>🔍 Artamon Debug v6</title>
 <style>
+:root {
+  --gold-1: #f6e6a8;
+  --gold-2: #d4af37;
+  --gold-3: #8f6f1a;
+  --bg-0: #050505;
+  --bg-1: #0a0a0a;
+  --bg-2: #141414;
+  --bg-3: #1a1a1a;
+  --txt-1: #e8e6e1;
+  --txt-2: #8a8a8a;
+  --txt-3: #5c5c5c;
+  --border: #2a2a2a;
+  --ok: #4ade80;
+  --err: #f87171;
+  --warn: #fbbf24;
+  --info: #60a5fa;
+}
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body {
-  background: #0a0a0a;
-  color: #e8e6e1;
+  background: var(--bg-1);
+  color: var(--txt-1);
   font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
   padding: 14px;
   font-size: 13px;
   line-height: 1.5;
   min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(212,175,55,.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 90%, rgba(96,165,250,.06) 0%, transparent 50%);
 }
 
-/* Заголовок */
+/* HEADER */
 .header {
   text-align: center;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #2a2a2a;
+  margin-bottom: 18px;
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(212,175,55,.06), transparent);
+  border-radius: 14px;
 }
 .header h1 {
-  font-size: 1.15rem;
-  color: #d4af37;
+  font-size: 1.3rem;
+  background: linear-gradient(180deg, var(--gold-1), var(--gold-2) 45%, var(--gold-3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   letter-spacing: .08em;
   margin-bottom: 4px;
+  font-weight: 900;
 }
 .header .version {
-  font-size: .7rem;
-  color: #5c5c5c;
-  letter-spacing: .15em;
+  font-size: .68rem;
+  color: var(--txt-3);
+  letter-spacing: .2em;
   text-transform: uppercase;
 }
+.header .status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: .7rem;
+  color: var(--txt-2);
+  padding: 4px 10px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+.header .status .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--txt-3);
+}
+.header .status .dot.on { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+.header .status .dot.off { background: var(--err); box-shadow: 0 0 8px var(--err); }
 
-/* Кнопки */
+/* ГРУППЫ КНОПОК */
+.group-title {
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--gold-2);
+  margin: 16px 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.group-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border), transparent);
+}
+
+/* КНОПКИ */
 button {
   display: flex;
   align-items: center;
@@ -44,9 +110,9 @@ button {
   width: 100%;
   padding: 14px 16px;
   margin-bottom: 8px;
-  background: linear-gradient(180deg, #1a1a1a, #141414);
-  color: #e8e6e1;
-  border: 1px solid #2a2a2a;
+  background: linear-gradient(180deg, var(--bg-3), var(--bg-2));
+  color: var(--txt-1);
+  border: 1px solid var(--border);
   border-radius: 12px;
   font-family: inherit;
   font-size: .88rem;
@@ -54,128 +120,199 @@ button {
   text-align: left;
   cursor: pointer;
   transition: .15s;
+  position: relative;
+  overflow: hidden;
 }
-button:hover { border-color: #d4af37; }
+button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,.08), transparent);
+  transform: translateX(-100%);
+  transition: transform .5s;
+}
+button:hover::before { transform: translateX(100%); }
+button:hover { border-color: var(--gold-2); box-shadow: 0 4px 16px rgba(212,175,55,.15); }
 button:active { transform: scale(.99); }
+button:disabled { opacity: .5; cursor: wait; }
 button .icon {
   font-size: 1.4rem;
   width: 32px;
   text-align: center;
   flex-shrink: 0;
 }
-button .label {
-  flex: 1;
-}
+button .label { flex: 1; }
 button .label .sub {
   display: block;
   font-size: .7rem;
-  color: #8a8a8a;
+  color: var(--txt-2);
   font-weight: 400;
   margin-top: 2px;
 }
 button.primary {
-  background: linear-gradient(180deg, #f6e6a8, #d4af37);
+  background: linear-gradient(180deg, var(--gold-1), var(--gold-2) 60%, var(--gold-3));
   color: #0a0a0a;
-  border-color: #f6e6a8;
+  border-color: var(--gold-1);
   font-weight: 800;
 }
 button.primary .label .sub { color: rgba(0,0,0,.6); }
+button.danger {
+  background: linear-gradient(180deg, #2a1010, #1a0808);
+  border-color: #4a2020;
+  color: #fecaca;
+}
+button.danger:hover { border-color: var(--err); }
 
-/* Прогресс */
-.progress {
+/* КАРТОЧКА СТАТУСА */
+.status-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  font-size: .82rem;
+}
+.status-card .row {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  background: #141414;
-  border: 1px solid #2a2a2a;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.status-card .row:last-child { border-bottom: none; }
+.status-card .row .k { color: var(--txt-2); }
+.status-card .row .v { color: var(--txt-1); font-weight: 700; font-family: ui-monospace, monospace; }
+.status-card .row .v.ok { color: var(--ok); }
+.status-card .row .v.err { color: var(--err); }
+.status-card .row .v.warn { color: var(--warn); }
+
+/* ПРОГРЕСС */
+.progress {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
   border-radius: 10px;
   margin-bottom: 8px;
   font-size: .8rem;
-  color: #8a8a8a;
+  color: var(--txt-2);
 }
+.progress.on { display: flex; }
 .progress .spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid #2a2a2a;
-  border-top-color: #d4af37;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--gold-2);
   border-radius: 50%;
   animation: spin .8s linear infinite;
   flex-shrink: 0;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Лог */
+/* ЛОГ */
 .log {
   background: #000;
-  border: 1px solid #1a1a1a;
+  border: 1px solid var(--bg-3);
   border-radius: 12px;
   padding: 14px;
   font-family: ui-monospace, Menlo, Consolas, monospace;
   font-size: 11.5px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: #d4d4d4;
   white-space: pre-wrap;
   word-break: break-word;
-  max-height: 70vh;
+  max-height: 65vh;
   overflow-y: auto;
-  min-height: 100px;
+  min-height: 120px;
   margin-top: 12px;
+  position: relative;
 }
-.log .line {
-  padding: 2px 0;
-}
-.log .divider {
-  color: #333;
-  margin: 6px 0;
-}
+.log .line { padding: 1px 0; }
 .log .title {
-  color: #d4af37;
-  font-weight: 700;
-  font-size: 12.5px;
-  margin-top: 8px;
-}
-.log .ok { color: #4ade80; font-weight: 700; }
-.log .err { color: #f87171; font-weight: 700; }
-.log .warn { color: #fbbf24; font-weight: 700; }
-.log .info { color: #60a5fa; font-weight: 700; }
-.log .dim { color: #6b6b6b; }
-
-/* Подсветка проблемной строки */
-.log .error-line {
-  background: rgba(248,113,113,.15);
-  color: #f87171;
+  color: var(--gold-2);
   font-weight: 800;
-  padding: 4px 6px;
-  border-left: 3px solid #f87171;
+  font-size: 12.5px;
+  margin-top: 10px;
+  padding-top: 6px;
+  border-top: 1px solid #1a1a1a;
+}
+.log .title:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+.log .ok { color: var(--ok); font-weight: 700; }
+.log .err { color: var(--err); font-weight: 700; }
+.log .warn { color: var(--warn); font-weight: 700; }
+.log .info { color: var(--info); font-weight: 700; }
+.log .dim { color: #6b6b6b; }
+.log .error-line {
+  background: rgba(248,113,113,.18);
+  color: var(--err);
+  font-weight: 800;
+  padding: 5px 8px;
+  border-left: 3px solid var(--err);
   border-radius: 4px;
-  margin: 2px 0;
+  margin: 3px 0;
 }
 .log .context-line {
   color: #8a8a8a;
-  padding-left: 8px;
-  border-left: 2px solid #2a2a2a;
+  padding-left: 10px;
+  border-left: 2px solid var(--border);
 }
+.log .success-line {
+  background: rgba(74,222,128,.12);
+  color: var(--ok);
+  padding: 5px 8px;
+  border-left: 3px solid var(--ok);
+  border-radius: 4px;
+  margin: 3px 0;
+}
+.log .info-line {
+  background: rgba(96,165,250,.12);
+  color: var(--info);
+  padding: 5px 8px;
+  border-left: 3px solid var(--info);
+  border-radius: 4px;
+  margin: 3px 0;
+}
+
+/* ФУТЕР */
+.footer {
+  text-align: center;
+  margin-top: 20px;
+  padding: 14px;
+  font-size: .68rem;
+  color: var(--txt-3);
+  letter-spacing: .1em;
+  border-top: 1px solid var(--border);
+}
+.footer b { color: var(--gold-2); }
 
 /* Скроллбар */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #0a0a0a; }
-::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold-2); }
 </style>
 </head>
 <body>
 
 <div class="header">
   <h1>🔍 Artamon Debug</h1>
-  <div class="version">Version 5.0</div>
+  <div class="version">Version 6.0 · Advanced</div>
+  <div class="status">
+    <span class="dot" id="netDot"></span>
+    <span id="netStatus">Проверка сети...</span>
+  </div>
 </div>
+
+<!-- Группа: Диагностика -->
+<div class="group-title">🩺 Диагностика</div>
 
 <button class="primary" onclick="testJS()">
   <span class="icon">🎯</span>
   <span class="label">
     Найти ошибку в JS
-    <span class="sub">Умный поиск с точной строкой</span>
+    <span class="sub">Авто-поиск файла + точная строка</span>
   </span>
 </button>
 
@@ -183,31 +320,157 @@ button.primary .label .sub { color: rgba(0,0,0,.6); }
   <span class="icon">📄</span>
   <span class="label">
     Проверить HTML
-    <span class="sub">Теги, скрипты, размер файла</span>
+    <span class="sub">Теги, скрипты, ключевые элементы</span>
   </span>
 </button>
+
+<button onclick="testSize()">
+  <span class="icon">📊</span>
+  <span class="label">
+    Анализ размера
+    <span class="sub">CSS / HTML / JS / script теги</span>
+  </span>
+</button>
+
+<button onclick="searchInFile()">
+  <span class="icon">🔎</span>
+  <span class="label">
+    Поиск по коду
+    <span class="sub">Найти подстроку с контекстом</span>
+  </span>
+</button>
+
+<!-- Группа: Сеть -->
+<div class="group-title">🌐 Сеть и API</div>
 
 <button onclick="testAPI()">
   <span class="icon">🌐</span>
   <span class="label">
     Проверить воркер
-    <span class="sub">Доступность и версия API</span>
+    <span class="sub">GET /api/tech-status</span>
   </span>
 </button>
 
-<button onclick="clearSW()">
+<button onclick="testAllEndpoints()">
+  <span class="icon">🧪</span>
+  <span class="label">
+    Тест всех эндпоинтов
+    <span class="sub">15+ ручек воркера</span>
+  </span>
+</button>
+
+<button onclick="testPing()">
+  <span class="icon">📡</span>
+  <span class="label">
+    Ping воркера
+    <span class="sub">5 запросов, среднее время</span>
+  </span>
+</button>
+
+<!-- Группа: Окружение -->
+<div class="group-title">💻 Окружение</div>
+
+<button onclick="deviceInfo()">
+  <span class="icon">📱</span>
+  <span class="label">
+    Информация об устройстве
+    <span class="sub">User-Agent, экран, тема, память</span>
+  </span>
+</button>
+
+<button onclick="storageInfo()">
+  <span class="icon">💾</span>
+  <span class="label">
+    Проверить localStorage
+    <span class="sub">Что лежит в хранилище</span>
+  </span>
+</button>
+
+<button onclick="testFeatureSupport()">
+  <span class="icon">🔬</span>
+  <span class="label">
+    Поддержка фич
+    <span class="sub">fetch, Service Worker, уведомления</span>
+  </span>
+</button>
+
+<!-- Группа: Действия -->
+<div class="group-title">⚙️ Действия</div>
+
+<button class="danger" onclick="clearSW()">
   <span class="icon">🧹</span>
   <span class="label">
     Очистить кэш и перезагрузить
-    <span class="sub">Удалить Service Worker</span>
+    <span class="sub">SW + Cache Storage + редирект</span>
   </span>
 </button>
 
+<button onclick="hardReset()">
+  <span class="icon">💣</span>
+  <span class="label">
+    Полный сброс localStorage
+    <span class="sub">Осторожно: удалит сохранения</span>
+  </span>
+</button>
+
+<button onclick="exportLog()">
+  <span class="icon">📤</span>
+  <span class="label">
+    Экспорт лога
+    <span class="sub">Скачать всё в .txt</span>
+  </span>
+</button>
+
+<button onclick="clearLog()">
+  <span class="icon">🗑</span>
+  <span class="label">
+    Очистить лог
+    <span class="sub">Стереть вывод на экране</span>
+  </span>
+</button>
+
+<div class="progress" id="progress">
+  <div class="spinner"></div>
+  <span id="progressText">Работаю...</span>
+</div>
+
 <div class="log" id="out">Нажми кнопку выше...</div>
 
-<script>
-var out = document.getElementById("out");
+<div class="footer">
+  Powered by <b>Artamon v2.7</b> · Debug v6
+</div>
 
+<script>
+// ============================================================
+// ARTAMON DEBUG v6.0
+// ============================================================
+
+var out = document.getElementById("out");
+var API_BASE = "https://artamon-api.artem123kv.workers.dev";
+
+// Возможные пути к файлу игры
+var GAME_FILE_CANDIDATES = [
+  "./index_v4.html",
+  "./index_v4.HTML",
+  "./index.html",
+  "../index_v4.html",
+  "../index.html",
+  "/index_v4.html",
+  "/index.html",
+  "./game/index_v4.html",
+  "./game/index.html",
+  "./artamon/index_v4.html",
+  "./artamon/index.html",
+  "./src/index_v4.html",
+  "./public/index_v4.html",
+];
+
+var GAME_FILE_FOUND = null;
+var GAME_FILE_CONTENT = null;
+
+// ============================================================
+// ЛОГИРОВАНИЕ
+// ============================================================
 function log(msg, cls) {
   var d = document.createElement("div");
   d.className = "line" + (cls ? " " + cls : "");
@@ -215,23 +478,105 @@ function log(msg, cls) {
   out.appendChild(d);
   out.scrollTop = out.scrollHeight;
 }
+function clearLog() {
+  out.innerHTML = "";
+  log("🗑 Лог очищен", "dim");
+}
+function showProgress(text) {
+  document.getElementById("progress").classList.add("on");
+  document.getElementById("progressText").textContent = text || "Работаю...";
+}
+function hideProgress() {
+  document.getElementById("progress").classList.remove("on");
+}
 
-function clear() { out.innerHTML = ""; }
+// ============================================================
+// АВТО-ПОИСК ФАЙЛА ИГРЫ
+// ============================================================
+function findGameFile(callback) {
+  var i = 0;
+  function tryNext() {
+    if (i >= GAME_FILE_CANDIDATES.length) {
+      callback(null);
+      return;
+    }
+    var path = GAME_FILE_CANDIDATES[i];
+    i++;
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status === 200) {
+        GAME_FILE_FOUND = path;
+        callback(path);
+      } else {
+        tryNext();
+      }
+    };
+    try {
+      xhr.open("GET", path + "?t=" + Date.now(), true);
+      xhr.send();
+    } catch(e) { tryNext(); }
+  }
+  tryNext();
+}
 
-/* ═══════════════════════════════════════════════════════
-   ТЕСТ JS — умный поиск ошибки
-   ═══════════════════════════════════════════════════════ */
+function loadGameFile(callback) {
+  if (GAME_FILE_CONTENT) {
+    callback(GAME_FILE_CONTENT, GAME_FILE_FOUND);
+    return;
+  }
+  if (GAME_FILE_FOUND) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status === 200) {
+        GAME_FILE_CONTENT = xhr.responseText;
+        callback(GAME_FILE_CONTENT, GAME_FILE_FOUND);
+      } else {
+        callback(null, null);
+      }
+    };
+    xhr.open("GET", GAME_FILE_FOUND + "?t=" + Date.now(), true);
+    xhr.send();
+    return;
+  }
+  showProgress("🔍 Ищу файл игры...");
+  findGameFile(function(found) {
+    hideProgress();
+    if (!found) {
+      callback(null, null);
+      return;
+    }
+    loadGameFile(callback);
+  });
+}
+
+// ============================================================
+// 1. УМНЫЙ ПОИСК ОШИБКИ В JS
+// ============================================================
 function testJS() {
-  clear();
+  clearLog();
   log("═══ УМНЫЙ ПОИСК ОШИБКИ В JS ═══", "title");
   log("");
+  log("🔍 Ищу файл игры...", "info");
 
-  var xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState !== 4) return;
-    if (xhr.status !== 200) { log("Файл не найден. Статус: " + xhr.status, "err"); return; }
+  loadGameFile(function(h, path) {
+    if (!h) {
+      log("❌ Файл игры НЕ НАЙДЕН ни по одному пути", "err");
+      log("");
+      log("Проверенные пути:", "warn");
+      GAME_FILE_CANDIDATES.forEach(function(p) { log("  " + p, "dim"); });
+      log("");
+      log("💡 Проверь, что debug.html лежит в том же репозитории, что и index_v4.html", "info");
+      log("💡 Или открой debug.html по правильному URL", "info");
+      return;
+    }
 
-    var h = xhr.responseText;
+    log("✅ Найден: " + path, "ok");
+    log("📄 Размер: " + h.length.toLocaleString() + " символов", "dim");
+    log("📏 Строк: " + h.split("\n").length, "dim");
+    log("");
+
     var openTag = "<" + "script>";
     var closeTag = "<" + "/" + "script>";
     var parts = h.split(openTag);
@@ -240,142 +585,128 @@ function testJS() {
     log("📦 Найдено скриптов: " + total, "ok");
     log("");
 
+    var errorCount = 0;
+
     for (var i = 1; i < parts.length; i++) {
       var chunk = parts[i].split(closeTag)[0] || "";
-      log("─── Скрипт #" + i + " (" + chunk.length.toLocaleString() + " симв.) ───", "title");
+      var chunkLines = chunk.split("\n").length;
+      log("─── Скрипт #" + i + " (" + chunk.length.toLocaleString() + " симв., " + chunkLines + " строк) ───", "title");
 
-      // Проверяем весь скрипт сразу
+      // Проверяем весь скрипт целиком
       try {
         new Function(chunk);
         log("✅ Синтаксис OK", "ok");
         log("");
         continue;
-      } catch(e) {
+      } catch (e) {
         log("❌ ОШИБКА: " + e.message, "err");
+        errorCount++;
       }
 
-      // Ищем точную строку
+      // Бинарный поиск первой невалидной строки
       log("🔍 Поиск точной строки...", "info");
       var lineNum = findExactLine(chunk);
       var lines = chunk.split("\n");
-
-      log("   Всего строк: " + lines.length, "dim");
-      log("");
 
       if (lineNum > 0 && lineNum <= lines.length) {
         log("🎯 ПРОБЛЕМНАЯ СТРОКА: #" + lineNum, "err");
         log("");
 
-        // Показать контекст
         var start = Math.max(0, lineNum - 5);
         var end = Math.min(lines.length, lineNum + 4);
 
         log("Контекст:", "info");
         for (var j = start; j < end; j++) {
           var lineText = lines[j] || "(пустая строка)";
+          var lineNo = (j + 1).toString().padStart(4, " ");
           if (j === lineNum - 1) {
-            log(">>> [" + (j + 1) + "] " + lineText, "error-line");
+            log(">>> [" + lineNo + "] " + lineText, "error-line");
           } else {
-            log("    [" + (j + 1) + "] " + lineText, "context-line");
+            log("    [" + lineNo + "] " + lineText, "context-line");
           }
         }
         log("");
         log("👆 Ошибка в строке с >>>", "warn");
       } else {
-        log("⚠️ Не удалось найти точную строку автоматически", "warn");
-        log("");
-        log("Показываю первые 25 строк:", "info");
-        for (var k = 0; k < Math.min(25, lines.length); k++) {
+        log("⚠️ Не удалось найти точную строку", "warn");
+        log("Показываю первые 20 строк:", "info");
+        for (var k = 0; k < Math.min(20, lines.length); k++) {
           log("[" + (k + 1) + "] " + (lines[k] || ""), "context-line");
-        }
-        log("");
-        log("И последние 25 строк:", "info");
-        for (var m = Math.max(0, lines.length - 25); m < lines.length; m++) {
-          log("[" + (m + 1) + "] " + (lines[m] || ""), "context-line");
         }
       }
       log("");
     }
 
-    log("═══ ПРОВЕРКА ЗАВЕРШЕНА ═══", "title");
-  };
-  xhr.open("GET", "./index_v2.html?v=" + Date.now(), true);
-  xhr.send();
+    log("═══ ИТОГ ═══", "title");
+    if (errorCount === 0) {
+      log("✅ Все " + total + " скриптов валидны", "ok");
+    } else {
+      log("❌ Найдено ошибок: " + errorCount + " из " + total + " скриптов", "err");
+    }
+  });
 }
 
-/* ═══════════════════════════════════════════════════════
-   Точное определение строки — БЕЗ использования e
-   ═══════════════════════════════════════════════════════ */
+// Бинарный поиск первой невалидной строки
 function findExactLine(code) {
   var lines = code.split("\n");
   var total = lines.length;
   if (total === 0) return 0;
 
-  // Бинарный поиск первой невалидной строки
-  var lo = 1;
-  var hi = total;
-  var firstInvalid = 0;
+  var lo = 1, hi = total, firstInvalid = 0;
 
   while (lo <= hi) {
     var mid = Math.floor((lo + hi) / 2);
     var testCode = lines.slice(0, mid).join("\n");
-
     var isValid = false;
-    try {
-      new Function(testCode);
-      isValid = true;
-    } catch(err) {
-      isValid = false;
-    }
-
-    if (isValid) {
-      lo = mid + 1;
-    } else {
-      firstInvalid = mid;
-      hi = mid - 1;
-    }
+    try { new Function(testCode); isValid = true; } catch (err) { isValid = false; }
+    if (isValid) lo = mid + 1;
+    else { firstInvalid = mid; hi = mid - 1; }
   }
-
   return firstInvalid;
 }
 
-/* ═══════════════════════════════════════════════════════
-   ПРОВЕРКА HTML
-   ═══════════════════════════════════════════════════════ */
+// ============================================================
+// 2. ПРОВЕРКА HTML
+// ============================================================
 function testHTML() {
-  clear();
-  log("═══ ПРОВЕРКА index_v4.html ═══", "title");
+  clearLog();
+  log("═══ ПРОВЕРКА HTML ═══", "title");
   log("");
+  log("🔍 Ищу файл игры...", "info");
 
-  var xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState !== 4) return;
-    if (xhr.status !== 200) { log("❌ Файл не найден", "err"); return; }
-
-    var h = xhr.responseText;
-    log("📄 Размер: " + h.length.toLocaleString() + " символов", "ok");
-    log("📏 Строк: " + h.split("\n").length, "dim");
+  loadGameFile(function(h, path) {
+    if (!h) {
+      log("❌ Файл НЕ НАЙДЕН", "err");
+      return;
+    }
+    log("✅ Найден: " + path, "ok");
     log("");
 
-    var sOpen = h.split("<" + "script>").length - 1;
+    var size = h.length;
+    var lines = h.split("\n").length;
+    log("📄 Размер: " + size.toLocaleString() + " символов", size > 100000 ? "ok" : "warn");
+    log("📏 Строк: " + lines, "dim");
+    log("📦 В байтах: ~" + Math.round(new Blob([h]).size / 1024) + " КБ", "dim");
+    log("");
+
+    var sOpen = h.split("<" + "script").length - 1;
     var sClose = h.split("<" + "/" + "script>").length - 1;
 
-    log("📦 Открывающих <script>: " + sOpen, sOpen >= 3 ? "ok" : "err");
-    log("📦 Закрывающих <script>: " + sClose, sClose === sOpen ? "ok" : "err");
+    log("📦 Открывающих <script: " + sOpen, sOpen >= 3 ? "ok" : "err");
+    log("📦 Закрывающих </script>: " + sClose, sClose === sOpen ? "ok" : "err");
 
     if (sOpen !== sClose) {
-      log("❌ Скрипты НЕ сбалансированы!", "err");
+      log("❌ Скрипты НЕ сбалансированы! Разница: " + (sOpen - sClose), "err");
     } else {
       log("✅ Скрипты закрыты корректно", "ok");
     }
     log("");
 
-    // Проверка ключевых элементов
     var checks = [
-      ["id=\"intro\"", "Интро"],
-      ["id=\"anniversary\"", "Юбилей"],
-      ["id=\"mainSite\"", "Основной сайт"],
-      ["id=\"preloader\"", "Прелоадер"],
+      ['id="intro"', "Интро"],
+      ['id="anniversary"', "Юбилей"],
+      ['id="mainSite"', "Основной сайт"],
+      ['id="preloader"', "Прелоадер"],
       ["SAFE_STORE", "Хранилище"],
       ["INTRO", "Модуль интро"],
       ["COINS", "Монеты"],
@@ -383,38 +714,153 @@ function testHTML() {
       ["WHEEL", "Колесо"],
       ["QUESTS", "Квесты"],
       ["FRIENDS", "Друзья"],
-      ["SUPPORT", "Поддержка"]
+      ["SUPPORT", "Поддержка"],
+      ["<head>", "head тег"],
+      ["<body", "body тег"],
+      ["</html>", "закрытие html"],
     ];
 
     log("Проверка ключевых элементов:", "info");
     var found = 0;
     for (var i = 0; i < checks.length; i++) {
       var ok = h.indexOf(checks[i][0]) !== -1;
-      log("  " + (ok ? "✅" : "❌") + " " + checks[i][1], ok ? "ok" : "err");
+      log("  " + (ok ? "✅" : "❌") + " " + checks[i][1] + "  (" + checks[i][0] + ")", ok ? "ok" : "err");
       if (ok) found++;
     }
     log("");
-    log("Найдено: " + found + " / " + checks.length, found === checks.length ? "ok" : "warn");
+    var pct = Math.round((found / checks.length) * 100);
+    log("Найдено: " + found + " / " + checks.length + " (" + pct + "%)", pct === 100 ? "ok" : pct > 70 ? "warn" : "err");
 
-    if (h.length < 200000) {
+    if (size < 200000) {
       log("");
-      log("⚠️ Файл маленький — возможно, не все 5 частей вставлены", "warn");
+      log("⚠️ Файл маленький — возможно, не все части вставлены", "warn");
     }
-  };
-  xhr.open("GET", "./index_v4.html?v=" + Date.now(), true);
-  xhr.send();
+  });
 }
 
-/* ═══════════════════════════════════════════════════════
-   ПРОВЕРКА ВОРКЕРА
-   ═══════════════════════════════════════════════════════ */
+// ============================================================
+// 3. АНАЛИЗ РАЗМЕРА
+// ============================================================
+function testSize() {
+  clearLog();
+  log("═══ АНАЛИЗ РАЗМЕРА ═══", "title");
+  log("");
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); return; }
+
+    var total = h.length;
+    log("📄 " + path, "ok");
+    log("📊 Общий размер: " + total.toLocaleString() + " символов", "info");
+    log("");
+
+    // Разбиваем на части
+    var headEnd = h.indexOf("</head>");
+    var bodyStart = h.indexOf("<body");
+    var bodyEnd = h.lastIndexOf("</body>");
+
+    var head = h.slice(0, headEnd + 7);
+    var body = h.slice(bodyStart, bodyEnd + 7);
+
+    log("─── Разбивка ───", "title");
+    log("HEAD: " + head.length.toLocaleString() + " симв. (" + Math.round(head.length / total * 100) + "%)", "dim");
+    log("BODY: " + body.length.toLocaleString() + " симв. (" + Math.round(body.length / total * 100) + "%)", "dim");
+    log("");
+
+    // CSS
+    var styleMatches = h.match(/<style[^>]*>[\s\S]*?<\/style>/g) || [];
+    var cssSize = styleMatches.reduce(function(a, s) { return a + s.length; }, 0);
+    log("🎨 CSS (<style>): " + cssSize.toLocaleString() + " симв., блоков: " + styleMatches.length, "info");
+
+    // Scripts
+    var scriptMatches = h.match(/<script[^>]*>[\s\S]*?<\/script>/g) || [];
+    var jsSize = scriptMatches.reduce(function(a, s) { return a + s.length; }, 0);
+    log("⚙️ JS (<script>): " + jsSize.toLocaleString() + " симв., блоков: " + scriptMatches.length, "info");
+
+    // Размеры отдельных скриптов
+    log("");
+    log("─── Размеры скриптов ───", "title");
+    var openTag = "<" + "script>";
+    var closeTag = "<" + "/" + "script>";
+    var parts = h.split(openTag);
+    for (var i = 1; i < parts.length; i++) {
+      var chunk = parts[i].split(closeTag)[0] || "";
+      var lines = chunk.split("\n").length;
+      var bar = "█".repeat(Math.min(40, Math.round(chunk.length / 2000)));
+      log("  #" + i + " " + chunk.length.toLocaleString().padStart(7) + " симв.  " + lines.toString().padStart(4) + " строк  " + bar, "dim");
+    }
+
+    // HTML между скриптами
+    var htmlSize = total - cssSize - jsSize;
+    log("");
+    log("📝 HTML (вне CSS/JS): " + htmlSize.toLocaleString() + " симв.", "dim");
+
+    // Рекомендации
+    log("");
+    log("─── Рекомендации ───", "title");
+    if (total > 500000) {
+      log("⚠️ Файл > 500КБ — стоит разделить на модули", "warn");
+    } else {
+      log("✅ Размер в пределах нормы", "ok");
+    }
+    if (jsSize > cssSize * 3) {
+      log("ℹ️ JS сильно больше CSS — нормально для SPA", "dim");
+    }
+  });
+}
+
+// ============================================================
+// 4. ПОИСК ПО КОДУ
+// ============================================================
+function searchInFile() {
+  var q = prompt("Что искать в index_v4.html?", "ARTAMON_API");
+  if (!q) return;
+  clearLog();
+  log("═══ ПОИСК: " + q + " ═══", "title");
+  log("");
+
+  loadGameFile(function(h, path) {
+    if (!h) { log("❌ Файл НЕ НАЙДЕН", "err"); return; }
+
+    log("📄 " + path, "dim");
+    log("");
+
+    var idx = 0, count = 0;
+    var lines = h.split("\n");
+
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].indexOf(q) !== -1) {
+        count++;
+        if (count <= 30) {
+          var pos = lines[i].indexOf(q);
+          var before = lines[i].slice(Math.max(0, pos - 30), pos);
+          var after = lines[i].slice(pos + q.length, pos + q.length + 30);
+          log("[" + (i + 1) + "] ..." + before + "⟨" + q + "⟩" + after + "...", "info-line");
+        }
+      }
+    }
+
+    log("");
+    if (count === 0) {
+      log("❌ Ничего не найдено", "err");
+    } else if (count > 30) {
+      log("✅ Найдено: " + count + " совпадений (показаны первые 30)", "ok");
+    } else {
+      log("✅ Найдено: " + count + " совпадений", "ok");
+    }
+  });
+}
+
+// ============================================================
+// 5. ПРОВЕРКА ВОРКЕРА
+// ============================================================
 function testAPI() {
-  clear();
+  clearLog();
   log("═══ ПРОВЕРКА ВОРКЕРА ═══", "title");
   log("");
 
-  var xhr = new XMLHttpRequest();
   var t = Date.now();
+  var xhr = new XMLHttpRequest();
 
   xhr.onreadystatechange = function() {
     if (xhr.readyState !== 4) return;
@@ -422,63 +868,450 @@ function testAPI() {
 
     if (xhr.status === 200) {
       log("✅ Воркер отвечает (" + ms + " мс)", "ok");
-      log("Ответ: " + xhr.responseText, "info");
+      log("");
+
       try {
         var d = JSON.parse(xhr.responseText);
-        if (d.version) {
-          log("📌 Версия: " + d.version, d.version === "2.7.0" ? "ok" : "warn");
+        log("Ответ:", "info");
+        log(JSON.stringify(d, null, 2), "dim");
+
+        if (typeof d.tech !== "undefined") {
+          log("");
+          if (d.tech) {
+            log("🛠 ТЕХРЕЖИМ ВКЛЮЧЁН", "warn");
+            log("Сообщение: " + (d.message || "(нет)"), "dim");
+          } else {
+            log("✅ Техрежим выключен", "ok");
+          }
         }
-      } catch(e) {}
+      } catch(e) {
+        log("⚠️ Ответ не JSON: " + xhr.responseText.slice(0, 200), "warn");
+      }
     } else if (xhr.status === 0) {
       log("❌ Воркер НЕ ОТВЕЧАЕТ", "err");
-      log("Проверь, задеплоен ли воркер", "warn");
+      log("Проверь, задеплоен ли воркер на Cloudflare", "warn");
     } else {
       log("⚠️ HTTP " + xhr.status, "warn");
     }
   };
 
-  xhr.open("GET", "https://artamon-api.artem123kv.workers.dev/", true);
+  xhr.open("GET", API_BASE + "/api/tech-status?t=" + Date.now(), true);
   xhr.send();
 }
 
-/* ═══════════════════════════════════════════════════════
-   ОЧИСТКА КЭША
-   ═══════════════════════════════════════════════════════ */
+// ============================================================
+// 6. ТЕСТ ВСЕХ ЭНДПОИНТОВ
+// ============================================================
+function testAllEndpoints() {
+  clearLog();
+  log("═══ ТЕСТ ВСЕХ ЭНДПОИНТОВ ═══", "title");
+  log("");
+
+  var password = prompt("Введи пароль owner для теста admin-ручек (или пусто):", "");
+  if (password === null) return;
+
+  var tests = [
+    { method: "GET",  path: "/api/tech-status", name: "Tech status", needPass: false },
+    { method: "POST", path: "/api/admin/login", name: "Admin login", needPass: true, body: { password: password } },
+    { method: "POST", path: "/api/admin/stats", name: "Admin stats", needPass: true },
+    { method: "POST", path: "/api/admin/users", name: "Admin users", needPass: true },
+    { method: "POST", path: "/api/admin/bans", name: "Admin bans", needPass: true },
+    { method: "POST", path: "/api/admin/posts", name: "Admin posts", needPass: true },
+    { method: "POST", path: "/api/admin/promo-list", name: "Promo list", needPass: true },
+    { method: "POST", path: "/api/admin/broadcast-list", name: "Broadcast list", needPass: true },
+    { method: "POST", path: "/api/admin/tickets", name: "Tickets", needPass: true },
+    { method: "POST", path: "/api/admin/logs", name: "Logs", needPass: true },
+    { method: "POST", path: "/api/admin/registrations-chart", name: "Reg chart", needPass: true },
+    { method: "POST", path: "/api/admin/tech-status", name: "Tech status admin", needPass: true },
+    { method: "POST", path: "/api/junior/my-status", name: "Junior my-status", needPass: false },
+    { method: "GET",  path: "/api/leaderboard", name: "Leaderboard", needPass: false },
+    { method: "GET",  path: "/api/posts", name: "Public posts", needPass: false },
+  ];
+
+  var done = 0, errors = 0, total = tests.length;
+  showProgress("Тестирую эндпоинты... (0/" + total + ")");
+
+  function runNext(idx) {
+    if (idx >= tests.length) {
+      hideProgress();
+      log("");
+      log("═══ ИТОГ ═══", "title");
+      log("Всего тестов: " + total, "info");
+      log("Успешно: " + done, done === total ? "ok" : "warn");
+      log("Ошибок: " + errors, errors === 0 ? "ok" : "err");
+      return;
+    }
+
+    var test = tests[idx];
+    document.getElementById("progressText").textContent = "Тестирую эндпоинты... (" + (idx + 1) + "/" + total + ")";
+
+    var xhr = new XMLHttpRequest();
+    var t = Date.now();
+
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState !== 4) return;
+      var ms = Date.now() - t;
+      var status = xhr.status;
+
+      var icon, cls;
+      if (status === 200) { icon = "✅"; cls = "ok"; done++; }
+      else if (status === 403) { icon = "🔒"; cls = "warn"; errors++; }
+      else if (status === 503) { icon = "🛠"; cls = "warn"; errors++; }
+      else if (status === 0) { icon = "❌"; cls = "err"; errors++; }
+      else { icon = "⚠️"; cls = "warn"; errors++; }
+
+      var preview = "";
+      try {
+        var d = JSON.parse(xhr.responseText);
+        if (d.error) preview = " · " + d.error;
+        else if (d.ok) preview = " · OK";
+      } catch(e) {}
+
+      log(icon + " [" + status + "] " + test.name.padEnd(22) + " (" + ms + "ms)" + preview, cls);
+
+      runNext(idx + 1);
+    };
+
+    xhr.open(test.method, API_BASE + test.path + "?t=" + Date.now(), true);
+
+    if (test.method === "POST") {
+      xhr.setRequestHeader("Content-Type", "application/json");
+      var body = test.body || {};
+      if (test.needPass && password) body.password = password;
+      xhr.send(JSON.stringify(body));
+    } else {
+      xhr.send();
+    }
+  }
+
+  runNext(0);
+}
+
+// ============================================================
+// 7. PING ВОРКЕРА
+// ============================================================
+function testPing() {
+  clearLog();
+  log("═══ PING ВОРКЕРА ═══", "title");
+  log("");
+
+  var times = [];
+  var count = 5;
+
+  function ping(i) {
+    if (i >= count) {
+      var avg = times.reduce(function(a, b) { return a + b; }, 0) / times.length;
+      var min = Math.min.apply(null, times);
+      var max = Math.max.apply(null, times);
+      log("");
+      log("═══ ИТОГ ═══", "title");
+      log("Средний пинг: " + Math.round(avg) + " мс", avg < 300 ? "ok" : avg < 1000 ? "warn" : "err");
+      log("Минимум: " + min + " мс", "dim");
+      log("Максимум: " + max + " мс", "dim");
+      return;
+    }
+    var t = Date.now();
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState !== 4) return;
+      var ms = Date.now() - t;
+      times.push(ms);
+      var cls = ms < 300 ? "ok" : ms < 1000 ? "warn" : "err";
+      var dot = ".".repeat(i + 1) + " ".repeat(count - i - 1);
+      log("Пинг " + (i + 1) + ": [" + dot + "] " + ms + " мс", cls);
+      ping(i + 1);
+    };
+    xhr.open("GET", API_BASE + "/api/tech-status?t=" + Date.now(), true);
+    xhr.send();
+  }
+
+  ping(0);
+}
+
+// ============================================================
+// 8. ИНФОРМАЦИЯ ОБ УСТРОЙСТВЕ
+// ============================================================
+function deviceInfo() {
+  clearLog();
+  log("═══ ИНФОРМАЦИЯ ОБ УСТРОЙСТВЕ ═══", "title");
+  log("");
+
+  log("🌐 Browser", "title");
+  log("  User-Agent: " + navigator.userAgent, "dim");
+  log("  Язык: " + navigator.language, "dim");
+  log("  Платформа: " + (navigator.platform || "—"), "dim");
+  log("  Онлайн: " + (navigator.onLine ? "✅ Да" : "❌ Нет"), navigator.onLine ? "ok" : "err");
+  log("");
+
+  log("📱 Экран", "title");
+  log("  Размер: " + screen.width + " × " + screen.height + " px", "dim");
+  log("  Доступно: " + screen.availWidth + " × " + screen.availHeight + " px", "dim");
+  log("  Окно: " + window.innerWidth + " × " + window.innerHeight + " px", "dim");
+  log("  DPR: " + (window.devicePixelRatio || 1), "dim");
+  log("  Ориентация: " + (screen.orientation ? screen.orientation.type : "—"), "dim");
+  log("");
+
+  log("🎨 Тема", "title");
+  var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  var prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+  log("  Системная: " + (prefersDark ? "Тёмная" : prefersLight ? "Светлая" : "—"), "dim");
+  var savedTheme = null;
+  try { savedTheme = localStorage.getItem("artamon_theme"); } catch(e) {}
+  log("  Сохранённая: " + (savedTheme || "не задана"), "dim");
+  log("");
+
+  log("💾 Память", "title");
+  if (performance.memory) {
+    log("  Использовано JS heap: " + Math.round(performance.memory.usedJSHeapSize / 1048576) + " МБ", "dim");
+    log("  Лимит: " + Math.round(performance.memory.jsHeapSizeLimit / 1048576) + " МБ", "dim");
+  } else {
+    log("  performance.memory недоступен", "dim");
+  }
+  log("");
+
+  log("⏱ Время", "title");
+  log("  Локальное: " + new Date().toLocaleString("ru-RU"), "dim");
+  log("  UTC: " + new Date().toUTCString(), "dim");
+  log("  Timestamp: " + Date.now(), "dim");
+  log("  Часовой пояс: " + (Intl.DateTimeFormat().resolvedOptions().timeZone || "—"), "dim");
+  log("");
+
+  log("🌍 URL", "title");
+  log("  Сайт: " + location.origin, "dim");
+  log("  Путь: " + location.pathname, "dim");
+  log("  Хост: " + location.hostname, "dim");
+  log("  Протокол: " + location.protocol, "dim");
+}
+
+// ============================================================
+// 9. ПРОВЕРКА LOCALSTORAGE
+// ============================================================
+function storageInfo() {
+  clearLog();
+  log("═══ LOCALSTORAGE ═══", "title");
+  log("");
+
+  try {
+    var total = 0;
+    var keys = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      var v = localStorage.getItem(k) || "";
+      total += k.length + v.length;
+      keys.push({ key: k, size: v.length, value: v });
+    }
+
+    keys.sort(function(a, b) { return b.size - a.size; });
+
+    log("📦 Всего ключей: " + keys.length, "info");
+    log("📊 Общий размер: " + (total / 1024).toFixed(2) + " КБ", "info");
+    log("");
+
+    if (keys.length === 0) {
+      log("ℹ️ localStorage пуст", "dim");
+      return;
+    }
+
+    log("─── Ключи (по размеру) ───", "title");
+    keys.slice(0, 50).forEach(function(item) {
+      var preview = item.value.length > 60 ? item.value.slice(0, 60) + "..." : item.value;
+      log("  " + item.key.padEnd(40) + " " + item.size.toString().padStart(8) + " б", "dim");
+    });
+    if (keys.length > 50) {
+      log("  ... и ещё " + (keys.length - 50) + " ключей", "dim");
+    }
+
+    log("");
+    log("─── Artamon-ключи ───", "title");
+    var artamon = keys.filter(function(k) {
+      return k.key.indexOf("artamon") !== -1;
+    });
+    if (artamon.length === 0) {
+      log("Нет ключей с 'artamon'", "dim");
+    } else {
+      artamon.forEach(function(item) {
+        log("  " + item.key + " = " + (item.value.length > 80 ? item.value.slice(0, 80) + "..." : item.value), "info");
+      });
+    }
+  } catch(e) {
+    log("❌ Ошибка доступа к localStorage: " + e.message, "err");
+  }
+}
+
+// ============================================================
+// 10. ПОДДЕРЖКА ФИЧ
+// ============================================================
+function testFeatureSupport() {
+  clearLog();
+  log("═══ ПОДДЕРЖКА ФИЧ ═══", "title");
+  log("");
+
+  var features = [
+    ["fetch", typeof fetch === "function"],
+    ["XMLHttpRequest", typeof XMLHttpRequest === "function"],
+    ["Promise", typeof Promise === "function"],
+    ["async/await", (function() { try { return (async function(){})(), true; } catch(e) { return false; } })()],
+    ["localStorage", (function() { try { localStorage.setItem("_t", "1"); localStorage.removeItem("_t"); return true; } catch(e) { return false; } })()],
+    ["sessionStorage", typeof sessionStorage !== "undefined"],
+    ["Service Worker", "serviceWorker" in navigator],
+    ["Cache API", "caches" in window],
+    ["Notification API", "Notification" in window],
+    ["Notification разрешено", "Notification" in window && Notification.permission === "granted"],
+    ["IndexedDB", "indexedDB" in window],
+    ["WebSocket", "WebSocket" in window],
+    ["Canvas", !!document.createElement("canvas").getContext],
+    ["Web Audio", "AudioContext" in window || "webkitAudioContext" in window],
+    ["Geolocation", "geolocation" in navigator],
+    ["Clipboard", "clipboard" in navigator],
+    ["Share API", "share" in navigator],
+    ["Vibration", "vibrate" in navigator],
+    ["Touch events", "ontouchstart" in window],
+    ["Pointer events", "PointerEvent" in window],
+    ["CSS Grid", CSS.supports && CSS.supports("display", "grid")],
+    ["CSS Flex", CSS.supports && CSS.supports("display", "flex")],
+    ["CSS Variables", CSS.supports && CSS.supports("--x", "0")],
+    ["backdrop-filter", CSS.supports && CSS.supports("backdrop-filter", "blur(1px)")],
+    ["WebAssembly", typeof WebAssembly !== "undefined"],
+  ];
+
+  var yes = 0;
+  features.forEach(function(f) {
+    var ok = f[1];
+    if (ok) yes++;
+    log((ok ? "✅" : "❌") + " " + f[0], ok ? "ok" : "dim");
+  });
+  log("");
+  log("Поддерживается: " + yes + " / " + features.length, yes === features.length ? "ok" : "info");
+
+  // Разрешение уведомлений
+  if ("Notification" in window) {
+    log("");
+    log("🔔 Notification.permission: " + Notification.permission, Notification.permission === "granted" ? "ok" : "warn");
+  }
+}
+
+// ============================================================
+// 11. ОЧИСТКА КЭША
+// ============================================================
 function clearSW() {
-  clear();
+  clearLog();
   log("═══ ОЧИСТКА КЭША ═══", "title");
   log("");
 
   if (!("serviceWorker" in navigator)) {
     log("⚠️ Service Worker не поддерживается", "warn");
-    return;
+  } else {
+    navigator.serviceWorker.getRegistrations().then(function(regs) {
+      log("Найдено Service Workers: " + regs.length, "info");
+      return Promise.all(regs.map(function(r) { return r.unregister(); }));
+    }).then(function() {
+      log("✅ Service Workers удалены", "ok");
+      if (window.caches) {
+        return caches.keys().then(function(names) {
+          log("Найдено кэшей: " + names.length, "info");
+          return Promise.all(names.map(function(n) { return caches.delete(n); }));
+        });
+      }
+    }).then(function() {
+      log("✅ Кэши удалены", "ok");
+      log("");
+      log("🔄 Перезагрузка через 2 секунды...", "warn");
+      setTimeout(function() {
+        var target = GAME_FILE_FOUND || "./index_v4.html";
+        location.href = target + "?v=" + Date.now();
+      }, 2000);
+    }).catch(function(e) {
+      log("❌ Ошибка: " + e.message, "err");
+    });
   }
-
-  navigator.serviceWorker.getRegistrations().then(function(regs) {
-    log("Найдено Service Workers: " + regs.length, "info");
-    return Promise.all(regs.map(function(r) { return r.unregister(); }));
-  }).then(function() {
-    log("✅ Service Workers удалены", "ok");
-    if (window.caches) {
-      return caches.keys().then(function(names) {
-        log("Найдено кэшей: " + names.length, "info");
-        return Promise.all(names.map(function(n) { return caches.delete(n); }));
-      });
-    }
-  }).then(function() {
-    log("✅ Кэши удалены", "ok");
-    log("");
-    log("🔄 Перезагрузка через 2 секунды...", "warn");
-    setTimeout(function() {
-      location.href = "./index_v4.html?v=" + Date.now();
-    }, 2000);
-  }).catch(function(e) {
-    log("❌ Ошибка: " + e.message, "err");
-  });
 }
 
-log("✅ Debug v5 загружен", "ok");
-log("Нажми кнопку выше, чтобы начать проверку", "dim");
+// ============================================================
+// 12. ПОЛНЫЙ СБРОС LOCALSTORAGE
+// ============================================================
+function hardReset() {
+  if (!confirm("⚠️ УДАЛИТЬ ВСЁ ИЗ localStorage?\n\nЭто сотрёт сохранения игры, тему, настройки.\n\nПродолжить?")) return;
+  if (!confirm("Точно? Действие необратимо!")) return;
+
+  clearLog();
+  log("═══ ПОЛНЫЙ СБРОС ═══", "title");
+  log("");
+
+  try {
+    var count = localStorage.length;
+    localStorage.clear();
+    log("✅ Удалено ключей: " + count, "ok");
+    log("🔄 Перезагрузка через 2 секунды...", "warn");
+    setTimeout(function() {
+      var target = GAME_FILE_FOUND || "./index_v4.html";
+      location.href = target + "?v=" + Date.now();
+    }, 2000);
+  } catch(e) {
+    log("❌ Ошибка: " + e.message, "err");
+  }
+}
+
+// ============================================================
+// 13. ЭКСПОРТ ЛОГА
+// ============================================================
+function exportLog() {
+  var text = out.textContent || "";
+  if (!text || text.length < 10) {
+    alert("Лог пуст");
+    return;
+  }
+  var header = "=== ARTAMON DEBUG v6 LOG ===\n" +
+               "Дата: " + new Date().toLocaleString("ru-RU") + "\n" +
+               "URL: " + location.href + "\n" +
+               "User-Agent: " + navigator.userAgent + "\n" +
+               "====================================\n\n";
+  var blob = new Blob([header + text], { type: "text/plain;charset=utf-8" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "artamon-debug-" + new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19) + ".txt";
+  a.click();
+  URL.revokeObjectURL(url);
+  log("📤 Лог скачан", "ok");
+}
+
+// ============================================================
+// СТАТУС СЕТИ В ЗАГОЛОВКЕ
+// ============================================================
+function updateNetStatus() {
+  var dot = document.getElementById("netDot");
+  var status = document.getElementById("netStatus");
+  if (navigator.onLine) {
+    dot.className = "dot on";
+    status.textContent = "Онлайн";
+  } else {
+    dot.className = "dot off";
+    status.textContent = "Офлайн";
+  }
+}
+window.addEventListener("online", updateNetStatus);
+window.addEventListener("offline", updateNetStatus);
+
+// ============================================================
+// ЛОВИМ ГЛОБАЛЬНЫЕ ОШИБКИ
+// ============================================================
+window.addEventListener("error", function(e) {
+  log("❗ Uncaught: " + (e.message || e.error) + " @ " + (e.filename || "?") + ":" + (e.lineno || "?"), "err");
+});
+window.addEventListener("unhandledrejection", function(e) {
+  log("❗ Promise rejection: " + (e.reason && e.reason.message ? e.reason.message : e.reason), "err");
+});
+
+// ============================================================
+// ИНИЦИАЛИЗАЦИЯ
+// ============================================================
+updateNetStatus();
+log("✅ Artamon Debug v6.0 загружен", "ok");
+log("🔍 Автопоиск файла игры готов", "info");
+log("");
+log("Подсказка: нажми любую кнопку выше для диагностики.", "dim");
+log("Проверяемые пути к файлу:", "dim");
+GAME_FILE_CANDIDATES.forEach(function(p) { log("  " + p, "dim"); });
 </script>
 
 </body>
