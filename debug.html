@@ -344,7 +344,7 @@ function findExactLine(code) {
    ═══════════════════════════════════════════════════════ */
 function testHTML() {
   clear();
-  log("═══ ПРОВЕРКА index_v2.html ═══", "title");
+  log("═══ ПРОВЕРКА index_v4.html ═══", "title");
   log("");
 
   var xhr = new XMLHttpRequest();
@@ -401,7 +401,7 @@ function testHTML() {
       log("⚠️ Файл маленький — возможно, не все 5 частей вставлены", "warn");
     }
   };
-  xhr.open("GET", "./index_v2.html?v=" + Date.now(), true);
+  xhr.open("GET", "./index_v4.html?v=" + Date.now(), true);
   xhr.send();
 }
 
@@ -470,7 +470,7 @@ function clearSW() {
     log("");
     log("🔄 Перезагрузка через 2 секунды...", "warn");
     setTimeout(function() {
-      location.href = "./index_v2.html?v=" + Date.now();
+      location.href = "./index_v4.html?v=" + Date.now();
     }, 2000);
   }).catch(function(e) {
     log("❌ Ошибка: " + e.message, "err");
