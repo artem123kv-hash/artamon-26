@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#fbbf24">
+<title>🛠 Технические работы — Artamon</title>
+<style>
+:root {
+  --bg-1: #020617;
+  --bg-2: #0f172a;
+  --card: rgba(15,23,42,.95);
+  --border: #334155;
+  --txt-1: #e2e8f0;
+  --txt-2: #94a3b8;
+  --txt-3: #475569;
+  --gold-2: #fbbf24;
+}
+body[data-theme="light"] {
+  --bg-1: #f8fafc;
+  --bg-2: #f1f5f9;
+  --card: rgba(255,255,255,.98);
+  --border: #cbd5e1;
+  --txt-1: #0f172a;
+  --txt-2: #475569;
+  --txt-3: #94a3b8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 30%, var(--bg-2) 0%, var(--bg-1) 75%);
+  color: var(--txt-1);
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  line-height: 1.5;
+  overflow: hidden;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.tech-wrap {
+  max-width: 520px;
+  width: 100%;
+  background: var(--card);
+  border: 2px solid var(--gold-2);
+  border-radius: 24px;
+  padding: 40px 32px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5), 0 0 40px rgba(251,191,36,.15);
+  animation: appear .5s cubic-bezier(.5,1.5,.5,1);
+}
+@keyframes appear {
+  from { opacity: 0; transform: translateY(20px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.tech-icon {
+  font-size: 5.5rem;
+  display: block;
+  margin-bottom: 20px;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50%      { transform: scale(1.08) rotate(-3deg); opacity: .9; }
+}
+.tech-badge {
+  display: inline-block;
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #0a0a0a;
+  background: linear-gradient(180deg, #fde68a, #fbbf24);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+.tech-title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  background: linear-gradient(180deg, #fef3c7, #fbbf24 60%, #d97706);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 14px;
+  line-height: 1.2;
+}
+.tech-text {
+  font-size: .98rem;
+  color: var(--txt-1);
+  line-height: 1.6;
+  margin-bottom: 28px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 3em;
+}
+.tech-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: .75rem;
+  color: var(--txt-3);
+  padding: 14px;
+  background: rgba(0,0,0,.25);
+  border-radius: 12px;
+  margin-bottom: 24px;
+  font-family: ui-monospace, monospace;
+}
+body[data-theme="light"] .tech-info { background: rgba(0,0,0,.04); }
+.tech-info b { color: var(--gold-2); }
+.tech-btn {
+  width: 100%;
+  background: color-mix(in srgb, var(--gold-2) 15%, transparent);
+  border: 1.5px solid var(--gold-2);
+  color: var(--gold-2);
+  padding: 14px;
+  border-radius: 12px;
+  font-size: .88rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: .2s;
+  font-family: inherit;
+}
+.tech-btn:hover { background: color-mix(in srgb, var(--gold-2) 30%, transparent); }
+.tech-btn:active { transform: scale(.98); }
+.tech-progress {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+.tech-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #d97706);
+  width: 0%;
+  transition: width .3s ease;
+}
+.tech-footer {
+  margin-top: 20px;
+  font-size: .7rem;
+  color: var(--txt-3);
+  letter-spacing: .08em;
+}
+.tech-footer b { color: var(--gold-2); }
+@media (max-width: 480px) {
+  .tech-wrap { padding: 28px 20px; }
+  .tech-icon { font-size: 4rem; }
+  .tech-title { font-size: 1.3rem; }
+  .tech-text { font-size: .88rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="tech-wrap">
+  <span class="tech-icon">🛠</span>
+  <span class="tech-badge">Технические работы</span>
+  <h1 class="tech-title">Artamon временно недоступен</h1>
+  <div class="tech-text" id="techText">Загружаем информацию...</div>
+
+  <div class="tech-info">
+    <div>🔗 <b>API:</b> <span id="apiStatus">проверка...</span></div>
+    <div>⏱ <b>Последняя проверка:</b> <span id="lastCheck">—</span></div>
+    <div>🔁 <b>Авто-обновление:</b> каждые 15 сек</div>
+  </div>
+
+  <button class="tech-btn" id="checkBtn">🔄 Проверить сейчас</button>
+  <div class="tech-progress"><div class="tech-progress-bar" id="progressBar"></div></div>
+
+  <div class="tech-footer">
+    Powered by <b>Artamon v2.7</b>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// TECH.HTML — заглушка техрежима
+// ============================================================
+
+var API = "https://artamon-api.artem123kv.workers.dev";
+var CHECK_INTERVAL = 15000; // 15 секунд
+var GAME_URL = "index_v4.html"; // ← куда редиректить после выключения техрежима
+
+var checkTimer = null;
+var progressTimer = null;
+var countdown = 15;
+
+// Тема: пытаемся угадать из localStorage или настроек устройства
+(function(){
+  var saved = null;
+  try { saved = localStorage.getItem("artamon_theme"); } catch(e){}
+  if(saved === "light" || saved === "dark"){
+    document.body.setAttribute("data-theme", saved);
+  } else if(window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches){
+    document.body.setAttribute("data-theme", "light");
+  }
+})();
+
+async function checkTechStatus(){
+  var apiStatus = document.getElementById("apiStatus");
+  var lastCheck = document.getElementById("lastCheck");
+  var techText = document.getElementById("techText");
+
+  apiStatus.textContent = "запрос...";
+  apiStatus.style.color = "";
+
+  try {
+    var r = await fetch(API + "/api/tech-status?t=" + Date.now());
+    var data = await r.json();
+
+    lastCheck.textContent = new Date().toLocaleTimeString("ru-RU");
+
+    if(!data.ok){
+      apiStatus.textContent = "ошибка";
+      apiStatus.style.color = "#f87171";
+      return;
+    }
+
+    apiStatus.textContent = "OK";
+    apiStatus.style.color = "#4ade80";
+
+    if(!data.tech){
+      // Техрежим выключен → перезагружаем игру
+      techText.textContent = "✅ Технические работы завершены! Загружаем игру...";
+      document.getElementById("checkBtn").textContent = "▶️ Открыть игру";
+      setTimeout(function(){
+        window.location.href = GAME_URL;
+      }, 1500);
+      return;
+    }
+
+    // Техрежим включён → показываем текст
+    techText.textContent = data.message || "🛠 Идут технические работы. Мы скоро вернёмся!";
+  } catch(e){
+    apiStatus.textContent = "недоступен";
+    apiStatus.style.color = "#f87171";
+    lastCheck.textContent = new Date().toLocaleTimeString("ru-RU");
+  }
+}
+
+function startCountdown(){
+  countdown = 15;
+  var bar = document.getElementById("progressBar");
+  if(!bar) return;
+
+  if(progressTimer) clearInterval(progressTimer);
+  progressTimer = setInterval(function(){
+    countdown--;
+    var pct = ((15 - countdown) / 15) * 100;
+    bar.style.width = pct + "%";
+    if(countdown <= 0){
+      clearInterval(progressTimer);
+      bar.style.width = "0%";
+    }
+  }, 1000);
+}
+
+function startAutoCheck(){
+  if(checkTimer) clearInterval(checkTimer);
+  checkTimer = setInterval(function(){
+    checkTechStatus();
+    startCountdown();
+  }, CHECK_INTERVAL);
+}
+
+document.getElementById("checkBtn").addEventListener("click", function(){
+  checkTechStatus();
+  startCountdown();
+});
+
+// Первая проверка — сразу
+checkTechStatus();
+startCountdown();
+startAutoCheck();
+
+// Дополнительно: если вкладка была неактивна — проверяем сразу при возврате
+document.addEventListener("visibilitychange", function(){
+  if(!document.hidden){
+    checkTechStatus();
+    startCountdown();
+  }
+});
+
+console.log("🛠 tech.html загружен. Проверка каждые " + (CHECK_INTERVAL/1000) + " сек");
+</script>
+</body>
+</html>
