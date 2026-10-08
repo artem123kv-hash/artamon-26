@@ -4154,20 +4154,32 @@ var ARTAMON_API = (function(){
     });
   }
 
-  function register(nick, password){
-    return req("/api/register", { method:"POST", body:{ nick, password } }).then(function(data){
-      var acc = { nick: data.nick, token: data.token, createdAt: Date.now(), progress: data.progress || null };
+  function register(nick, password) {
+  return req("/api/register", { method: "POST", body: { nick, password } })
+    .then(function(data) {
+      var acc = { 
+        nick: (data.user && data.user.nick) || data.nick || nick,
+        token: data.session || data.token,
+        createdAt: Date.now(), 
+        progress: data.progress || null 
+      };
       saveAccount(acc);
       return acc;
     });
-  }
-  function login(nick, password){
-    return req("/api/login", { method:"POST", body:{ nick, password } }).then(function(data){
-      var acc = { nick: data.nick, token: data.token, createdAt: Date.now(), progress: data.progress || null };
+}
+  function login(nick, password) {
+  return req("/api/login", { method: "POST", body: { nick, password } })
+    .then(function(data) {
+      var acc = { 
+        nick: (data.user && data.user.nick) || data.nick || nick,
+        token: data.session || data.token,
+        createdAt: Date.now(), 
+        progress: data.progress || null 
+      };
       saveAccount(acc);
       return acc;
     });
-  }
+}
   function logout(){
     var acc = loadAccount();
     clearAccount();
