@@ -1119,13 +1119,13 @@ footer .admin-dot { display:inline-block; width:8px; height:8px; border-radius:5
     <div class="upd-sub">Что нового</div>
 
     <div class="upd-section">
-      <div class="upd-section-title new">🎡 Колесо фортуны</div>
-      <ul class="upd-list">
-        <li><b>Бесплатный спин</b> — каждый день</li>
-        <li><b>Платный спин</b> — 500 монет</li>
-        <li><b>Джекпот 10 000 монет</b></li>
-      </ul>
-    </div>
+  <div class="upd-section-title new">🎰 Upgrader</div>
+  <ul class="upd-list">
+    <li><b>Апгрейд предметов</b> — ставка x множитель</li>
+    <li><b>20 предметов</b> — от Common до Legendary</li>
+    <li><b>Бонусы к монетам</b> — до +60%</li>
+  </ul>
+</div>
 
     <div class="upd-section">
       <div class="upd-section-title new">🎯 Ежедневные квесты</div>
@@ -1342,14 +1342,14 @@ footer .admin-dot { display:inline-block; width:8px; height:8px; border-radius:5
 
     <div class="rule"></div>
 
-    <button class="feature-launch wheel" id="wheelLaunch" type="button">
-      <span class="rl-badge">NEW</span>
-      <span class="rl-icon">🎡</span>
-      <div class="rl-body">
-        <div class="rl-title">Колесо фортуны</div>
-        <div class="rl-desc">1 спин в день бесплатно · Джекпот 10 000 🪙</div>
-      </div>
-    </button>
+    <button class="feature-launch wheel" id="upgraderLaunch" type="button">
+  <span class="rl-badge">NEW</span>
+  <span class="rl-icon">🎰</span>
+  <div class="rl-body">
+    <div class="rl-title">Upgrader</div>
+    <div class="rl-desc">Апгрейд предметов · Умножай монеты · x10 шанс</div>
+  </div>
+</button>
 
     <button class="feature-launch quests" id="questsLaunch" type="button">
       <span class="rl-badge">NEW</span>
@@ -1602,7 +1602,7 @@ footer .admin-dot { display:inline-block; width:8px; height:8px; border-radius:5
   <h3>Меню</h3>
   <div class="sub">Навигация</div>
   <button class="menu-item" id="miMain" type="button"><span>🏠</span><span>Опрос</span></button>
-  <button class="menu-item" id="miWheel" type="button"><span>🎡</span><span>Колесо фортуны</span></button>
+  <button class="menu-item" id="miUpgrader" type="button"><span>🎰</span><span>Upgrader</span></button>
   <button class="menu-item" id="miQuests" type="button"><span>🎯</span><span>Квесты</span></button>
   <button class="menu-item" id="miFriends" type="button"><span>👥</span><span>Друзья</span></button>
   <button class="menu-item" id="miRating" type="button"><span>⭐</span><span>Лента рейтинга</span></button>
@@ -1860,7 +1860,7 @@ footer .admin-dot { display:inline-block; width:8px; height:8px; border-radius:5
 // ============================================================
 
 // SAFE STORAGE
-var SAFE_STORE = (function(){
+var TORE = (function(){
   var mem = {};
   var ok = (function(){
     try { localStorage.setItem("__artamon_test","1"); localStorage.removeItem("__artamon_test"); return true; }
@@ -3651,7 +3651,7 @@ var INTRO = (function(){
   }
   var WORD_SEQ = [
     {at:900,word:"ARTAMON 2.7",hand:"🎉",anim:"fly"},
-    {at:3100,word:"КОЛЕСО",hand:"🎡",anim:"hold"},
+    { at: 3100, word: "АПГРЕЙД", hand: "🎰", anim: "hold" },
     {at:5400,word:"КВЕСТЫ",hand:"🎯",anim:"punch"},
     {at:7700,word:"ДРУЗЬЯ",hand:"👥",anim:"hold"},
     {at:10000,word:"ПОДДЕРЖКА",hand:"📮",anim:"hold"},
@@ -3661,7 +3661,7 @@ var INTRO = (function(){
   ];
   var NAR = [
     {at:2000,text:"<b>Artamon 2.7</b> — The Big Update"},
-    {at:6000,text:"<b>Колесо фортуны</b> — спин каждый день."},
+    { at: 6000, text: "<b>Апгрейдер</b> — умножайте предметы. " },
     {at:10000,text:"<b>Квесты</b> — задания и награды."},
     {at:14000,text:"<b>Друзья и поддержка</b>."}
   ];
@@ -5470,11 +5470,37 @@ document.addEventListener("click", function(e){
   var el = e.target;
   if(!el || !el.closest) return;
 
-  if(el.closest("#wheelLaunch") || el.closest("#miWheel")){
-    e.preventDefault();
-    if(el.closest("#miWheel")){ $("drawer").classList.remove("on"); $("overlay").classList.remove("on"); }
-    WHEEL.open(); return;
+  if (el.closest("#upgraderLaunch") || el.closest("#miUpgrader")) {
+  e.preventDefault();
+  if (el.closest("#miUpgrader")) {
+    $("drawer").classList.remove("on");
+    $("overlay").classList.remove("on");
   }
+  var acc = ARTAMON_API.getAccount();
+  if (!acc || !acc.nick) {
+    if (typeof toast === "function") toast("⚠️ Сначала войди в аккаунт");
+    else alert("Сначала войди в аккаунт");
+    return;
+  }
+  var url = "upgrader.html?nick=" + encodeURIComponent(acc.nick);
+  window.open(url, "_blank");
+  return;
+}if (el.closest("#upgraderLaunch") || el.closest("#miUpgrader")) {
+  e.preventDefault();
+  if (el.closest("#miUpgrader")) {
+    $("drawer").classList.remove("on");
+    $("overlay").classList.remove("on");
+  }
+  var acc = ARTAMON_API.getAccount();
+  if (!acc || !acc.nick) {
+    if (typeof toast === "function") toast("⚠️ Сначала войди в аккаунт");
+    else alert("Сначала войди в аккаунт");
+    return;
+  }
+  var url = "upgrader.html?nick=" + encodeURIComponent(acc.nick);
+  window.open(url, "_blank");
+  return;
+}
   if(el.closest("#questsLaunch") || el.closest("#miQuests")){
     e.preventDefault();
     if(el.closest("#miQuests")){ $("drawer").classList.remove("on"); $("overlay").classList.remove("on"); }
