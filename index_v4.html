@@ -3886,6 +3886,61 @@ if (document.readyState === "loading") {
 
 console.log("✅ Artamon 2.7 загружен полностью");
 </script>
-
+<script>
+// ============================================================
+// UPGRADER LAUNCHER
+// ============================================================
+(function(){
+  "use strict";
+  function openUpgrader() {
+    var nick = "";
+    try {
+      var accRaw = localStorage.getItem("artamon_account_v1");
+      if (accRaw) { var acc = JSON.parse(accRaw); if (acc && acc.nick) nick = acc.nick; }
+    } catch (e) {}
+    if (!nick) { try { nick = localStorage.getItem("artamon_nick") || ""; } catch (e) {} }
+    if (!nick) {
+      var el = document.getElementById("userBtnNick");
+      if (el) {
+        var t = (el.textContent || "").trim();
+        if (t && t !== "Войти" && t !== "Гость" && t !== "Пользователь") nick = t;
+      }
+    }
+    if (!nick) {
+      nick = prompt("🎰 Введи свой ник для входа в Upgrader:", "");
+      if (!nick) { alert("Для входа нужен ник!"); return; }
+      nick = nick.trim();
+      if (!nick) return;
+    }
+    try { localStorage.setItem("artamon_nick", nick); } catch (e) {}
+    var url = "upgrader.html?nick=" + encodeURIComponent(nick);
+    window.location.href = url;
+  }
+  function bind() {
+    var btn = document.getElementById("upgraderLaunch");
+    if (btn && !btn._bound) {
+      btn._bound = true;
+      btn.addEventListener("click", function(e) { e.preventDefault(); openUpgrader(); });
+    }
+    var mi = document.getElementById("miUpgrader");
+    if (mi && !mi._bound) {
+      mi._bound = true;
+      mi.addEventListener("click", function() {
+        var d = document.getElementById("drawer");
+        var o = document.getElementById("overlay");
+        if (d) d.classList.remove("on");
+        if (o) o.classList.remove("on");
+        openUpgrader();
+      });
+    }
+  }
+  window.openUpgrader = openUpgrader;
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind);
+  else bind();
+  setTimeout(bind, 500);
+  setTimeout(bind, 1500);
+  setTimeout(bind, 3000);
+})();
+</script>
 </body>
 </html>
