@@ -183,9 +183,15 @@ input, select { font-family: inherit; font-size: 16px; }
 .circle-payout { font-size: .82rem; color: var(--gold-bright); font-weight: 800;
   margin-top: 4px; font-family: ui-monospace, monospace; }
 .circle-pointer {
-  position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%);
-  font-size: 1.8rem; filter: drop-shadow(0 0 12px var(--gold));
-  z-index: 5; pointer-events: none; color: var(--gold);
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 12px var(--gold));
+  z-index: 5;
+  pointer-events: none;
+  color: var(--gold);
+  transform-origin: 50% -108px;
 }
 .circle-pointer.spinning { transition: transform 4.5s cubic-bezier(.15, .85, .25, 1); }
 .circle-pointer.win { color: var(--ok); }
@@ -1636,12 +1642,12 @@ function doUpgrade() {
   // Анимация
   var pointer = $("circlePointer");
   pointer.classList.remove("win", "lose", "spinning");
-  pointer.style.transform = "translateX(-50%) rotate(0deg)";
+  pointer.style.transform = "rotate(0deg)";
 
   var randomSpin = 360 * 4 + Math.random() * 360;
   setTimeout(function() {
     pointer.classList.add("spinning");
-    pointer.style.transform = "translateX(-50%) rotate(" + randomSpin + "deg)";
+    pointer.style.transform = "rotate(" + randomSpin + "deg)";
   }, 50);
 
   // Ждём результат
@@ -1671,7 +1677,7 @@ function doUpgrade() {
       var finalAngle = 360 - targetAngle;
 
       pointer.classList.add(isWin ? "win" : "lose");
-      pointer.style.transform = "translateX(-50%) rotate(" + (360 * 4 + finalAngle) + "deg)";
+pointer.style.transform = "rotate(" + (360 * 4 + finalAngle) + "deg)";
 
       // Записываем в историю
       State.history.unshift({
