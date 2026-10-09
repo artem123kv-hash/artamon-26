@@ -7,864 +7,344 @@
 <title>🎰 Artamon Upgrader</title>
 <style>
 :root {
-  /* Artamon + казино-люкс */
-  --bg-0: #050507;
-  --bg-1: #0a0a12;
-  --bg-2: #12121c;
-  --bg-3: #1a1a28;
-  --card: rgba(18,18,28,.85);
-  --card-2: rgba(10,10,18,.95);
-  --border: #252535;
-  --border-gold: rgba(212,175,55,.4);
-  --txt-1: #e8e8f0;
-  --txt-2: #8888a0;
-  --txt-3: #555568;
-  --gold: #d4af37;
-  --gold-bright: #f6e6a8;
-  --gold-dark: #8f6f1a;
-  --blue: #4a90e2;
-  --blue-bright: #93c5fd;
-  --purple: #a855f7;
-  --ok: #4ade80;
-  --err: #f87171;
-  --warn: #fbbf24;
-
-  --common: #8a8a9a;
-  --rare: #4a90e2;
-  --epic: #a855f7;
-  --legendary: #f59e0b;
-
-  --shadow-gold: 0 0 40px rgba(212,175,55,.3);
-  --shadow-gold-strong: 0 0 80px rgba(212,175,55,.5);
+  --bg-0: #050507; --bg-1: #0a0a12; --bg-2: #12121c; --bg-3: #1a1a28;
+  --card: rgba(18,18,28,.85); --card-2: rgba(10,10,18,.95);
+  --border: #252535; --border-gold: rgba(212,175,55,.4);
+  --txt-1: #e8e8f0; --txt-2: #8888a0; --txt-3: #555568;
+  --gold: #d4af37; --gold-bright: #f6e6a8; --gold-dark: #8f6f1a;
+  --ok: #4ade80; --err: #f87171; --warn: #fbbf24; --info: #60a5fa;
+  --common: #8a8a9a; --rare: #4a90e2; --epic: #a855f7; --legendary: #f59e0b;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body {
-  min-height: 100vh;
-  background: var(--bg-0);
-  color: var(--txt-1);
+  min-height: 100vh; background: var(--bg-0); color: var(--txt-1);
   font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
-  line-height: 1.5;
-  overflow-x: hidden;
+  line-height: 1.5; overflow-x: hidden;
 }
 body {
   background-image:
     radial-gradient(ellipse at 50% -10%, rgba(212,175,55,.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 100%, rgba(74,144,226,.08) 0%, transparent 45%),
-    radial-gradient(circle at 20% 80%, rgba(168,85,247,.06) 0%, transparent 50%);
-  background-attachment: fixed;
-  padding-bottom: 40px;
-  position: relative;
-}
-/* Звёзды на фоне */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image:
-    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.4), transparent),
-    radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,.3), transparent),
-    radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,.5), transparent),
-    radial-gradient(1px 1px at 40% 90%, rgba(255,255,255,.3), transparent),
-    radial-gradient(2px 2px at 10% 50%, rgba(212,175,55,.4), transparent),
-    radial-gradient(1px 1px at 90% 40%, rgba(212,175,55,.3), transparent);
-  background-size: 100% 100%;
-  pointer-events: none;
-  z-index: 0;
-  opacity: .8;
+    radial-gradient(circle at 80% 100%, rgba(74,144,226,.08) 0%, transparent 45%);
+  background-attachment: fixed; padding-bottom: 40px;
 }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
-input, select { font-family: inherit; }
+input, select { font-family: inherit; font-size: 16px; }
 .hidden { display: none !important; }
 #app { position: relative; z-index: 1; }
 
-/* ===== ВЕРХНЯЯ ПАНЕЛЬ ===== */
 .topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 12px;
-  align-items: center;
+  position: sticky; top: 0; z-index: 100;
+  display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
   padding: 12px 16px;
   background: linear-gradient(180deg, rgba(5,5,7,.98), rgba(5,5,7,.85));
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  box-shadow: 0 4px 20px rgba(0,0,0,.5);
+  backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
 }
 .topbar-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.15rem;
-  font-weight: 900;
+  display: flex; align-items: center; gap: 8px; font-size: 1.15rem; font-weight: 900;
   letter-spacing: .08em;
   background: linear-gradient(180deg, var(--gold-bright), var(--gold) 60%, var(--gold-dark));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  white-space: nowrap;
+  -webkit-background-clip: text; background-clip: text; color: transparent; white-space: nowrap;
 }
-.topbar-logo .spin-emoji {
-  font-size: 1.5rem;
-  filter: drop-shadow(0 0 12px rgba(212,175,55,.7));
-  animation: spin-emoji 8s linear infinite;
-  display: inline-block;
-}
-@keyframes spin-emoji {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.topbar-center {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-}
+.topbar-logo .spin-emoji { font-size: 1.5rem; display: inline-block; animation: spin 8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.topbar-center { display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; }
 .topbar-stat {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  font-size: .74rem;
-  color: var(--txt-2);
+  display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px;
+  font-size: .74rem; color: var(--txt-2);
 }
 .topbar-stat b { color: var(--gold-bright); font-weight: 800; }
-.topbar-stat .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--ok);
-  box-shadow: 0 0 10px var(--ok);
-  animation: pulse-dot 2s infinite;
-}
-@keyframes pulse-dot {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.3); opacity: .7; }
-}
-.topbar-right {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
+.topbar-right { display: flex; gap: 8px; align-items: center; }
 .balance-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
+  display: flex; align-items: center; gap: 8px; padding: 8px 14px;
   background: linear-gradient(180deg, rgba(212,175,55,.18), rgba(212,175,55,.05));
-  border: 1.5px solid var(--border-gold);
-  border-radius: 12px;
-  font-weight: 900;
-  color: var(--gold-bright);
-  white-space: nowrap;
-  transition: .3s;
+  border: 1.5px solid var(--border-gold); border-radius: 12px; font-weight: 900;
+  color: var(--gold-bright); white-space: nowrap; transition: .3s;
 }
-.balance-box.updating {
-  transform: scale(1.08);
-  box-shadow: var(--shadow-gold);
-}
-.balance-box .coin { font-size: 1.15rem; }
+.balance-box.updating { transform: scale(1.08); box-shadow: 0 0 40px rgba(212,175,55,.3); }
 .balance-box .num { font-family: ui-monospace, monospace; font-size: .95rem; }
-
 .user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 40px; height: 40px; border-radius: 50%;
   background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  font-weight: 900;
-  color: #0a0a0a;
-  border: 2px solid var(--gold-bright);
-  box-shadow: 0 0 20px rgba(212,175,55,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; font-weight: 900; color: #0a0a0a;
+  border: 2px solid var(--gold-bright); box-shadow: 0 0 20px rgba(212,175,55,.4);
   cursor: pointer;
 }
 
-/* ===== НАВИГАЦИЯ ===== */
 .navbar {
-  display: flex;
-  gap: 6px;
-  padding: 8px 16px;
-  background: var(--bg-1);
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-  scrollbar-width: none;
-  position: sticky;
-  top: 65px;
-  z-index: 99;
+  display: flex; gap: 6px; padding: 8px 16px;
+  background: var(--bg-1); border-bottom: 1px solid var(--border);
+  overflow-x: auto; scrollbar-width: none;
+  position: sticky; top: 65px; z-index: 99;
 }
 .navbar::-webkit-scrollbar { display: none; }
 .nav-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-size: .82rem;
-  font-weight: 800;
-  letter-spacing: .06em;
-  color: var(--txt-2);
-  white-space: nowrap;
-  transition: .2s;
-  border: 1.5px solid transparent;
+  display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+  border-radius: 10px; font-size: .82rem; font-weight: 800; letter-spacing: .06em;
+  color: var(--txt-2); white-space: nowrap; transition: .2s;
+  border: 1.5px solid transparent; cursor: pointer; user-select: none;
 }
 .nav-btn:hover { color: var(--txt-1); background: rgba(255,255,255,.03); }
 .nav-btn.active {
   color: var(--gold-bright);
   background: linear-gradient(180deg, rgba(212,175,55,.2), rgba(212,175,55,.05));
   border-color: var(--border-gold);
-  box-shadow: 0 0 20px rgba(212,175,55,.2);
 }
 .nav-btn .badge {
-  padding: 2px 7px;
-  background: var(--gold);
-  color: #0a0a0a;
-  border-radius: 8px;
-  font-size: .65rem;
-  font-weight: 900;
+  padding: 2px 7px; background: var(--gold); color: #0a0a0a;
+  border-radius: 8px; font-size: .65rem; font-weight: 900;
+  font-family: ui-monospace, monospace;
 }
 
-/* ===== ОСНОВНОЙ КОНТЕЙНЕР ===== */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px 16px;
-}
+.container { max-width: 1200px; margin: 0 auto; padding: 20px 16px; }
 .tab-content { display: none; animation: fade-up .35s ease; }
 .tab-content.active { display: block; }
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ===== ГЛАВНЫЙ ЭКРАН АПГРЕЙДА ===== */
+/* UPGRADE STAGE */
 .upgrade-stage {
-  display: grid;
-  grid-template-columns: 1fr 1.3fr 1fr;
-  gap: 16px;
-  align-items: center;
+  display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 16px; align-items: center;
   padding: 24px 20px;
   background: linear-gradient(180deg, var(--card), var(--card-2));
-  border: 1.5px solid var(--border);
-  border-radius: 20px;
-  margin-bottom: 16px;
-  position: relative;
-  overflow: hidden;
+  border: 1.5px solid var(--border); border-radius: 20px; margin-bottom: 16px;
+  position: relative; overflow: hidden;
 }
-.upgrade-stage::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(212,175,55,.08), transparent 65%);
-  pointer-events: none;
-}
-@media (max-width: 720px) {
-  .upgrade-stage { grid-template-columns: 1fr; }
-}
+@media (max-width: 720px) { .upgrade-stage { grid-template-columns: 1fr; } }
 
-/* СЛОТ ПРЕДМЕТА */
 .slot {
   position: relative;
   background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
-  border: 2px dashed var(--border);
-  border-radius: 16px;
-  padding: 16px 12px;
-  min-height: 160px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 6px;
-  transition: .3s;
-  cursor: pointer;
-  overflow: hidden;
-}
-.slot::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 50%, currentColor, transparent 60%);
-  opacity: 0;
-  transition: opacity .3s;
-  pointer-events: none;
+  border: 2px dashed var(--border); border-radius: 16px;
+  padding: 16px 12px; min-height: 160px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: 6px; transition: .3s; cursor: pointer; overflow: hidden;
+  user-select: none;
 }
 .slot:hover { border-color: var(--gold); transform: translateY(-2px); }
-.slot:hover::before { opacity: .08; }
-.slot.filled {
-  border-style: solid;
-  border-color: var(--gold);
-  background: linear-gradient(180deg, rgba(212,175,55,.08), var(--bg-2));
-}
-.slot.filled.rarity-common { border-color: var(--common); color: var(--common); }
-.slot.filled.rarity-rare { border-color: var(--rare); color: var(--rare); box-shadow: 0 0 30px rgba(74,144,226,.3); }
-.slot.filled.rarity-epic { border-color: var(--epic); color: var(--epic); box-shadow: 0 0 30px rgba(168,85,247,.4); }
-.slot.filled.rarity-legendary { border-color: var(--legendary); color: var(--legendary); box-shadow: 0 0 40px rgba(245,158,11,.5); }
+.slot.filled { border-style: solid; border-color: var(--gold);
+  background: linear-gradient(180deg, rgba(212,175,55,.08), var(--bg-2)); }
+.slot.filled.rarity-common { border-color: var(--common); }
+.slot.filled.rarity-rare { border-color: var(--rare); box-shadow: 0 0 30px rgba(74,144,226,.3); }
+.slot.filled.rarity-epic { border-color: var(--epic); box-shadow: 0 0 30px rgba(168,85,247,.4); }
+.slot.filled.rarity-legendary { border-color: var(--legendary); box-shadow: 0 0 40px rgba(245,158,11,.5); }
 
-.slot-hint {
-  font-size: .66rem;
-  color: var(--txt-3);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  font-weight: 800;
-}
-.slot-empty-icon {
-  font-size: 2.4rem;
-  opacity: .3;
-  transition: .3s;
-}
+.slot-hint { font-size: .66rem; color: var(--txt-3); letter-spacing: .12em; text-transform: uppercase; font-weight: 800; }
+.slot-empty-icon { font-size: 2.4rem; opacity: .3; transition: .3s; }
 .slot:hover .slot-empty-icon { opacity: .6; transform: scale(1.1); }
-.slot-icon {
-  font-size: 3.5rem;
-  line-height: 1;
-  filter: drop-shadow(0 6px 20px rgba(0,0,0,.6));
-  animation: float 3s ease-in-out infinite;
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-.slot-name {
-  font-size: .85rem;
-  font-weight: 800;
-  color: var(--txt-1);
-}
-.slot-price {
-  font-size: .78rem;
-  color: var(--txt-2);
-  font-weight: 700;
-  font-family: ui-monospace, monospace;
-}
+.slot-icon { font-size: 3.5rem; line-height: 1; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.slot-name { font-size: .85rem; font-weight: 800; color: var(--txt-1);
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.slot-price { font-size: .78rem; color: var(--txt-2); font-weight: 700;
+  font-family: ui-monospace, monospace; }
 .slot-price .coin { color: var(--gold); }
-.slot-rarity-tag {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-size: .58rem;
-  font-weight: 900;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
+.slot-rarity-tag { display: inline-block; padding: 2px 8px; border-radius: 6px;
+  font-size: .58rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
 .r-common { color: var(--common); background: rgba(138,138,154,.15); }
 .r-rare { color: var(--rare); background: rgba(74,144,226,.15); }
 .r-epic { color: var(--epic); background: rgba(168,85,247,.15); }
 .r-legendary { color: var(--legendary); background: rgba(245,158,11,.15); }
 
 .slot-remove {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: rgba(248,113,113,.2);
-  color: var(--err);
-  font-size: 1rem;
-  font-weight: 900;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: .2s;
+  position: absolute; top: 8px; right: 8px; width: 26px; height: 26px;
+  border-radius: 50%; background: rgba(248,113,113,.2); color: var(--err);
+  font-size: 1rem; font-weight: 900; display: flex; align-items: center;
+  justify-content: center; transition: .2s; cursor: pointer;
 }
 .slot-remove:hover { background: var(--err); color: white; transform: scale(1.1); }
 
-/* УКАЗАТЕЛЬ-СТРЕЛКА МЕЖДУ СЛОТАМИ */
-.arrow-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 1.5rem;
-  color: var(--gold);
-  text-align: center;
-}
-.arrow-wrap .mult-display {
-  font-size: .85rem;
-  font-weight: 900;
-  color: var(--gold-bright);
-  font-family: ui-monospace, monospace;
-  letter-spacing: .05em;
-  padding: 4px 12px;
-  background: rgba(212,175,55,.1);
-  border: 1.5px solid var(--border-gold);
-  border-radius: 10px;
-  text-shadow: 0 0 12px rgba(212,175,55,.6);
-}
-.arrow-wrap .arrow {
-  font-size: 2.2rem;
-  filter: drop-shadow(0 0 12px rgba(212,175,55,.6));
-  animation: arrow-pulse 1.5s infinite;
-}
-@keyframes arrow-pulse {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(5px); }
-}
-
-/* КРУГ АПГРЕЙДА */
 .circle-wrap {
-  position: relative;
-  width: 240px;
-  height: 240px;
-  margin: 0 auto;
+  position: relative; width: 240px; height: 240px; margin: 0 auto;
   filter: drop-shadow(0 0 30px rgba(212,175,55,.2));
 }
-.circle-wrap svg {
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-}
-.circle-bg {
-  fill: none;
-  stroke: rgba(255,255,255,.04);
-  stroke-width: 16;
-}
-.circle-track {
-  fill: none;
-  stroke: rgba(248,113,113,.35);
-  stroke-width: 16;
-  transition: stroke .4s;
-}
-.circle-win {
-  fill: none;
-  stroke: url(#winGradient);
-  stroke-width: 16;
-  stroke-linecap: butt;
-  transition: stroke-dasharray .5s ease;
-  filter: drop-shadow(0 0 12px var(--ok));
-}
-.circle-tick {
-  stroke: rgba(255,255,255,.12);
-  stroke-width: 2;
-}
-.circle-tick.major {
-  stroke: rgba(212,175,55,.4);
-  stroke-width: 3;
-}
-
+.circle-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.circle-bg { fill: none; stroke: rgba(255,255,255,.04); stroke-width: 16; }
+.circle-track { fill: none; stroke: rgba(248,113,113,.35); stroke-width: 16; }
+.circle-win { fill: none; stroke: url(#winGradient); stroke-width: 16;
+  stroke-linecap: butt; transition: stroke-dasharray .5s ease;
+  filter: drop-shadow(0 0 12px var(--ok)); }
+.circle-tick { stroke: rgba(255,255,255,.12); stroke-width: 2; }
+.circle-tick.major { stroke: rgba(212,175,55,.4); stroke-width: 3; }
 .circle-center {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  pointer-events: none;
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center; pointer-events: none;
 }
 .circle-chance {
-  font-size: 2.8rem;
-  font-weight: 900;
-  color: var(--ok);
-  letter-spacing: -.02em;
-  line-height: 1;
-  text-shadow: 0 0 30px rgba(74,222,128,.5);
-  transition: color .3s;
-  font-family: ui-monospace, monospace;
+  font-size: 2.8rem; font-weight: 900; color: var(--ok);
+  line-height: 1; font-family: ui-monospace, monospace;
+  text-shadow: 0 0 30px rgba(74,222,128,.5); transition: color .3s;
 }
-.circle-chance.low { color: var(--err); text-shadow: 0 0 30px rgba(248,113,113,.6); }
-.circle-chance.mid { color: var(--warn); text-shadow: 0 0 30px rgba(251,191,36,.6); }
-.circle-chance.high { color: var(--ok); text-shadow: 0 0 30px rgba(74,222,128,.6); }
-.circle-label {
-  font-size: .65rem;
-  color: var(--txt-2);
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  font-weight: 800;
-  margin-top: 6px;
-}
-.circle-payout {
-  font-size: .82rem;
-  color: var(--gold-bright);
-  font-weight: 800;
-  margin-top: 4px;
-  font-family: ui-monospace, monospace;
-}
-
+.circle-chance.low { color: var(--err); }
+.circle-chance.mid { color: var(--warn); }
+.circle-chance.high { color: var(--ok); }
+.circle-label { font-size: .65rem; color: var(--txt-2); letter-spacing: .2em;
+  text-transform: uppercase; font-weight: 800; margin-top: 6px; }
+.circle-payout { font-size: .82rem; color: var(--gold-bright); font-weight: 800;
+  margin-top: 4px; font-family: ui-monospace, monospace; }
 .circle-pointer {
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1.8rem;
-  filter: drop-shadow(0 0 12px var(--gold));
-  transition: none;
-  z-index: 5;
-  pointer-events: none;
-  color: var(--gold);
+  position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%);
+  font-size: 1.8rem; filter: drop-shadow(0 0 12px var(--gold));
+  z-index: 5; pointer-events: none; color: var(--gold);
 }
-.circle-pointer.spinning {
-  transition: transform 4.5s cubic-bezier(.15, .85, .25, 1);
-}
-.circle-pointer.win { color: var(--ok); filter: drop-shadow(0 0 16px var(--ok)); }
-.circle-pointer.lose { color: var(--err); filter: drop-shadow(0 0 16px var(--err)); }
+.circle-pointer.spinning { transition: transform 4.5s cubic-bezier(.15, .85, .25, 1); }
+.circle-pointer.win { color: var(--ok); }
+.circle-pointer.lose { color: var(--err); }
 
-/* ТРЕЙЛ ПОСЛЕ УКАЗАТЕЛЯ */
-.pointer-trail {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--gold);
-  box-shadow: 0 0 12px var(--gold);
-  pointer-events: none;
-  animation: trail-fade .6s ease-out forwards;
-}
-@keyframes trail-fade {
-  0% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(0.2); }
-}
-
-/* ===== МНОЖИТЕЛИ ===== */
 .mult-section {
   background: linear-gradient(180deg, var(--card), var(--card-2));
-  border: 1.5px solid var(--border);
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 16px;
+  border: 1.5px solid var(--border); border-radius: 16px;
+  padding: 16px; margin-bottom: 16px;
 }
-.mult-label {
-  font-size: .7rem;
-  color: var(--txt-2);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  font-weight: 800;
-  margin-bottom: 10px;
-}
-.mult-presets {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-  gap: 6px;
-  margin-bottom: 14px;
-}
+.mult-label { font-size: .7rem; color: var(--txt-2); letter-spacing: .12em;
+  text-transform: uppercase; font-weight: 800; margin-bottom: 10px; }
+.mult-presets { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 6px; margin-bottom: 14px; }
 .mult-btn {
-  padding: 10px 8px;
-  background: var(--bg-2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  font-size: .82rem;
-  font-weight: 900;
-  font-family: ui-monospace, monospace;
-  color: var(--txt-2);
-  transition: .2s;
+  padding: 10px 8px; background: var(--bg-2); border: 1.5px solid var(--border);
+  border-radius: 10px; font-size: .82rem; font-weight: 900;
+  font-family: ui-monospace, monospace; color: var(--txt-2); transition: .2s;
+  cursor: pointer; user-select: none;
 }
 .mult-btn:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
 .mult-btn.active {
   background: linear-gradient(180deg, rgba(212,175,55,.25), rgba(212,175,55,.08));
-  border-color: var(--gold-bright);
-  color: var(--gold-bright);
-  box-shadow: 0 0 20px rgba(212,175,55,.3);
+  border-color: var(--gold-bright); color: var(--gold-bright);
 }
-
-/* Слайдер */
-.slider-wrap {
-  position: relative;
-  margin-top: 4px;
-}
+.slider-wrap { position: relative; margin-top: 4px; }
 .mult-slider {
-  width: 100%;
-  height: 8px;
-  border-radius: 4px;
+  width: 100%; height: 8px; border-radius: 4px;
   background: linear-gradient(90deg, var(--err) 0%, var(--warn) 50%, var(--ok) 100%);
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-  cursor: pointer;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,.5);
+  outline: none; -webkit-appearance: none; appearance: none; cursor: pointer;
 }
 .mult-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
+  -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, var(--gold-bright), var(--gold) 70%, var(--gold-dark));
-  cursor: pointer;
-  box-shadow: 0 0 16px rgba(212,175,55,.8), 0 0 4px rgba(0,0,0,.6);
+  cursor: pointer; box-shadow: 0 0 16px rgba(212,175,55,.8);
   border: 2px solid var(--gold-bright);
-  transition: .15s;
-}
-.mult-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
-  box-shadow: 0 0 24px rgba(212,175,55,1);
 }
 .mult-slider::-moz-range-thumb {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
+  width: 24px; height: 24px; border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, var(--gold-bright), var(--gold) 70%, var(--gold-dark));
-  cursor: pointer;
-  box-shadow: 0 0 16px rgba(212,175,55,.8);
+  cursor: pointer; box-shadow: 0 0 16px rgba(212,175,55,.8);
   border: 2px solid var(--gold-bright);
 }
 .slider-value {
-  position: absolute;
-  top: -32px;
-  transform: translateX(-50%);
-  padding: 2px 10px;
-  background: var(--gold);
-  color: #0a0a0a;
-  border-radius: 8px;
-  font-size: .72rem;
-  font-weight: 900;
-  font-family: ui-monospace, monospace;
-  white-space: nowrap;
-  transition: left .15s;
-  pointer-events: none;
+  position: absolute; top: -32px; transform: translateX(-50%);
+  padding: 2px 10px; background: var(--gold); color: #0a0a0a;
+  border-radius: 8px; font-size: .72rem; font-weight: 900;
+  font-family: ui-monospace, monospace; white-space: nowrap;
+  transition: left .15s; pointer-events: none;
 }
 .slider-value::after {
-  content: "";
-  position: absolute;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-  width: 8px;
-  height: 8px;
-  background: var(--gold);
+  content: ""; position: absolute; bottom: -4px; left: 50%;
+  transform: translateX(-50%) rotate(45deg); width: 8px; height: 8px; background: var(--gold);
 }
 
-/* ===== КНОПКА КРУТИТЬ ===== */
 .spin-btn {
-  position: relative;
-  width: 100%;
-  padding: 20px;
-  border-radius: 16px;
-  font-size: 1.05rem;
-  font-weight: 900;
-  letter-spacing: .14em;
-  text-transform: uppercase;
+  position: relative; width: 100%; padding: 20px; border-radius: 16px;
+  font-size: 1.05rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase;
   background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 40%, var(--gold-dark) 100%);
-  color: #0a0a0a;
-  border: 2px solid var(--gold-bright);
-  box-shadow: 0 10px 40px rgba(212,175,55,.4), inset 0 1px 0 rgba(255,255,255,.4);
-  transition: .25s;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  cursor: pointer;
+  color: #0a0a0a; border: 2px solid var(--gold-bright);
+  box-shadow: 0 10px 40px rgba(212,175,55,.4);
+  transition: .25s; overflow: hidden; display: flex; align-items: center;
+  justify-content: center; gap: 12px; cursor: pointer; user-select: none;
 }
-.spin-btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent);
-  transform: translateX(-100%);
-  transition: transform .8s;
-  pointer-events: none;
-}
-.spin-btn:hover:not(:disabled)::before { transform: translateX(100%); }
-.spin-btn:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 50px rgba(212,175,55,.6), inset 0 1px 0 rgba(255,255,255,.4);
-}
+.spin-btn:hover:not(:disabled) { transform: translateY(-3px);
+  box-shadow: 0 16px 50px rgba(212,175,55,.6); }
 .spin-btn:active:not(:disabled) { transform: scale(.98); }
-.spin-btn:disabled {
-  opacity: .45;
-  cursor: not-allowed;
-  filter: grayscale(.4);
-}
+.spin-btn:disabled { opacity: .45; cursor: not-allowed; filter: grayscale(.4); }
 .spin-btn .icon { font-size: 1.5rem; }
-.spin-btn .text { position: relative; z-index: 1; }
 
-/* ===== РЕЗУЛЬТАТ ===== */
 .result-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 500;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(0,0,0,.88);
-  backdrop-filter: blur(12px);
+  position: fixed; inset: 0; z-index: 500; display: none;
+  align-items: center; justify-content: center; padding: 20px;
+  background: rgba(0,0,0,.88); backdrop-filter: blur(12px);
 }
 .result-overlay.on { display: flex; animation: fade-in .3s ease; }
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 .result-card {
-  max-width: 420px;
-  width: 100%;
-  padding: 40px 28px;
+  max-width: 420px; width: 100%; padding: 40px 28px;
   background: linear-gradient(180deg, var(--card), var(--card-2));
-  border: 3px solid var(--gold);
-  border-radius: 24px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  animation: pop-in .5s cubic-bezier(.5, 1.5, .5, 1);
+  border: 3px solid var(--gold); border-radius: 24px; text-align: center;
+  position: relative; overflow: hidden; animation: pop-in .5s cubic-bezier(.5, 1.5, .5, 1);
 }
-@keyframes pop-in {
-  from { transform: scale(.6); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-.result-card.win {
-  border-color: var(--ok);
-  box-shadow: 0 0 100px rgba(74,222,128,.6), inset 0 0 60px rgba(74,222,128,.05);
-}
-.result-card.lose {
-  border-color: var(--err);
-  box-shadow: 0 0 100px rgba(248,113,113,.6), inset 0 0 60px rgba(248,113,113,.05);
-}
-.result-card.jackpot {
-  border-color: var(--legendary);
-  box-shadow: 0 0 140px rgba(245,158,11,.8), inset 0 0 80px rgba(245,158,11,.08);
-  animation: pop-in .5s cubic-bezier(.5, 1.5, .5, 1), jackpot-glow 1.5s ease infinite alternate;
-}
-@keyframes jackpot-glow {
-  from { box-shadow: 0 0 100px rgba(245,158,11,.6); }
-  to { box-shadow: 0 0 160px rgba(245,158,11,1); }
-}
-.result-emoji {
-  font-size: 6rem;
-  display: block;
-  margin-bottom: 18px;
-  line-height: 1;
-  filter: drop-shadow(0 0 40px currentColor);
-}
+@keyframes pop-in { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.result-card.win { border-color: var(--ok); box-shadow: 0 0 100px rgba(74,222,128,.6); }
+.result-card.lose { border-color: var(--err); box-shadow: 0 0 100px rgba(248,113,113,.6); }
+.result-card.jackpot { border-color: var(--legendary);
+  box-shadow: 0 0 140px rgba(245,158,11,.8);
+  animation: pop-in .5s cubic-bezier(.5, 1.5, .5, 1), jackpot-glow 1.5s ease infinite alternate; }
+@keyframes jackpot-glow { from { box-shadow: 0 0 100px rgba(245,158,11,.6); }
+  to { box-shadow: 0 0 160px rgba(245,158,11,1); } }
+.result-emoji { font-size: 6rem; display: block; margin-bottom: 18px; line-height: 1;
+  filter: drop-shadow(0 0 40px currentColor); }
 .result-emoji.win { color: var(--ok); animation: bounce .7s ease; }
 .result-emoji.lose { color: var(--err); animation: shake .7s ease; }
 .result-emoji.jackpot { color: var(--legendary); animation: bounce .7s ease, pulse-glow 1s infinite; }
-@keyframes bounce {
-  0% { transform: translateY(0) scale(1); }
+@keyframes bounce { 0% { transform: translateY(0) scale(1); }
   30% { transform: translateY(-40px) scale(1.4); }
-  60% { transform: translateY(0) scale(1); }
-}
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
+  60% { transform: translateY(0) scale(1); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-16px) rotate(-6deg); }
-  40% { transform: translateX(16px) rotate(6deg); }
-  60% { transform: translateX(-10px) rotate(-4deg); }
-  80% { transform: translateX(10px) rotate(4deg); }
-}
-@keyframes pulse-glow {
-  0%, 100% { filter: drop-shadow(0 0 30px currentColor); }
-  50% { filter: drop-shadow(0 0 70px currentColor); }
-}
-.result-title {
-  font-size: 1.8rem;
-  font-weight: 900;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
+  40% { transform: translateX(16px) rotate(6deg); } }
+@keyframes pulse-glow { 0%, 100% { filter: drop-shadow(0 0 30px currentColor); }
+  50% { filter: drop-shadow(0 0 70px currentColor); } }
+.result-title { font-size: 1.8rem; font-weight: 900; letter-spacing: .08em;
+  text-transform: uppercase; margin-bottom: 12px; }
 .result-title.win { color: var(--ok); }
 .result-title.lose { color: var(--err); }
-.result-title.jackpot {
-  background: linear-gradient(180deg, #fef3c7, var(--legendary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.result-sub {
-  font-size: .95rem;
-  color: var(--txt-2);
-  margin-bottom: 22px;
-  line-height: 1.5;
-}
+.result-title.jackpot { background: linear-gradient(180deg, #fef3c7, var(--legendary));
+  -webkit-background-clip: text; background-clip: text; color: transparent; }
+.result-sub { font-size: .95rem; color: var(--txt-2); margin-bottom: 22px; line-height: 1.5; }
 .result-reward {
-  padding: 18px;
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  font-size: 1.2rem;
-  font-weight: 900;
-  font-family: ui-monospace, monospace;
+  padding: 18px; background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 14px; margin-bottom: 20px; display: flex;
+  align-items: center; justify-content: center; gap: 14px;
+  font-size: 1.2rem; font-weight: 900; font-family: ui-monospace, monospace;
 }
 .result-reward .icon { font-size: 2rem; }
 .result-reward .green { color: var(--ok); }
 .result-reward .red { color: var(--err); }
-
 .confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.confetti-piece {
-  position: absolute;
-  width: 10px;
-  height: 16px;
-  top: -20px;
-  animation: confetti-fall 3.5s linear forwards;
-}
-@keyframes confetti-fall {
-  to { transform: translateY(700px) rotate(900deg); opacity: 0; }
-}
+.confetti-piece { position: absolute; width: 10px; height: 16px; top: -20px;
+  animation: confetti-fall 3.5s linear forwards; }
+@keyframes confetti-fall { to { transform: translateY(700px) rotate(900deg); opacity: 0; } }
 
-/* ===== БЫСТРЫЕ СТАВКИ ===== */
 .quick-bets {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-  padding: 10px 12px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;
+  padding: 10px 12px; background: var(--bg-2);
+  border: 1px solid var(--border); border-radius: 12px; align-items: center;
 }
-.quick-bets-label {
-  font-size: .68rem;
-  color: var(--txt-3);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  font-weight: 800;
-  align-self: center;
-  margin-right: 4px;
-}
+.quick-bets-label { font-size: .68rem; color: var(--txt-3);
+  letter-spacing: .1em; text-transform: uppercase; font-weight: 800; margin-right: 4px; }
 .quick-bet {
-  padding: 6px 10px;
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 1.1rem;
-  transition: .2s;
-  cursor: pointer;
+  padding: 6px 10px; background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: 8px; font-size: 1.1rem; transition: .2s; cursor: pointer;
 }
 .quick-bet:hover { border-color: var(--gold); transform: scale(1.1); }
 
-/* ===== СЕКЦИИ ===== */
 .section {
   background: linear-gradient(180deg, var(--card), var(--card-2));
-  border: 1.5px solid var(--border);
-  border-radius: 16px;
-  padding: 18px;
-  margin-bottom: 16px;
+  border: 1.5px solid var(--border); border-radius: 16px;
+  padding: 18px; margin-bottom: 16px;
 }
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-.section-title {
-  font-size: .9rem;
-  font-weight: 900;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--gold);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.section-header { display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.section-title { font-size: .9rem; font-weight: 900; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--gold); display: flex; align-items: center; gap: 8px; }
 .section-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
-/* ===== ПРЕДМЕТЫ (сетка) ===== */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 16px; background: var(--bg-2); border: 1.5px solid var(--border);
+  border-radius: 10px; font-size: .78rem; font-weight: 800; color: var(--txt-2);
+  transition: .2s; text-transform: uppercase; cursor: pointer; user-select: none; }
+.btn:hover { border-color: var(--gold); color: var(--gold); }
+.btn.danger { background: rgba(248,113,113,.1); border-color: rgba(248,113,113,.4); color: var(--err); }
+.btn.danger:hover { background: rgba(248,113,113,.25); color: #fff; }
+
 .items-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;
 }
 @media (max-width: 560px) {
   .items-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
@@ -872,485 +352,222 @@ input, select { font-family: inherit; }
 .item-card {
   position: relative;
   background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  padding: 14px 10px 12px;
-  text-align: center;
-  transition: .25s;
-  cursor: pointer;
-  overflow: hidden;
-}
-.item-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 0%, currentColor, transparent 60%);
-  opacity: 0;
-  transition: opacity .3s;
-  pointer-events: none;
+  border: 1.5px solid var(--border); border-radius: 14px;
+  padding: 14px 10px 12px; text-align: center;
+  transition: .25s; cursor: pointer; overflow: hidden; user-select: none;
 }
 .item-card.rarity-common { color: var(--common); }
 .item-card.rarity-rare { color: var(--rare); }
 .item-card.rarity-epic { color: var(--epic); }
 .item-card.rarity-legendary { color: var(--legendary); }
-.item-card:hover {
-  transform: translateY(-4px);
-  border-color: currentColor;
-  box-shadow: 0 12px 30px rgba(0,0,0,.5), 0 0 24px currentColor;
-}
-.item-card:hover::before { opacity: .12; }
-.item-icon {
-  font-size: 2.8rem;
-  line-height: 1;
-  margin-bottom: 8px;
-  filter: drop-shadow(0 6px 14px rgba(0,0,0,.6));
-  position: relative;
-  z-index: 1;
-}
-.item-name {
-  font-size: .78rem;
-  font-weight: 800;
-  color: var(--txt-1);
-  margin-bottom: 4px;
-  position: relative;
-  z-index: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.item-rarity {
-  display: inline-block;
-  padding: 2px 7px;
-  border-radius: 6px;
-  font-size: .55rem;
-  font-weight: 900;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-  position: relative;
-  z-index: 1;
-}
-.item-price {
-  font-size: .74rem;
-  font-weight: 800;
-  color: var(--txt-2);
-  position: relative;
-  z-index: 1;
-  font-family: ui-monospace, monospace;
-}
+.item-card:hover { transform: translateY(-4px); border-color: currentColor;
+  box-shadow: 0 12px 30px rgba(0,0,0,.5), 0 0 24px currentColor; }
+.item-icon { font-size: 2.8rem; line-height: 1; margin-bottom: 8px;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,.6)); }
+.item-name { font-size: .78rem; font-weight: 800; color: var(--txt-1);
+  margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.item-rarity { display: inline-block; padding: 2px 7px; border-radius: 6px;
+  font-size: .55rem; font-weight: 900; letter-spacing: .12em;
+  text-transform: uppercase; margin-bottom: 6px; }
+.item-price { font-size: .74rem; font-weight: 800; color: var(--txt-2);
+  font-family: ui-monospace, monospace; }
 .item-price .coin { color: var(--gold); }
 .item-count {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: var(--gold);
-  color: #0a0a0a;
-  font-size: .68rem;
-  font-weight: 900;
-  padding: 2px 8px;
-  border-radius: 10px;
-  min-width: 24px;
-  z-index: 2;
-  box-shadow: 0 2px 8px rgba(0,0,0,.4);
+  position: absolute; top: 8px; right: 8px; background: var(--gold);
+  color: #0a0a0a; font-size: .68rem; font-weight: 900;
+  padding: 2px 8px; border-radius: 10px; min-width: 24px; z-index: 2;
+  font-family: ui-monospace, monospace;
 }
 .item-sell-btn {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  font-size: .6rem;
-  font-weight: 900;
-  padding: 4px 9px;
-  border-radius: 6px;
-  background: rgba(74,222,128,.15);
-  color: var(--ok);
-  letter-spacing: .05em;
-  opacity: 0;
-  transition: .2s;
-  z-index: 2;
-  border: 1px solid rgba(74,222,128,.4);
+  position: absolute; bottom: 8px; right: 8px; font-size: .6rem; font-weight: 900;
+  padding: 4px 9px; border-radius: 6px;
+  background: rgba(74,222,128,.15); color: var(--ok);
+  letter-spacing: .05em; opacity: 0; transition: .2s; z-index: 2;
+  border: 1px solid rgba(74,222,128,.4); cursor: pointer;
 }
 .item-card:hover .item-sell-btn { opacity: 1; }
 .item-sell-btn:hover { background: rgba(74,222,128,.4); color: #fff; }
 
-/* ===== ИСТОРИЯ ===== */
-.history-list { display: flex; flex-direction: column; gap: 8px; max-height: 600px; overflow-y: auto; }
-.history-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-left: 4px solid var(--border);
-  border-radius: 12px;
-  transition: .2s;
-}
+.history-list { display: flex; flex-direction: column; gap: 8px;
+  max-height: 600px; overflow-y: auto; }
+.history-item { display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; background: var(--bg-2);
+  border: 1px solid var(--border); border-left: 4px solid var(--border);
+  border-radius: 12px; transition: .2s; }
 .history-item:hover { background: var(--bg-3); transform: translateX(4px); }
 .history-item.win { border-left-color: var(--ok); }
 .history-item.lose { border-left-color: var(--err); }
-.history-icons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.6rem;
-  flex-shrink: 0;
-}
+.history-icons { display: flex; align-items: center; gap: 8px;
+  font-size: 1.6rem; flex-shrink: 0; }
 .history-arrow { color: var(--txt-3); font-size: 1rem; }
 .history-info { flex: 1; min-width: 0; }
-.history-title {
-  font-size: .85rem;
-  font-weight: 800;
-  margin-bottom: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.history-meta {
-  font-size: .68rem;
-  color: var(--txt-3);
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  font-family: ui-monospace, monospace;
-}
-.history-result {
-  font-size: .7rem;
-  font-weight: 900;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 8px;
-  flex-shrink: 0;
-}
+.history-title { font-size: .85rem; font-weight: 800; margin-bottom: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.history-meta { font-size: .68rem; color: var(--txt-3);
+  display: flex; gap: 12px; flex-wrap: wrap; font-family: ui-monospace, monospace; }
+.history-result { font-size: .7rem; font-weight: 900; letter-spacing: .08em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 8px; flex-shrink: 0; }
 .history-result.win { background: rgba(74,222,128,.15); color: var(--ok); }
 .history-result.lose { background: rgba(248,113,113,.15); color: var(--err); }
 
-/* Фильтр истории */
-.history-filter {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-.history-filter button {
-  padding: 7px 14px;
-  background: var(--bg-2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  font-size: .74rem;
-  font-weight: 800;
-  color: var(--txt-2);
-  transition: .2s;
-  letter-spacing: .05em;
-}
-.history-filter button:hover { border-color: var(--gold); color: var(--gold); }
-.history-filter button.active {
-  background: linear-gradient(180deg, rgba(212,175,55,.2), rgba(212,175,55,.05));
-  border-color: var(--border-gold);
-  color: var(--gold-bright);
-}
-
-/* ===== ТОП-10 ===== */
 .top-list { display: flex; flex-direction: column; gap: 6px; }
-.top-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  transition: .2s;
-}
+.top-item { display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; background: var(--bg-2);
+  border: 1px solid var(--border); border-radius: 12px; transition: .2s; }
 .top-item:hover { background: var(--bg-3); transform: translateX(4px); }
-.top-item .rank {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .85rem;
-  font-weight: 900;
-  background: var(--bg-3);
-  border: 2px solid var(--border);
-  flex-shrink: 0;
-}
-.top-item.rank-1 .rank { background: linear-gradient(135deg, #ffd700, #d4af37); color: #0a0a0a; border-color: #f6e6a8; }
-.top-item.rank-2 .rank { background: linear-gradient(135deg, #e5e7eb, #9ca3af); color: #0a0a0a; border-color: #d1d5db; }
-.top-item.rank-3 .rank { background: linear-gradient(135deg, #f59e0b, #92400e); color: #fff; border-color: #f59e0b; }
+.top-item .rank { width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem; font-weight: 900; background: var(--bg-3);
+  border: 2px solid var(--border); flex-shrink: 0; }
+.top-item.rank-1 .rank { background: linear-gradient(135deg, #ffd700, #d4af37);
+  color: #0a0a0a; border-color: #f6e6a8; }
 .top-item .nick { flex: 1; font-weight: 800; font-size: .88rem; }
-.top-item .value { font-family: ui-monospace, monospace; font-weight: 900; color: var(--gold-bright); font-size: .9rem; }
+.top-item .value { font-family: ui-monospace, monospace;
+  font-weight: 900; color: var(--gold-bright); font-size: .9rem; }
 
-/* ===== СТАТИСТИКА ИГРОКА ===== */
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;
 }
 .stat-tile {
-  padding: 14px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  text-align: center;
-  transition: .2s;
+  padding: 14px; background: var(--bg-2);
+  border: 1px solid var(--border); border-radius: 12px;
+  text-align: center; transition: .2s;
 }
 .stat-tile:hover { border-color: var(--gold); transform: translateY(-2px); }
-.stat-tile .value {
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: var(--gold-bright);
-  line-height: 1;
-  margin-bottom: 4px;
-  font-family: ui-monospace, monospace;
-}
-.stat-tile .label {
-  font-size: .66rem;
-  color: var(--txt-2);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  font-weight: 800;
-}
+.stat-tile .value { font-size: 1.5rem; font-weight: 900; color: var(--gold-bright);
+  line-height: 1; margin-bottom: 4px; font-family: ui-monospace, monospace; }
+.stat-tile .label { font-size: .66rem; color: var(--txt-2);
+  letter-spacing: .1em; text-transform: uppercase; font-weight: 800; }
 .stat-tile.ok .value { color: var(--ok); }
 .stat-tile.err .value { color: var(--err); }
 
-/* ===== ДОСТИЖЕНИЯ ===== */
 .ach-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 10px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px;
 }
-.ach-card {
-  display: flex;
-  gap: 10px;
-  padding: 12px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  transition: .2s;
-}
-.ach-card.unlocked {
-  border-color: var(--gold);
-  background: linear-gradient(180deg, rgba(212,175,55,.08), var(--bg-2));
-}
+.ach-card { display: flex; gap: 10px; padding: 12px;
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: 12px; transition: .2s; }
+.ach-card.unlocked { border-color: var(--gold);
+  background: linear-gradient(180deg, rgba(212,175,55,.08), var(--bg-2)); }
 .ach-card.locked { opacity: .5; }
 .ach-icon { font-size: 2rem; flex-shrink: 0; }
 .ach-body { flex: 1; }
 .ach-name { font-size: .82rem; font-weight: 800; margin-bottom: 2px; }
 .ach-desc { font-size: .68rem; color: var(--txt-3); }
 
-/* ===== МОДАЛКА ===== */
 .modal {
-  position: fixed;
-  inset: 0;
-  z-index: 400;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: rgba(0,0,0,.85);
-  backdrop-filter: blur(10px);
+  position: fixed; inset: 0; z-index: 400; display: none;
+  align-items: center; justify-content: center; padding: 16px;
+  background: rgba(0,0,0,.85); backdrop-filter: blur(10px);
 }
 .modal.on { display: flex; animation: fade-in .2s ease; }
 .modal-box {
-  max-width: 560px;
-  width: 100%;
-  max-height: 88vh;
-  overflow-y: auto;
+  max-width: 560px; width: 100%; max-height: 88vh; overflow-y: auto;
   background: linear-gradient(180deg, var(--card), var(--card-2));
-  border: 2px solid var(--gold);
-  border-radius: 20px;
-  padding: 24px;
-  position: relative;
-  animation: pop-in .35s ease;
-  box-shadow: var(--shadow-gold);
+  border: 2px solid var(--gold); border-radius: 20px;
+  padding: 24px; position: relative; animation: pop-in .35s ease;
 }
 .modal-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(248,113,113,.15);
-  color: var(--err);
-  font-size: 1.3rem;
-  font-weight: 900;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: .2s;
+  position: absolute; top: 12px; right: 12px; width: 36px; height: 36px;
+  border-radius: 50%; background: rgba(248,113,113,.15); color: var(--err);
+  font-size: 1.3rem; font-weight: 900; display: flex; align-items: center;
+  justify-content: center; transition: .2s; cursor: pointer;
 }
 .modal-close:hover { background: var(--err); color: #fff; transform: rotate(90deg); }
-.modal-title {
-  font-size: 1.15rem;
-  font-weight: 900;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--gold-bright);
-  margin-bottom: 18px;
-  padding-right: 44px;
-}
+.modal-title { font-size: 1.15rem; font-weight: 900; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--gold-bright);
+  margin-bottom: 18px; padding-right: 44px; }
 
-/* ===== ПУСТО / ЗАГРУЗКА ===== */
-.empty {
-  text-align: center;
-  padding: 50px 20px;
-  color: var(--txt-3);
-  font-style: italic;
-}
-.empty-icon {
-  font-size: 3.5rem;
-  display: block;
-  margin-bottom: 14px;
-  opacity: .4;
-  font-style: normal;
-}
-.loading {
-  text-align: center;
-  padding: 50px 20px;
-  color: var(--txt-2);
-}
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--border);
-  border-top-color: var(--gold);
-  border-radius: 50%;
-  animation: spin .8s linear infinite;
-  margin: 0 auto 14px;
-  box-shadow: 0 0 20px rgba(212,175,55,.3);
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+.empty { text-align: center; padding: 50px 20px; color: var(--txt-3);
+  font-style: italic; grid-column: 1 / -1; }
+.empty-icon { font-size: 3.5rem; display: block; margin-bottom: 14px;
+  opacity: .4; font-style: normal; }
 
-/* ===== ТОСТЫ ===== */
 #toasts {
-  position: fixed;
-  top: 80px;
-  right: 16px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  pointer-events: none;
-  max-width: 340px;
+  position: fixed; top: 80px; right: 16px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px;
+  pointer-events: none; max-width: 340px;
 }
 .toast {
-  padding: 14px 18px;
-  background: linear-gradient(180deg, var(--card), var(--card-2));
-  border: 1.5px solid var(--gold);
-  border-radius: 12px;
-  font-size: .85rem;
-  font-weight: 700;
-  color: var(--txt-1);
-  transform: translateX(140%);
-  opacity: 0;
+  padding: 14px 18px; background: linear-gradient(180deg, var(--card), var(--card-2));
+  border: 1.5px solid var(--gold); border-radius: 12px;
+  font-size: .85rem; font-weight: 700; color: var(--txt-1);
+  transform: translateX(140%); opacity: 0;
   transition: all .35s cubic-bezier(.5, 1.5, .5, 1);
-  pointer-events: auto;
-  box-shadow: 0 12px 32px rgba(0,0,0,.6);
+  pointer-events: auto; box-shadow: 0 12px 32px rgba(0,0,0,.6);
 }
 .toast.show { transform: translateX(0); opacity: 1; }
 .toast.success { border-color: var(--ok); color: var(--ok); }
 .toast.error { border-color: var(--err); color: var(--err); }
 .toast.warn { border-color: var(--warn); color: var(--warn); }
-.toast.info { border-color: var(--blue); color: var(--blue-bright); }
+.toast.info { border-color: var(--info); color: #93c5fd; }
 
-/* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ===== */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-0); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
 @media (max-width: 640px) {
   .topbar { grid-template-columns: 1fr auto; gap: 8px; padding: 10px 12px; }
   .topbar-center { display: none; }
   .topbar-logo { font-size: .95rem; }
-  .topbar-logo .spin-emoji { font-size: 1.3rem; }
-  .balance-box { padding: 6px 10px; font-size: .82rem; }
-  .user-avatar { width: 34px; height: 34px; font-size: 1rem; }
-  .navbar { padding: 6px 12px; top: 55px; }
+  .navbar { top: 55px; padding: 6px 12px; }
   .nav-btn { padding: 8px 12px; font-size: .74rem; }
   .container { padding: 14px 10px; }
   .circle-wrap { width: 200px; height: 200px; }
   .circle-chance { font-size: 2.2rem; }
   .slot-icon { font-size: 2.8rem; }
   .spin-btn { padding: 16px; font-size: .9rem; }
-  .items-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
-  .item-icon { font-size: 2.2rem; }
+  #toasts { right: 10px; left: 10px; max-width: none; }
 }
-
-/* ===== СКРОЛЛБАР ===== */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--bg-0); }
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
-  transition: .2s;
-}
-::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 </style>
 </head>
 <body>
 
 <div id="app">
-
-  <!-- ===== ВЕРХНЯЯ ПАНЕЛЬ ===== -->
   <div class="topbar">
     <div class="topbar-logo">
       <span class="spin-emoji">🎰</span>
       <span>Artamon Upgrader</span>
     </div>
-
     <div class="topbar-center">
-      <div class="topbar-stat">
-        <span class="dot"></span>
-        <span>Онлайн: <b id="onlineCount">—</b></span>
-      </div>
-      <div class="topbar-stat">
-        📡 Пинг: <b id="pingValue">— мс</b>
-      </div>
-      <div class="topbar-stat">
-        🎰 Апгрейдов: <b id="totalUpgrades">—</b>
-      </div>
+      <div class="topbar-stat">📡 Пинг: <b id="pingValue">— мс</b></div>
+      <div class="topbar-stat">🎰 Апгрейдов: <b id="totalUpgrades">—</b></div>
+      <div class="topbar-stat">🔥 Стрик: <b id="streakValue">0</b></div>
     </div>
-
     <div class="topbar-right">
       <div class="balance-box" id="balanceBox">
-        <span class="coin">🪙</span>
-        <span class="num" id="balanceDisplay">—</span>
+        <span>🪙</span><span class="num" id="balanceDisplay">—</span>
       </div>
-      <div class="user-avatar" id="userAvatar" onclick="showProfile()" title="Профиль">?</div>
+      <div class="user-avatar" id="userAvatar" title="Профиль">?</div>
     </div>
   </div>
 
-  <!-- ===== НАВИГАЦИЯ ===== -->
   <div class="navbar">
-    <button class="nav-btn active" data-tab="upgrade">🎯 Апгрейд</button>
-    <button class="nav-btn" data-tab="inventory">🎒 Инвентарь <span class="badge" id="invBadge">0</span></button>
-    <button class="nav-btn" data-tab="shop">🛒 Магазин</button>
-    <button class="nav-btn" data-tab="history">📜 История</button>
-    <button class="nav-btn" data-tab="top">🏆 Топ</button>
-    <button class="nav-btn" data-tab="achievements">🎖 Достижения</button>
-    <button class="nav-btn" data-tab="profile">👤 Профиль</button>
+    <button class="nav-btn active" data-tab="upgrade" type="button">🎯 Апгрейд</button>
+    <button class="nav-btn" data-tab="inventory" type="button">🎒 Инвентарь <span class="badge" id="invBadge">0</span></button>
+    <button class="nav-btn" data-tab="shop" type="button">🛒 Магазин</button>
+    <button class="nav-btn" data-tab="history" type="button">📜 История</button>
+    <button class="nav-btn" data-tab="top" type="button">🏆 Топ</button>
+    <button class="nav-btn" data-tab="achievements" type="button">🎖 Достижения</button>
+    <button class="nav-btn" data-tab="profile" type="button">👤 Профиль</button>
   </div>
 
   <div class="container">
-
-    <!-- ========== АПГРЕЙД ========== -->
+    <!-- UPGRADE -->
     <div class="tab-content active" data-tab="upgrade">
-
-      <!-- Быстрые ставки -->
       <div class="quick-bets" id="quickBets" style="display:none;">
         <span class="quick-bets-label">Быстро:</span>
         <div id="quickBetsList" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
       </div>
 
-      <!-- Основной экран -->
       <div class="upgrade-stage">
-        <!-- СТАВКА -->
-        <div class="slot" id="betSlot" onclick="openBetPicker()">
+        <div class="slot" id="betSlot" onclick="UI.openBetPicker()">
           <span class="slot-hint">Нажми</span>
           <span class="slot-empty-icon">➕</span>
           <span class="slot-hint">Твой предмет</span>
         </div>
 
-        <!-- ЦЕНТР: КРУГ -->
         <div>
           <div class="circle-wrap">
             <svg viewBox="0 0 240 240">
@@ -1374,74 +591,57 @@ input, select { font-family: inherit; }
           </div>
         </div>
 
-        <!-- ЦЕЛЬ -->
-        <div class="slot" id="targetSlot" onclick="openTargetPicker()">
+        <div class="slot" id="targetSlot" onclick="UI.openTargetPicker()">
           <span class="slot-hint">Нажми</span>
           <span class="slot-empty-icon">🎯</span>
           <span class="slot-hint">Цель</span>
         </div>
       </div>
 
-      <!-- Множители -->
       <div class="mult-section">
         <div class="mult-label">⚡ Множитель ставки</div>
         <div class="mult-presets">
-          <button class="mult-btn" data-mult="1.5">x1.5</button>
-          <button class="mult-btn" data-mult="2">x2</button>
-          <button class="mult-btn active" data-mult="3">x3</button>
-          <button class="mult-btn" data-mult="5">x5</button>
-          <button class="mult-btn" data-mult="10">x10</button>
-          <button class="mult-btn" data-mult="25">x25</button>
-          <button class="mult-btn" data-mult="50">x50</button>
-          <button class="mult-btn" data-mult="100">x100</button>
+          <button class="mult-btn" type="button" data-mult="1.5">x1.5</button>
+          <button class="mult-btn" type="button" data-mult="2">x2</button>
+          <button class="mult-btn active" type="button" data-mult="3">x3</button>
+          <button class="mult-btn" type="button" data-mult="5">x5</button>
+          <button class="mult-btn" type="button" data-mult="10">x10</button>
+          <button class="mult-btn" type="button" data-mult="25">x25</button>
+          <button class="mult-btn" type="button" data-mult="50">x50</button>
+          <button class="mult-btn" type="button" data-mult="100">x100</button>
         </div>
         <div class="slider-wrap">
           <input type="range" class="mult-slider" id="multSlider" min="1.1" max="100" step="0.1" value="3">
-          <div class="slider-value" id="sliderValue" style="left: 3%">x3.00</div>
+          <div class="slider-value" id="sliderValue">x3.00</div>
         </div>
       </div>
 
-      <!-- Кнопка -->
-      <button class="spin-btn" id="spinBtn" disabled>
-        <span class="icon">🎰</span>
-        <span class="text">КРУТИТЬ</span>
+      <button class="spin-btn" id="spinBtn" type="button" disabled>
+        <span class="icon">🎰</span><span class="text">КРУТИТЬ</span>
       </button>
-
-      <!-- Ежедневный бонус -->
-      <div class="section" id="dailyBonusSection" style="margin-top:16px;">
-        <div class="section-header">
-          <div class="section-title">🎁 Ежедневный бонус</div>
-        </div>
-        <div id="dailyBonusContent">
-          <div class="loading"><div class="spinner"></div>Загрузка...</div>
-        </div>
-      </div>
-
     </div>
 
-    <!-- ========== ИНВЕНТАРЬ ========== -->
+    <!-- INVENTORY -->
     <div class="tab-content" data-tab="inventory">
       <div class="section">
         <div class="section-header">
           <div class="section-title">🎒 Инвентарь</div>
           <div class="section-actions">
             <span id="invCount" style="font-size:.78rem;color:var(--txt-2);align-self:center;"></span>
-            <button class="btn ghost sm" onclick="sellAllCommons()" id="sellCommonsBtn" style="display:none;">💰 Продать все Common</button>
+            <button class="btn danger" type="button" onclick="UI.sellAllCommons()" id="sellCommonsBtn" style="display:none;">💰 Продать Common</button>
           </div>
         </div>
-        <div class="items-grid" id="inventoryGrid">
-          <div class="loading"><div class="spinner"></div>Загрузка...</div>
-        </div>
+        <div class="items-grid" id="inventoryGrid"></div>
       </div>
     </div>
 
-    <!-- ========== МАГАЗИН ========== -->
+    <!-- SHOP -->
     <div class="tab-content" data-tab="shop">
       <div class="section">
         <div class="section-header">
           <div class="section-title">🛒 Магазин</div>
           <div class="section-actions">
-            <select class="search-input" id="shopFilter" style="padding:8px 12px;background:var(--bg-2);border:1px solid var(--border);color:var(--txt-1);border-radius:10px;font-size:.8rem;outline:none;">
+            <select id="shopFilter" style="padding:8px 12px;background:var(--bg-2);border:1px solid var(--border);color:var(--txt-1);border-radius:10px;font-size:.8rem;outline:none;">
               <option value="all">Все редкости</option>
               <option value="common">Common</option>
               <option value="rare">Rare</option>
@@ -1450,85 +650,49 @@ input, select { font-family: inherit; }
             </select>
           </div>
         </div>
-        <div class="items-grid" id="shopGrid">
-          <div class="loading"><div class="spinner"></div>Загрузка...</div>
-        </div>
+        <div class="items-grid" id="shopGrid"></div>
       </div>
     </div>
 
-    <!-- ========== ИСТОРИЯ ========== -->
+    <!-- HISTORY -->
     <div class="tab-content" data-tab="history">
       <div class="section">
         <div class="section-header">
           <div class="section-title">📜 История апгрейдов</div>
         </div>
-        <div class="history-filter" id="historyFilter">
-          <button class="active" data-filter="all">Все</button>
-          <button data-filter="win">✅ Победы</button>
-          <button data-filter="lose">❌ Проигрыши</button>
-          <button data-filter="big">🔥 Крупные (10k+)</button>
-        </div>
         <div class="history-list" id="historyList">
-          <div class="empty">
-            <span class="empty-icon">📜</span>
-            История пуста
-          </div>
+          <div class="empty"><span class="empty-icon">📜</span>История пуста</div>
         </div>
       </div>
     </div>
 
-    <!-- ========== ТОП ========== -->
+    <!-- TOP -->
     <div class="tab-content" data-tab="top">
       <div class="section">
         <div class="section-header">
-          <div class="section-title">🏆 Топ-10 апгрейдеров</div>
-          <div class="section-actions">
-            <button class="btn ghost sm" onclick="switchTop('wins')" id="topWinsBtn">По победам</button>
-            <button class="btn ghost sm" onclick="switchTop('profit')" id="topProfitBtn">По профиту</button>
-          </div>
+          <div class="section-title">🏆 Топ игроков</div>
         </div>
-        <div class="top-list" id="topList">
-          <div class="loading"><div class="spinner"></div>Загрузка...</div>
-        </div>
+        <div class="top-list" id="topList"></div>
       </div>
     </div>
 
-    <!-- ========== ДОСТИЖЕНИЯ ========== -->
+    <!-- ACHIEVEMENTS -->
     <div class="tab-content" data-tab="achievements">
       <div class="section">
         <div class="section-header">
-          <div class="section-title">🎖 Достижения апгрейдера</div>
+          <div class="section-title">🎖 Достижения</div>
         </div>
         <div class="ach-grid" id="achGrid"></div>
       </div>
     </div>
 
-    <!-- ========== ПРОФИЛЬ ========== -->
+    <!-- PROFILE -->
     <div class="tab-content" data-tab="profile">
       <div class="section">
         <div class="section-header">
-          <div class="section-title">👤 Мой профиль</div>
+          <div class="section-title">👤 Профиль</div>
         </div>
-        <div id="profileContent">
-          <div class="loading"><div class="spinner"></div>Загрузка...</div>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title">⚙️ Настройки</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-            <input type="checkbox" id="soundEnabled" checked style="width:18px;height:18px;accent-color:var(--gold);cursor:pointer;">
-            <span style="font-size:.85rem;">🔊 Звуковые эффекты</span>
-          </label>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:.85rem;color:var(--txt-2);">Громкость:</span>
-            <input type="range" id="volumeSlider" min="0" max="100" value="60" style="flex:1;accent-color:var(--gold);">
-            <span id="volumeValue" style="font-size:.8rem;color:var(--txt-2);font-family:ui-monospace,monospace;">60%</span>
-          </div>
-        </div>
+        <div id="profileContent"></div>
       </div>
 
       <div class="section">
@@ -1536,73 +700,61 @@ input, select { font-family: inherit; }
           <div class="section-title">🔗 Связь с игрой</div>
         </div>
         <div style="font-size:.82rem;color:var(--txt-2);line-height:1.7;">
-          Твой профиль автоматически синхронизируется с игрой Artamon.<br>
           <b style="color:var(--gold);">Ник:</b> <span id="profileNick">—</span><br>
-          <b style="color:var(--gold);">Игра:</b> <a href="index_v4.html" style="color:var(--blue-bright);text-decoration:none;">← Вернуться в игру</a>
+          <a href="index_v4.html" style="color:#93c5fd;text-decoration:none;font-weight:700;">← Вернуться в игру</a>
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- ===== РЕЗУЛЬТАТ ===== -->
 <div class="result-overlay" id="resultOverlay">
   <div class="result-card" id="resultCard">
     <div class="confetti" id="confetti"></div>
     <span class="result-emoji" id="resultEmoji">🎉</span>
     <div class="result-title" id="resultTitle">ПОБЕДА!</div>
-    <div class="result-sub" id="resultSub">Ты апгрейднул предмет!</div>
+    <div class="result-sub" id="resultSub"></div>
     <div class="result-reward" id="resultReward"></div>
-    <button class="btn primary full" onclick="closeResult()" style="padding:14px;border-radius:12px;font-size:.9rem;font-weight:900;background:linear-gradient(135deg,var(--gold-bright),var(--gold) 50%,var(--gold-dark));color:#0a0a0a;border:2px solid var(--gold-bright);width:100%;">ПРОДОЛЖИТЬ</button>
+    <button class="spin-btn" type="button" onclick="UI.closeResult()" style="padding:14px;">
+      <span class="text">ПРОДОЛЖИТЬ</span>
+    </button>
   </div>
 </div>
 
-<!-- ===== МОДАЛКА ===== -->
 <div class="modal" id="modal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeModal()">×</button>
+    <button class="modal-close" type="button" onclick="UI.closeModal()">×</button>
     <div class="modal-title" id="modalTitle">—</div>
     <div id="modalBody"></div>
   </div>
 </div>
 
-<!-- ===== ТОСТЫ ===== -->
 <div id="toasts"></div>
 
 <script>
-// ============================================================
-// ARTAMON UPGRADER v2.0 — ЧАСТЬ 2/3 (ОСНОВА)
-// ============================================================
+'use strict';
 
 // ============================================================
 // КОНСТАНТЫ
 // ============================================================
-var API = "https://artamon-api.artem123kv.workers.dev";
-var STORAGE_SETTINGS = "artamon_upgrader_settings_v1";
+var API_URL = "https://artamon-api.artem123kv.workers.dev";
+var NICK_KEY = "artamon_upgrader_nick_v1";
+var SPIN_DURATION = 4500;
 
 // ============================================================
 // СОСТОЯНИЕ
 // ============================================================
-var state = {
-  user: null,           // { nick, id }
-  balance: 0,           // монеты
-  inventory: {},        // { itemId: count }
-  history: [],          // [{ from, to, mult, win, ts }]
-  items: [],            // список всех предметов (из воркера)
-  config: {},           // конфигурация (комиссия, множители)
-  multiplier: 3,        // текущий множитель
-  betItem: null,        // предмет ставки (объект)
-  targetItem: null,     // предмет цели
-  spinning: false,      // идёт ли кручение
-  dailyClaim: 0,        // timestamp последнего бонуса
-  currentTab: "upgrade",
-  historyFilter: "all",
-  topMode: "wins",
-  settings: {
-    soundEnabled: true,
-    volume: 0.6,
-  },
+var State = {
+  user: null,
+  balance: 0,
+  inventory: {},
+  history: [],
+  items: [],
+  multiplier: 3,
+  betItem: null,
+  targetItem: null,
+  spinning: false,
+  currentTab: "upgrade"
 };
 
 // ============================================================
@@ -1610,17 +762,17 @@ var state = {
 // ============================================================
 function $(id) { return document.getElementById(id); }
 function $$(sel) { return document.querySelectorAll(sel); }
-function escapeHtml(s) {
-  return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
-    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function(c) {
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
   });
 }
-function formatMoney(n) {
+
+function fmt(n) {
   return Math.floor(n || 0).toLocaleString("ru-RU");
 }
-function rarityShort(r) {
-  return { common: "COMMON", rare: "RARE", epic: "EPIC", legendary: "LEGENDARY" }[r] || r;
-}
+
 function timeAgo(ts) {
   if (!ts) return "—";
   var diff = Date.now() - ts;
@@ -1633,1551 +785,1150 @@ function timeAgo(ts) {
   if (days < 30) return days + " дн назад";
   return new Date(ts).toLocaleDateString("ru-RU");
 }
+
 function toast(msg, type) {
   type = type || "info";
   var el = document.createElement("div");
   el.className = "toast " + type;
   el.textContent = msg;
-  $("toasts").appendChild(el);
-  setTimeout(function () { el.classList.add("show"); }, 30);
-  setTimeout(function () {
+  var box = $("toasts");
+  if (!box) return;
+  box.appendChild(el);
+  setTimeout(function() { el.classList.add("show"); }, 30);
+  setTimeout(function() {
     el.classList.remove("show");
-    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 400);
+    setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 400);
   }, 3500);
 }
-function showLoader(on) {
-  // Нет глобального лоадера — используем тосты
-}
 
-// ============================================================
-// ПОЛУЧЕНИЕ НИКА ИЗ URL
-// ============================================================
-function getNickFromURL() {
+function getNick() {
   try {
     var params = new URLSearchParams(window.location.search);
     var nick = params.get("nick");
     if (nick) {
-      localStorage.setItem("artamon_upgrader_nick_v1", nick);
+      localStorage.setItem(NICK_KEY, nick);
       return nick;
     }
-    return localStorage.getItem("artamon_upgrader_nick_v1") || "";
+    return localStorage.getItem(NICK_KEY) || "";
   } catch (e) {
     return "";
   }
 }
 
 // ============================================================
-// API ЗАПРОСЫ
+// API
 // ============================================================
-async function apiCall(path, body) {
-  try {
-    var r = await fetch(API + path, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body || {}),
+function apiCall(path, body) {
+  return fetch(API_URL + path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body || {})
+  }).then(function(r) {
+    return r.text().then(function(text) {
+      try { return JSON.parse(text); }
+      catch (e) { return { ok: false, error: "Bad JSON" }; }
     });
-    var d = await r.json();
-    return d;
-  } catch (e) {
+  }).catch(function(e) {
     return { ok: false, error: "Сеть: " + e.message };
-  }
-}
-
-async function apiGet(path) {
-  try {
-    var r = await fetch(API + path, { cache: "no-store" });
-    var d = await r.json();
-    return d;
-  } catch (e) {
-    return { ok: false, error: "Сеть: " + e.message };
-  }
-}
-
-// ============================================================
-// ЗАГРУЗКА ПРЕДМЕТОВ ИЗ ВОРКЕРА
-// ============================================================
-async function loadItems() {
-  var d = await apiGet("/api/upgrade-items");
-  if (d.ok && d.items) {
-    state.items = d.items;
-    return true;
-  }
-  return false;
-}
-
-async function loadConfig() {
-  var d = await apiGet("/api/upgrade-config");
-  if (d.ok && d.config) {
-    state.config = d.config;
-    return true;
-  }
-  return false;
-}
-
-// ============================================================
-// ЗАГРУЗКА ПРОФИЛЯ ИГРОКА
-// ============================================================
-async function loadProfile() {
-  var nick = getNickFromURL();
-  if (!nick) {
-    showNoNickScreen();
-    return false;
-  }
-
-  state.user = { nick: nick };
-
-  var d = await apiCall("/api/upgrade-history", { nick: nick });
-  if (!d.ok) {
-    toast("⚠️ Не удалось загрузить профиль: " + (d.error || "?"), "error");
-    return false;
-  }
-
-  state.balance = d.coins || 0;
-  state.inventory = d.inventory || {};
-  state.history = d.history || [];
-
-  updateBalance();
-  updateUserAvatar();
-
-  return true;
-}
-
-function showNoNickScreen() {
-  var html = '<div style="text-align:center;padding:40px 20px;">' +
-    '<div style="font-size:3rem;margin-bottom:20px;">🔐</div>' +
-    '<div style="font-size:1.2rem;font-weight:900;color:var(--gold-bright);margin-bottom:12px;">Войди через игру</div>' +
-    '<div style="font-size:.88rem;color:var(--txt-2);line-height:1.6;margin-bottom:20px;">' +
-      'Открой апгрейдер через кнопку <b style="color:var(--gold);">🎰 Upgrader</b> в игре Artamon' +
-    '</div>' +
-    '<a href="index_v4.html" style="display:inline-block;padding:12px 24px;background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:#0a0a0a;border-radius:12px;text-decoration:none;font-weight:900;letter-spacing:.06em;">← Вернуться в игру</a>' +
-    '</div>';
-  document.querySelector(".container").innerHTML = html;
-}
-
-// ============================================================
-// ОБНОВЛЕНИЕ UI
-// ============================================================
-function updateBalance() {
-  var el = $("balanceDisplay");
-  if (el) el.textContent = formatMoney(state.balance);
-  var box = $("balanceBox");
-  if (box) {
-    box.classList.add("updating");
-    setTimeout(function () { box.classList.remove("updating"); }, 500);
-  }
-}
-
-function updateUserAvatar() {
-  var av = $("userAvatar");
-  if (!av || !state.user) return;
-  var nick = state.user.nick || "?";
-  av.textContent = nick.charAt(0).toUpperCase();
-  av.title = nick;
-}
-
-// ============================================================
-// ЗВУКИ (Web Audio API)
-// ============================================================
-var audioCtx = null;
-function initAudio() {
-  if (audioCtx) return;
-  try {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  } catch (e) {}
-}
-function playTone(freq, duration, type, volume, delay) {
-  if (!audioCtx || !state.settings.soundEnabled) return;
-  try {
-    var t = audioCtx.currentTime + (delay || 0);
-    var osc = audioCtx.createOscillator();
-    var gain = audioCtx.createGain();
-    osc.type = type || "sine";
-    osc.frequency.value = freq;
-    var vol = (volume || 0.1) * state.settings.volume;
-    gain.gain.setValueAtTime(vol, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start(t);
-    osc.stop(t + duration);
-  } catch (e) {}
-}
-function playSpin() {
-  // Серия тиков с ускорением
-  var total = 30;
-  for (var i = 0; i < total; i++) {
-    var delay = i * 0.12;
-    var freq = 600 + i * 15 + Math.random() * 100;
-    (function (d, f) {
-      setTimeout(function () {
-        playTone(f, 0.04, "square", 0.06);
-      }, d * 1000);
-    })(delay, freq);
-  }
-}
-function playWin() {
-  var notes = [523, 659, 784, 1047];
-  notes.forEach(function (f, i) {
-    playTone(f, 0.35, "triangle", 0.15, i * 0.12);
-  });
-}
-function playLose() {
-  var notes = [400, 300, 200];
-  notes.forEach(function (f, i) {
-    playTone(f, 0.3, "sawtooth", 0.1, i * 0.15);
-  });
-}
-function playJackpot() {
-  var notes = [523, 659, 784, 1047, 1319, 1568, 2093];
-  notes.forEach(function (f, i) {
-    playTone(f, 0.45, "triangle", 0.18, i * 0.1);
-  });
-  // Дополнительный звон
-  setTimeout(function () {
-    playTone(2637, 0.8, "sine", 0.12);
-  }, 900);
-}
-function playClick() {
-  playTone(800, 0.03, "sine", 0.05);
-}
-
-// ============================================================
-// РИСОВАНИЕ ТИКОВ НА КРУГЕ
-// ============================================================
-function drawTicks() {
-  var g = $("ticks");
-  if (!g) return;
-  g.innerHTML = "";
-  var total = 60;
-  for (var i = 0; i < total; i++) {
-    var angle = (i * 360 / total) * Math.PI / 180;
-    var isMajor = i % 5 === 0;
-    var r1 = isMajor ? 92 : 96;
-    var r2 = 100;
-    var x1 = 120 + Math.cos(angle) * r1;
-    var y1 = 120 + Math.sin(angle) * r1;
-    var x2 = 120 + Math.cos(angle) * r2;
-    var y2 = 120 + Math.sin(angle) * r2;
-    var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", x1);
-    line.setAttribute("y1", y1);
-    line.setAttribute("x2", x2);
-    line.setAttribute("y2", y2);
-    line.setAttribute("class", "circle-tick" + (isMajor ? " major" : ""));
-    g.appendChild(line);
-  }
-}
-
-// ============================================================
-// ОБНОВЛЕНИЕ КРУГА
-// ============================================================
-function updateCircle(winPercent) {
-  var circle = $("circleWin");
-  if (!circle) return;
-  var r = 104;
-  var circumference = 2 * Math.PI * r;
-  var winLength = circumference * (winPercent / 100);
-  circle.style.strokeDasharray = winLength + " " + circumference;
-  circle.style.strokeDashoffset = 0;
-}
-
-function calculateChance() {
-  if (!state.betItem || !state.targetItem) return 0;
-  var mult = state.multiplier;
-  var commission = state.config.commission || 0.05;
-  var chance = (100 / mult) * (1 - commission);
-  return Math.min(chance, 95);
-}
-
-function updateChance() {
-  var chanceVal = $("chanceValue");
-  var payoutVal = $("payoutValue");
-
-  if (!state.betItem || !state.targetItem) {
-    if (chanceVal) {
-      chanceVal.textContent = "0%";
-      chanceVal.className = "circle-chance";
-    }
-    if (payoutVal) payoutVal.textContent = "—";
-    updateCircle(0);
-    updateSpinBtn();
-    return;
-  }
-
-  var chance = calculateChance();
-  chanceVal.textContent = chance.toFixed(2) + "%";
-  chanceVal.className = "circle-chance" + (chance < 20 ? " low" : chance < 50 ? " mid" : " high");
-
-  // Превращаем множитель в проценты для круга
-  // Шанс на победу = chance, значит зелёная зона = chance% от 360°
-  updateCircle(chance);
-
-  // Показываем потенциальную выплату
-  if (payoutVal) {
-    var winAmount = Math.floor(state.betItem.price * state.multiplier);
-    payoutVal.textContent = "+" + formatMoney(winAmount) + " 🪙";
-  }
-
-  updateSpinBtn();
-}
-
-// ============================================================
-// РЕНДЕР СЛОТА СТАВКИ
-// ============================================================
-function renderBetSlot() {
-  var slot = $("betSlot");
-  if (!slot) return;
-  if (state.betItem) {
-    slot.className = "slot filled rarity-" + state.betItem.rarity;
-    slot.innerHTML =
-      '<button class="slot-remove" onclick="event.stopPropagation();removeBet()">×</button>' +
-      '<span class="slot-icon">' + state.betItem.icon + '</span>' +
-      '<span class="slot-name">' + escapeHtml(state.betItem.name) + '</span>' +
-      '<span class="slot-rarity-tag r-' + state.betItem.rarity + '">' + rarityShort(state.betItem.rarity) + '</span>' +
-      '<span class="slot-price"><span class="coin">🪙</span> ' + formatMoney(state.betItem.price) + '</span>';
-  } else {
-    slot.className = "slot";
-    slot.innerHTML =
-      '<span class="slot-hint">Нажми</span>' +
-      '<span class="slot-empty-icon">➕</span>' +
-      '<span class="slot-hint">Твой предмет</span>';
-  }
-}
-
-function renderTargetSlot() {
-  var slot = $("targetSlot");
-  if (!slot) return;
-  if (state.targetItem) {
-    slot.className = "slot filled rarity-" + state.targetItem.rarity;
-    slot.innerHTML =
-      '<button class="slot-remove" onclick="event.stopPropagation();removeTarget()">×</button>' +
-      '<span class="slot-icon">' + state.targetItem.icon + '</span>' +
-      '<span class="slot-name">' + escapeHtml(state.targetItem.name) + '</span>' +
-      '<span class="slot-rarity-tag r-' + state.targetItem.rarity + '">' + rarityShort(state.targetItem.rarity) + '</span>' +
-      '<span class="slot-price"><span class="coin">🪙</span> ' + formatMoney(state.targetItem.price) + '</span>';
-  } else {
-    slot.className = "slot";
-    slot.innerHTML =
-      '<span class="slot-hint">Нажми</span>' +
-      '<span class="slot-empty-icon">🎯</span>' +
-      '<span class="slot-hint">Цель</span>';
-  }
-}
-
-function removeBet() {
-  if (state.spinning) return;
-  state.betItem = null;
-  renderBetSlot();
-  updateChance();
-  playClick();
-}
-
-function removeTarget() {
-  if (state.spinning) return;
-  state.targetItem = null;
-  renderTargetSlot();
-  updateChance();
-  playClick();
-}
-
-// ============================================================
-// ОБНОВЛЕНИЕ КНОПКИ КРУТИТЬ
-// ============================================================
-function updateSpinBtn() {
-  var btn = $("spinBtn");
-  if (!btn) return;
-  if (state.spinning) {
-    btn.disabled = true;
-    btn.innerHTML = '<span class="icon">⏳</span><span class="text">КРУТИТСЯ...</span>';
-    return;
-  }
-  var ok = state.betItem && state.targetItem;
-  btn.disabled = !ok;
-  btn.innerHTML = '<span class="icon">🎰</span><span class="text">КРУТИТЬ</span>';
-}
-
-// ============================================================
-// ОТКРЫТИЕ ВЫБОРА ПРЕДМЕТА
-// ============================================================
-function openBetPicker() {
-  if (state.spinning || state.betItem) return;
-  openPicker("🎒 Выбери предмет для ставки", "inventory", function (item) {
-    if ((state.inventory[item.id] || 0) <= 0) {
-      toast("❌ У тебя нет " + item.icon + " " + item.name, "error");
-      return;
-    }
-    state.betItem = item;
-    if (!state.targetItem) autoPickTarget(item);
-    renderBetSlot();
-    renderTargetSlot();
-    updateChance();
-    playClick();
-    closeModal();
   });
 }
 
-function openTargetPicker() {
-  if (state.spinning) return;
-  openPicker("🎯 Выбери цель апгрейда", "shop", function (item) {
-    if (state.betItem && item.price <= state.betItem.price) {
-      toast("⚠️ Цель должна быть дороже ставки", "warn");
-      return;
-    }
-    state.targetItem = item;
-    if (state.betItem) {
-      state.multiplier = item.price / state.betItem.price;
-      // Обновляем UI множителя
-      updateMultiplierUI();
-    }
-    renderTargetSlot();
-    updateChance();
-    playClick();
-    closeModal();
-  });
+function apiGet(path) {
+  return fetch(API_URL + path, { cache: "no-store" })
+    .then(function(r) { return r.json(); })
+    .catch(function(e) { return { ok: false, error: "Сеть: " + e.message }; });
 }
 
-function autoPickTarget(betItem) {
-  // Находим следующий по цене предмет
-  for (var i = 0; i < state.items.length; i++) {
-    if (state.items[i].price > betItem.price) {
-      state.targetItem = state.items[i];
-      state.multiplier = state.items[i].price / betItem.price;
-      updateMultiplierUI();
-      return;
+// ============================================================
+// UI — ВСЕ РЕНДЕРЫ
+// ============================================================
+var UI = {
+
+  // ---------- Инициализация UI ----------
+  renderAll: function() {
+    UI.renderBalance();
+    UI.renderAvatar();
+    UI.renderInvBadge();
+    UI.renderBetSlot();
+    UI.renderTargetSlot();
+    UI.renderMultipliers();
+    UI.renderCircle();
+    UI.renderQuickBets();
+    UI.renderInventory();
+    UI.renderShop();
+    UI.renderHistory();
+    UI.renderTop();
+    UI.renderAchievements();
+    UI.renderProfile();
+  },
+
+  // ---------- Баланс ----------
+  renderBalance: function() {
+    var el = $("balanceDisplay");
+    if (el) el.textContent = fmt(State.balance);
+    var box = $("balanceBox");
+    if (box) {
+      box.classList.add("updating");
+      setTimeout(function() { box.classList.remove("updating"); }, 500);
     }
-  }
-}
+  },
 
-function openPicker(title, mode, callback) {
-  var html = '<div class="items-grid" id="pickerGrid">';
-
-  if (mode === "inventory") {
-    var entries = Object.keys(state.inventory).filter(function (id) { return state.inventory[id] > 0; });
-    if (!entries.length) {
-      html += '<div class="empty" style="grid-column:1/-1;"><span class="empty-icon">🎒</span>Инвентарь пуст<br><br>Купи предметы в магазине</div>';
+  // ---------- Аватар ----------
+  renderAvatar: function() {
+    var av = $("userAvatar");
+    if (!av) return;
+    if (State.user) {
+      av.textContent = State.user.nick.charAt(0).toUpperCase();
+      av.title = State.user.nick;
     } else {
-      entries.forEach(function (id) {
-        var item = findItem(id);
-        if (!item) return;
-        var count = state.inventory[id];
-        html += renderPickerItem(item, count, false);
-      });
+      av.textContent = "?";
     }
-  } else {
-    state.items.forEach(function (item) {
-      var disabled = state.betItem && item.price <= state.betItem.price;
-      html += renderPickerItem(item, 0, disabled);
-    });
-  }
+  },
 
-  html += '</div>';
-  openModal(title, html);
-
-  $$("#pickerGrid .item-card").forEach(function (card) {
-    card.addEventListener("click", function () {
-      if (card.dataset.disabled === "1") return;
-      var id = card.dataset.itemId;
-      var item = findItem(id);
-      if (item) callback(item);
-    });
-  });
-}
-
-function renderPickerItem(item, count, disabled) {
-  return '<div class="item-card rarity-' + item.rarity + '" data-item-id="' + item.id + '" data-disabled="' + (disabled ? "1" : "0") + '" style="' + (disabled ? "opacity:.35;pointer-events:none;" : "") + '">' +
-    (count > 0 ? '<div class="item-count">' + count + '</div>' : '') +
-    '<div class="item-icon">' + item.icon + '</div>' +
-    '<div class="item-name">' + escapeHtml(item.name) + '</div>' +
-    '<div class="item-rarity r-' + item.rarity + '">' + rarityShort(item.rarity) + '</div>' +
-    '<div class="item-price"><span class="coin">🪙</span> ' + formatMoney(item.price) + '</div>' +
-  '</div>';
-}
-
-function findItem(id) {
-  for (var i = 0; i < state.items.length; i++) {
-    if (state.items[i].id === id) return state.items[i];
-  }
-  return null;
-}
-
-// ============================================================
-// МНОЖИТЕЛИ
-// ============================================================
-function updateMultiplierUI() {
-  // Обновляем пресеты
-  $$(".mult-btn").forEach(function (b) {
-    b.classList.toggle("active", Math.abs(parseFloat(b.dataset.mult) - state.multiplier) < 0.01);
-  });
-  // Обновляем слайдер
-  var slider = $("multSlider");
-  if (slider) {
-    slider.value = Math.min(100, Math.max(1.1, state.multiplier));
-  }
-  // Обновляем отображение
-  updateSliderValue();
-}
-
-function updateSliderValue() {
-  var slider = $("multSlider");
-  var val = $("sliderValue");
-  if (!slider || !val) return;
-  var v = parseFloat(slider.value);
-  var pct = (v - 1.1) / (100 - 1.1) * 100;
-  val.style.left = pct + "%";
-  val.textContent = "x" + v.toFixed(2);
-}
-
-// ============================================================
-// МОДАЛКА
-// ============================================================
-function openModal(title, html) {
-  $("modalTitle").textContent = title;
-  $("modalBody").innerHTML = html;
-  $("modal").classList.add("on");
-}
-function closeModal() {
-  $("modal").classList.remove("on");
-}
-
-// ============================================================
-// ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
-// ============================================================
-function switchTab(tab) {
-  state.currentTab = tab;
-  $$(".nav-btn").forEach(function (b) {
-    b.classList.toggle("active", b.dataset.tab === tab);
-  });
-  $$(".tab-content").forEach(function (c) {
-    c.classList.toggle("active", c.dataset.tab === tab);
-  });
-
-  if (tab === "inventory" && window.renderInventory) window.renderInventory();
-  else if (tab === "shop" && window.renderShop) window.renderShop();
-  else if (tab === "history" && window.renderHistory) window.renderHistory();
-  else if (tab === "top" && window.renderTop) window.renderTop();
-  else if (tab === "achievements" && window.renderAchievements) window.renderAchievements();
-  else if (tab === "profile" && window.renderProfile) window.renderProfile();
-
-  playClick();
-}
-
-// ============================================================
-// РЕЗУЛЬТАТ
-// ============================================================
-function showResult(type, fromItem, toItem) {
-  var overlay = $("resultOverlay");
-  var card = $("resultCard");
-  var emoji = $("resultEmoji");
-  var title = $("resultTitle");
-  var sub = $("resultSub");
-  var reward = $("resultReward");
-
-  card.className = "result-card " + type;
-  emoji.className = "result-emoji " + type;
-  title.className = "result-title " + type;
-
-  if (type === "win") {
-    emoji.textContent = "🎉";
-    title.textContent = "ПОБЕДА!";
-    sub.textContent = "Ты апгрейднул " + fromItem.name + " до " + toItem.name + "!";
-    reward.innerHTML = '<span class="icon">' + fromItem.icon + '</span> → <span class="icon">' + toItem.icon + '</span> · <span class="green">+' + formatMoney(toItem.price) + ' 🪙</span>';
-    spawnConfetti();
-  } else if (type === "jackpot") {
-    emoji.textContent = "💎";
-    title.textContent = "ДЖЕКПОТ!";
-    sub.textContent = "Невероятная удача! Ты выиграл " + toItem.name + "!";
-    reward.innerHTML = '<span class="icon">' + fromItem.icon + '</span> → <span class="icon">' + toItem.icon + '</span> · <span class="green">+' + formatMoney(toItem.price) + ' 🪙</span>';
-    spawnConfetti();
-  } else {
-    emoji.textContent = "💀";
-    title.textContent = "ПРОИГРЫШ";
-    sub.textContent = "Предмет " + fromItem.name + " сгорел";
-    reward.innerHTML = '<span class="icon">' + fromItem.icon + '</span> → <span class="red">−' + formatMoney(fromItem.price) + ' 🪙</span>';
-  }
-
-  overlay.classList.add("on");
-}
-
-function closeResult() {
-  $("resultOverlay").classList.remove("on");
-}
-
-function spawnConfetti() {
-  var box = $("confetti");
-  if (!box) return;
-  box.innerHTML = "";
-  var colors = ["#d4af37", "#4ade80", "#f6e6a8", "#f59e0b", "#60a5fa", "#a855f7"];
-  for (var i = 0; i < 50; i++) {
-    var p = document.createElement("div");
-    p.className = "confetti-piece";
-    p.style.left = Math.random() * 100 + "%";
-    p.style.background = colors[Math.floor(Math.random() * colors.length)];
-    p.style.animationDelay = Math.random() * 0.5 + "s";
-    p.style.animationDuration = (2.5 + Math.random() * 2) + "s";
-    box.appendChild(p);
-  }
-}
-
-// ============================================================
-// НАСТРОЙКИ (сохраняются в localStorage)
-// ============================================================
-function loadSettings() {
-  try {
-    var raw = localStorage.getItem(STORAGE_SETTINGS);
-    if (raw) {
-      var s = JSON.parse(raw);
-      if (typeof s.soundEnabled !== "undefined") state.settings.soundEnabled = s.soundEnabled;
-      if (typeof s.volume !== "undefined") state.settings.volume = s.volume;
+  // ---------- Бейдж инвентаря ----------
+  renderInvBadge: function() {
+    var total = 0;
+    for (var k in State.inventory) {
+      if (State.inventory.hasOwnProperty(k)) total += State.inventory[k];
     }
-  } catch (e) {}
-}
+    var badge = $("invBadge");
+    if (badge) badge.textContent = total;
+  },
 
-function saveSettings() {
-  try {
-    localStorage.setItem(STORAGE_SETTINGS, JSON.stringify(state.settings));
-  } catch (e) {}
-}
+  // ---------- Слоты ----------
+  renderBetSlot: function() {
+    var slot = $("betSlot");
+    if (!slot) return;
+    if (State.betItem) {
+      var it = State.betItem;
+      slot.className = "slot filled rarity-" + it.rarity;
+      slot.innerHTML =
+        '<button class="slot-remove" type="button" onclick="event.stopPropagation();UI.removeBet()">×</button>' +
+        '<span class="slot-icon">' + it.icon + '</span>' +
+        '<span class="slot-name">' + esc(it.name) + '</span>' +
+        '<span class="slot-rarity-tag r-' + it.rarity + '">' + it.rarity.toUpperCase() + '</span>' +
+        '<span class="slot-price"><span class="coin">🪙</span> ' + fmt(it.price) + '</span>';
+    } else {
+      slot.className = "slot";
+      slot.innerHTML = '<span class="slot-hint">Нажми</span><span class="slot-empty-icon">➕</span><span class="slot-hint">Твой предмет</span>';
+    }
+  },
 
-// ============================================================
-// ПРОФИЛЬ (быстрая модалка)
-// ============================================================
-function showProfile() {
-  if (!state.user) return;
-  switchTab("profile");
-}
+  renderTargetSlot: function() {
+    var slot = $("targetSlot");
+    if (!slot) return;
+    if (State.targetItem) {
+      var it = State.targetItem;
+      slot.className = "slot filled rarity-" + it.rarity;
+      slot.innerHTML =
+        '<button class="slot-remove" type="button" onclick="event.stopPropagation();UI.removeTarget()">×</button>' +
+        '<span class="slot-icon">' + it.icon + '</span>' +
+        '<span class="slot-name">' + esc(it.name) + '</span>' +
+        '<span class="slot-rarity-tag r-' + it.rarity + '">' + it.rarity.toUpperCase() + '</span>' +
+        '<span class="slot-price"><span class="coin">🪙</span> ' + fmt(it.price) + '</span>';
+    } else {
+      slot.className = "slot";
+      slot.innerHTML = '<span class="slot-hint">Нажми</span><span class="slot-empty-icon">🎯</span><span class="slot-hint">Цель</span>';
+    }
+  },
 
-// ============================================================
-// СТАТИСТИКА В ШАПКЕ
-// ============================================================
-async function updateHeaderStats() {
-  // Пинг
-  var t0 = Date.now();
-  try {
-    var r = await fetch(API + "/api/tech-status", { cache: "no-store" });
-    await r.json();
-    var ping = Date.now() - t0;
-    if ($("pingValue")) $("pingValue").textContent = ping + " мс";
-  } catch (e) {
-    if ($("pingValue")) $("pingValue").textContent = "— мс";
-  }
+  // ---------- Круг ----------
+  renderCircle: function() {
+    var circle = $("circleWin");
+    var chanceEl = $("chanceValue");
+    var payoutEl = $("payoutValue");
 
-  // Онлайн (приблизительно — количество игроков с непустым инвентарём)
-  // Общая статистика апгрейдов
-  try {
-    var r2 = await apiCall("/api/upgrade-history", { nick: state.user ? state.user.nick : "" });
-    // Не даёт общее — оставим прочерк
-    if ($("onlineCount")) $("onlineCount").textContent = "—";
-    if ($("totalUpgrades")) $("totalUpgrades").textContent = "—";
-  } catch (e) {}
-}
+    if (!circle) return;
 
-// ============================================================
-// АВТО-ОБНОВЛЕНИЕ БАЛАНСА
-// ============================================================
-function startAutoRefresh() {
-  setInterval(async function () {
-    if (state.spinning) return;
-    if (!state.user || !state.user.nick) return;
-    var d = await apiCall("/api/upgrade-history", { nick: state.user.nick });
-    if (d.ok) {
-      state.balance = d.coins || 0;
-      state.inventory = d.inventory || {};
-      state.history = d.history || [];
-      updateBalance();
-      // Не перерисовываем всё, только баланс
-      if ($("invBadge")) {
-        var total = Object.keys(state.inventory).reduce(function (a, k) { return a + state.inventory[k]; }, 0);
-        $("invBadge").textContent = total;
+    var chance = 0;
+    if (State.betItem && State.targetItem) {
+      chance = Math.min((100 / State.multiplier) * 0.95, 95);
+    }
+
+    var r = 104;
+    var circ = 2 * Math.PI * r;
+    var winLength = circ * (chance / 100);
+
+    circle.style.strokeDasharray = winLength + " " + circ;
+
+    if (chanceEl) {
+      chanceEl.textContent = chance.toFixed(2) + "%";
+      var cls = "circle-chance";
+      if (chance > 0) {
+        if (chance < 20) cls += " low";
+        else if (chance < 50) cls += " mid";
+        else cls += " high";
+      }
+      chanceEl.className = cls;
+    }
+
+    if (payoutEl) {
+      var payout = State.betItem ? Math.floor(State.betItem.price * State.multiplier) : 0;
+      payoutEl.textContent = payout > 0 ? "+" + fmt(payout) + " 🪙" : "—";
+    }
+
+    this.renderSpinBtn();
+  },
+
+  renderSpinBtn: function() {
+    var btn = $("spinBtn");
+    if (!btn) return;
+    if (State.spinning) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="icon">⏳</span><span class="text">КРУТИТСЯ...</span>';
+      return;
+    }
+    var canSpin = State.betItem && State.targetItem && State.user;
+    btn.disabled = !canSpin;
+    btn.innerHTML = '<span class="icon">🎰</span><span class="text">КРУТИТЬ</span>';
+  },
+
+  // ---------- Множители ----------
+  renderMultipliers: function() {
+    var btns = $$(".mult-btn");
+    for (var i = 0; i < btns.length; i++) {
+      var b = btns[i];
+      var m = parseFloat(b.dataset.mult);
+      b.classList.toggle("active", Math.abs(m - State.multiplier) < 0.01);
+    }
+    var slider = $("multSlider");
+    if (slider) slider.value = Math.min(100, Math.max(1.1, State.multiplier));
+    this.renderSliderValue();
+  },
+
+  renderSliderValue: function() {
+    var slider = $("multSlider");
+    var val = $("sliderValue");
+    if (!slider || !val) return;
+    var v = parseFloat(slider.value);
+    var pct = (v - 1.1) / (100 - 1.1) * 100;
+    val.style.left = pct + "%";
+    val.textContent = "x" + v.toFixed(2);
+  },
+
+  // ---------- Быстрые ставки ----------
+  renderQuickBets: function() {
+    var box = $("quickBets");
+    var list = $("quickBetsList");
+    if (!box || !list) return;
+
+    var entries = [];
+    for (var id in State.inventory) {
+      if (State.inventory.hasOwnProperty(id) && State.inventory[id] > 0) {
+        entries.push([id, State.inventory[id]]);
       }
     }
-  }, 30000);
+
+    if (!entries.length) {
+      box.style.display = "none";
+      return;
+    }
+
+    entries.sort(function(a, b) {
+      var ia = State.findItem(a[0]);
+      var ib = State.findItem(b[0]);
+      return (ib ? ib.price : 0) - (ia ? ia.price : 0);
+    });
+
+    list.innerHTML = "";
+    entries.slice(0, 3).forEach(function(e) {
+      var it = State.findItem(e[0]);
+      if (!it) return;
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "quick-bet";
+      btn.textContent = it.icon;
+      btn.title = it.name + " (" + fmt(it.price) + " 🪙)";
+      btn.onclick = function() { UI.quickBet(it.id); };
+      list.appendChild(btn);
+    });
+
+    box.style.display = "flex";
+  },
+
+  // ---------- Инвентарь ----------
+  renderInventory: function() {
+    var grid = $("inventoryGrid");
+    if (!grid) return;
+
+    var entries = [];
+    for (var id in State.inventory) {
+      if (State.inventory.hasOwnProperty(id) && State.inventory[id] > 0) {
+        entries.push([id, State.inventory[id]]);
+      }
+    }
+
+    var total = entries.reduce(function(a, e) { return a + e[1]; }, 0);
+    var countEl = $("invCount");
+    if (countEl) countEl.textContent = "Всего: " + total + " шт.";
+
+    if (!entries.length) {
+      grid.innerHTML = '<div class="empty"><span class="empty-icon">🎒</span>Инвентарь пуст</div>';
+      var sellBtn = $("sellCommonsBtn");
+      if (sellBtn) sellBtn.style.display = "none";
+      return;
+    }
+
+    var hasCommons = entries.some(function(e) {
+      var it = State.findItem(e[0]);
+      return it && it.rarity === "common";
+    });
+    var sellBtn2 = $("sellCommonsBtn");
+    if (sellBtn2) sellBtn2.style.display = hasCommons ? "inline-flex" : "none";
+
+    // Сортировка: legendary → epic → rare → common
+    var order = { legendary: 0, epic: 1, rare: 2, common: 3 };
+    entries.sort(function(a, b) {
+      var ia = State.findItem(a[0]);
+      var ib = State.findItem(b[0]);
+      if (!ia || !ib) return 0;
+      var oa = order[ia.rarity] != null ? order[ia.rarity] : 4;
+      var ob = order[ib.rarity] != null ? order[ib.rarity] : 4;
+      return oa - ob;
+    });
+
+    grid.innerHTML = "";
+    entries.forEach(function(e) {
+      var it = State.findItem(e[0]);
+      if (!it) return;
+      var sellPrice = Math.floor(it.price * 0.7);
+      var card = document.createElement("div");
+      card.className = "item-card rarity-" + it.rarity;
+      card.innerHTML =
+        '<div class="item-count">' + e[1] + '</div>' +
+        '<div class="item-icon">' + it.icon + '</div>' +
+        '<div class="item-name">' + esc(it.name) + '</div>' +
+        '<div class="item-rarity r-' + it.rarity + '">' + it.rarity.toUpperCase() + '</div>' +
+        '<div class="item-price"><span class="coin">🪙</span> ' + fmt(it.price) + '</div>' +
+        '<button class="item-sell-btn" type="button">+ ' + fmt(sellPrice) + ' 🪙</button>';
+
+      var sellButton = card.querySelector(".item-sell-btn");
+      sellButton.onclick = function(ev) {
+        ev.stopPropagation();
+        UI.sellItem(it.id);
+      };
+
+      grid.appendChild(card);
+    });
+  },
+
+  // ---------- Магазин ----------
+  renderShop: function() {
+    var grid = $("shopGrid");
+    if (!grid) return;
+
+    var filter = "all";
+    var filterEl = $("shopFilter");
+    if (filterEl) filter = filterEl.value;
+
+    var list = State.items.slice();
+    if (filter !== "all") {
+      list = list.filter(function(i) { return i.rarity === filter; });
+    }
+
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty"><span class="empty-icon">🔍</span>Ничего не найдено</div>';
+      return;
+    }
+
+    grid.innerHTML = "";
+    list.forEach(function(it) {
+      var canBuy = State.balance >= it.price;
+      var card = document.createElement("div");
+      card.className = "item-card rarity-" + it.rarity;
+      if (!canBuy) card.style.opacity = "0.5";
+      card.innerHTML =
+        '<div class="item-icon">' + it.icon + '</div>' +
+        '<div class="item-name">' + esc(it.name) + '</div>' +
+        '<div class="item-rarity r-' + it.rarity + '">' + it.rarity.toUpperCase() + '</div>' +
+        '<div class="item-price"><span class="coin">🪙</span> ' + fmt(it.price) + '</div>';
+      card.onclick = function() { UI.buyItem(it.id); };
+      grid.appendChild(card);
+    });
+  },
+
+  // ---------- История ----------
+  renderHistory: function() {
+    var box = $("historyList");
+    if (!box) return;
+
+    var list = State.history.slice(0, 100);
+    if (!list.length) {
+      box.innerHTML = '<div class="empty"><span class="empty-icon">📜</span>История пуста</div>';
+      return;
+    }
+
+    box.innerHTML = "";
+    list.forEach(function(h) {
+      var from = State.findItem(h.betItemId || h.from);
+      var to = State.findItem(h.targetItemId || h.to);
+      if (!from || !to) return;
+
+      var el = document.createElement("div");
+      el.className = "history-item " + (h.win ? "win" : "lose");
+      el.innerHTML =
+        '<div class="history-icons">' +
+          '<span>' + from.icon + '</span>' +
+          '<span class="history-arrow">→</span>' +
+          '<span>' + to.icon + '</span>' +
+        '</div>' +
+        '<div class="history-info">' +
+          '<div class="history-title">' + esc(from.name) + ' → ' + esc(to.name) + '</div>' +
+          '<div class="history-meta">' +
+            '<span>x' + (h.multiplier || h.mult || 0).toFixed(2) + '</span>' +
+            '<span>' + timeAgo(h.ts) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="history-result ' + (h.win ? "win" : "lose") + '">' +
+          (h.win ? "WIN" : "LOSE") +
+        '</div>';
+      box.appendChild(el);
+    });
+  },
+
+  // ---------- Топ ----------
+  renderTop: function() {
+    var box = $("topList");
+    if (!box) return;
+
+    var wins = 0, profit = 0;
+    State.history.forEach(function(h) {
+      var from = State.findItem(h.betItemId || h.from);
+      var to = State.findItem(h.targetItemId || h.to);
+      if (h.win) { wins++; if (to) profit += to.price; }
+      else { if (from) profit -= from.price; }
+    });
+
+    box.innerHTML =
+      '<div class="top-item rank-1">' +
+        '<div class="rank">🥇</div>' +
+        '<div class="nick">' + esc(State.user ? State.user.nick : "?") + ' <span style="color:var(--txt-3);font-size:.7rem;">(ты)</span></div>' +
+        '<div class="value">' + (profit >= 0 ? "+" : "") + fmt(profit) + ' 🪙</div>' +
+      '</div>' +
+      '<div class="top-item"><div class="rank">2</div><div class="nick" style="color:var(--txt-3);">Общий топ появится позже</div><div class="value">—</div></div>' +
+      '<div class="top-item"><div class="rank">3</div><div class="nick" style="color:var(--txt-3);">Общий топ появится позже</div><div class="value">—</div></div>';
+  },
+
+  // ---------- Достижения ----------
+  renderAchievements: function() {
+    var grid = $("achGrid");
+    if (!grid) return;
+
+    var total = State.history.length;
+    var wins = State.history.filter(function(h) { return h.win; }).length;
+
+    var list = [
+      { id: "first_upgrade", icon: "🎯", name: "Первый апгрейд", desc: "Сделай первый апгрейд", done: total >= 1 },
+      { id: "first_win", icon: "🎉", name: "Первая победа", desc: "Выиграй апгрейд", done: wins >= 1 },
+      { id: "win_10", icon: "🔥", name: "10 побед", desc: "Выиграй 10 апгрейдов", done: wins >= 10 },
+      { id: "win_50", icon: "⚡", name: "50 побед", desc: "Выиграй 50 апгрейдов", done: wins >= 50 },
+      { id: "rare_drop", icon: "🔵", name: "Rare дроп", desc: "Получи Rare предмет", done: false },
+      { id: "epic_drop", icon: "🟣", name: "Epic дроп", desc: "Получи Epic предмет", done: false },
+      { id: "legendary_drop", icon: "🟡", name: "Legendary дроп", desc: "Получи Legendary предмет", done: false },
+      { id: "gambler", icon: "🎲", name: "Азартный", desc: "Сделай 100 апгрейдов", done: total >= 100 }
+    ];
+
+    // Проверяем Rare/Epic/Legendary по истории
+    State.history.forEach(function(h) {
+      if (!h.win) return;
+      var to = State.findItem(h.targetItemId || h.to);
+      if (!to) return;
+      if (to.rarity === "rare") list[4].done = true;
+      if (to.rarity === "epic") list[5].done = true;
+      if (to.rarity === "legendary") list[6].done = true;
+    });
+
+    grid.innerHTML = "";
+    list.forEach(function(a) {
+      var card = document.createElement("div");
+      card.className = "ach-card " + (a.done ? "unlocked" : "locked");
+      card.innerHTML =
+        '<div class="ach-icon">' + (a.done ? a.icon : "🔒") + '</div>' +
+        '<div class="ach-body">' +
+          '<div class="ach-name">' + esc(a.name) + '</div>' +
+          '<div class="ach-desc">' + esc(a.desc) + '</div>' +
+        '</div>';
+      grid.appendChild(card);
+    });
+  },
+
+  // ---------- Профиль ----------
+  renderProfile: function() {
+    var box = $("profileContent");
+    if (!box) return;
+
+    var total = State.history.length;
+    var wins = State.history.filter(function(h) { return h.win; }).length;
+    var loses = total - wins;
+    var winrate = total ? Math.round(wins / total * 100) : 0;
+
+    var profit = 0;
+    State.history.forEach(function(h) {
+      var from = State.findItem(h.betItemId || h.from);
+      var to = State.findItem(h.targetItemId || h.to);
+      if (h.win) { if (to) profit += to.price; }
+      else { if (from) profit -= from.price; }
+    });
+
+    var totalItems = 0;
+    for (var k in State.inventory) {
+      if (State.inventory.hasOwnProperty(k)) totalItems += State.inventory[k];
+    }
+
+    box.innerHTML =
+      '<div class="stats-grid">' +
+        '<div class="stat-tile"><div class="value">' + total + '</div><div class="label">Всего игр</div></div>' +
+        '<div class="stat-tile ok"><div class="value">' + wins + '</div><div class="label">Побед</div></div>' +
+        '<div class="stat-tile err"><div class="value">' + loses + '</div><div class="label">Проигрышей</div></div>' +
+        '<div class="stat-tile"><div class="value">' + winrate + '%</div><div class="label">Winrate</div></div>' +
+        '<div class="stat-tile ' + (profit >= 0 ? "ok" : "err") + '"><div class="value">' + (profit >= 0 ? "+" : "") + fmt(profit) + '</div><div class="label">Профит</div></div>' +
+        '<div class="stat-tile"><div class="value">' + totalItems + '</div><div class="label">Предметов</div></div>' +
+      '</div>';
+
+    var nickEl = $("profileNick");
+    if (nickEl) nickEl.textContent = State.user ? State.user.nick : "—";
+  },
+
+  // ---------- Переключение вкладок ----------
+  switchTab: function(tab) {
+    State.currentTab = tab;
+
+    var navBtns = $$(".nav-btn");
+    for (var i = 0; i < navBtns.length; i++) {
+      navBtns[i].classList.toggle("active", navBtns[i].dataset.tab === tab);
+    }
+
+    var contents = $$(".tab-content");
+    for (var j = 0; j < contents.length; j++) {
+      contents[j].classList.toggle("active", contents[j].dataset.tab === tab);
+    }
+
+    // Рендер соответствующей вкладки
+    if (tab === "inventory") UI.renderInventory();
+    else if (tab === "shop") UI.renderShop();
+    else if (tab === "history") UI.renderHistory();
+    else if (tab === "top") UI.renderTop();
+    else if (tab === "achievements") UI.renderAchievements();
+    else if (tab === "profile") UI.renderProfile();
+  },
+
+  // ---------- Модалка ----------
+  openModal: function(title, html) {
+    var mt = $("modalTitle");
+    var mb = $("modalBody");
+    if (mt) mt.textContent = title;
+    if (mb) mb.innerHTML = html;
+    var modal = $("modal");
+    if (modal) modal.classList.add("on");
+  },
+
+  closeModal: function() {
+    var modal = $("modal");
+    if (modal) modal.classList.remove("on");
+  },
+
+  // ---------- Слоты: действия ----------
+  removeBet: function() {
+    if (State.spinning) return;
+    State.betItem = null;
+    UI.renderBetSlot();
+    UI.renderCircle();
+  },
+
+  removeTarget: function() {
+    if (State.spinning) return;
+    State.targetItem = null;
+    UI.renderTargetSlot();
+    UI.renderCircle();
+  },
+
+  quickBet: function(id) {
+    if (State.spinning) return;
+    var it = State.findItem(id);
+    if (!it) return;
+    State.betItem = it;
+    if (!State.targetItem) UI.autoPickTarget(it);
+    UI.renderBetSlot();
+    UI.renderTargetSlot();
+    UI.renderCircle();
+  },
+
+  autoPickTarget: function(betItem) {
+    for (var i = 0; i < State.items.length; i++) {
+      if (State.items[i].price > betItem.price) {
+        State.targetItem = State.items[i];
+        State.multiplier = Math.min(100, Math.max(1.1, State.items[i].price / betItem.price));
+        UI.renderMultipliers();
+        return;
+      }
+    }
+  },
+
+  // ---------- Выбор предмета ----------
+  openBetPicker: function() {
+    if (State.spinning || State.betItem) return;
+
+    var html = '<div class="items-grid">';
+    var hasItems = false;
+
+    for (var id in State.inventory) {
+      if (!State.inventory.hasOwnProperty(id)) continue;
+      if (State.inventory[id] <= 0) continue;
+      var it = State.findItem(id);
+      if (!it) continue;
+      hasItems = true;
+      html +=
+        '<div class="item-card rarity-' + it.rarity + '" data-id="' + id + '">' +
+          '<div class="item-count">' + State.inventory[id] + '</div>' +
+          '<div class="item-icon">' + it.icon + '</div>' +
+          '<div class="item-name">' + esc(it.name) + '</div>' +
+          '<div class="item-rarity r-' + it.rarity + '">' + it.rarity.toUpperCase() + '</div>' +
+          '<div class="item-price"><span class="coin">🪙</span> ' + fmt(it.price) + '</div>' +
+        '</div>';
+    }
+
+    if (!hasItems) {
+      html += '<div class="empty" style="grid-column:1/-1;"><span class="empty-icon">🎒</span>Инвентарь пуст</div>';
+    }
+    html += '</div>';
+
+    UI.openModal("🎒 Выбери предмет для ставки", html);
+
+    var cards = document.querySelectorAll('#modalBody .item-card[data-id]');
+    for (var i = 0; i < cards.length; i++) {
+      (function(card) {
+        card.onclick = function() {
+          var itemId = card.getAttribute("data-id");
+          var item = State.findItem(itemId);
+          if (!item) return;
+          if ((State.inventory[item.id] || 0) <= 0) {
+            toast("❌ У тебя нет " + item.name, "error");
+            return;
+          }
+          State.betItem = item;
+          if (!State.targetItem) UI.autoPickTarget(item);
+          UI.renderBetSlot();
+          UI.renderTargetSlot();
+          UI.renderCircle();
+          UI.closeModal();
+        };
+      })(cards[i]);
+    }
+  },
+
+  openTargetPicker: function() {
+    if (State.spinning) return;
+
+    var html = '<div class="items-grid">';
+    for (var i = 0; i < State.items.length; i++) {
+      var it = State.items[i];
+      var disabled = State.betItem && it.price <= State.betItem.price;
+      html +=
+        '<div class="item-card rarity-' + it.rarity + '" data-id="' + it.id + '" ' +
+        (disabled ? 'style="opacity:.35;pointer-events:none;"' : '') + '>' +
+          '<div class="item-icon">' + it.icon + '</div>' +
+          '<div class="item-name">' + esc(it.name) + '</div>' +
+          '<div class="item-rarity r-' + it.rarity + '">' + it.rarity.toUpperCase() + '</div>' +
+          '<div class="item-price"><span class="coin">🪙</span> ' + fmt(it.price) + '</div>' +
+        '</div>';
+    }
+    html += '</div>';
+
+    UI.openModal("🎯 Выбери цель апгрейда", html);
+
+    var cards = document.querySelectorAll('#modalBody .item-card[data-id]');
+    for (var j = 0; j < cards.length; j++) {
+      (function(card) {
+        card.onclick = function() {
+          var itemId = card.getAttribute("data-id");
+          var item = State.findItem(itemId);
+          if (!item) return;
+          if (State.betItem && item.price <= State.betItem.price) {
+            toast("⚠️ Цель должна быть дороже ставки", "warn");
+            return;
+          }
+          State.targetItem = item;
+          if (State.betItem) {
+            State.multiplier = Math.min(100, Math.max(1.1, item.price / State.betItem.price));
+            UI.renderMultipliers();
+          }
+          UI.renderTargetSlot();
+          UI.renderCircle();
+          UI.closeModal();
+        };
+      })(cards[j]);
+    }
+  },
+
+  // ---------- Продажа / покупка ----------
+  sellItem: function(id) {
+    var it = State.findItem(id);
+    if (!it || (State.inventory[id] || 0) <= 0) return;
+
+    var price = Math.floor(it.price * 0.7);
+    if (!confirm("Продать " + it.icon + " " + it.name + " за " + fmt(price) + " 🪙?")) return;
+
+    apiCall("/api/upgrade-sell", { nick: State.user.nick, itemId: id }).then(function(d) {
+      if (!d.ok) { toast("❌ " + (d.error || "Ошибка"), "error"); return; }
+      State.balance = d.coins != null ? d.coins : State.balance;
+      State.inventory = d.inventory || {};
+      UI.renderBalance();
+      UI.renderInvBadge();
+      UI.renderInventory();
+      UI.renderQuickBets();
+      toast("💰 Продано за " + fmt(d.sold || price) + " 🪙", "success");
+    });
+  },
+
+  sellAllCommons: function() {
+    var entries = [];
+    for (var id in State.inventory) {
+      if (!State.inventory.hasOwnProperty(id)) continue;
+      if (State.inventory[id] <= 0) continue;
+      var it = State.findItem(id);
+      if (it && it.rarity === "common") entries.push([id, State.inventory[id]]);
+    }
+    if (!entries.length) return;
+
+    var totalPrice = 0, totalCount = 0;
+    entries.forEach(function(e) {
+      var it = State.findItem(e[0]);
+      totalPrice += Math.floor(it.price * 0.7) * e[1];
+      totalCount += e[1];
+    });
+
+    if (!confirm("Продать все Common предметы?\n\n" + totalCount + " шт. за " + fmt(totalPrice) + " 🪙")) return;
+
+    var promise = Promise.resolve();
+    entries.forEach(function(e) {
+      for (var i = 0; i < e[1]; i++) {
+        promise = promise.then(function(id) {
+          return apiCall("/api/upgrade-sell", { nick: State.user.nick, itemId: id }).then(function(d) {
+            if (d.ok) {
+              State.balance = d.coins != null ? d.coins : State.balance;
+              State.inventory = d.inventory || {};
+            }
+          });
+        }.bind(null, e[0]));
+      }
+    });
+
+    promise.then(function() {
+      UI.renderBalance();
+      UI.renderInvBadge();
+      UI.renderInventory();
+      UI.renderQuickBets();
+      toast("💰 Продано " + totalCount + " шт. за " + fmt(totalPrice) + " 🪙", "success");
+    });
+  },
+
+  buyItem: function(id) {
+    var it = State.findItem(id);
+    if (!it) return;
+    if (State.balance < it.price) { toast("❌ Недостаточно монет", "error"); return; }
+    if (!confirm("Купить " + it.icon + " " + it.name + " за " + fmt(it.price) + " 🪙?")) return;
+
+    apiCall("/api/upgrade-buy", { nick: State.user.nick, itemId: id }).then(function(d) {
+      if (!d.ok) { toast("❌ " + (d.error || "Ошибка"), "error"); return; }
+      State.balance = d.coins != null ? d.coins : State.balance;
+      State.inventory = d.inventory || {};
+      UI.renderBalance();
+      UI.renderInvBadge();
+      UI.renderShop();
+      UI.renderQuickBets();
+      toast("✅ Куплен " + it.icon + " " + it.name, "success");
+    });
+  },
+
+  // ---------- Результат ----------
+  showResult: function(type, from, to) {
+    var card = $("resultCard");
+    var emoji = $("resultEmoji");
+    var title = $("resultTitle");
+    var sub = $("resultSub");
+    var reward = $("resultReward");
+
+    card.className = "result-card " + type;
+    emoji.className = "result-emoji " + type;
+    title.className = "result-title " + type;
+
+    if (type === "win" || type === "jackpot") {
+      emoji.textContent = type === "jackpot" ? "💎" : "🎉";
+      title.textContent = type === "jackpot" ? "ДЖЕКПОТ!" : "ПОБЕДА!";
+      sub.textContent = "Ты апгрейднул " + from.name + " до " + to.name + "!";
+      reward.innerHTML = '<span class="icon">' + from.icon + '</span> → <span class="icon">' + to.icon + '</span> · <span class="green">+' + fmt(to.price) + ' 🪙</span>';
+      UI.spawnConfetti();
+    } else {
+      emoji.textContent = "💀";
+      title.textContent = "ПРОИГРЫШ";
+      sub.textContent = "Предмет " + from.name + " сгорел";
+      reward.innerHTML = '<span class="icon">' + from.icon + '</span> → <span class="red">−' + fmt(from.price) + ' 🪙</span>';
+    }
+
+    var overlay = $("resultOverlay");
+    if (overlay) overlay.classList.add("on");
+  },
+
+  closeResult: function() {
+    var overlay = $("resultOverlay");
+    if (overlay) overlay.classList.remove("on");
+  },
+
+  spawnConfetti: function() {
+    var box = $("confetti");
+    if (!box) return;
+    box.innerHTML = "";
+    var colors = ["#d4af37", "#4ade80", "#f6e6a8", "#f59e0b", "#60a5fa", "#a855f7"];
+    for (var i = 0; i < 50; i++) {
+      var p = document.createElement("div");
+      p.className = "confetti-piece";
+      p.style.left = Math.random() * 100 + "%";
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.animationDelay = Math.random() * 0.5 + "s";
+      p.style.animationDuration = (2.5 + Math.random() * 2) + "s";
+      box.appendChild(p);
+    }
+  }
+};
+
+// Добавляем findItem в State
+State.findItem = function(id) {
+  for (var i = 0; i < this.items.length; i++) {
+    if (this.items[i].id === id) return this.items[i];
+  }
+  return null;
+};
+
+// ============================================================
+// ЛОГИКА АПГРЕЙДА
+// ============================================================
+function doUpgrade() {
+  if (State.spinning) return;
+  if (!State.betItem || !State.targetItem) {
+    toast("⚠️ Выбери предмет и цель", "warn");
+    return;
+  }
+  if (!State.user || !State.user.nick) {
+    toast("❌ Не авторизован", "error");
+    return;
+  }
+  if ((State.inventory[State.betItem.id] || 0) <= 0) {
+    toast("❌ У тебя нет " + State.betItem.name, "error");
+    return;
+  }
+
+  State.spinning = true;
+  UI.renderSpinBtn();
+
+  var betItem = State.betItem;
+  var targetItem = State.targetItem;
+  var multiplier = State.multiplier;
+  var chance = Math.min((100 / multiplier) * 0.95, 95);
+
+  // Отправляем запрос
+  var spinPromise = apiCall("/api/upgrade-spin", {
+    nick: State.user.nick,
+    betItemId: betItem.id,
+    targetItemId: targetItem.id,
+    multiplier: multiplier
+  });
+
+  // Анимация
+  var pointer = $("circlePointer");
+  pointer.classList.remove("win", "lose", "spinning");
+  pointer.style.transform = "translateX(-50%) rotate(0deg)";
+
+  var randomSpin = 360 * 4 + Math.random() * 360;
+  setTimeout(function() {
+    pointer.classList.add("spinning");
+    pointer.style.transform = "translateX(-50%) rotate(" + randomSpin + "deg)";
+  }, 50);
+
+  // Ждём результат
+  spinPromise.then(function(result) {
+    setTimeout(function() {
+      State.spinning = false;
+      pointer.classList.remove("spinning");
+
+      if (!result || !result.ok) {
+        toast("❌ " + (result && result.error || "Ошибка сервера"), "error");
+        UI.renderSpinBtn();
+        return;
+      }
+
+      var isWin = result.win;
+      var isJackpot = isWin && multiplier >= 25;
+
+      // Обновляем состояние
+      if (result.inventory) State.inventory = result.inventory;
+      if (typeof result.coins === "number") State.balance = result.coins;
+
+      // Точное позиционирование
+      var winZoneAngle = (chance / 100) * 360;
+      var targetAngle = isWin
+        ? Math.random() * winZoneAngle
+        : winZoneAngle + Math.random() * (360 - winZoneAngle);
+      var finalAngle = 360 - targetAngle;
+
+      pointer.classList.add(isWin ? "win" : "lose");
+      pointer.style.transform = "translateX(-50%) rotate(" + (360 * 4 + finalAngle) + "deg)";
+
+      // Записываем в историю
+      State.history.unshift({
+        id: Date.now().toString(36),
+        ts: Date.now(),
+        betItemId: betItem.id,
+        targetItemId: targetItem.id,
+        multiplier: multiplier,
+        win: isWin
+      });
+      if (State.history.length > 500) State.history.length = 500;
+
+      // Показываем результат
+      setTimeout(function() {
+        UI.showResult(isJackpot ? "jackpot" : (isWin ? "win" : "lose"), betItem, targetItem);
+
+        if (isWin) {
+          toast("🎉 ПОБЕДА! Получен " + targetItem.icon + " " + targetItem.name, "success");
+        } else {
+          toast("💀 Проигрыш. Потерян " + betItem.icon + " " + betItem.name, "error");
+        }
+
+        UI.renderBalance();
+        UI.renderInvBadge();
+        UI.renderInventory();
+        UI.renderQuickBets();
+
+        // Сброс ставки
+        State.betItem = null;
+        State.targetItem = null;
+        UI.renderBetSlot();
+        UI.renderTargetSlot();
+        UI.renderCircle();
+
+        if (State.currentTab === "history") UI.renderHistory();
+        if (State.currentTab === "profile") UI.renderProfile();
+      }, 300);
+    }, SPIN_DURATION);
+  });
+}
+
+// ============================================================
+// ЗАГРУЗКА ДАННЫХ
+// ============================================================
+function loadItems() {
+  return apiGet("/api/upgrade-items").then(function(d) {
+    if (d.ok && Array.isArray(d.items)) {
+      State.items = d.items;
+    } else {
+      State.items = getDefaultItems();
+    }
+    return true;
+  });
+}
+
+function getDefaultItems() {
+  return [
+    { id: "coin_1", icon: "🪙", name: "Монетка", price: 100, rarity: "common" },
+    { id: "coin_2", icon: "💰", name: "Мешочек монет", price: 500, rarity: "common" },
+    { id: "gem_1", icon: "💎", name: "Кристалл", price: 1000, rarity: "rare" },
+    { id: "gem_2", icon: "🔮", name: "Магический шар", price: 2500, rarity: "rare" },
+    { id: "sword_1", icon: "⚔️", name: "Стальной меч", price: 5000, rarity: "epic" },
+    { id: "shield_1", icon: "🛡️", name: "Золотой щит", price: 10000, rarity: "epic" },
+    { id: "crown_1", icon: "👑", name: "Корона", price: 25000, rarity: "legendary" },
+    { id: "dragon_1", icon: "🐉", name: "Дракон", price: 50000, rarity: "legendary" },
+    { id: "trophy_1", icon: "🏆", name: "Кубок", price: 100000, rarity: "legendary" }
+  ];
+}
+
+function loadProfile() {
+  var nick = getNick();
+  if (!nick) return Promise.resolve(false);
+
+  State.user = { nick: nick };
+
+  return apiCall("/api/upgrade-history", { nick: nick }).then(function(d) {
+    if (!d.ok) {
+      toast("⚠️ Не удалось загрузить профиль", "error");
+      return false;
+    }
+
+    State.balance = d.coins || 0;
+    State.inventory = d.inventory || {};
+    State.history = Array.isArray(d.history) ? d.history : [];
+
+    return true;
+  });
 }
 
 // ============================================================
 // ИНИЦИАЛИЗАЦИЯ
 // ============================================================
-document.addEventListener("DOMContentLoaded", async function () {
-  // Загружаем настройки
-  loadSettings();
+function init() {
+  // Рисуем тики на круге
+  var g = $("ticks");
+  if (g) {
+    for (var i = 0; i < 60; i++) {
+      var angle = (i * 360 / 60) * Math.PI / 180;
+      var isMajor = i % 5 === 0;
+      var r1 = isMajor ? 92 : 96;
+      var r2 = 100;
+      var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", 120 + Math.cos(angle) * r1);
+      line.setAttribute("y1", 120 + Math.sin(angle) * r1);
+      line.setAttribute("x2", 120 + Math.cos(angle) * r2);
+      line.setAttribute("y2", 120 + Math.sin(angle) * r2);
+      line.setAttribute("class", "circle-tick" + (isMajor ? " major" : ""));
+      g.appendChild(line);
+    }
+  }
 
-  // Рисуем тики
-  drawTicks();
-
-  // Загружаем предметы и настройки
-  await loadItems();
-  await loadConfig();
-
-  // Загружаем профиль
-  await loadProfile();
-
-  // Обновляем шапку
-  updateHeaderStats();
-
-  // Запускаем авто-обновление
-  startAutoRefresh();
-
-  // === Обработчики ===
+  // ===== ОБРАБОТЧИКИ КНОПОК =====
 
   // Навигация
-  $$(".nav-btn").forEach(function (b) {
-    b.addEventListener("click", function () {
-      switchTab(b.dataset.tab);
-    });
-  });
+  var navBtns = document.querySelectorAll(".nav-btn");
+  for (var i = 0; i < navBtns.length; i++) {
+    (function(btn) {
+      btn.addEventListener("click", function() {
+        var tab = btn.getAttribute("data-tab");
+        if (tab) UI.switchTab(tab);
+      });
+    })(navBtns[i]);
+  }
 
-  // Пресеты множителей
-  $$(".mult-btn").forEach(function (b) {
-    b.addEventListener("click", function () {
-      if (state.spinning) return;
-      state.multiplier = parseFloat(b.dataset.mult);
-      updateMultiplierUI();
-      updateChance();
-      playClick();
-    });
-  });
+  // Множители
+  var multBtns = document.querySelectorAll(".mult-btn");
+  for (var j = 0; j < multBtns.length; j++) {
+    (function(btn) {
+      btn.addEventListener("click", function() {
+        if (State.spinning) return;
+        State.multiplier = parseFloat(btn.getAttribute("data-mult"));
+        UI.renderMultipliers();
+        UI.renderCircle();
+      });
+    })(multBtns[j]);
+  }
 
   // Слайдер
   var slider = $("multSlider");
   if (slider) {
-    slider.addEventListener("input", function () {
-      if (state.spinning) return;
-      state.multiplier = parseFloat(slider.value);
-      $$(".mult-btn").forEach(function (b) { b.classList.remove("active"); });
-      updateSliderValue();
-      updateChance();
-    });
-    slider.addEventListener("change", function () {
-      playClick();
+    slider.addEventListener("input", function() {
+      if (State.spinning) return;
+      State.multiplier = parseFloat(slider.value);
+      var btns = document.querySelectorAll(".mult-btn");
+      for (var k = 0; k < btns.length; k++) btns[k].classList.remove("active");
+      UI.renderSliderValue();
+      UI.renderCircle();
     });
   }
 
   // Кнопка крутить
   var spinBtn = $("spinBtn");
-  if (spinBtn) spinBtn.addEventListener("click", function () {
-    if (window.doUpgrade) window.doUpgrade();
-  });
+  if (spinBtn) spinBtn.addEventListener("click", doUpgrade);
 
-  // Закрытие модалки
+  // Фильтр магазина
+  var shopFilter = $("shopFilter");
+  if (shopFilter) shopFilter.addEventListener("change", UI.renderShop);
+
+  // Модалка: закрытие по фону
   var modal = $("modal");
-  if (modal) modal.addEventListener("click", function (e) {
-    if (e.target === modal) closeModal();
-  });
-
-  // Результат — закрытие
-  var resultOv = $("resultOverlay");
-  if (resultOv) resultOv.addEventListener("click", function (e) {
-    if (e.target === resultOv) closeResult();
-  });
-
-  // Звук — вкл/выкл
-  var soundEl = $("soundEnabled");
-  if (soundEl) {
-    soundEl.checked = state.settings.soundEnabled;
-    soundEl.addEventListener("change", function () {
-      state.settings.soundEnabled = soundEl.checked;
-      saveSettings();
-      if (soundEl.checked) playClick();
-    });
-  }
-  var volEl = $("volumeSlider");
-  var volVal = $("volumeValue");
-  if (volEl) {
-    volEl.value = state.settings.volume * 100;
-    if (volVal) volVal.textContent = Math.round(state.settings.volume * 100) + "%";
-    volEl.addEventListener("input", function () {
-      state.settings.volume = parseInt(volEl.value, 10) / 100;
-      if (volVal) volVal.textContent = volEl.value + "%";
-      saveSettings();
+  if (modal) {
+    modal.addEventListener("click", function(e) {
+      if (e.target === modal) UI.closeModal();
     });
   }
 
-  // Первое обновление множителя
-  updateMultiplierUI();
-
-  // Приветствие
-  console.log("[Artamon Upgrader v2.0] загружен. Юзер:", state.user ? state.user.nick : "нет");
-});
-
-// Экспорт в window
-window.closeModal = closeModal;
-window.closeResult = closeResult;
-window.openBetPicker = openBetPicker;
-window.openTargetPicker = openTargetPicker;
-window.removeBet = removeBet;
-window.removeTarget = removeTarget;
-window.switchTab = switchTab;
-window.showProfile = showProfile;
-window.findItem = findItem;
-window.playClick = playClick;
-window.playSpin = playSpin;
-window.playWin = playWin;
-window.playLose = playLose;
-window.playJackpot = playJackpot;
-window.initAudio = initAudio;
-window.updateBalance = updateBalance;
-</script>
-
-<script>
-// ============================================================
-// ARTAMON UPGRADER v2.0 — ЧАСТЬ 3/3 (ФИНАЛ)
-// ============================================================
-
-// ============================================================
-// ГЛАВНАЯ ЛОГИКА — КРУЧЕНИЕ
-// ============================================================
-async function doUpgrade() {
-  if (state.spinning) return;
-  if (!state.betItem || !state.targetItem) {
-    toast("⚠️ Выбери предмет и цель", "warn");
-    return;
-  }
-  if (!state.user || !state.user.nick) {
-    toast("❌ Не авторизован", "error");
-    return;
-  }
-  if ((state.inventory[state.betItem.id] || 0) <= 0) {
-    toast("❌ У тебя нет " + state.betItem.name, "error");
-    return;
+  // Результат: закрытие по фону
+  var resultOverlay = $("resultOverlay");
+  if (resultOverlay) {
+    resultOverlay.addEventListener("click", function(e) {
+      if (e.target === resultOverlay) UI.closeResult();
+    });
   }
 
-  initAudio();
-  state.spinning = true;
-  updateSpinBtn();
-
-  var betItem = state.betItem;
-  var targetItem = state.targetItem;
-  var chance = calculateChance();
-
-  // Отправляем запрос в воркер ПАРАЛЛЕЛЬНО с анимацией
-  var spinPromise = apiCall("/api/upgrade-spin", {
-    nick: state.user.nick,
-    betItemId: betItem.id,
-    targetItemId: targetItem.id,
-    multiplier: state.multiplier,
-  });
-
-  // Запускаем звук
-  playSpin();
-
-  // Анимация указателя
-  var pointer = $("circlePointer");
-  pointer.classList.remove("win", "lose", "spinning");
-  pointer.style.transform = "translateX(-50%) rotate(0deg)";
-
-  // Случайный угол для анимации (визуальный — настоящий результат с сервера)
-  var randomSpin = 360 * 4 + Math.random() * 360;
-  setTimeout(function () {
-    pointer.classList.add("spinning");
-    pointer.style.transform = "translateX(-50%) rotate(" + randomSpin + "deg)";
-  }, 50);
-
-  // Трейл после указателя
-  startPointerTrail(pointer);
-
-  // Ждём результат с сервера
-  var result = null;
-  try {
-    result = await spinPromise;
-  } catch (e) {
-    state.spinning = false;
-    stopPointerTrail();
-    updateSpinBtn();
-    toast("❌ Ошибка сети", "error");
-    return;
+  // Аватар — переход на профиль
+  var avatar = $("userAvatar");
+  if (avatar) {
+    avatar.addEventListener("click", function() { UI.switchTab("profile"); });
   }
 
-  // Через 4.5 секунды (пока идёт анимация) — показываем результат
-  setTimeout(function () {
-    state.spinning = false;
-    stopPointerTrail();
-    pointer.classList.remove("spinning");
+  // Баланс — инфо
+  var balanceBox = $("balanceBox");
+  if (balanceBox) {
+    balanceBox.addEventListener("click", function() {
+      UI.openModal("🪙 Монеты",
+        '<div style="text-align:center;padding:20px 0;">' +
+          '<div style="font-size:2.5rem;margin-bottom:12px;">🪙</div>' +
+          '<div style="font-size:2rem;font-weight:900;color:var(--gold-bright);font-family:ui-monospace,monospace;margin-bottom:8px;">' + fmt(State.balance) + '</div>' +
+          '<div style="font-size:.85rem;color:var(--txt-2);line-height:1.6;">' +
+            'Монеты можно получить:<br>• Продавая предметы<br>• Выигрывая апгрейды' +
+          '</div>' +
+        '</div>'
+      );
+    });
+  }
 
-    if (!result || !result.ok) {
-      toast("❌ " + (result && result.error || "Ошибка"), "error");
-      updateSpinBtn();
+  // ===== ЗАГРУЗКА ДАННЫХ =====
+  loadItems().then(function() {
+    return loadProfile();
+  }).then(function(ok) {
+    if (!ok) {
+      // Показываем экран "войди через игру"
+      var app = $("app");
+      if (app) {
+        app.innerHTML =
+          '<div style="text-align:center;padding:80px 20px;max-width:500px;margin:0 auto;">' +
+            '<div style="font-size:4rem;margin-bottom:20px;">🔐</div>' +
+            '<div style="font-size:1.4rem;font-weight:900;color:var(--gold-bright);margin-bottom:12px;">Войди через игру</div>' +
+            '<div style="font-size:.9rem;color:var(--txt-2);line-height:1.6;margin-bottom:24px;">' +
+              'Открой апгрейдер через кнопку <b style="color:var(--gold);">🎰 Upgrader</b> в игре Artamon<br>' +
+              'Или добавь <b>?nick=ТвойНик</b> в URL' +
+            '</div>' +
+            '<a href="index_v4.html" style="display:inline-block;padding:14px 28px;background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:#0a0a0a;border-radius:12px;text-decoration:none;font-weight:900;">← Вернуться в игру</a>' +
+          '</div>';
+      }
       return;
     }
 
-    var isWin = result.win;
-    var isJackpot = isWin && state.multiplier >= 25;
+    // Полный рендер
+    UI.renderAll();
 
-    // Обновляем локальное состояние из ответа
-    if (result.inventory) state.inventory = result.inventory;
-    if (typeof result.bonusPercent !== "undefined") {
-      state.bonusPercent = result.bonusPercent;
-    }
+    // Пинг
+    var t0 = Date.now();
+    fetch(API_URL + "/api/tech-status", { cache: "no-store" })
+      .then(function() {
+        var ping = Date.now() - t0;
+        var pingEl = $("pingValue");
+        if (pingEl) pingEl.textContent = ping + " мс";
+      })
+      .catch(function() {
+        var pingEl = $("pingValue");
+        if (pingEl) pingEl.textContent = "— мс";
+      });
 
-    // Точное позиционирование указателя
-    var winZoneAngle = (chance / 100) * 360; // угол зелёной зоны
-    var targetAngle = isWin
-      ? Math.random() * winZoneAngle
-      : winZoneAngle + Math.random() * (360 - winZoneAngle);
-    // Указатель снизу (270°) — нужно совместить с началом зоны (справа от 12 часов)
-    var finalAngle = 360 - targetAngle;
-
-    pointer.classList.add(isWin ? "win" : "lose");
-    pointer.style.transform = "translateX(-50%) rotate(" + (360 * 4 + finalAngle) + "deg)";
-
-    // Проигрываем звук
-    if (isWin) {
-      if (isJackpot) playJackpot();
-      else playWin();
-    } else {
-      playLose();
-    }
-
-    // Показываем результат
-    setTimeout(function () {
-      showResult(isJackpot ? "jackpot" : (isWin ? "win" : "lose"), betItem, targetItem);
-
-      if (isWin) {
-        toast("🎉 ПОБЕДА! Получен " + targetItem.icon + " " + targetItem.name, "success");
-      } else {
-        toast("💀 Проигрыш. Потерян " + betItem.icon + " " + betItem.name, "error");
-      }
-
-      // Обновляем UI
-      updateBalance();
-      updateInventoryBadge();
-
-      // Очищаем ставку
-      state.betItem = null;
-      state.targetItem = null;
-      renderBetSlot();
-      renderTargetSlot();
-      updateChance();
-      updateSpinBtn();
-
-      // Обновляем быстрые ставки
-      updateQuickBets();
-
-      // Обновляем историю
-      if (state.currentTab === "history") renderHistory();
-      if (state.currentTab === "inventory") renderInventory();
-      if (state.currentTab === "profile") renderProfile();
-
-      // Обновляем статистику
-      refreshProfile();
-    }, 300);
-  }, 4500);
-}
-
-// ============================================================
-// ТРЕЙЛ ЗА УКАЗАТЕЛЕМ
-// ============================================================
-var trailInterval = null;
-function startPointerTrail(pointer) {
-  if (trailInterval) clearInterval(trailInterval);
-  var wrap = pointer.parentElement;
-  trailInterval = setInterval(function () {
-    if (!state.spinning) return;
-    var rect = pointer.getBoundingClientRect();
-    var wrapRect = wrap.getBoundingClientRect();
-    var trail = document.createElement("div");
-    trail.className = "pointer-trail";
-    trail.style.left = (rect.left - wrapRect.left + rect.width / 2) + "px";
-    trail.style.top = (rect.top - wrapRect.top + rect.height / 2) + "px";
-    wrap.appendChild(trail);
-    setTimeout(function () { if (trail.parentNode) trail.parentNode.removeChild(trail); }, 600);
-  }, 80);
-}
-function stopPointerTrail() {
-  if (trailInterval) { clearInterval(trailInterval); trailInterval = null; }
-}
-
-// ============================================================
-// ОБНОВЛЕНИЕ БАЛАНСА И ИНВЕНТАРЯ
-// ============================================================
-async function refreshProfile() {
-  if (!state.user || !state.user.nick) return;
-  var d = await apiCall("/api/upgrade-history", { nick: state.user.nick });
-  if (d.ok) {
-    state.balance = d.coins || 0;
-    state.inventory = d.inventory || {};
-    state.history = d.history || [];
-    updateBalance();
-    updateInventoryBadge();
-  }
-}
-
-function updateInventoryBadge() {
-  var total = Object.keys(state.inventory).reduce(function (a, k) { return a + state.inventory[k]; }, 0);
-  var badge = $("invBadge");
-  if (badge) badge.textContent = total;
-}
-
-// ============================================================
-// БЫСТРЫЕ СТАВКИ
-// ============================================================
-function updateQuickBets() {
-  var box = $("quickBets");
-  var list = $("quickBetsList");
-  if (!box || !list) return;
-
-  var entries = Object.keys(state.inventory).filter(function (id) { return state.inventory[id] > 0; });
-  if (!entries.length) { box.style.display = "none"; return; }
-
-  // Берём 3 самых дорогих предмета
-  entries.sort(function (a, b) {
-    var ia = findItem(a), ib = findItem(b);
-    return (ib ? ib.price : 0) - (ia ? ia.price : 0);
-  });
-
-  var top = entries.slice(0, 3);
-  list.innerHTML = "";
-  top.forEach(function (id) {
-    var item = findItem(id);
-    if (!item) return;
-    var btn = document.createElement("button");
-    btn.className = "quick-bet";
-    btn.textContent = item.icon;
-    btn.title = item.name + " (" + formatMoney(item.price) + " 🪙)";
-    btn.addEventListener("click", function () {
-      if (state.spinning) return;
-      state.betItem = item;
-      if (!state.targetItem) autoPickTarget(item);
-      renderBetSlot();
-      renderTargetSlot();
-      updateChance();
-      playClick();
-    });
-    list.appendChild(btn);
-  });
-  box.style.display = "flex";
-}
-
-// ============================================================
-// ИНВЕНТАРЬ
-// ============================================================
-function renderInventory() {
-  var grid = $("inventoryGrid");
-  if (!grid) return;
-
-  var entries = Object.keys(state.inventory).filter(function (id) { return state.inventory[id] > 0; });
-  if ($("invCount")) {
-    var total = entries.reduce(function (a, id) { return a + state.inventory[id]; }, 0);
-    $("invCount").textContent = "Всего: " + total + " шт.";
-  }
-
-  if (!entries.length) {
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1;"><span class="empty-icon">🎒</span>Инвентарь пуст<br><br>Купи предметы в магазине или выиграй в апгрейде</div>';
-    var btn = $("sellCommonsBtn");
-    if (btn) btn.style.display = "none";
-    return;
-  }
-
-  // Проверяем, есть ли common предметы для продажи
-  var hasCommons = entries.some(function (id) {
-    var item = findItem(id);
-    return item && item.rarity === "common";
-  });
-  var sellBtn = $("sellCommonsBtn");
-  if (sellBtn) sellBtn.style.display = hasCommons ? "inline-flex" : "none";
-
-  grid.innerHTML = "";
-  entries.forEach(function (id) {
-    var item = findItem(id);
-    if (!item) return;
-    var count = state.inventory[id];
-    var card = document.createElement("div");
-    card.className = "item-card rarity-" + item.rarity;
-    card.innerHTML =
-      '<div class="item-count">' + count + '</div>' +
-      '<div class="item-icon">' + item.icon + '</div>' +
-      '<div class="item-name">' + escapeHtml(item.name) + '</div>' +
-      '<div class="item-rarity r-' + item.rarity + '">' + rarityShort(item.rarity) + '</div>' +
-      '<div class="item-price"><span class="coin">🪙</span> ' + formatMoney(item.price) + '</div>' +
-      '<button class="item-sell-btn" data-sell="' + id + '">+ ' + formatMoney(Math.floor(item.price * 0.7)) + ' 🪙</button>';
-    grid.appendChild(card);
-  });
-
-  grid.querySelectorAll("[data-sell]").forEach(function (btn) {
-    btn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      sellItem(btn.getAttribute("data-sell"));
-    });
-  });
-}
-
-async function sellItem(id) {
-  var item = findItem(id);
-  if (!item) return;
-  if ((state.inventory[id] || 0) <= 0) return;
-  var price = Math.floor(item.price * 0.7);
-  if (!confirm("Продать " + item.icon + " " + item.name + " за " + formatMoney(price) + " 🪙?")) return;
-
-  var d = await apiCall("/api/upgrade-sell", { nick: state.user.nick, itemId: id });
-  if (!d.ok) {
-    toast("❌ " + (d.error || "Ошибка"), "error");
-    return;
-  }
-  state.balance = d.coins;
-  state.inventory = d.inventory || {};
-  updateBalance();
-  updateInventoryBadge();
-  renderInventory();
-  updateQuickBets();
-  playWin();
-  toast("💰 Продано за " + formatMoney(d.sold || price) + " 🪙", "success");
-}
-
-async function sellAllCommons() {
-  var entries = Object.keys(state.inventory).filter(function (id) {
-    var item = findItem(id);
-    return item && item.rarity === "common" && state.inventory[id] > 0;
-  });
-  if (!entries.length) return;
-
-  var totalPrice = 0;
-  var totalCount = 0;
-  entries.forEach(function (id) {
-    var item = findItem(id);
-    totalPrice += Math.floor(item.price * 0.7) * state.inventory[id];
-    totalCount += state.inventory[id];
-  });
-
-  if (!confirm("Продать все Common предметы?\n\n" + totalCount + " шт. за " + formatMoney(totalPrice) + " 🪙")) return;
-
-  showLoader(true);
-  for (var i = 0; i < entries.length; i++) {
-    var id = entries[i];
-    var count = state.inventory[id];
-    for (var j = 0; j < count; j++) {
-      var d = await apiCall("/api/upgrade-sell", { nick: state.user.nick, itemId: id });
-      if (!d.ok) break;
-      state.balance = d.coins;
-      state.inventory = d.inventory || {};
-    }
-  }
-  showLoader(false);
-  updateBalance();
-  updateInventoryBadge();
-  renderInventory();
-  updateQuickBets();
-  playWin();
-  toast("💰 Продано " + totalCount + " шт. за " + formatMoney(totalPrice) + " 🪙", "success");
-}
-
-// ============================================================
-// МАГАЗИН
-// ============================================================
-function renderShop() {
-  var grid = $("shopGrid");
-  if (!grid) return;
-  var filter = ($("shopFilter") && $("shopFilter").value) || "all";
-
-  var list = state.items.slice();
-  if (filter !== "all") list = list.filter(function (i) { return i.rarity === filter; });
-
-  if (!list.length) {
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1;">Ничего не найдено</div>';
-    return;
-  }
-
-  grid.innerHTML = "";
-  list.forEach(function (item) {
-    var canBuy = state.balance >= item.price;
-    var card = document.createElement("div");
-    card.className = "item-card rarity-" + item.rarity;
-    if (!canBuy) card.style.opacity = ".5";
-    card.innerHTML =
-      '<div class="item-icon">' + item.icon + '</div>' +
-      '<div class="item-name">' + escapeHtml(item.name) + '</div>' +
-      '<div class="item-rarity r-' + item.rarity + '">' + rarityShort(item.rarity) + '</div>' +
-      '<div class="item-price"><span class="coin">🪙</span> ' + formatMoney(item.price) + '</div>';
-    card.addEventListener("click", function () {
-      buyItem(item);
-    });
-    grid.appendChild(card);
-  });
-}
-
-async function buyItem(item) {
-  if (!state.user || !state.user.nick) return;
-  if (state.balance < item.price) {
-    toast("❌ Недостаточно монет", "error");
-    return;
-  }
-  if (!confirm("Купить " + item.icon + " " + item.name + " за " + formatMoney(item.price) + " 🪙?")) return;
-
-  var d = await apiCall("/api/upgrade-buy", { nick: state.user.nick, itemId: item.id });
-  if (!d.ok) {
-    toast("❌ " + (d.error || "Ошибка"), "error");
-    return;
-  }
-  state.balance = d.coins;
-  state.inventory = d.inventory || {};
-  updateBalance();
-  updateInventoryBadge();
-  renderShop();
-  updateQuickBets();
-  playWin();
-  toast("✅ Куплен " + item.icon + " " + item.name, "success");
-}
-
-// ============================================================
-// ИСТОРИЯ
-// ============================================================
-function renderHistory() {
-  var box = $("historyList");
-  if (!box) return;
-
-  var list = state.history.slice();
-  var filter = state.historyFilter;
-  if (filter === "win") list = list.filter(function (h) { return h.win; });
-  else if (filter === "lose") list = list.filter(function (h) { return !h.win; });
-  else if (filter === "big") list = list.filter(function (h) {
-    var item = findItem(h.to || h.targetItemId);
-    return item && item.price >= 10000;
-  });
-
-  if (!list.length) {
-    box.innerHTML = '<div class="empty"><span class="empty-icon">📜</span>История пуста</div>';
-    return;
-  }
-
-  box.innerHTML = "";
-  list.slice(0, 100).forEach(function (h) {
-    var fromId = h.from || h.betItemId;
-    var toId = h.to || h.targetItemId;
-    var fromItem = findItem(fromId);
-    var toItem = findItem(toId);
-    if (!fromItem || !toItem) return;
-
-    var el = document.createElement("div");
-    el.className = "history-item " + (h.win ? "win" : "lose");
-    el.innerHTML =
-      '<div class="history-icons">' +
-        '<span>' + fromItem.icon + '</span>' +
-        '<span class="history-arrow">→</span>' +
-        '<span>' + toItem.icon + '</span>' +
-      '</div>' +
-      '<div class="history-info">' +
-        '<div class="history-title">' + escapeHtml(fromItem.name) + ' → ' + escapeHtml(toItem.name) + '</div>' +
-        '<div class="history-meta">' +
-          '<span>x' + (h.mult || h.multiplier || 0).toFixed(2) + '</span>' +
-          '<span>' + timeAgo(h.ts) + '</span>' +
-        '</div>' +
-      '</div>' +
-      '<div class="history-result ' + (h.win ? "win" : "lose") + '">' +
-        (h.win ? "WIN" : "LOSE") +
-      '</div>';
-    box.appendChild(el);
+    console.log("[Upgrader] ✅ Инициализация завершена. Ник:", State.user.nick);
+  }).catch(function(err) {
+    console.error("[Upgrader] ❌ Ошибка:", err);
+    toast("❌ Ошибка загрузки: " + err.message, "error");
   });
 }
 
 // ============================================================
-// ТОП-10 (на основе истории игрока — общий топ через воркер не доступен)
+// ЭКСПОРТ В WINDOW (нужно для inline onclick)
 // ============================================================
-function renderTop() {
-  var box = $("topList");
-  if (!box) return;
+window.UI = UI;
+window.State = State;
 
-  // Строим топ из своей истории (у нас нет общего топа)
-  // Оставим только свой профит
-  var wins = 0, loses = 0, profit = 0;
-  state.history.forEach(function (h) {
-    if (h.win) {
-      wins++;
-      var item = findItem(h.to || h.targetItemId);
-      if (item) profit += item.price;
-    } else {
-      loses++;
-      var item2 = findItem(h.from || h.betItemId);
-      if (item2) profit -= item2.price;
-    }
-  });
-
-  // Показываем свой профиль как топ-1
-  box.innerHTML = '';
-  var topItem = document.createElement("div");
-  topItem.className = "top-item rank-1";
-  topItem.innerHTML =
-    '<div class="rank">🥇</div>' +
-    '<div class="nick">' + escapeHtml(state.user ? state.user.nick : "?") + ' <span style="color:var(--txt-3);font-size:.7rem;">(ты)</span></div>' +
-    '<div class="value">' + (profit >= 0 ? "+" : "") + formatMoney(profit) + ' 🪙</div>';
-  box.appendChild(topItem);
-
-  var t2 = document.createElement("div");
-  t2.className = "top-item";
-  t2.innerHTML = '<div class="rank">—</div><div class="nick" style="color:var(--txt-3);">Общий топ появится позже</div><div class="value">—</div>';
-  box.appendChild(t2);
-
-  var t3 = document.createElement("div");
-  t3.className = "top-item";
-  t3.innerHTML = '<div class="rank">—</div><div class="nick" style="color:var(--txt-3);">Общий топ появится позже</div><div class="value">—</div>';
-  box.appendChild(t3);
+// ============================================================
+// СТАРТ
+// ============================================================
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
 }
 
-function switchTop(mode) {
-  state.topMode = mode;
-  if ($("topWinsBtn")) $("topWinsBtn").classList.toggle("active", mode === "wins");
-  if ($("topProfitBtn")) $("topProfitBtn").classList.toggle("active", mode === "profit");
-  renderTop();
-}
-
-// ============================================================
-// ДОСТИЖЕНИЯ
-// ============================================================
-var ACHIEVEMENTS = [
-  { id: "first_upgrade", icon: "🎯", name: "Первый апгрейд", desc: "Сделай первый апгрейд" },
-  { id: "first_win", icon: "🎉", name: "Первая победа", desc: "Выиграй апгрейд" },
-  { id: "first_rare", icon: "🔵", name: "Первая Rare", desc: "Получи Rare-предмет" },
-  { id: "first_epic", icon: "🟣", name: "Первая Epic", desc: "Получи Epic-предмет" },
-  { id: "first_legendary", icon: "🟡", name: "Первая Legendary", desc: "Получи Legendary-предмет" },
-  { id: "win_10", icon: "🔥", name: "10 побед", desc: "Выиграй 10 апгрейдов" },
-  { id: "win_50", icon: "⚡", name: "50 побед", desc: "Выиграй 50 апгрейдов" },
-  { id: "win_streak_3", icon: "🌟", name: "3 победы подряд", desc: "Выиграй 3 раза подряд" },
-  { id: "win_streak_5", icon: "💫", name: "5 побед подряд", desc: "Выиграй 5 раз подряд" },
-  { id: "big_win", icon: "💰", name: "Крупный выигрыш", desc: "Выиграй предмет от 10 000 🪙" },
-  { id: "huge_win", icon: "💎", name: "Джекпот", desc: "Выиграй предмет от 50 000 🪙" },
-  { id: "collector", icon: "🎒", name: "Коллекционер", desc: "Собери 20 предметов" },
-  { id: "millionaire", icon: "🤑", name: "Миллионер", desc: "Накопи 100 000 🪙" },
-  { id: "gambler", icon: "🎲", name: "Азартный", desc: "Сделай 100 апгрейдов" },
-  { id: "rich", icon: "👑", name: "Богач", desc: "Накопи 1 000 000 🪙" },
-  { id: "perfect", icon: "🏆", name: "Идеально", desc: "Выиграй апгрейд с шансом < 10%" },
-];
-
-function calculateAchievements() {
-  var unlocked = {};
-  var total = state.history.length;
-  var wins = state.history.filter(function (h) { return h.win; }).length;
-  var currentStreak = 0;
-  var maxStreak = 0;
-  var hasRare = false, hasEpic = false, hasLegendary = false;
-  var maxWin = 0;
-  var lastWasWin = false;
-
-  state.history.forEach(function (h) {
-    if (h.win) {
-      currentStreak++;
-      if (currentStreak > maxStreak) maxStreak = currentStreak;
-      var toItem = findItem(h.to || h.targetItemId);
-      if (toItem) {
-        if (toItem.rarity === "rare") hasRare = true;
-        if (toItem.rarity === "epic") hasEpic = true;
-        if (toItem.rarity === "legendary") hasLegendary = true;
-        if (toItem.price > maxWin) maxWin = toItem.price;
-      }
-    } else {
-      currentStreak = 0;
-    }
-  });
-
-  // Проверяем условия
-  if (total >= 1) unlocked["first_upgrade"] = true;
-  if (wins >= 1) unlocked["first_win"] = true;
-  if (hasRare) unlocked["first_rare"] = true;
-  if (hasEpic) unlocked["first_epic"] = true;
-  if (hasLegendary) unlocked["first_legendary"] = true;
-  if (wins >= 10) unlocked["win_10"] = true;
-  if (wins >= 50) unlocked["win_50"] = true;
-  if (maxStreak >= 3) unlocked["win_streak_3"] = true;
-  if (maxStreak >= 5) unlocked["win_streak_5"] = true;
-  if (maxWin >= 10000) unlocked["big_win"] = true;
-  if (maxWin >= 50000) unlocked["huge_win"] = true;
-
-  var totalItems = Object.keys(state.inventory).reduce(function (a, k) { return a + state.inventory[k]; }, 0);
-  if (totalItems >= 20) unlocked["collector"] = true;
-  if (state.balance >= 100000) unlocked["millionaire"] = true;
-  if (total >= 100) unlocked["gambler"] = true;
-  if (state.balance >= 1000000) unlocked["rich"] = true;
-
-  // "Идеально" — если последний выигрыш был с шансом < 10%
-  state.history.forEach(function (h) {
-    if (h.win && h.chance && h.chance < 10) unlocked["perfect"] = true;
-  });
-
-  return unlocked;
-}
-
-function renderAchievements() {
-  var grid = $("achGrid");
-  if (!grid) return;
-
-  var unlocked = calculateAchievements();
-  grid.innerHTML = "";
-  ACHIEVEMENTS.forEach(function (ach) {
-    var isUnlocked = !!unlocked[ach.id];
-    var card = document.createElement("div");
-    card.className = "ach-card " + (isUnlocked ? "unlocked" : "locked");
-    card.innerHTML =
-      '<div class="ach-icon">' + (isUnlocked ? ach.icon : "🔒") + '</div>' +
-      '<div class="ach-body">' +
-        '<div class="ach-name">' + escapeHtml(ach.name) + '</div>' +
-        '<div class="ach-desc">' + escapeHtml(ach.desc) + '</div>' +
-      '</div>';
-    grid.appendChild(card);
-  });
-}
-
-// ============================================================
-// ПРОФИЛЬ
-// ============================================================
-function renderProfile() {
-  var box = $("profileContent");
-  if (!box) return;
-
-  var total = state.history.length;
-  var wins = state.history.filter(function (h) { return h.win; }).length;
-  var loses = total - wins;
-  var winrate = total ? Math.round(wins / total * 100) : 0;
-
-  // Профит
-  var profit = 0;
-  state.history.forEach(function (h) {
-    if (h.win) {
-      var item = findItem(h.to || h.targetItemId);
-      if (item) profit += item.price;
-    } else {
-      var item2 = findItem(h.from || h.betItemId);
-      if (item2) profit -= item2.price;
-    }
-  });
-
-  // Лучший дроп
-  var bestDrop = null;
-  state.history.forEach(function (h) {
-    if (h.win) {
-      var item = findItem(h.to || h.targetItemId);
-      if (item && (!bestDrop || item.price > bestDrop.price)) bestDrop = item;
-    }
-  });
-
-  var totalItems = Object.keys(state.inventory).reduce(function (a, k) { return a + state.inventory[k]; }, 0);
-
-  box.innerHTML =
-    '<div class="stats-grid">' +
-      '<div class="stat-tile"><div class="value">' + total + '</div><div class="label">Всего игр</div></div>' +
-      '<div class="stat-tile ok"><div class="value">' + wins + '</div><div class="label">Побед</div></div>' +
-      '<div class="stat-tile err"><div class="value">' + loses + '</div><div class="label">Проигрышей</div></div>' +
-      '<div class="stat-tile"><div class="value">' + winrate + '%</div><div class="label">Winrate</div></div>' +
-      '<div class="stat-tile ' + (profit >= 0 ? "ok" : "err") + '"><div class="value">' + (profit >= 0 ? "+" : "") + formatMoney(profit) + '</div><div class="label">Профит</div></div>' +
-      '<div class="stat-tile"><div class="value">' + totalItems + '</div><div class="label">Предметов</div></div>' +
-      '<div class="stat-tile"><div class="value">' + (bestDrop ? bestDrop.icon : "—") + '</div><div class="label">Лучший дроп</div></div>' +
-      '<div class="stat-tile"><div class="value">' + formatMoney(state.balance) + '</div><div class="label">Баланс</div></div>' +
-    '</div>';
-
-  // Ник в настройках
-  if ($("profileNick")) $("profileNick").textContent = state.user ? state.user.nick : "—";
-}
-
-// ============================================================
-// ЕЖЕДНЕВНЫЙ БОНУС
-// ============================================================
-function renderDailyBonus() {
-  var box = $("dailyBonusContent");
-  if (!box) return;
-
-  var lastClaim = state.dailyClaim;
-  try {
-    var saved = localStorage.getItem("artamon_upgrader_daily_v1");
-    if (saved) lastClaim = parseInt(saved, 10) || 0;
-  } catch (e) {}
-
-  var now = Date.now();
-  var canClaim = (now - lastClaim) >= 24 * 60 * 60 * 1000;
-  var hoursLeft = canClaim ? 0 : Math.ceil((24 * 60 * 60 * 1000 - (now - lastClaim)) / 3600000);
-
-  box.innerHTML =
-    '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">' +
-      '<div>' +
-        '<div style="font-size:.85rem;color:var(--txt-2);margin-bottom:4px;">Раз в 24 часа ты можешь забрать</div>' +
-        '<div style="font-size:1.5rem;font-weight:900;color:var(--gold-bright);">🪙 +500 монет</div>' +
-      '</div>' +
-      '<button class="btn" id="claimDailyBtn" ' + (canClaim ? "" : "disabled") + ' style="padding:12px 24px;border-radius:12px;font-size:.82rem;font-weight:900;background:linear-gradient(135deg,' + (canClaim ? "var(--gold-bright),var(--gold)" : "var(--bg-3),var(--bg-2)") + ');color:' + (canClaim ? "#0a0a0a" : "var(--txt-3)") + ';border:1.5px solid ' + (canClaim ? "var(--gold-bright)" : "var(--border)") + ';cursor:' + (canClaim ? "pointer" : "not-allowed") + ';letter-spacing:.06em;">' +
-        (canClaim ? "🎁 ЗАБРАТЬ" : "⏳ " + hoursLeft + " ч") +
-      '</button>' +
-    '</div>';
-
-  if (canClaim) {
-    var btn = $("claimDailyBtn");
-    if (btn) btn.addEventListener("click", claimDailyBonus);
-  }
-}
-
-async function claimDailyBonus() {
-  if (!state.user || !state.user.nick) return;
-
-  // Простой локальный бонус (без воркера — но начисляем через give-coins не можем, используем сами)
-  // Начисляем через имитацию: сервер не даёт нам ручку для ежедневного бонуса,
-  // но пользователь может получить монеты через апгрейды.
-  // Поэтому временно — просто отметим и покажем тост.
-  // В идеале нужна ручка /api/upgrade-daily.
-  // Пока делаем локально:
-  try {
-    localStorage.setItem("artamon_upgrader_daily_v1", String(Date.now()));
-    state.dailyClaim = Date.now();
-  } catch (e) {}
-
-  toast("🎁 Бонус пока не подключён к воркеру", "info");
-  renderDailyBonus();
-}
-
-// ============================================================
-// ФИЛЬТРЫ ИСТОРИИ
-// ============================================================
-if ($("historyFilter")) {
-  $("historyFilter").querySelectorAll("button").forEach(function (b) {
-    b.addEventListener("click", function () {
-      $("historyFilter").querySelectorAll("button").forEach(function (x) { x.classList.remove("active"); });
-      b.classList.add("active");
-      state.historyFilter = b.dataset.filter;
-      renderHistory();
-    });
-  });
-}
-
-// ============================================================
-// ФИЛЬТР МАГАЗИНА
-// ============================================================
-if ($("shopFilter")) {
-  $("shopFilter").addEventListener("change", renderShop);
-}
-
-// ============================================================
-// ЭКСПОРТ ФУНКЦИЙ
-// ============================================================
-window.doUpgrade = doUpgrade;
-window.renderInventory = renderInventory;
-window.renderShop = renderShop;
-window.renderHistory = renderHistory;
-window.renderTop = renderTop;
-window.renderAchievements = renderAchievements;
-window.renderProfile = renderProfile;
-window.renderDailyBonus = renderDailyBonus;
-window.claimDailyBonus = claimDailyBonus;
-window.sellItem = sellItem;
-window.sellAllCommons = sellAllCommons;
-window.buyItem = buyItem;
-window.updateQuickBets = updateQuickBets;
-window.updateInventoryBadge = updateInventoryBadge;
-window.switchTop = switchTop;
-window.refreshProfile = refreshProfile;
-
-// ============================================================
-// ПЕРВИЧНЫЙ РЕНДЕР
-// ============================================================
-document.addEventListener("DOMContentLoaded", function () {
-  // Отрисовываем UI через 500мс после загрузки (когда state уже загружен из части 2)
-  setTimeout(function () {
-    renderBetSlot();
-    renderTargetSlot();
-    renderInventory();
-    renderShop();
-    renderHistory();
-    renderTop();
-    renderAchievements();
-    renderProfile();
-    renderDailyBonus();
-    updateQuickBets();
-    updateInventoryBadge();
-    updateChance();
-    updateSpinBtn();
-  }, 500);
-});
-
-console.log("✅ Upgrader v2.0 — часть 3 загружена");
+console.log("%c🎰 Artamon Upgrader v5.0", "color:#d4af37;font-size:20px;font-weight:900;");
 </script>
 
 </body>
