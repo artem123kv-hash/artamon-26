@@ -4043,6 +4043,29 @@ var TUTORIAL = (function(){
 })();
 
 // ============================================================
+// РЕЙТИНГ — открытие / закрытие
+// ============================================================
+function openRatingFeed() {
+  var rf = $("ratingFeed");
+  var main = $("viewMain");
+  if (!rf) return;
+  if (main) main.style.display = "";
+  rf.style.display = "block";
+  rf.scrollIntoView({ behavior: "smooth", block: "start" });
+  loadPosts();
+}
+
+function closeRatingFeed() {
+  var rf = $("ratingFeed");
+  if (rf) rf.style.display = "none";
+  var main = $("viewMain");
+  if (main) main.style.display = "";
+}
+
+window.openRatingFeed = openRatingFeed;
+window.closeRatingFeed = closeRatingFeed;
+
+// ============================================================
 // РЕЙТИНГ — через API воркер
 // ============================================================
 const API_BASE = "https://artamon-api.artem123kv.workers.dev";
