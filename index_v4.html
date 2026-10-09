@@ -5004,6 +5004,241 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
+<!-- ============================================================
+     FEATURE LAUNCHERS — привязка кнопок Квесты, Друзья, Рейтинг
+     ============================================================ -->
+<script>
+(function(){
+  "use strict";
 
+  function bind() {
+    // 🎯 КНОПКА КВЕСТЫ
+    var qBtn = document.getElementById("questsLaunch");
+    if (qBtn && !qBtn._bound) {
+      qBtn._bound = true;
+      qBtn.addEventListener("click", function() {
+        console.log("[Feature] Открываю квесты");
+        if (typeof QUESTS !== "undefined" && QUESTS.open) {
+          QUESTS.open();
+        } else {
+          alert("Квесты: раздел загружается...");
+        }
+      });
+    }
+
+    // 👥 КНОПКА ДРУЗЬЯ
+    var fBtn = document.getElementById("friendsLaunch");
+    if (fBtn && !fBtn._bound) {
+      fBtn._bound = true;
+      fBtn.addEventListener("click", function() {
+        console.log("[Feature] Открываю друзей");
+        if (typeof FRIENDS !== "undefined" && FRIENDS.open) {
+          FRIENDS.open();
+        } else {
+          alert("Друзья: раздел загружается...");
+        }
+      });
+    }
+
+    // ⭐ КНОПКА РЕЙТИНГ
+    var rBtn = document.getElementById("ratingLaunch");
+    if (rBtn && !rBtn._bound) {
+      rBtn._bound = true;
+      rBtn.addEventListener("click", function() {
+        console.log("[Feature] Открываю рейтинг");
+        openRatingFeed();
+      });
+    }
+
+    // Дополнительно — кнопки в меню (drawer)
+    var miQ = document.getElementById("miQuests");
+    if (miQ && !miQ._bound) {
+      miQ._bound = true;
+      miQ.addEventListener("click", function() {
+        var d = document.getElementById("drawer");
+        var o = document.getElementById("overlay");
+        if (d) d.classList.remove("on");
+        if (o) o.classList.remove("on");
+        if (typeof QUESTS !== "undefined" && QUESTS.open) QUESTS.open();
+      });
+    }
+
+    var miF = document.getElementById("miFriends");
+    if (miF && !miF._bound) {
+      miF._bound = true;
+      miF.addEventListener("click", function() {
+        var d = document.getElementById("drawer");
+        var o = document.getElementById("overlay");
+        if (d) d.classList.remove("on");
+        if (o) o.classList.remove("on");
+        if (typeof FRIENDS !== "undefined" && FRIENDS.open) FRIENDS.open();
+      });
+    }
+
+    var miR = document.getElementById("miRating");
+    if (miR && !miR._bound) {
+      miR._bound = true;
+      miR.addEventListener("click", function() {
+        var d = document.getElementById("drawer");
+        var o = document.getElementById("overlay");
+        if (d) d.classList.remove("on");
+        if (o) o.classList.remove("on");
+        openRatingFeed();
+      });
+    }
+  }
+
+  // ============================================================
+  // ФУНКЦИЯ РЕЙТИНГА (лента постов)
+  // ============================================================
+  function openRatingFeed() {
+    console.log("[Rating] Открываю ленту рейтинга");
+
+    // Скрываем главный экран
+    var vm = document.getElementById("viewMain");
+    if (vm) vm.style.display = "none";
+
+    // Показываем ленту
+    var rf = document.getElementById("ratingFeed");
+    if (!rf) {
+      alert("Лента рейтинга: раздел загружается...");
+      return;
+    }
+    rf.classList.add("on");
+    rf.style.display = "block";
+
+    // Загружаем посты
+    loadPosts();
+  }
+
+  function closeRatingFeed() {
+    var rf = document.getElementById("ratingFeed");
+    if (rf) {
+      rf.classList.remove("on");
+      rf.style.display = "none";
+    }
+    var vm = document.getElementById("viewMain");
+    if (vm) vm.style.display = "";
+  }
+
+  window.closeRatingFeed = closeRatingFeed;
+
+  function loadPosts() {
+    var box = document.getElementById("ratingContent");
+    if (!box) return;
+    box.innerHTML = '<div class="rate-empty"><div style="font-size:2.5rem;margin-bottom:10px;">⏳</div>Загрузка постов...</div>';
+
+    // Проверка на API
+    if (typeof ARTAMON_API === "undefined" || !ARTAMON_API.fetchPosts) {
+      box.innerHTML = '<div class="rate-empty"><div style="font-size:2.5rem;margin-bottom:10px;">⚠️</div>API не загружен<br><b>Открой через игру или GitHub Pages</b></div>';
+      return;
+    }
+
+    ARTAMON_API.fetchPosts()
+      .then(function(data) {
+        var posts = (data && data.posts) || [];
+        if (!posts.length) {
+          box.innerHTML = '<div class="rate-empty"><div style="font-size:2.5rem;margin-bottom:10px;">📭</div>Пока нет постов<br><b>Будь первым!</b></div>';
+          return;
+        }
+        renderPosts(posts);
+      })
+      .catch(function(e) {
+        box.innerHTML = '<div class="rate-empty"><div style="font-size:2.5rem;margin-bottom:10px;">❌</div>Ошибка: ' + (e.message || "неизвестно") + '</div>';
+      });
+  }
+
+  function renderPosts(posts) {
+    var box = document.getElementById("ratingContent");
+    if (!box) return;
+
+    box.innerHTML = posts.map(function(p) {
+      var starsHtml = "";
+      var avg = p.avgRating || 0;
+      for (var i = 1; i <= 5; i++) {
+        var cls = "star-btn" + (i <= Math.round(avg) ? " active" : "");
+        starsHtml += '<button class="' + cls + '" data-post="' + p.id + '" data-value="' + i + '">★</button>';
+      }
+
+      return '<div class="post-card' + (p.pinned ? " pinned" : "") + '">' +
+        (p.pinned ? '<div class="post-pin">📌 Закреплено</div>' : '') +
+        '<div class="post-head">' +
+          '<div class="post-av">' + (p.avatar || "👤") + '</div>' +
+          '<div class="post-info">' +
+            '<div class="post-author">' + escapeHtml(p.author || "Аноним") + '</div>' +
+            '<div class="post-date">' + (p.date || "") + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="post-title">' + escapeHtml(p.title || "") + '</div>' +
+        '<div class="post-body">' + escapeHtml(p.body || "") + '</div>' +
+        (p.img ? '<img class="post-img" src="' + p.img + '" alt="">' : '') +
+        '<div class="post-rating">' +
+          '<div class="stars-input">' + starsHtml + '</div>' +
+          '<div class="rating-info">' +
+            '<div class="rating-avg">' + (avg ? avg.toFixed(1) + " ⭐" : "нет оценок") + '</div>' +
+            '<div class="rating-count">' + (p.ratingCount || 0) + ' оценок</div>' +
+          '</div>' +
+        '</div>' +
+        '<button class="post-comments-toggle" data-post="' + p.id + '">💬 Комментарии</button>' +
+      '</div>';
+    }).join("");
+
+    // Звёзды
+    box.querySelectorAll(".star-btn").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var pid = btn.getAttribute("data-post");
+        var val = parseInt(btn.getAttribute("data-value"), 10);
+        var nick = "";
+        try {
+          var accRaw = localStorage.getItem("artamon_account_v1");
+          if (accRaw) { var acc = JSON.parse(accRaw); nick = acc.nick || ""; }
+        } catch (e) {}
+
+        if (!nick) { alert("Войди в аккаунт, чтобы оценивать"); return; }
+
+        if (typeof ARTAMON_API !== "undefined" && ARTAMON_API.submitRating) {
+          ARTAMON_API.submitRating(pid, nick, val).then(function() {
+            if (typeof toast !== "undefined") toast("⭐ Оценка " + val + " сохранена");
+          });
+        }
+      });
+    });
+  }
+
+  // Глобально
+  window.openRatingFeed = openRatingFeed;
+
+  // Привязка при старте
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bind);
+  } else {
+    bind();
+  }
+  setTimeout(bind, 500);
+  setTimeout(bind, 1500);
+  setTimeout(bind, 3000);
+})();
+</script>
+
+<!-- ============================================================
+     КНОПКА "НАЗАД" В ЛЕНТЕ РЕЙТИНГА
+     ============================================================ -->
+<script>
+(function(){
+  function bind() {
+    var back = document.getElementById("ratingBack");
+    if (back && !back._bound) {
+      back._bound = true;
+      back.addEventListener("click", function() {
+        if (window.closeRatingFeed) window.closeRatingFeed();
+      });
+    }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind);
+  else bind();
+  setTimeout(bind, 500);
+  setTimeout(bind, 1500);
+})();
+</script>
 </body>
 </html>
