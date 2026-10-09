@@ -4,116 +4,70 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#d4af37">
-<title>⚡ Artamon Admin v3.0</title>
+<title>⚡ Artamon Admin</title>
 <style>
 :root {
-  --gold-1: #f6e6a8;
-  --gold-2: #d4af37;
-  --gold-3: #8f6f1a;
-  --bg-1: #050505;
-  --bg-2: #0d0d0d;
-  --bg-3: #141414;
-  --txt-1: #e8e6e1;
-  --txt-2: #8a8a8a;
-  --txt-3: #5c5c5c;
-  --card-1: rgba(23,23,23,.95);
-  --card-2: rgba(15,15,15,.95);
+  --gold-1: #f6e6a8; --gold-2: #d4af37; --gold-3: #8f6f1a;
+  --bg-1: #050505; --bg-2: #0d0d0d; --bg-3: #141414;
+  --txt-1: #e8e6e1; --txt-2: #8a8a8a; --txt-3: #5c5c5c;
+  --card-1: rgba(23,23,23,.95); --card-2: rgba(15,15,15,.95);
   --border: #2a2a2a;
-  --success: #4ade80;
-  --danger: #f87171;
-  --warn: #fbbf24;
-  --info: #60a5fa;
-  --common: #8a8a9a;
-  --rare: #4a90e2;
-  --epic: #a855f7;
-  --legendary: #f59e0b;
+  --success: #4ade80; --danger: #f87171; --warn: #fbbf24; --info: #60a5fa;
+  --common: #8a8a9a; --rare: #4a90e2; --epic: #a855f7; --legendary: #f59e0b;
 }
 body[data-theme="light"] {
-  --bg-1: #f8fafc;
-  --bg-2: #f1f5f9;
-  --bg-3: #e2e8f0;
-  --txt-1: #0f172a;
-  --txt-2: #475569;
-  --txt-3: #94a3b8;
-  --card-1: rgba(255,255,255,.98);
-  --card-2: rgba(248,250,252,.98);
+  --bg-1: #f8fafc; --bg-2: #f1f5f9; --bg-3: #e2e8f0;
+  --txt-1: #0f172a; --txt-2: #475569; --txt-3: #94a3b8;
+  --card-1: rgba(255,255,255,.98); --card-2: rgba(248,250,252,.98);
   --border: #cbd5e1;
 }
 body[data-theme="blue"] {
-  --bg-1: #020617;
-  --bg-2: #0f172a;
-  --bg-3: #1e293b;
-  --gold-1: #dbeafe;
-  --gold-2: #60a5fa;
-  --gold-3: #1e40af;
-  --card-1: rgba(15,23,42,.95);
-  --card-2: rgba(2,6,23,.95);
+  --bg-1: #020617; --bg-2: #0f172a; --bg-3: #1e293b;
+  --gold-1: #dbeafe; --gold-2: #60a5fa; --gold-3: #1e40af;
+  --card-1: rgba(15,23,42,.95); --card-2: rgba(2,6,23,.95);
   --border: #334155;
 }
 body[data-theme="red"] {
-  --bg-1: #0a0505;
-  --bg-2: #1a0a0a;
-  --bg-3: #2a1010;
-  --gold-1: #fecaca;
-  --gold-2: #ef4444;
-  --gold-3: #991b1b;
-  --card-1: rgba(30,10,10,.95);
-  --card-2: rgba(15,5,5,.95);
+  --bg-1: #0a0505; --bg-2: #1a0a0a; --bg-3: #2a1010;
+  --gold-1: #fecaca; --gold-2: #ef4444; --gold-3: #991b1b;
+  --card-1: rgba(30,10,10,.95); --card-2: rgba(15,5,5,.95);
   --border: #4a2020;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body {
-  min-height: 100vh;
-  background: var(--bg-1);
-  color: var(--txt-1);
+  min-height: 100vh; background: var(--bg-1); color: var(--txt-1);
   font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
-  line-height: 1.5;
-  overflow-x: hidden;
+  line-height: 1.5; overflow-x: hidden;
 }
 body { transition: background .3s, color .3s; }
 button { font-family: inherit; cursor: pointer; }
 input, textarea, select { font-family: inherit; }
 .hidden { display: none !important; }
 
-/* ===== LOGIN ===== */
 #loginScreen {
   position: fixed; inset: 0; z-index: 1000;
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
   background: radial-gradient(circle at 50% 50%, var(--bg-2) 0%, var(--bg-1) 70%);
 }
 .login-box {
-  max-width: 420px; width: 100%;
-  background: var(--card-1);
-  border: 2px solid var(--gold-2);
-  border-radius: 20px;
-  padding: 32px 26px;
-  text-align: center;
+  max-width: 420px; width: 100%; background: var(--card-1);
+  border: 2px solid var(--gold-2); border-radius: 20px;
+  padding: 32px 26px; text-align: center;
   animation: pop-in .5s cubic-bezier(.5, 1.5, .5, 1);
 }
-@keyframes pop-in {
-  from { opacity: 0; transform: scale(.9); }
-  to   { opacity: 1; transform: scale(1); }
-}
-.login-icon { font-size: 4rem; margin-bottom: 12px; display: block; animation: pulse 2s infinite; }
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
+@keyframes pop-in { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: scale(1); } }
+.login-icon { font-size: 4rem; margin-bottom: 12px; display: block; }
 .login-title {
   font-size: 1.5rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase;
   background: linear-gradient(180deg, var(--gold-1), var(--gold-2) 45%, var(--gold-3));
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  margin-bottom: 8px;
+  -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 8px;
 }
 .login-sub { color: var(--txt-2); font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 24px; }
 .login-input {
-  width: 100%; background: var(--bg-2);
-  border: 1px solid var(--border); color: var(--gold-2);
-  padding: 14px; border-radius: 10px;
+  width: 100%; background: var(--bg-2); border: 1px solid var(--border);
+  color: var(--gold-2); padding: 14px; border-radius: 10px;
   font-family: ui-monospace, monospace; font-size: 1rem;
-  text-align: center; outline: none; letter-spacing: .06em;
-  margin-bottom: 12px;
+  text-align: center; outline: none; letter-spacing: .06em; margin-bottom: 12px;
 }
 .login-input:focus { border-color: var(--gold-2); }
 .login-btn {
@@ -126,52 +80,39 @@ input, textarea, select { font-family: inherit; }
 .login-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--gold-2) 28%, transparent); }
 .login-btn:disabled { opacity: .5; cursor: not-allowed; }
 .login-error {
-  background: rgba(248,113,113,.15);
-  border: 1px solid rgba(248,113,113,.4);
-  color: var(--danger); border-radius: 10px;
-  padding: 10px 14px; font-size: .82rem;
-  margin-bottom: 12px; display: none;
+  background: rgba(248,113,113,.15); border: 1px solid rgba(248,113,113,.4);
+  color: var(--danger); border-radius: 10px; padding: 10px 14px;
+  font-size: .82rem; margin-bottom: 12px; display: none;
 }
 .login-error.on { display: block; }
 
-/* ===== LAYOUT ===== */
 #app { display: flex; min-height: 100vh; }
 #sidebar {
-  width: 260px; flex-shrink: 0;
-  background: var(--card-1);
-  border-right: 1px solid var(--border);
-  padding: 20px 14px;
+  width: 260px; flex-shrink: 0; background: var(--card-1);
+  border-right: 1px solid var(--border); padding: 20px 14px;
   display: flex; flex-direction: column;
-  position: fixed; top: 0; left: 0; bottom: 0;
-  z-index: 100; transition: transform .3s ease;
-  overflow-y: auto;
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+  transition: transform .3s ease; overflow-y: auto;
 }
 #sidebar.mobile-open { transform: translateX(0); }
 .sidebar-header {
   display: flex; align-items: center; gap: 10px;
-  padding: 0 6px 16px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
+  padding: 0 6px 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px;
 }
 .sidebar-logo { font-size: 1.6rem; animation: logo-spin 12s linear infinite; }
-@keyframes logo-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
+@keyframes logo-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .sidebar-title {
   font-size: 1rem; font-weight: 900; letter-spacing: .06em;
   background: linear-gradient(180deg, var(--gold-1), var(--gold-2));
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  line-height: 1.1;
+  -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1.1;
 }
 .sidebar-version { font-size: .62rem; color: var(--txt-3); letter-spacing: .1em; }
 .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 3px; }
 .nav-item {
   display: flex; align-items: center; gap: 12px;
   background: transparent; border: 1px solid transparent;
-  border-radius: 10px; color: var(--txt-2);
-  padding: 10px 12px; font-size: .85rem; font-weight: 600;
-  text-align: left; transition: .15s; position: relative;
+  border-radius: 10px; color: var(--txt-2); padding: 10px 12px;
+  font-size: .85rem; font-weight: 600; text-align: left; transition: .15s;
 }
 .nav-item .nav-icon { font-size: 1.1rem; width: 22px; text-align: center; }
 .nav-item .nav-badge {
@@ -181,262 +122,118 @@ input, textarea, select { font-family: inherit; }
 }
 .nav-item .nav-badge.danger { background: rgba(248,113,113,.2); color: var(--danger); }
 .nav-item:hover { background: color-mix(in srgb, var(--gold-2) 8%, transparent); color: var(--txt-1); }
-.nav-item.active {
-  background: color-mix(in srgb, var(--gold-2) 15%, transparent);
-  border-color: var(--gold-2); color: var(--gold-2);
-}
-.nav-divider {
-  height: 1px; background: var(--border);
-  margin: 10px 4px;
-}
-.sidebar-footer {
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
-  display: flex; flex-direction: column; gap: 6px;
-}
+.nav-item.active { background: color-mix(in srgb, var(--gold-2) 15%, transparent); border-color: var(--gold-2); color: var(--gold-2); }
+.nav-divider { height: 1px; background: var(--border); margin: 10px 4px; }
+.sidebar-footer { padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
 .sidebar-footer button {
-  background: transparent; border: 1px solid var(--border);
-  color: var(--txt-2); padding: 9px 12px;
-  border-radius: 8px; font-size: .78rem; font-weight: 700;
+  background: transparent; border: 1px solid var(--border); color: var(--txt-2);
+  padding: 9px 12px; border-radius: 8px; font-size: .78rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: .06em;
 }
 .sidebar-footer button:hover { border-color: var(--gold-2); color: var(--gold-2); }
 .sidebar-footer button.danger { color: var(--danger); border-color: rgba(248,113,113,.4); }
+
 #main { flex: 1; margin-left: 260px; display: flex; flex-direction: column; min-height: 100vh; }
 .topbar {
-  display: flex; align-items: center; gap: 12px;
-  padding: 14px 20px;
-  background: var(--card-1);
-  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px; padding: 14px 20px;
+  background: var(--card-1); border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 50;
 }
 .burger {
-  background: transparent; border: 1px solid var(--border);
-  color: var(--txt-2); width: 40px; height: 40px;
-  border-radius: 10px; display: flex; align-items: center;
-  justify-content: center; font-size: 1.2rem;
+  background: transparent; border: 1px solid var(--border); color: var(--txt-2);
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
 }
 .burger:hover { border-color: var(--gold-2); color: var(--gold-2); }
 .topbar-title { flex: 1; font-size: 1rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
-.theme-switch {
-  display: flex; gap: 4px; padding: 3px;
-  background: var(--bg-2); border: 1px solid var(--border);
-  border-radius: 10px;
-}
-.theme-switch button {
-  background: transparent; border: none;
-  width: 32px; height: 32px; border-radius: 7px;
-  font-size: 1rem; display: flex; align-items: center; justify-content: center;
-}
+.theme-switch { display: flex; gap: 4px; padding: 3px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; }
+.theme-switch button { background: transparent; border: none; width: 32px; height: 32px; border-radius: 7px; font-size: 1rem; }
 .theme-switch button.active { background: color-mix(in srgb, var(--gold-2) 22%, transparent); }
 #content { flex: 1; padding: 20px; max-width: 1400px; margin: 0 auto; width: 100%; }
 
-/* ===== STATS ===== */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px; margin-bottom: 20px;
-}
-.stat-card {
-  background: var(--card-1); border: 1px solid var(--border);
-  border-radius: 14px; padding: 16px;
-  text-align: center; transition: .2s;
-}
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--card-1); border: 1px solid var(--border); border-radius: 14px; padding: 16px; text-align: center; transition: .2s; }
 .stat-card:hover { border-color: var(--gold-2); transform: translateY(-2px); }
-.stat-card .num {
-  font-size: 1.6rem; font-weight: 900; color: var(--gold-2);
-  line-height: 1; margin-bottom: 6px;
-}
-.stat-card .lbl {
-  font-size: .68rem; color: var(--txt-2);
-  letter-spacing: .1em; text-transform: uppercase;
-}
+.stat-card .num { font-size: 1.6rem; font-weight: 900; color: var(--gold-2); line-height: 1; margin-bottom: 6px; }
+.stat-card .lbl { font-size: .68rem; color: var(--txt-2); letter-spacing: .1em; text-transform: uppercase; }
 
-/* ===== SECTIONS ===== */
-.section {
-  background: var(--card-1); border: 1px solid var(--border);
-  border-radius: 14px; padding: 18px; margin-bottom: 16px;
-}
-.section-header {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
-}
-.section-title {
-  font-size: .9rem; font-weight: 800; letter-spacing: .1em;
-  text-transform: uppercase; color: var(--gold-2);
-  display: flex; align-items: center; gap: 8px;
-}
+.section { background: var(--card-1); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
+.section-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.section-title { font-size: .9rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--gold-2); display: flex; align-items: center; gap: 8px; }
 .section-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 .search-bar { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-.search-input {
-  flex: 1; min-width: 180px;
-  background: var(--bg-2); border: 1px solid var(--border);
-  color: var(--txt-1); padding: 11px 14px;
-  border-radius: 10px; font-size: .88rem; outline: none;
-}
+.search-input { flex: 1; min-width: 180px; background: var(--bg-2); border: 1px solid var(--border); color: var(--txt-1); padding: 11px 14px; border-radius: 10px; font-size: .88rem; outline: none; }
 .search-input:focus { border-color: var(--gold-2); }
 
-/* ===== BUTTONS ===== */
 .btn {
   background: color-mix(in srgb, var(--gold-2) 12%, transparent);
   border: 1.5px solid var(--gold-2); color: var(--gold-2);
   padding: 10px 16px; border-radius: 10px;
   font-size: .78rem; font-weight: 800; letter-spacing: .06em;
-  text-transform: uppercase; transition: .15s;
-  white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
+  text-transform: uppercase; transition: .15s; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 6px;
 }
 .btn:hover:not(:disabled) { background: color-mix(in srgb, var(--gold-2) 25%, transparent); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn.ghost { background: transparent; border-color: var(--border); color: var(--txt-2); }
 .btn.ghost:hover:not(:disabled) { border-color: var(--gold-2); color: var(--gold-2); }
 .btn.danger { border-color: var(--danger); color: var(--danger); background: rgba(248,113,113,.12); }
-.btn.danger:hover:not(:disabled) { background: rgba(248,113,113,.25); }
 .btn.success { border-color: var(--success); color: var(--success); background: rgba(74,222,128,.12); }
-.btn.success:hover:not(:disabled) { background: rgba(74,222,128,.25); }
 .btn.warn { border-color: var(--warn); color: var(--warn); background: rgba(251,191,36,.12); }
 .btn.sm { padding: 7px 12px; font-size: .7rem; }
 .btn.full { width: 100%; justify-content: center; }
 
-/* ===== USER CARDS ===== */
 .users-list { display: flex; flex-direction: column; gap: 8px; }
-.user-card {
-  display: flex; align-items: center; gap: 12px;
-  background: var(--bg-2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 12px 14px; transition: .15s;
-}
+.user-card { display: flex; align-items: center; gap: 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; transition: .15s; }
 .user-card:hover { border-color: var(--gold-2); }
 .user-card.banned { border-left: 3px solid var(--danger); }
 .user-card.muted { border-left: 3px solid var(--warn); }
-.user-avatar {
-  width: 42px; height: 42px; flex-shrink: 0;
-  border-radius: 50%; display: grid; place-items: center;
-  font-size: 1.4rem; background: var(--bg-3);
-  border: 2px solid var(--border);
-}
+.user-avatar { width: 42px; height: 42px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center; font-size: 1.4rem; background: var(--bg-3); border: 2px solid var(--border); }
 .user-info { flex: 1; min-width: 0; }
-.user-nick {
-  font-size: .95rem; font-weight: 800; color: var(--txt-1);
-  margin-bottom: 2px; overflow: hidden;
-  text-overflow: ellipsis; white-space: nowrap;
-}
+.user-nick { font-size: .95rem; font-weight: 800; color: var(--txt-1); margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .user-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: .72rem; color: var(--txt-2); }
-.user-meta span { display: inline-flex; align-items: center; gap: 3px; }
 .user-meta b { color: var(--gold-2); font-weight: 800; }
-.user-meta .badge {
-  font-size: .6rem; font-weight: 800; letter-spacing: .06em;
-  text-transform: uppercase; padding: 2px 7px; border-radius: 6px;
-}
-.user-meta .badge.ban { background: rgba(248,113,113,.18); color: var(--danger); }
-.user-meta .badge.mute { background: rgba(251,191,36,.18); color: var(--warn); }
-.user-meta .badge.wip { background: rgba(96,165,250,.18); color: var(--info); }
 .user-actions { display: flex; gap: 4px; flex-shrink: 0; }
 
-/* ===== RARITY ===== */
-.rarity-common { color: var(--common); }
-.rarity-rare { color: var(--rare); }
-.rarity-epic { color: var(--epic); }
-.rarity-legendary { color: var(--legendary); }
-.badge-common { background: rgba(138,138,154,.18); color: var(--common); }
-.badge-rare { background: rgba(74,144,226,.18); color: var(--rare); }
-.badge-epic { background: rgba(168,85,247,.18); color: var(--epic); }
-.badge-legendary { background: rgba(245,158,11,.18); color: var(--legendary); }
+.badge { display: inline-block; font-size: .62rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 8px; }
+.badge.open { background: rgba(96,165,250,.18); color: var(--info); }
+.badge.answered { background: rgba(74,222,128,.18); color: var(--success); }
+.badge.closed { background: rgba(92,92,92,.18); color: var(--txt-3); }
+.badge.common { background: rgba(138,138,138,.18); color: #8a8a8a; }
 
-/* ===== TABLE ===== */
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: .82rem; }
-th {
-  text-align: left; padding: 10px 12px; color: var(--txt-2);
-  font-size: .68rem; letter-spacing: .1em;
-  text-transform: uppercase; border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
+th { text-align: left; padding: 10px 12px; color: var(--txt-2); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
 td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--txt-1); vertical-align: middle; }
 tr:hover td { background: color-mix(in srgb, var(--gold-2) 4%, transparent); }
 
-/* ===== EMPTY ===== */
-.empty {
-  text-align: center; padding: 50px 20px;
-  color: var(--txt-3); font-style: italic;
-}
+.empty { text-align: center; padding: 50px 20px; color: var(--txt-3); font-style: italic; }
 .empty-icon { font-size: 3rem; display: block; margin-bottom: 10px; opacity: .5; }
-.empty b { color: var(--gold-2); font-style: normal; }
 .loading { text-align: center; padding: 40px 20px; color: var(--txt-2); }
-.spinner {
-  width: 30px; height: 30px; border: 3px solid var(--border);
-  border-top-color: var(--gold-2); border-radius: 50%;
-  animation: spin .8s linear infinite; margin: 0 auto 12px;
-}
+.spinner { width: 30px; height: 30px; border: 3px solid var(--border); border-top-color: var(--gold-2); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ===== MODAL ===== */
-.modal {
-  position: fixed; inset: 0; z-index: 500;
-  display: none; align-items: center; justify-content: center;
-  padding: 16px; background: rgba(0,0,0,.75);
-  backdrop-filter: blur(6px);
-}
+.modal { position: fixed; inset: 0; z-index: 500; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(0,0,0,.75); backdrop-filter: blur(6px); }
 .modal.on { display: flex; animation: fade-in .2s ease; }
-@keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-.modal-box {
-  max-width: 560px; width: 100%; max-height: 90vh;
-  overflow-y: auto; background: var(--card-1);
-  border: 2px solid var(--gold-2); border-radius: 18px;
-  padding: 24px; position: relative;
-  animation: pop-in .3s ease;
-}
-.modal-close {
-  position: absolute; top: 14px; right: 14px;
-  background: transparent; border: 1px solid var(--border);
-  color: var(--txt-2); width: 34px; height: 34px;
-  border-radius: 8px; font-size: 1.1rem;
-}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.modal-box { max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto; background: var(--card-1); border: 2px solid var(--gold-2); border-radius: 18px; padding: 24px; position: relative; animation: pop-in .3s ease; }
+.modal-close { position: absolute; top: 14px; right: 14px; background: transparent; border: 1px solid var(--border); color: var(--txt-2); width: 34px; height: 34px; border-radius: 8px; font-size: 1.1rem; }
 .modal-close:hover { border-color: var(--danger); color: var(--danger); }
-.modal-title {
-  font-size: 1.15rem; font-weight: 900; letter-spacing: .06em;
-  text-transform: uppercase; color: var(--gold-2);
-  margin-bottom: 16px; padding-right: 40px;
-}
+.modal-title { font-size: 1.15rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: var(--gold-2); margin-bottom: 16px; padding-right: 40px; }
 
-/* ===== FORM ===== */
 .form-group { margin-bottom: 14px; }
-.form-label {
-  display: block; font-size: .7rem; color: var(--txt-2);
-  letter-spacing: .08em; text-transform: uppercase;
-  margin-bottom: 6px; font-weight: 700;
-}
-.form-input {
-  width: 100%; background: var(--bg-2);
-  border: 1px solid var(--border); color: var(--txt-1);
-  padding: 11px 14px; border-radius: 10px;
-  font-size: .9rem; outline: none;
-}
+.form-label { display: block; font-size: .7rem; color: var(--txt-2); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; font-weight: 700; }
+.form-input { width: 100%; background: var(--bg-2); border: 1px solid var(--border); color: var(--txt-1); padding: 11px 14px; border-radius: 10px; font-size: .9rem; outline: none; }
 .form-input:focus { border-color: var(--gold-2); }
 textarea.form-input { resize: vertical; min-height: 80px; }
 .form-row { display: flex; gap: 8px; align-items: center; }
 .form-row .form-input { flex: 1; }
-.form-actions {
-  display: flex; gap: 8px; margin-top: 18px;
-  justify-content: flex-end; flex-wrap: wrap;
-}
+.form-actions { display: flex; gap: 8px; margin-top: 18px; justify-content: flex-end; flex-wrap: wrap; }
 .form-hint { font-size: .7rem; color: var(--txt-3); margin-top: 4px; }
-.checkbox-row {
-  display: flex; align-items: center; gap: 8px;
-  cursor: pointer; font-size: .88rem; padding: 8px 0;
-}
-.checkbox-row input[type="checkbox"] {
-  width: 18px; height: 18px;
-  accent-color: var(--gold-2); cursor: pointer;
-}
+.checkbox-row { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: .88rem; padding: 8px 0; }
+.checkbox-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gold-2); cursor: pointer; }
 
-/* ===== TICKETS ===== */
-.ticket-card {
-  background: var(--bg-2); border: 1px solid var(--border);
-  border-left: 3px solid var(--gold-2); border-radius: 12px;
-  padding: 14px; margin-bottom: 10px;
-}
+.ticket-card { background: var(--bg-2); border: 1px solid var(--border); border-left: 3px solid var(--gold-2); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
 .ticket-card.closed { border-left-color: var(--txt-3); opacity: .7; }
 .ticket-card.answered { border-left-color: var(--success); }
 .ticket-head { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
@@ -447,148 +244,53 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 .ticket-replies { padding-left: 12px; border-left: 2px solid var(--border); margin-bottom: 10px; }
 .ticket-reply { background: var(--card-2); border-radius: 8px; padding: 10px 12px; margin-bottom: 6px; font-size: .82rem; }
 .ticket-reply .reply-head { font-size: .65rem; font-weight: 800; color: var(--gold-2); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
-.badge {
-  display: inline-block; font-size: .62rem; font-weight: 800;
-  letter-spacing: .06em; text-transform: uppercase;
-  padding: 3px 9px; border-radius: 8px;
-}
-.badge.open { background: rgba(96,165,250,.18); color: var(--info); }
-.badge.answered { background: rgba(74,222,128,.18); color: var(--success); }
-.badge.closed { background: rgba(92,92,92,.18); color: var(--txt-3); }
-.badge.common { background: rgba(138,138,138,.18); color: #8a8a8a; }
 
-/* ===== TABS ===== */
 .tab-content { display: none; }
 .tab-content.active { display: block; animation: fade-in .25s ease; }
 
-/* ===== CHART ===== */
-.chart-container {
-  background: var(--bg-2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 16px; height: 220px;
-  display: flex; align-items: flex-end;
-  justify-content: space-around; gap: 6px;
-  position: relative;
-}
-.chart-bar {
-  flex: 1; background: linear-gradient(180deg, var(--gold-2), var(--gold-3));
-  border-radius: 6px 6px 0 0; min-height: 4px;
-  position: relative; transition: .3s;
-}
-.chart-bar:hover { filter: brightness(1.3); }
-.chart-bar .chart-label {
-  position: absolute; bottom: -22px; left: 0; right: 0;
-  text-align: center; font-size: .62rem; color: var(--txt-3);
-}
-.chart-bar .chart-value {
-  position: absolute; top: -20px; left: 0; right: 0;
-  text-align: center; font-size: .7rem;
-  font-weight: 800; color: var(--gold-2);
-}
+.chart-container { background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; height: 220px; display: flex; align-items: flex-end; justify-content: space-around; gap: 6px; position: relative; }
+.chart-bar { flex: 1; background: linear-gradient(180deg, var(--gold-2), var(--gold-3)); border-radius: 6px 6px 0 0; min-height: 4px; position: relative; transition: .3s; }
+.chart-bar .chart-label { position: absolute; bottom: -22px; left: 0; right: 0; text-align: center; font-size: .62rem; color: var(--txt-3); }
+.chart-bar .chart-value { position: absolute; top: -20px; left: 0; right: 0; text-align: center; font-size: .7rem; font-weight: 800; color: var(--gold-2); }
 
-/* ===== LOGS ===== */
-.log-list {
-  max-height: 500px; overflow-y: auto;
-  display: flex; flex-direction: column; gap: 6px;
-}
-.log-item {
-  background: var(--bg-2); border-left: 3px solid var(--gold-2);
-  border-radius: 8px; padding: 10px 12px; font-size: .78rem;
-}
+.log-list { max-height: 500px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+.log-item { background: var(--bg-2); border-left: 3px solid var(--gold-2); border-radius: 8px; padding: 10px 12px; font-size: .78rem; }
 .log-item .log-time { color: var(--txt-3); font-size: .68rem; margin-right: 8px; }
-.log-item .log-action {
-  color: var(--gold-2); font-weight: 800;
-  text-transform: uppercase; letter-spacing: .05em;
-  font-size: .7rem; margin-right: 6px;
-}
+.log-item .log-action { color: var(--gold-2); font-weight: 800; text-transform: uppercase; letter-spacing: .05em; font-size: .7rem; margin-right: 6px; }
 .log-item .log-detail { color: var(--txt-1); }
 
-/* ===== PROMO ===== */
-.promo-card {
-  background: var(--bg-2); border: 1.5px dashed var(--gold-2);
-  border-radius: 12px; padding: 14px; margin-bottom: 10px;
-}
-.promo-code {
-  font-family: ui-monospace, monospace; font-size: 1.1rem;
-  font-weight: 900; color: var(--gold-2);
-  letter-spacing: .1em; margin-bottom: 6px;
-}
-.promo-info { font-size: .75rem; color: var(--txt-2); display: flex; gap: 12px; flex-wrap: wrap; }
-.promo-info b { color: var(--txt-1); }
-
-/* ===== TOAST ===== */
-#toasts {
-  position: fixed; top: 20px; right: 20px; z-index: 9999;
-  display: flex; flex-direction: column; gap: 8px;
-  pointer-events: none; max-width: 340px;
-}
-.toast {
-  background: var(--card-1); border: 1.5px solid var(--gold-2);
-  border-radius: 12px; padding: 12px 16px;
-  font-size: .85rem; font-weight: 600; color: var(--txt-1);
-  transform: translateX(120%); opacity: 0;
-  transition: transform .3s cubic-bezier(.5,1.5,.5,1), opacity .3s;
-  pointer-events: auto;
-}
+#toasts { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; max-width: 340px; }
+.toast { background: var(--card-1); border: 1.5px solid var(--gold-2); border-radius: 12px; padding: 12px 16px; font-size: .85rem; font-weight: 600; color: var(--txt-1); transform: translateX(120%); opacity: 0; transition: transform .3s cubic-bezier(.5,1.5,.5,1), opacity .3s; pointer-events: auto; }
 .toast.show { transform: translateX(0); opacity: 1; }
 .toast.success { border-color: var(--success); color: var(--success); }
 .toast.error { border-color: var(--danger); color: var(--danger); }
 .toast.warn { border-color: var(--warn); color: var(--warn); }
 .toast.info { border-color: var(--info); color: var(--info); }
 
-/* ===== TECH PANEL ===== */
-.tech-panel {
-  background: linear-gradient(180deg, rgba(251,191,36,.15), rgba(251,191,36,.05));
-  border: 1.5px solid var(--warn);
-  border-radius: 12px; padding: 16px; margin-bottom: 16px;
-}
+.tech-panel { background: linear-gradient(180deg, rgba(251,191,36,.15), rgba(251,191,36,.05)); border: 1.5px solid var(--warn); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
 .tech-status { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
-.tech-indicator {
-  display: inline-block; width: 12px; height: 12px;
-  border-radius: 50%; background: var(--txt-3);
-}
-.tech-indicator.on { background: var(--danger); box-shadow: 0 0 12px var(--danger); animation: pulse 1.6s infinite; }
+.tech-indicator { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--txt-3); }
+.tech-indicator.on { background: var(--danger); box-shadow: 0 0 12px var(--danger); }
 .tech-indicator.off { background: var(--success); box-shadow: 0 0 12px var(--success); }
 .tech-label { font-weight: 800; text-transform: uppercase; letter-spacing: .08em; font-size: .82rem; }
 .tech-presets { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.curfew-panel { background: linear-gradient(180deg, rgba(248,113,113,.15), rgba(248,113,113,.05)); border: 1.5px solid var(--danger); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
 
-/* ===== CURFEW ===== */
-.curfew-panel {
-  background: linear-gradient(180deg, rgba(248,113,113,.15), rgba(248,113,113,.05));
-  border: 1.5px solid var(--danger);
-  border-radius: 12px; padding: 16px; margin-bottom: 16px;
-}
-
-/* ===== UPGRADE ITEM CARD ===== */
-.upg-item {
-  display: flex; align-items: center; gap: 12px;
-  background: var(--bg-2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 10px 14px;
-  transition: .15s; margin-bottom: 6px;
-}
+.upg-item { display: flex; align-items: center; gap: 12px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin-bottom: 6px; }
 .upg-item:hover { border-color: var(--gold-2); }
 .upg-item.disabled { opacity: .5; }
-.upg-icon {
-  width: 44px; height: 44px; flex-shrink: 0;
-  border-radius: 10px; display: grid; place-items: center;
-  font-size: 1.6rem; background: var(--bg-3);
-  border: 2px solid var(--border);
-}
-.upg-item[data-rarity="rare"] .upg-icon { border-color: var(--rare); }
-.upg-item[data-rarity="epic"] .upg-icon { border-color: var(--epic); box-shadow: 0 0 12px rgba(168,85,247,.3); }
-.upg-item[data-rarity="legendary"] .upg-icon { border-color: var(--legendary); box-shadow: 0 0 16px rgba(245,158,11,.4); }
+.upg-icon { width: 44px; height: 44px; flex-shrink: 0; border-radius: 10px; display: grid; place-items: center; font-size: 1.6rem; background: var(--bg-3); border: 2px solid var(--border); }
 .upg-info { flex: 1; min-width: 0; }
 .upg-name { font-size: .9rem; font-weight: 800; margin-bottom: 2px; }
 .upg-meta { font-size: .68rem; color: var(--txt-2); display: flex; gap: 10px; flex-wrap: wrap; }
 .upg-meta b { color: var(--gold-2); }
 .upg-actions { display: flex; gap: 4px; flex-shrink: 0; }
 
-/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-2); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gold-2); }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   #sidebar { transform: translateX(-100%); width: 270px; box-shadow: 0 0 40px rgba(0,0,0,.6); }
   #main { margin-left: 0; }
@@ -596,22 +298,9 @@ textarea.form-input { resize: vertical; min-height: 80px; }
   .topbar { padding: 12px 14px; }
   .topbar-title { font-size: .88rem; }
   .stat-card .num { font-size: 1.4rem; }
-  .user-card { padding: 10px 12px; }
-  .user-avatar { width: 36px; height: 36px; font-size: 1.2rem; }
-  .user-nick { font-size: .85rem; }
-  .user-meta { font-size: .66rem; }
   .section { padding: 14px; }
   .modal-box { padding: 18px; }
 }
-
-/* ===== LOADER OVERLAY ===== */
-#globalLoader {
-  position: fixed; inset: 0; z-index: 8888;
-  background: rgba(0,0,0,.5); backdrop-filter: blur(3px);
-  display: none; align-items: center; justify-content: center;
-}
-#globalLoader.on { display: flex; }
-#globalLoader .spinner { width: 44px; height: 44px; }
 </style>
 </head>
 <body data-theme="dark">
@@ -621,7 +310,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
   <div class="login-box">
     <span class="login-icon">⚡</span>
     <div class="login-title">Artamon Admin</div>
-    <div class="login-sub">Введите секретный пароль</div>
+    <div class="login-sub">Введите пароль владельца</div>
     <div class="login-error" id="loginError"></div>
     <input type="password" class="login-input" id="loginInput" placeholder="••••••••••••" autocomplete="off">
     <button class="login-btn" id="loginBtn">🔓 Войти</button>
@@ -630,81 +319,38 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 
 <!-- APP -->
 <div id="app" class="hidden">
-
-<!-- SIDEBAR -->
 <aside id="sidebar">
   <div class="sidebar-header">
     <span class="sidebar-logo">⚡</span>
     <div>
       <div class="sidebar-title">Artamon</div>
-      <div class="sidebar-version">Admin v3.0</div>
+      <div class="sidebar-version">Admin v3.1</div>
     </div>
   </div>
-
   <nav class="sidebar-nav">
-    <button class="nav-item active" data-tab="dashboard">
-      <span class="nav-icon">📊</span><span>Дашборд</span>
-    </button>
-    <button class="nav-item" data-tab="users">
-      <span class="nav-icon">👥</span><span>Пользователи</span>
-      <span class="nav-badge" id="badgeUsers">0</span>
-    </button>
-    <button class="nav-item" data-tab="bans">
-      <span class="nav-icon">🚫</span><span>Баны</span>
-      <span class="nav-badge danger" id="badgeBans">0</span>
-    </button>
-    <button class="nav-item" data-tab="posts">
-      <span class="nav-icon">📰</span><span>Посты</span>
-      <span class="nav-badge" id="badgePosts">0</span>
-    </button>
-    <button class="nav-item" data-tab="promos">
-      <span class="nav-icon">🎁</span><span>Промокоды</span>
-      <span class="nav-badge" id="badgePromos">0</span>
-    </button>
-    <button class="nav-item" data-tab="broadcast">
-      <span class="nav-icon">📢</span><span>Рассылки</span>
-    </button>
-    <button class="nav-item" data-tab="tickets">
-      <span class="nav-icon">🎫</span><span>Поддержка</span>
-      <span class="nav-badge danger" id="badgeTickets">0</span>
-    </button>
-    <button class="nav-item" data-tab="achievements">
-      <span class="nav-icon">🏆</span><span>Достижения</span>
-    </button>
-    <button class="nav-item" data-tab="stats">
-      <span class="nav-icon">📈</span><span>Статистика</span>
-    </button>
-
+    <button class="nav-item active" data-tab="dashboard"><span class="nav-icon">📊</span><span>Дашборд</span></button>
+    <button class="nav-item" data-tab="users"><span class="nav-icon">👥</span><span>Пользователи</span><span class="nav-badge" id="badgeUsers">0</span></button>
+    <button class="nav-item" data-tab="bans"><span class="nav-icon">🚫</span><span>Баны</span><span class="nav-badge danger" id="badgeBans">0</span></button>
+    <button class="nav-item" data-tab="posts"><span class="nav-icon">📰</span><span>Посты</span><span class="nav-badge" id="badgePosts">0</span></button>
+    <button class="nav-item" data-tab="promos"><span class="nav-icon">🎁</span><span>Промокоды</span><span class="nav-badge" id="badgePromos">0</span></button>
+    <button class="nav-item" data-tab="broadcast"><span class="nav-icon">📢</span><span>Рассылки</span></button>
+    <button class="nav-item" data-tab="tickets"><span class="nav-icon">🎫</span><span>Поддержка</span><span class="nav-badge danger" id="badgeTickets">0</span></button>
+    <button class="nav-item" data-tab="achievements"><span class="nav-icon">🏆</span><span>Достижения</span></button>
+    <button class="nav-item" data-tab="stats"><span class="nav-icon">📈</span><span>Статистика</span></button>
     <div class="nav-divider"></div>
-
-    <!-- НОВЫЙ РАЗДЕЛ -->
-    <button class="nav-item" data-tab="upgrader">
-      <span class="nav-icon">🎰</span><span>Апгрейдер</span>
-      <span class="nav-badge" id="badgeUpgrader">20</span>
-    </button>
-
+    <button class="nav-item" data-tab="upgrader"><span class="nav-icon">🎰</span><span>Апгрейдер</span><span class="nav-badge" id="badgeUpgrader">0</span></button>
     <div class="nav-divider"></div>
-
-    <button class="nav-item" data-tab="settings">
-      <span class="nav-icon">⚙️</span><span>Настройки</span>
-    </button>
-    <button class="nav-item" data-tab="data">
-      <span class="nav-icon">💾</span><span>Данные</span>
-    </button>
-    <button class="nav-item" data-tab="tools">
-      <span class="nav-icon">🛠</span><span>Инструменты</span>
-    </button>
+    <button class="nav-item" data-tab="settings"><span class="nav-icon">⚙️</span><span>Настройки</span></button>
+    <button class="nav-item" data-tab="data"><span class="nav-icon">💾</span><span>Данные</span></button>
+    <button class="nav-item" data-tab="tools"><span class="nav-icon">🛠</span><span>Инструменты</span></button>
   </nav>
-
   <div class="sidebar-footer">
     <button id="refreshBtn">🔄 Обновить</button>
     <button id="logoutBtn" class="danger">🚪 Выйти</button>
   </div>
 </aside>
 
-<!-- MAIN -->
 <div id="main">
-
 <div class="topbar">
   <button class="burger" id="burger">☰</button>
   <div class="topbar-title" id="topbarTitle">📊 Дашборд</div>
@@ -720,8 +366,6 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 
 <!-- DASHBOARD -->
 <div class="tab-content active" data-tab="dashboard">
-
-  <!-- TECH -->
   <div class="tech-panel">
     <div class="tech-status">
       <span class="tech-indicator off" id="techIndicator"></span>
@@ -729,10 +373,9 @@ textarea.form-input { resize: vertical; min-height: 80px; }
       <button class="btn warn sm" id="techToggleBtn" style="margin-left:auto;">🛠 Включить</button>
     </div>
     <div class="tech-presets">
-      <button class="btn ghost sm" data-tech-msg="🛠 Идут технические работы. Мы скоро вернёмся!">🛠 Стандарт</button>
-      <button class="btn ghost sm" data-tech-msg="🚀 Обновляем сервер! Скоро вернёмся с новыми фичами!">🚀 Обновление</button>
-      <button class="btn ghost sm" data-tech-msg="🐛 Фиксим баги. Заходите через 15 минут!">🐛 Фикс багов</button>
-      <button class="btn ghost sm" data-tech-msg="⚙️ Плановые работы. Спасибо за терпение!">⚙️ Плановые</button>
+      <button class="btn ghost sm" data-tech-msg="🛠 Идут технические работы. Мы скоро вернёмся!">Стандарт</button>
+      <button class="btn ghost sm" data-tech-msg="🚀 Обновляем сервер! Скоро вернёмся!">Обновление</button>
+      <button class="btn ghost sm" data-tech-msg="🐛 Фиксим баги. Заходите через 15 минут!">Фикс багов</button>
     </div>
     <div class="form-group" style="margin-bottom:0;">
       <label class="form-label">Сообщение техрежима</label>
@@ -740,7 +383,6 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     </div>
   </div>
 
-  <!-- CURFEW -->
   <div class="curfew-panel">
     <div class="tech-status">
       <span class="tech-indicator off" id="curfewIndicator"></span>
@@ -781,14 +423,6 @@ textarea.form-input { resize: vertical; min-height: 80px; }
   </div>
 
   <div class="section">
-    <div class="section-header">
-      <div class="section-title">📈 Регистрации за 7 дней</div>
-      <div class="section-actions"><button class="btn ghost sm" id="reloadChart">🔄</button></div>
-    </div>
-    <div class="chart-container" id="chartRegs"><div class="loading"><div class="spinner"></div>Загрузка...</div></div>
-  </div>
-
-  <div class="section">
     <div class="section-header"><div class="section-title">⚡ Быстрые действия</div></div>
     <div class="section-actions">
       <button class="btn" id="quickCreatePost">➕ Создать пост</button>
@@ -805,10 +439,6 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     <div class="section-header">
       <div class="section-title">👥 Пользователи</div>
       <div class="section-actions">
-        <button class="btn ghost sm" id="deleteTestAccounts">🧹 Удалить test*</button>
-        <button class="btn ghost sm" id="checkDupes">🔍 Дубликаты</button>
-        <button class="btn ghost sm" id="deadAccounts">💀 Мёртвые</button>
-        <button class="btn ghost sm" id="compareUsers">⚖️ Сравнить</button>
         <button class="btn ghost sm" id="reloadUsers">🔄</button>
       </div>
     </div>
@@ -817,27 +447,13 @@ textarea.form-input { resize: vertical; min-height: 80px; }
       <select class="search-input" id="userFilter" style="min-width:130px;flex:0;">
         <option value="all">Все</option>
         <option value="banned">Забаненные</option>
-        <option value="muted">В муте</option>
         <option value="wip">С WIP</option>
         <option value="rich">Богатые (1000+)</option>
-        <option value="fav">⭐ Избранные</option>
       </select>
       <select class="search-input" id="userSort" style="min-width:130px;flex:0;">
         <option value="date">По дате</option>
         <option value="coins">По монетам</option>
-        <option value="ratings">По оценкам</option>
       </select>
-    </div>
-    <div id="bulkPanel" class="section" style="display:none;padding:12px;background:linear-gradient(180deg,rgba(212,175,55,.15),rgba(212,175,55,.05));border:1.5px solid var(--gold-2);margin-bottom:12px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
-        <div><b style="color:var(--gold-2);">Выбрано: <span id="bulkCount">0</span></b></div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <button class="btn sm success" id="bulkGiveCoins">🪙 Выдать</button>
-          <button class="btn sm danger" id="bulkBan">🚫 Забанить</button>
-          <button class="btn sm warn" id="bulkMute">🔕 Мут</button>
-          <button class="btn sm ghost" id="bulkClear">Очистить</button>
-        </div>
-      </div>
     </div>
     <div class="users-list" id="usersList"><div class="loading"><div class="spinner"></div>Загрузка...</div></div>
   </div>
@@ -863,7 +479,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
       <input type="text" class="search-input" id="muteNick" placeholder="Ник для мута">
       <input type="number" class="search-input" id="muteHours" placeholder="Часов" value="1" min="1">
       <button class="btn warn" id="muteBtn">🔕 Мут</button>
-      <button class="btn ghost" id="unmuteBtn">🔔 Снять мут</button>
+      <button class="btn ghost" id="unmuteBtn">🔔 Снять</button>
     </div>
   </div>
   <div class="section">
@@ -872,7 +488,6 @@ textarea.form-input { resize: vertical; min-height: 80px; }
       <div class="section-actions">
         <button class="btn danger sm" id="unbanAll">🚫 Разбанить всех</button>
         <button class="btn ghost sm" id="reloadBans">🔄</button>
-        <button class="btn ghost sm" id="exportBansCsv">📤 CSV</button>
       </div>
     </div>
     <div class="table-wrap">
@@ -905,9 +520,6 @@ textarea.form-input { resize: vertical; min-height: 80px; }
       <div class="section-title">🎁 Промокоды</div>
       <div class="section-actions">
         <button class="btn success sm" id="createPromoBtn">➕ Создать</button>
-        <button class="btn ghost sm" id="bulkPromosBtn">🎲 Массово (10)</button>
-        <button class="btn ghost sm" id="advancedPromoBtn">⚙️ Продвинутый</button>
-        <button class="btn ghost sm" id="exportPromosCsv">📤 CSV</button>
         <button class="btn ghost sm" id="reloadPromos">🔄</button>
       </div>
     </div>
@@ -932,15 +544,6 @@ textarea.form-input { resize: vertical; min-height: 80px; }
         <option value="error">❌ Ошибка</option>
       </select>
     </div>
-    <div class="form-group">
-      <label class="form-label">Таргет</label>
-      <select class="form-input" id="bcTarget">
-        <option value="all">Всем</option>
-        <option value="banned">Забаненным</option>
-        <option value="wip">С WIP</option>
-        <option value="rich">Богатым (1000+)</option>
-      </select>
-    </div>
     <button class="btn warn full" id="sendBroadcastBtn">📢 Отправить всем</button>
   </div>
   <div class="section">
@@ -956,7 +559,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 <div class="tab-content" data-tab="tickets">
   <div class="section">
     <div class="section-header">
-      <div class="section-title">🎫 Обращения игроков</div>
+      <div class="section-title">🎫 Обращения</div>
       <div class="section-actions">
         <select class="search-input" id="ticketFilter" style="flex:0;min-width:140px;">
           <option value="all">Все</option>
@@ -964,7 +567,6 @@ textarea.form-input { resize: vertical; min-height: 80px; }
           <option value="answered">✅ Отвеченные</option>
           <option value="closed">🔒 Закрытые</option>
         </select>
-        <button class="btn ghost sm" id="exportTicketsCsv">📤 CSV</button>
         <button class="btn ghost sm" id="reloadTickets">🔄</button>
       </div>
     </div>
@@ -989,35 +591,18 @@ textarea.form-input { resize: vertical; min-height: 80px; }
       <button class="btn danger" id="removeAchBtn">❌ Забрать</button>
     </div>
   </div>
-  <div class="section">
-    <div class="section-header"><div class="section-title">📖 Список достижений</div></div>
-    <div id="achList" style="max-height: 400px; overflow-y: auto;"></div>
-  </div>
 </div>
 
 <!-- STATS -->
 <div class="tab-content" data-tab="stats">
   <div class="section">
-    <div class="section-header">
-      <div class="section-title">🏆 Топ-10 по монетам</div>
-      <button class="btn ghost sm" id="exportStats">📤 CSV</button>
-    </div>
+    <div class="section-header"><div class="section-title">🏆 Топ-10 по монетам</div></div>
     <div id="topCoinsList"></div>
-  </div>
-  <div class="section">
-    <div class="section-header"><div class="section-title">⭐ Топ-10 по оценкам</div></div>
-    <div id="topRatingsList"></div>
-  </div>
-  <div class="section">
-    <div class="section-header"><div class="section-title">💬 Топ-10 по комментариям</div></div>
-    <div id="topCommentsList"></div>
   </div>
 </div>
 
-<!-- ========== UPGRADER ========== -->
+<!-- UPGRADER -->
 <div class="tab-content" data-tab="upgrader">
-
-  <!-- Настройки -->
   <div class="section">
     <div class="section-header">
       <div class="section-title">⚙️ Настройки апгрейдера</div>
@@ -1041,31 +626,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
         <input type="number" class="form-input" id="cfgSellPercent" step="1" min="0" max="100">
       </div>
     </div>
-    <label class="checkbox-row">
-      <input type="checkbox" id="cfgEnabled">
-      Апгрейдер включён
-    </label>
   </div>
-
-  <!-- Статистика -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-title">📊 Общая статистика</div>
-      <button class="btn ghost sm" id="reloadUpgradeStats">🔄</button>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="num" id="ustTotal">—</div><div class="lbl">Всего игр</div></div>
-      <div class="stat-card"><div class="num" id="ustWins">—</div><div class="lbl">Побед</div></div>
-      <div class="stat-card"><div class="num" id="ustLoses">—</div><div class="lbl">Проигрышей</div></div>
-      <div class="stat-card"><div class="num" id="ustWinrate">—</div><div class="lbl">Winrate</div></div>
-      <div class="stat-card"><div class="num" id="ustBet">—</div><div class="lbl">Оборот</div></div>
-      <div class="stat-card"><div class="num" id="ustWinSum">—</div><div class="lbl">Выиграно</div></div>
-      <div class="stat-card"><div class="num" id="ustLoseSum">—</div><div class="lbl">Проиграно</div></div>
-      <div class="stat-card"><div class="num" id="ustProfit">—</div><div class="lbl">Профит</div></div>
-    </div>
-  </div>
-
-  <!-- Предметы -->
   <div class="section">
     <div class="section-header">
       <div class="section-title">🎁 Предметы</div>
@@ -1076,48 +637,23 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     </div>
     <div id="upgradeItemsList" class="users-list"></div>
   </div>
-
-  <!-- Логи -->
   <div class="section">
     <div class="section-header">
-      <div class="section-title">📜 Последние апгрейды</div>
+      <div class="section-title">📜 Логи</div>
       <button class="btn ghost sm" id="reloadUpgradeLogs">🔄</button>
     </div>
     <div id="upgradeLogsList" class="log-list"></div>
   </div>
-
-  <!-- Инвентарь игрока -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-title">🎒 Инвентарь игрока</div>
-    </div>
-    <div class="search-bar">
-      <input type="text" class="search-input" id="invSearchNick" placeholder="Ник игрока">
-      <button class="btn" id="loadUserInv">🔍 Загрузить</button>
-    </div>
-    <div id="userInvResult"></div>
-  </div>
-
 </div>
 
 <!-- SETTINGS -->
 <div class="tab-content" data-tab="settings">
   <div class="section">
-    <div class="section-header"><div class="section-title">⚙️ Настройки сайта</div></div>
-    <div class="form-group">
-      <label class="form-label">Название сайта</label>
-      <input type="text" class="form-input" id="setSiteName" value="Artamon">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Приветственный текст</label>
-      <textarea class="form-input" id="setWelcome" placeholder="Текст на экране приветствия"></textarea>
-    </div>
-    <div class="form-group">
-      <label class="checkbox-row"><input type="checkbox" id="setRegistration"> Регистрация открыта</label>
-    </div>
-    <div class="form-actions">
-      <button class="btn success" id="saveSettings">💾 Сохранить</button>
-      <button class="btn ghost" id="resetSettings">♻️ Сбросить</button>
+    <div class="section-header"><div class="section-title">⚙️ Информация</div></div>
+    <div style="font-size:.85rem;color:var(--txt-2);line-height:1.8;">
+      <b style="color:var(--gold-2);">Artamon Admin v3.1</b><br>
+      API: <span style="font-family:ui-monospace,monospace;font-size:.75rem;">artamon-api.artem123kv.workers.dev</span><br>
+      Режим: <b style="color:var(--success);">Владелец</b>
     </div>
   </div>
 </div>
@@ -1127,13 +663,10 @@ textarea.form-input { resize: vertical; min-height: 80px; }
   <div class="section">
     <div class="section-header"><div class="section-title">💾 Управление данными</div></div>
     <div class="section-actions">
-      <button class="btn" id="exportDb">📤 Экспорт БД</button>
       <button class="btn" id="kvDump">📦 Дамп KV</button>
-      <button class="btn" id="backupNow">💾 Сделать бэкап</button>
       <button class="btn success" id="exportFullBtn">📦 Полный экспорт</button>
-      <button class="btn danger" id="wipeDb">💣 Очистить</button>
     </div>
-    <pre id="dataOutput" style="background:var(--bg-2);padding:14px;border-radius:10px;color:var(--txt-2);font-family:ui-monospace,monospace;font-size:.74rem;max-height:400px;overflow-y:auto;white-space:pre-wrap;margin-top:14px;">Нажми кнопку для результата.</pre>
+    <pre id="dataOutput" style="background:var(--bg-2);padding:14px;border-radius:10px;color:var(--txt-2);font-family:ui-monospace,monospace;font-size:.74rem;max-height:400px;overflow-y:auto;white-space:pre-wrap;margin-top:14px;">Нажми кнопку.</pre>
   </div>
 </div>
 
@@ -1143,30 +676,9 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     <div class="section-header"><div class="section-title">🛠 Инструменты</div></div>
     <div class="section-actions">
       <button class="btn" id="apiTest">🌐 Проверка API</button>
-      <button class="btn ghost" id="testRegister">📝 Тест регистрации</button>
-      <button class="btn ghost" id="viewLogs">📜 Логи действий</button>
-      <button class="btn ghost" id="exportLogsCsv">📤 CSV логов</button>
       <button class="btn ghost" id="rebuildNickIndex">🔧 Восстановить ники</button>
-      <button class="btn danger" id="clearLogs">🗑 Очистить логи</button>
     </div>
-    <pre id="toolsOutput" style="background:var(--bg-2);padding:14px;border-radius:10px;color:var(--txt-2);font-family:ui-monospace,monospace;font-size:.74rem;max-height:400px;overflow-y:auto;white-space:pre-wrap;margin-top:14px;">Нажми кнопку для результата.</pre>
-  </div>
-  <div id="logsFilterPanel" style="display:none;margin-top:12px;padding:12px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;">
-    <div class="search-bar" style="margin-bottom:8px;">
-      <input type="text" class="search-input" id="logsSearch" placeholder="🔍 Поиск по действию...">
-      <select class="search-input" id="logsTypeFilter" style="flex:0;min-width:140px;">
-        <option value="all">Все</option>
-        <option value="ban">Баны</option>
-        <option value="mute">Муты</option>
-        <option value="coins">Монеты</option>
-        <option value="post">Посты</option>
-        <option value="tech">Техрежим</option>
-        <option value="curfew">Комендантский</option>
-        <option value="upgrade">Апгрейд</option>
-        <option value="login">Логины</option>
-      </select>
-    </div>
-    <div id="logsList" class="log-list"></div>
+    <pre id="toolsOutput" style="background:var(--bg-2);padding:14px;border-radius:10px;color:var(--txt-2);font-family:ui-monospace,monospace;font-size:.74rem;max-height:400px;overflow-y:auto;white-space:pre-wrap;margin-top:14px;">Нажми кнопку.</pre>
   </div>
 </div>
 
@@ -1185,16 +697,10 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 <div id="toasts"></div>
 </div>
 
-<!-- GLOBAL LOADER -->
-<div id="globalLoader">
-  <div class="spinner"></div>
-</div>
-
-  <script>
+<script>
 // ============================================================
-// ARTAMON ADMIN v3.0 — ЧАСТЬ 2/3
+// ARTAMON ADMIN v3.1 — ЕДИНЫЙ ФАЙЛ
 // ============================================================
-
 var API = "https://artamon-api.artem123kv.workers.dev";
 
 var state = {
@@ -1205,24 +711,20 @@ var state = {
   promos: [],
   broadcasts: [],
   tickets: [],
-  logs: [],
   tech: { enabled: false, message: "" },
-  curfew: { enabled: false, message: "", reason: "", until: 0 },
+  curfew: { enabled: false, message: "", reason: "" },
   currentTab: "dashboard",
-  // Upgrader
   upgradeItems: [],
   upgradeConfig: {},
 };
-
-var bulkSelected = {};
 
 // ============================================================
 // УТИЛИТЫ
 // ============================================================
 function $(id) { return document.getElementById(id); }
-function $$(sel) { return document.querySelectorAll(sel); }
+function $$(s) { return document.querySelectorAll(s); }
 function escapeHtml(s) {
-  return String(s == null ? "" : s).replace(/[&<>"']/g, function(c) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
     return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
   });
 }
@@ -1230,10 +732,6 @@ function fmtDate(ts) {
   if (!ts) return "—";
   var d = new Date(ts);
   return d.toLocaleDateString("ru-RU") + " " + d.toTimeString().slice(0, 5);
-}
-function fmtDateShort(ts) {
-  if (!ts) return "—";
-  return new Date(ts).toLocaleDateString("ru-RU");
 }
 function timeAgo(ts) {
   if (!ts) return "—";
@@ -1245,7 +743,7 @@ function timeAgo(ts) {
   if (hrs < 24) return hrs + " ч назад";
   var days = Math.floor(hrs / 24);
   if (days < 30) return days + " дн назад";
-  return fmtDateShort(ts);
+  return new Date(ts).toLocaleDateString("ru-RU");
 }
 function toast(msg, type) {
   type = type || "info";
@@ -1259,10 +757,6 @@ function toast(msg, type) {
     setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 400);
   }, 3500);
 }
-function showLoader(on) {
-  if (on) $("globalLoader").classList.add("on");
-  else $("globalLoader").classList.remove("on");
-}
 
 // ============================================================
 // API
@@ -1275,21 +769,8 @@ async function api(path, body) {
   });
   var data = null;
   try { data = await r.json(); } catch (e) { data = {}; }
-
-  if (data && data.tech && !data.curfew) {
-    showTechOverlay(data.message, "tech");
-    throw new Error(data.message || "Технические работы");
-  }
-  if (data && data.curfew) {
-    showTechOverlay(data.message, "curfew");
-    throw new Error(data.message || "Комендантский час");
-  }
   if (!r.ok) throw new Error(data.error || ("HTTP " + r.status));
   return data;
-}
-
-function showTechOverlay(message, kind) {
-  toast("⚠️ " + (kind === "curfew" ? "Комендантский час" : "Технические работы") + ": " + message, "warn");
 }
 
 // ============================================================
@@ -1300,18 +781,16 @@ function openModal(title, html) {
   $("modalBody").innerHTML = html;
   $("modal").classList.add("on");
 }
-function closeModal() {
-  $("modal").classList.remove("on");
-}
+function closeModal() { $("modal").classList.remove("on"); }
 
 // ============================================================
-// THEMES
+// THEME
 // ============================================================
-function applyTheme(theme) {
-  document.body.setAttribute("data-theme", theme);
-  try { localStorage.setItem("artamon_admin_theme", theme); } catch (e) {}
+function applyTheme(t) {
+  document.body.setAttribute("data-theme", t);
+  try { localStorage.setItem("artamon_admin_theme", t); } catch (e) {}
   $$(".theme-switch button").forEach(function (b) {
-    b.classList.toggle("active", b.getAttribute("data-theme") === theme);
+    b.classList.toggle("active", b.getAttribute("data-theme") === t);
   });
 }
 function loadTheme() {
@@ -1321,55 +800,38 @@ function loadTheme() {
 }
 
 // ============================================================
-// NAVIGATION
+// NAV
 // ============================================================
 var TAB_TITLES = {
-  dashboard: "📊 Дашборд",
-  users: "👥 Пользователи",
-  bans: "🚫 Баны",
-  posts: "📰 Посты",
-  promos: "🎁 Промокоды",
-  broadcast: "📢 Рассылки",
-  tickets: "🎫 Поддержка",
-  achievements: "🏆 Достижения",
-  stats: "📈 Статистика",
-  upgrader: "🎰 Апгрейдер",
-  settings: "⚙️ Настройки",
-  data: "💾 Данные",
-  tools: "🛠 Инструменты",
+  dashboard: "📊 Дашборд", users: "👥 Пользователи", bans: "🚫 Баны",
+  posts: "📰 Посты", promos: "🎁 Промокоды", broadcast: "📢 Рассылки",
+  tickets: "🎫 Поддержка", achievements: "🏆 Достижения", stats: "📈 Статистика",
+  upgrader: "🎰 Апгрейдер", settings: "⚙️ Настройки", data: "💾 Данные", tools: "🛠 Инструменты",
 };
-
 function switchTab(tab) {
   state.currentTab = tab;
-  $$(".nav-item").forEach(function (b) {
-    b.classList.toggle("active", b.getAttribute("data-tab") === tab);
-  });
-  $$(".tab-content").forEach(function (c) {
-    c.classList.toggle("active", c.getAttribute("data-tab") === tab);
-  });
+  $$(".nav-item").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-tab") === tab); });
+  $$(".tab-content").forEach(function (c) { c.classList.toggle("active", c.getAttribute("data-tab") === tab); });
   if ($("topbarTitle")) $("topbarTitle").textContent = TAB_TITLES[tab] || tab;
   $("sidebar").classList.remove("mobile-open");
 
-  if (tab === "dashboard") { loadStats(); loadChart(); loadTechStatus(); loadCurfewStatus(); }
+  if (tab === "dashboard") { loadStats(); loadTech(); loadCurfew(); }
   else if (tab === "users") loadUsers();
   else if (tab === "bans") loadBans();
   else if (tab === "posts") loadPosts();
   else if (tab === "promos") loadPromos();
   else if (tab === "broadcast") loadBroadcasts();
   else if (tab === "tickets") loadTickets();
-  else if (tab === "achievements") renderAchList();
   else if (tab === "stats") loadTopLists();
-  else if (tab === "settings") loadSettings();
-  else if (tab === "upgrader" && window.loadUpgrader) window.loadUpgrader();
+  else if (tab === "upgrader") { loadUpgradeItems(); loadUpgradeLogs(); }
 }
 
 // ============================================================
 // LOGIN
 // ============================================================
 async function tryLogin() {
-  var input = $("loginInput");
+  var pass = $("loginInput").value.trim();
   var err = $("loginError");
-  var pass = input.value.trim();
   if (!pass) return;
 
   err.classList.remove("on");
@@ -1385,7 +847,7 @@ async function tryLogin() {
     });
     var data = await r.json();
 
-    if (!r.ok) throw new Error(data.error || "Неверный пароль");
+    if (!r.ok || !data.ok) throw new Error(data.error || "Неверный пароль");
     if (data.role !== "owner") {
       throw new Error("Это пароль младшего админа. Используй Junior-панель.");
     }
@@ -1395,18 +857,17 @@ async function tryLogin() {
 
     $("loginScreen").classList.add("hidden");
     $("app").classList.remove("hidden");
-    toast("✅ Добро пожаловать!", "success");
+    toast("✅ Добро пожаловать, владелец!", "success");
     switchTab("dashboard");
   } catch (e) {
     err.textContent = "❌ " + e.message;
     err.classList.add("on");
-    input.value = "";
+    $("loginInput").value = "";
   } finally {
     btn.disabled = false;
     btn.textContent = "🔓 Войти";
   }
 }
-
 function logout() {
   try { localStorage.removeItem("artamon_admin_pass"); } catch (e) {}
   state.password = "";
@@ -1416,20 +877,17 @@ function logout() {
 }
 
 // ============================================================
-// TECH MODE
+// TECH / CURFEW
 // ============================================================
-async function loadTechStatus() {
+async function loadTech() {
   try {
     var r = await api("/api/admin/tech-status");
     state.tech = { enabled: !!r.tech, message: r.message || "" };
-    renderTechStatus();
+    renderTech();
   } catch (e) {}
 }
-function renderTechStatus() {
-  var ind = $("techIndicator");
-  var lbl = $("techLabel");
-  var btn = $("techToggleBtn");
-  var msg = $("techMessage");
+function renderTech() {
+  var ind = $("techIndicator"), lbl = $("techLabel"), btn = $("techToggleBtn"), msg = $("techMessage");
   if (!ind) return;
   if (state.tech.enabled) {
     ind.className = "tech-indicator on";
@@ -1444,41 +902,15 @@ function renderTechStatus() {
   }
   if (msg && !msg.value) msg.value = state.tech.message || "";
 }
-if ($("techToggleBtn")) $("techToggleBtn").addEventListener("click", async function () {
-  try {
-    var enable = !state.tech.enabled;
-    var message = ($("techMessage").value || "").trim() || "🛠 Идут технические работы. Мы скоро вернёмся!";
-    var r = await api("/api/admin/tech-toggle", { enable: enable, message: message });
-    state.tech = { enabled: r.tech, message: r.message };
-    renderTechStatus();
-    toast(enable ? "🛠 Техрежим включён" : "✅ Техрежим выключен", enable ? "warn" : "success");
-  } catch (e) { toast("❌ " + e.message, "error"); }
-});
-$$("[data-tech-msg]").forEach(function (b) {
-  b.addEventListener("click", function () {
-    if ($("techMessage")) $("techMessage").value = b.getAttribute("data-tech-msg");
-  });
-});
-
-// ============================================================
-// CURFEW MODE
-// ============================================================
-async function loadCurfewStatus() {
+async function loadCurfew() {
   try {
     var r = await api("/api/admin/curfew-status");
-    state.curfew = {
-      enabled: !!r.curfew,
-      message: r.message || "",
-      reason: r.reason || "",
-      until: r.until || 0,
-    };
-    renderCurfewStatus();
+    state.curfew = { enabled: !!r.curfew, message: r.message || "", reason: r.reason || "" };
+    renderCurfew();
   } catch (e) {}
 }
-function renderCurfewStatus() {
-  var ind = $("curfewIndicator");
-  var lbl = $("curfewLabel");
-  var btn = $("curfewToggleBtn");
+function renderCurfew() {
+  var ind = $("curfewIndicator"), lbl = $("curfewLabel"), btn = $("curfewToggleBtn");
   if (!ind) return;
   if (state.curfew.enabled) {
     ind.className = "tech-indicator on";
@@ -1494,23 +926,6 @@ function renderCurfewStatus() {
   if ($("curfewReason") && !$("curfewReason").value) $("curfewReason").value = state.curfew.reason || "";
   if ($("curfewMessage") && !$("curfewMessage").value) $("curfewMessage").value = state.curfew.message || "";
 }
-if ($("curfewToggleBtn")) $("curfewToggleBtn").addEventListener("click", async function () {
-  try {
-    var enable = !state.curfew.enabled;
-    var reason = ($("curfewReason").value || "").trim();
-    var message = ($("curfewMessage").value || "").trim() || "🚨 Комендантский час. Игра временно закрыта.";
-    var durationMin = parseInt($("curfewDuration").value, 10) || 0;
-    var r = await api("/api/admin/curfew-toggle", {
-      enable: enable,
-      reason: reason,
-      message: message,
-      durationMin: durationMin,
-    });
-    state.curfew = { enabled: r.curfew, message: r.message, reason: r.reason, until: r.until };
-    renderCurfewStatus();
-    toast(enable ? "🚨 Комендантский час включён" : "✅ Комендантский час выключен", enable ? "error" : "success");
-  } catch (e) { toast("❌ " + e.message, "error"); }
-});
 
 // ============================================================
 // DASHBOARD
@@ -1532,35 +947,14 @@ async function loadStats() {
     if ($("badgePosts")) $("badgePosts").textContent = s.postsCount || 0;
     if ($("badgePromos")) $("badgePromos").textContent = s.promosCount || 0;
     if ($("badgeTickets")) $("badgeTickets").textContent = s.ticketsOpen || 0;
-  } catch (e) {
-    toast("❌ Статистика: " + e.message, "error");
-  }
-}
-
-async function loadChart() {
-  var box = $("chartRegs");
-  if (!box) return;
-  box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
-  try {
-    var r = await api("/api/admin/registrations-chart");
-    var chart = r.chart || [];
-    if (!chart.length) { box.innerHTML = '<div class="empty">Нет данных</div>'; return; }
-    var max = Math.max.apply(null, chart.map(function (c) { return c.count; }).concat([1]));
-    box.innerHTML = chart.map(function (c) {
-      var h = Math.max((c.count / max) * 100, 2);
-      return '<div class="chart-bar" style="height:' + h + '%"><div class="chart-value">' + c.count + '</div><div class="chart-label">' + c.date.slice(5) + '</div></div>';
-    }).join("");
-  } catch (e) {
-    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
-  }
+  } catch (e) {}
 }
 
 // ============================================================
 // USERS
 // ============================================================
 async function loadUsers() {
-  var box = $("usersList");
-  if (!box) return;
+  var box = $("usersList"); if (!box) return;
   box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
   try {
     var r = await api("/api/admin/users");
@@ -1570,127 +964,56 @@ async function loadUsers() {
     box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
   }
 }
-
 function renderUsers() {
-  var box = $("usersList");
-  if (!box) return;
+  var box = $("usersList"); if (!box) return;
   var search = ($("userSearch").value || "").toLowerCase().trim();
   var filter = $("userFilter").value || "all";
   var sort = $("userSort").value || "date";
-
   var list = state.users.slice();
   if (search) list = list.filter(function (u) { return u.nick.toLowerCase().indexOf(search) !== -1; });
   if (filter === "banned") list = list.filter(function (u) { return u.banned; });
-  else if (filter === "muted") list = list.filter(function (u) { return u.muted; });
   else if (filter === "wip") list = list.filter(function (u) { return u.wip && u.wip.active; });
   else if (filter === "rich") list = list.filter(function (u) { return (u.coins || 0) >= 1000; });
-  else if (filter === "fav") {
-    var favs = getFavorites();
-    list = list.filter(function (u) { return favs.indexOf(u.nick) !== -1; });
-  }
-
   if (sort === "coins") list.sort(function (a, b) { return (b.coins || 0) - (a.coins || 0); });
-  else if (sort === "ratings") list.sort(function (a, b) { return (b.ratings || 0) - (a.ratings || 0); });
   else list.sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
 
   if (!list.length) {
     box.innerHTML = '<div class="empty"><span class="empty-icon">👥</span>Нет пользователей</div>';
-    updateBulkPanel();
     return;
   }
   box.innerHTML = "";
-  var tags = getTags();
-  var notes = getNotes();
-
   list.forEach(function (u) {
     var card = document.createElement("div");
     card.className = "user-card";
     if (u.banned) card.classList.add("banned");
     if (u.muted) card.classList.add("muted");
-
-    var wipActive = u.wip && u.wip.active;
-    var wipDays = wipActive ? Math.ceil((u.wip.until - Date.now()) / 86400000) : 0;
-    var ownedAvatars = (u.owned && u.owned.avatars) || [];
-    var avatar = ownedAvatars.length ? ownedAvatars[ownedAvatars.length - 1] : "👤";
     var inv = u.inventory || {};
     var invCount = Object.keys(inv).reduce(function (a, k) { return a + inv[k]; }, 0);
-
-    var badges = [];
-    if (u.banned) badges.push('<span class="badge ban">🚫 БАН</span>');
-    if (u.muted) badges.push('<span class="badge mute">🔕 МУТ</span>');
-    if (wipActive) badges.push('<span class="badge wip">💎 ' + wipDays + 'д</span>');
-
-    var checked = bulkSelected[u.nick] ? "checked" : "";
-    var isFav = getFavorites().indexOf(u.nick) !== -1;
-    var favStar = isFav ? ' <span style="color:var(--gold-2);">⭐</span>' : "";
-
-    var tagsHtml = "";
-    if (tags[u.nick] && tags[u.nick].length) {
-      tagsHtml = '<div style="font-size:.66rem;margin-top:3px;display:flex;gap:4px;flex-wrap:wrap;">' +
-        tags[u.nick].map(function (t) {
-          return '<span style="padding:1px 6px;background:rgba(212,175,55,.15);color:var(--gold-2);border-radius:6px;">' + escapeHtml(t) + '</span>';
-        }).join("") + '</div>';
-    }
-    var noteHtml = "";
-    if (notes[u.nick] && notes[u.nick].text) {
-      noteHtml = '<div style="font-size:.7rem;color:var(--txt-3);font-style:italic;margin-top:3px;">📝 ' + escapeHtml(notes[u.nick].text.slice(0, 60)) + '</div>';
-    }
-
     card.innerHTML =
-      '<input type="checkbox" data-bulk-nick="' + escapeHtml(u.nick) + '" ' + checked + ' style="width:20px;height:20px;accent-color:var(--gold-2);cursor:pointer;flex-shrink:0;">' +
-      '<div class="user-avatar">' + avatar + '</div>' +
+      '<div class="user-avatar">👤</div>' +
       '<div class="user-info">' +
-        '<div class="user-nick">' + escapeHtml(u.nick) + favStar + '</div>' +
+        '<div class="user-nick">' + escapeHtml(u.nick) + '</div>' +
         '<div class="user-meta">' +
           '<span>🪙 <b>' + (u.coins || 0) + '</b></span>' +
-          '<span>⭐ <b>' + (u.ratings || 0) + '</b></span>' +
-          '<span>💬 <b>' + (u.comments || 0) + '</b></span>' +
           (invCount > 0 ? '<span>🎒 <b>' + invCount + '</b></span>' : '') +
-          '<span>📅 ' + fmtDateShort(u.createdAt) + '</span>' +
-          badges.join(" ") +
+          (u.banned ? '<span class="badge closed">🚫 БАН</span>' : '') +
+          (u.muted ? '<span class="badge" style="background:rgba(251,191,36,.2);color:var(--warn);">🔕 МУТ</span>' : '') +
         '</div>' +
-        tagsHtml + noteHtml +
       '</div>' +
       '<div class="user-actions">' +
-        '<button class="btn sm" data-action="manage" data-nick="' + escapeHtml(u.nick) + '">⚙️</button>' +
         '<button class="btn sm ' + (u.banned ? 'success' : 'danger') + '" data-action="' + (u.banned ? 'unban' : 'ban') + '" data-nick="' + escapeHtml(u.nick) + '">' + (u.banned ? '✅' : '🚫') + '</button>' +
       '</div>';
     box.appendChild(card);
   });
-
-  box.querySelectorAll("[data-bulk-nick]").forEach(function (cb) {
-    cb.addEventListener("change", function () {
-      var nick = cb.getAttribute("data-bulk-nick");
-      if (cb.checked) bulkSelected[nick] = true;
-      else delete bulkSelected[nick];
-      updateBulkPanel();
+  box.querySelectorAll("[data-action]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var a = b.getAttribute("data-action");
+      var n = b.getAttribute("data-nick");
+      if (a === "ban") quickBan(n);
+      else if (a === "unban") quickUnban(n);
     });
   });
-
-  box.querySelectorAll("[data-action]").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var action = btn.getAttribute("data-action");
-      var nick = btn.getAttribute("data-nick");
-      if (action === "manage") openUserManage(nick);
-      else if (action === "ban") quickBan(nick);
-      else if (action === "unban") quickUnban(nick);
-    });
-  });
-
-  updateBulkPanel();
 }
-
-function updateBulkPanel() {
-  var panel = $("bulkPanel");
-  if (!panel) return;
-  var count = Object.keys(bulkSelected).length;
-  if (count === 0) panel.style.display = "none";
-  else {
-    panel.style.display = "block";
-    if ($("bulkCount")) $("bulkCount").textContent = count;
-  }
-}
-
 async function quickBan(nick) {
   openModal("🚫 Забанить " + nick,
     '<div class="form-group"><label class="form-label">Причина</label>' +
@@ -1699,24 +1022,19 @@ async function quickBan(nick) {
       '<select class="form-input" id="qBanHours">' +
         '<option value="0">Навсегда</option><option value="1">1 час</option>' +
         '<option value="24">1 день</option><option value="168">7 дней</option>' +
-        '<option value="720">30 дней</option>' +
-      '</select></div>' +
+        '<option value="720">30 дней</option></select></div>' +
     '<div class="form-actions">' +
       '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
       '<button class="btn danger" id="qBanConfirm">🚫 Забанить</button></div>'
   );
   $("qBanConfirm").addEventListener("click", async function () {
-    var reason = $("qBanReason").value.trim();
-    var hours = parseInt($("qBanHours").value, 10) || 0;
     try {
-      await api("/api/admin/ban", { nick: nick, reason: reason, hours: hours });
+      await api("/api/admin/ban", { nick: nick, reason: $("qBanReason").value.trim(), hours: parseInt($("qBanHours").value, 10) || 0 });
       toast("🚫 " + nick + " забанен", "success");
-      closeModal();
-      loadUsers(); loadStats();
+      closeModal(); loadUsers(); loadStats();
     } catch (e) { toast("❌ " + e.message, "error"); }
   });
 }
-
 async function quickUnban(nick) {
   if (!confirm("Разбанить " + nick + "?")) return;
   try {
@@ -1726,289 +1044,11 @@ async function quickUnban(nick) {
   } catch (e) { toast("❌ " + e.message, "error"); }
 }
 
-async function openUserManage(nick) {
-  try {
-    var r = await api("/api/admin/user-detail", { nick: nick });
-    var u = r.user;
-    var wipActive = u.wipUntil && u.wipUntil > Date.now();
-    var wipDays = wipActive ? Math.ceil((u.wipUntil - Date.now()) / 86400000) : 0;
-    var ownedAvatars = u.ownedAvatars || [];
-    var muted = u.muted && (u.mutedUntil > Date.now());
-    var inv = u.inventory || {};
-    var invCount = Object.keys(inv).reduce(function (a, k) { return a + inv[k]; }, 0);
-
-    openModal("⚙️ " + u.nick,
-      '<div style="font-size:.82rem;color:var(--txt-2);margin-bottom:16px;line-height:1.7;">' +
-        '📅 Создан: <b style="color:var(--txt-1);">' + fmtDate(u.createdAt) + '</b><br>' +
-        '🪙 Монет: <b style="color:var(--gold-2);">' + (u.coins || 0) + '</b><br>' +
-        '💎 WIP: <b style="color:' + (wipActive ? 'var(--success)' : 'var(--txt-2)') + ';">' + (wipActive ? wipDays + ' дн.' : 'нет') + '</b><br>' +
-        '🎨 Аватарок: <b style="color:var(--gold-2);">' + ownedAvatars.length + '</b><br>' +
-        '🎒 Предметов: <b style="color:var(--gold-2);">' + invCount + '</b> (✨ +' + (u.bonusPercent || 0) + '%)' +
-        (muted ? '<br>🔕 Мут до: <b style="color:var(--warn);">' + fmtDate(u.mutedUntil) + '</b>' : '') +
-      '</div>' +
-      '<div class="form-group"><label class="form-label">🪙 Монеты</label>' +
-        '<input type="number" class="form-input" id="mCoins" value="100">' +
-        '<div class="form-row" style="margin-top:6px;">' +
-          '<button class="btn success sm" data-coin="add" style="flex:1;">➕</button>' +
-          '<button class="btn danger sm" data-coin="take" style="flex:1;">➖</button>' +
-          '<button class="btn ghost sm" data-coin="set" style="flex:1;">=</button>' +
-        '</div></div>' +
-      '<div class="form-group"><label class="form-label">💎 WIP-подписка (дней)</label>' +
-        '<input type="number" class="form-input" id="mWipDays" value="30">' +
-        '<div class="form-row" style="margin-top:6px;">' +
-          '<button class="btn success sm" data-wip="give" style="flex:1;">➕ Выдать</button>' +
-          '<button class="btn danger sm" data-wip="remove" style="flex:1;">➖ Забрать</button>' +
-        '</div></div>' +
-      '<div class="form-group"><label class="form-label">🎁 Аватарка (эмодзи)</label>' +
-        '<input type="text" class="form-input" id="mAvatar" placeholder="👑" maxlength="4">' +
-        '<div class="form-row" style="margin-top:6px;">' +
-          '<button class="btn success sm" data-avatar="give" style="flex:1;">➕</button>' +
-          '<button class="btn danger sm" data-avatar="remove" style="flex:1;">➖</button>' +
-        '</div></div>' +
-      '<div class="form-group"><label class="form-label">🔑 Сбросить пароль</label>' +
-        '<div class="form-row">' +
-          '<input type="text" class="form-input" id="mNewPass" placeholder="Новый пароль (мин. 4)">' +
-          '<button class="btn warn sm" data-action="reset-pass">🔑</button>' +
-        '</div></div>' +
-      '<div class="form-group"><label class="form-label">✏️ Сменить ник</label>' +
-        '<div class="form-row">' +
-          '<input type="text" class="form-input" id="mNewNick" placeholder="Новый ник">' +
-          '<button class="btn warn sm" data-action="change-nick">✏️</button>' +
-        '</div></div>' +
-      '<div class="form-group"><label class="form-label">🔕 Мут</label>' +
-        '<div class="form-row">' +
-          '<input type="number" class="form-input" id="mMuteHours" value="1">' +
-          (muted
-            ? '<button class="btn success sm" data-action="unmute">✅ Снять</button>'
-            : '<button class="btn warn sm" data-action="mute">🔕 Мут</button>') +
-        '</div></div>' +
-      '<div class="form-group"><label class="form-label">📝 Заметка (только для тебя)</label>' +
-        '<textarea class="form-input" id="mNote" placeholder="Заметка..." style="min-height:60px;">' + escapeHtml(getNotes()[u.nick] ? getNotes()[u.nick].text : "") + '</textarea>' +
-        '<div class="form-row" style="margin-top:6px;">' +
-          '<button class="btn success sm" data-note="save" style="flex:1;">💾 Сохранить</button>' +
-          '<button class="btn danger sm" data-note="delete" style="flex:1;">🗑 Очистить</button>' +
-        '</div></div>' +
-      '<div class="form-group"><label class="form-label">🏷 Теги</label>' +
-        '<div class="section-actions" id="userTagsRow"></div>' +
-      '</div>' +
-      '<div class="form-group"><label class="form-label">⭐ Избранное</label>' +
-        '<button class="btn ' + (getFavorites().indexOf(u.nick) !== -1 ? 'success' : 'ghost') + ' full" data-fav="toggle">' +
-          (getFavorites().indexOf(u.nick) !== -1 ? '⭐ Убрать из избранного' : '☆ Добавить в избранное') +
-        '</button>' +
-      '</div>' +
-      '<div class="form-actions"><button class="btn ghost" onclick="closeModal()">Закрыть</button></div>'
-    );
-
-    // ТЕГИ
-    var allTags = ["⚠️ внимание", "💎 VIP", "☠️ токсик", "✅ проверен", "👤 свой", "🚨 жалоба", "🤝 друг"];
-    var userTags = getTags()[u.nick] || [];
-    var tagsRow = $("userTagsRow");
-    tagsRow.innerHTML = allTags.map(function (t) {
-      var active = userTags.indexOf(t) !== -1;
-      return '<button class="btn ' + (active ? 'success' : 'ghost') + ' sm" data-tag="' + escapeHtml(t) + '">' + escapeHtml(t) + '</button>';
-    }).join(" ");
-    tagsRow.querySelectorAll("[data-tag]").forEach(function (b) {
-      b.addEventListener("click", function () {
-        var tag = b.getAttribute("data-tag");
-        var cur = getTags()[u.nick] || [];
-        var idx = cur.indexOf(tag);
-        if (idx === -1) cur.push(tag);
-        else cur.splice(idx, 1);
-        setTags(u.nick, cur);
-        toast("🏷 Теги обновлены", "success");
-        openUserManage(u.nick);
-        renderUsers();
-      });
-    });
-
-    $("modalBody").querySelectorAll("[data-coin]").forEach(function (b) {
-      b.addEventListener("click", async function () {
-        var amount = parseInt($("mCoins").value, 10) || 0;
-        var mode = b.getAttribute("data-coin");
-        if (amount <= 0) return toast("Введи число", "error");
-        try {
-          var rr = await api("/api/admin/give-coins", { nick: u.nick, amount: amount, mode: mode });
-          toast("🪙 " + mode + " → " + rr.coins, "success");
-          openUserManage(u.nick); loadUsers(); loadStats();
-        } catch (e) { toast("❌ " + e.message, "error"); }
-      });
-    });
-
-    $("modalBody").querySelectorAll("[data-wip]").forEach(function (b) {
-      b.addEventListener("click", async function () {
-        var mode = b.getAttribute("data-wip");
-        try {
-          if (mode === "give") {
-            var days = parseInt($("mWipDays").value, 10) || 30;
-            await api("/api/admin/give-wip", { nick: u.nick, days: days });
-            toast("💎 WIP " + days + " дн.", "success");
-          } else {
-            await api("/api/admin/remove-wip", { nick: u.nick });
-            toast("💎 WIP снят", "success");
-          }
-          openUserManage(u.nick); loadUsers();
-        } catch (e) { toast("❌ " + e.message, "error"); }
-      });
-    });
-
-    $("modalBody").querySelectorAll("[data-avatar]").forEach(function (b) {
-      b.addEventListener("click", async function () {
-        var avatar = $("mAvatar").value.trim();
-        if (!avatar) return toast("Введи аватарку", "error");
-        var mode = b.getAttribute("data-avatar");
-        try {
-          var path = mode === "give" ? "/api/admin/give-avatar" : "/api/admin/remove-avatar";
-          await api(path, { nick: u.nick, avatar: avatar });
-          toast("🎁 " + (mode === "give" ? "Выдано" : "Забрано"), "success");
-          openUserManage(u.nick); loadUsers();
-        } catch (e) { toast("❌ " + e.message, "error"); }
-      });
-    });
-
-    $("modalBody").querySelectorAll("[data-note]").forEach(function (b) {
-      b.addEventListener("click", function () {
-        var act = b.getAttribute("data-note");
-        if (act === "save") { setNote(u.nick, $("mNote").value.trim()); toast("📝 Заметка сохранена", "success"); }
-        else { setNote(u.nick, ""); $("mNote").value = ""; toast("🗑 Заметка очищена", "info"); }
-        renderUsers();
-      });
-    });
-
-    $("modalBody").querySelector("[data-fav]").addEventListener("click", function () {
-      toggleFavorite(u.nick);
-      toast("⭐ Обновлено", "success");
-      openUserManage(u.nick);
-      renderUsers();
-    });
-
-    $("modalBody").querySelectorAll("[data-action]").forEach(function (b) {
-      b.addEventListener("click", async function () {
-        var action = b.getAttribute("data-action");
-        try {
-          if (action === "reset-pass") {
-            var newPass = $("mNewPass").value.trim();
-            if (newPass.length < 4) return toast("Пароль мин. 4 символа", "error");
-            await api("/api/admin/reset-password", { nick: u.nick, newPass: newPass });
-            toast("🔑 Пароль сброшен", "success");
-          } else if (action === "change-nick") {
-            var newNick = $("mNewNick").value.trim();
-            if (!newNick) return toast("Введи ник", "error");
-            await api("/api/admin/change-nick", { oldNick: u.nick, newNick: newNick });
-            toast("✏️ Ник изменён", "success");
-            closeModal(); loadUsers();
-          } else if (action === "mute") {
-            var hours = parseInt($("mMuteHours").value, 10) || 1;
-            await api("/api/admin/mute", { nick: u.nick, hours: hours });
-            toast("🔕 Мут на " + hours + "ч", "success");
-            openUserManage(u.nick); loadUsers();
-          } else if (action === "unmute") {
-            await api("/api/admin/unmute", { nick: u.nick });
-            toast("✅ Мут снят", "success");
-            openUserManage(u.nick); loadUsers();
-          }
-        } catch (e) { toast("❌ " + e.message, "error"); }
-      });
-    });
-  } catch (e) { toast("❌ " + e.message, "error"); }
-}
-
-// Bulk handlers
-document.addEventListener("click", function (e) {
-  if (e.target.id === "bulkClear") { bulkSelected = {}; renderUsers(); }
-  else if (e.target.id === "bulkGiveCoins") {
-    var nicks = Object.keys(bulkSelected);
-    if (!nicks.length) return;
-    var amount = parseInt(prompt("Сколько монет выдать каждому?", "100"), 10);
-    if (!amount || amount <= 0) return;
-    if (!confirm("Выдать " + amount + " монет " + nicks.length + " игрокам?")) return;
-    (async function () {
-      var done = 0, err = 0;
-      for (var i = 0; i < nicks.length; i++) {
-        try { await api("/api/admin/give-coins", { nick: nicks[i], amount: amount, mode: "add" }); done++; }
-        catch (e) { err++; }
-      }
-      toast("✅ Выдано: " + done + (err ? ", ошибок: " + err : ""), "success");
-      bulkSelected = {};
-      loadUsers();
-    })();
-  } else if (e.target.id === "bulkBan") {
-    var nicks = Object.keys(bulkSelected);
-    if (!nicks.length) return;
-    var hours = parseInt(prompt("На сколько часов? (0=навсегда)", "24"), 10);
-    if (isNaN(hours)) return;
-    var reason = prompt("Причина:", "Массовый бан") || "Массовый бан";
-    if (!confirm("Забанить " + nicks.length + " игроков?")) return;
-    (async function () {
-      var done = 0, err = 0;
-      for (var i = 0; i < nicks.length; i++) {
-        try { await api("/api/admin/ban", { nick: nicks[i], hours: hours, reason: reason }); done++; }
-        catch (e) { err++; }
-      }
-      toast("🚫 Забанено: " + done, "success");
-      bulkSelected = {};
-      loadUsers(); loadBans();
-    })();
-  } else if (e.target.id === "bulkMute") {
-    var nicks = Object.keys(bulkSelected);
-    if (!nicks.length) return;
-    var hours = parseInt(prompt("На сколько часов замутить?", "1"), 10);
-    if (!hours || hours <= 0) return;
-    if (!confirm("Замутить " + nicks.length + " игроков на " + hours + "ч?")) return;
-    (async function () {
-      var done = 0, err = 0;
-      for (var i = 0; i < nicks.length; i++) {
-        try { await api("/api/admin/mute", { nick: nicks[i], hours: hours }); done++; }
-        catch (e) { err++; }
-      }
-      toast("🔕 Замучено: " + done, "success");
-      bulkSelected = {};
-      loadUsers();
-    })();
-  }
-});
-
-// ============================================================
-// FAVORITES / TAGS / NOTES
-// ============================================================
-var NOTES_KEY = "artamon_admin_notes_v1";
-var TAGS_KEY = "artamon_admin_tags_v1";
-var FAV_KEY = "artamon_admin_favorites_v1";
-
-function getNotes() {
-  try { return JSON.parse(localStorage.getItem(NOTES_KEY) || "{}"); } catch (e) { return {}; }
-}
-function setNote(nick, text) {
-  var n = getNotes();
-  if (text) n[nick] = { text: text, ts: Date.now() };
-  else delete n[nick];
-  try { localStorage.setItem(NOTES_KEY, JSON.stringify(n)); } catch (e) {}
-}
-function getTags() {
-  try { return JSON.parse(localStorage.getItem(TAGS_KEY) || "{}"); } catch (e) { return {}; }
-}
-function setTags(nick, tags) {
-  var t = getTags();
-  if (tags && tags.length) t[nick] = tags;
-  else delete t[nick];
-  try { localStorage.setItem(TAGS_KEY, JSON.stringify(t)); } catch (e) {}
-}
-function getFavorites() {
-  try { return JSON.parse(localStorage.getItem(FAV_KEY) || "[]"); } catch (e) { return []; }
-}
-function toggleFavorite(nick) {
-  var favs = getFavorites();
-  var idx = favs.indexOf(nick);
-  if (idx === -1) favs.push(nick);
-  else favs.splice(idx, 1);
-  try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); } catch (e) {}
-}
-
 // ============================================================
 // BANS
 // ============================================================
 async function loadBans() {
-  var tbody = $("bansBody");
-  if (!tbody) return;
+  var tbody = $("bansBody"); if (!tbody) return;
   tbody.innerHTML = '<tr><td colspan="5" class="empty">Загрузка...</td></tr>';
   try {
     var r = await api("/api/admin/bans");
@@ -2020,13 +1060,12 @@ async function loadBans() {
     tbody.innerHTML = "";
     state.bans.forEach(function (b) {
       var untilText = b.until > 0 ? fmtDate(b.until) : "∞";
-      var expired = b.until > 0 && b.until < Date.now();
       var tr = document.createElement("tr");
       tr.innerHTML =
         '<td><b>' + escapeHtml(b.nick) + '</b></td>' +
         '<td style="color:var(--danger);">' + escapeHtml(b.reason) + '</td>' +
         '<td style="font-size:.72rem;color:var(--txt-3);">' + timeAgo(b.bannedAt) + '</td>' +
-        '<td style="font-size:.72rem;color:' + (expired ? 'var(--txt-3)' : 'var(--warn)') + ';">' + untilText + '</td>' +
+        '<td style="font-size:.72rem;color:var(--warn);">' + untilText + '</td>' +
         '<td><button class="btn sm success" data-unban="' + escapeHtml(b.nick) + '">✅ Разбанить</button></td>';
       tbody.appendChild(tr);
     });
@@ -2045,61 +1084,11 @@ async function loadBans() {
   }
 }
 
-if ($("banBtn")) $("banBtn").addEventListener("click", async function () {
-  var nick = $("banNick").value.trim();
-  var reason = $("banReason").value.trim() || "Без причины";
-  var hours = parseInt($("banHours").value, 10) || 0;
-  if (!nick) return toast("Введи ник", "error");
-  try {
-    await api("/api/admin/ban", { nick: nick, reason: reason, hours: hours });
-    toast("🚫 " + nick + " забанен", "success");
-    $("banNick").value = ""; $("banReason").value = "";
-    loadBans(); loadUsers(); loadStats();
-  } catch (e) { toast("❌ " + e.message, "error"); }
-});
-
-if ($("muteBtn")) $("muteBtn").addEventListener("click", async function () {
-  var nick = $("muteNick").value.trim();
-  var hours = parseInt($("muteHours").value, 10) || 1;
-  if (!nick) return toast("Введи ник", "error");
-  try {
-    await api("/api/admin/mute", { nick: nick, hours: hours });
-    toast("🔕 " + nick + " в муте на " + hours + "ч", "success");
-    $("muteNick").value = "";
-    loadUsers();
-  } catch (e) { toast("❌ " + e.message, "error"); }
-});
-
-if ($("unmuteBtn")) $("unmuteBtn").addEventListener("click", async function () {
-  var nick = $("muteNick").value.trim();
-  if (!nick) return toast("Введи ник", "error");
-  try {
-    await api("/api/admin/unmute", { nick: nick });
-    toast("✅ Мут снят с " + nick, "success");
-    $("muteNick").value = "";
-    loadUsers();
-  } catch (e) { toast("❌ " + e.message, "error"); }
-});
-
-if ($("unbanAll")) $("unbanAll").addEventListener("click", async function () {
-  if (!confirm("Разбанить ВСЕХ?")) return;
-  try {
-    var count = 0;
-    for (var i = 0; i < state.bans.length; i++) {
-      await api("/api/admin/unban", { nick: state.bans[i].nick });
-      count++;
-    }
-    toast("✅ Разбанено: " + count, "success");
-    loadBans(); loadUsers(); loadStats();
-  } catch (e) { toast("❌ " + e.message, "error"); }
-});
-
 // ============================================================
 // POSTS
 // ============================================================
 async function loadPosts() {
-  var box = $("postsList");
-  if (!box) return;
+  var box = $("postsList"); if (!box) return;
   box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
   try {
     var r = await api("/api/admin/posts");
@@ -2109,30 +1098,15 @@ async function loadPosts() {
     box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
   }
 }
-
 function renderPosts() {
-  var box = $("postsList");
-  if (!box) return;
+  var box = $("postsList"); if (!box) return;
   if (!state.posts.length) {
     box.innerHTML = '<div class="empty"><span class="empty-icon">📰</span>Постов нет</div>';
     return;
   }
   box.innerHTML = "";
   state.posts.forEach(function (p) {
-    var ratings = p.ratings || {};
-    var keys = Object.keys(ratings).filter(function (k) { return k.indexOf("__") === -1; });
-    var cnt = keys.length;
-    var avg = 0;
-    if (cnt) {
-      var sum = 0;
-      keys.forEach(function (k) { sum += ratings[k]; });
-      avg = (sum / cnt).toFixed(1);
-    }
-    var commentsCount = (p.comments || []).length;
-    var statuses = [];
-    if (p.pinned) statuses.push('<span class="badge badge-rare">📌</span>');
-    if (p.hidden) statuses.push('<span class="badge badge-closed">🙈</span>');
-
+    var cnt = (p.ratings && Object.keys(p.ratings).length) || 0;
     var card = document.createElement("div");
     card.className = "section";
     card.style.marginBottom = "12px";
@@ -2144,320 +1118,127 @@ function renderPosts() {
           '<div style="font-size:.72rem;color:var(--txt-2);display:flex;gap:12px;flex-wrap:wrap;">' +
             '<span>👤 ' + escapeHtml(p.author || "—") + '</span>' +
             '<span>📅 ' + fmtDate(p.date) + '</span>' +
-            '<span>⭐ ' + (cnt ? avg + ' (' + cnt + ')' : '—') + '</span>' +
-            '<span>💬 ' + commentsCount + '</span>' +
-            statuses.join(" ") +
+            '<span>⭐ ' + cnt + '</span>' +
           '</div>' +
         '</div>' +
-        '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+        '<div style="display:flex;gap:6px;">' +
           '<button class="btn sm" data-act="pin" data-id="' + p.id + '">' + (p.pinned ? "📍" : "📌") + '</button>' +
-          '<button class="btn sm" data-act="hide" data-id="' + p.id + '">' + (p.hidden ? "👁" : "🙈") + '</button>' +
-          '<button class="btn sm warn" data-act="edit" data-id="' + p.id + '">✏️</button>' +
-          '<button class="btn sm" data-act="comments" data-id="' + p.id + '">💬</button>' +
           '<button class="btn sm danger" data-act="delete" data-id="' + p.id + '">🗑</button>' +
         '</div>' +
       '</div>' +
-      (p.body ? '<div style="font-size:.85rem;white-space:pre-wrap;">' + escapeHtml(p.body.slice(0, 200)) + (p.body.length > 200 ? "..." : "") + '</div>' : '');
+      (p.body ? '<div style="font-size:.85rem;white-space:pre-wrap;">' + escapeHtml(p.body.slice(0, 200)) + '</div>' : '');
     box.appendChild(card);
   });
   box.querySelectorAll("[data-act]").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var act = btn.getAttribute("data-act");
       var id = btn.getAttribute("data-id");
-      if (act === "pin") togglePost(id, "pinned");
-      else if (act === "hide") togglePost(id, "hidden");
+      if (act === "pin") togglePost(id);
       else if (act === "delete") deletePost(id);
-      else if (act === "edit") openEditPost(id);
-      else if (act === "comments") openCommentsModal(id);
     });
   });
 }
-
-async function togglePost(id, field) {
-  try {
-    await api("/api/admin/post-toggle", { id: id, field: field });
-    toast("✅ Изменено", "success");
-    loadPosts();
-  } catch (e) { toast("❌ " + e.message, "error"); }
+async function togglePost(id) {
+  try { await api("/api/admin/post-toggle", { id: id, field: "pinned" }); toast("✅", "success"); loadPosts(); }
+  catch (e) { toast("❌ " + e.message, "error"); }
 }
 async function deletePost(id) {
   if (!confirm("Удалить пост?")) return;
-  try {
-    await api("/api/admin/post-delete", { id: id });
-    toast("🗑 Удалён", "success");
-    loadPosts(); loadStats();
-  } catch (e) { toast("❌ " + e.message, "error"); }
+  try { await api("/api/admin/post-delete", { id: id }); toast("🗑 Удалён", "success"); loadPosts(); loadStats(); }
+  catch (e) { toast("❌ " + e.message, "error"); }
 }
-function openCreatePost() {
-  openModal("➕ Новый пост",
-    '<div class="form-group"><label class="form-label">Заголовок *</label>' +
-      '<input type="text" class="form-input" id="npTitle" maxlength="200"></div>' +
-    '<div class="form-group"><label class="form-label">Текст</label>' +
-      '<textarea class="form-input" id="npBody" style="min-height:120px;"></textarea></div>' +
-    '<div class="form-group"><label class="form-label">URL картинки</label>' +
-      '<input type="text" class="form-input" id="npImg" placeholder="https://..."></div>' +
-    '<div class="form-group"><label class="checkbox-row"><input type="checkbox" id="npPinned"> 📌 Закрепить</label></div>' +
-    '<div class="form-actions">' +
-      '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
-      '<button class="btn success" id="npCreate">✅ Создать</button></div>'
-  );
-  $("npCreate").addEventListener("click", async function () {
-    var title = $("npTitle").value.trim();
-    if (!title) return toast("Введи заголовок", "error");
-    try {
-      await api("/api/admin/post-create", { title: title, body: $("npBody").value.trim(), img: $("npImg").value.trim(), pinned: $("npPinned").checked });
-      toast("✅ Пост создан", "success");
-      closeModal(); loadPosts(); loadStats();
-    } catch (e) { toast("❌ " + e.message, "error"); }
-  });
-}
-function openEditPost(id) {
-  var post = state.posts.filter(function (p) { return p.id === id; })[0];
-  if (!post) return;
-  openModal("✏️ Редактировать",
-    '<div class="form-group"><label class="form-label">Заголовок</label>' +
-      '<input type="text" class="form-input" id="epTitle" value="' + escapeHtml(post.title) + '"></div>' +
-    '<div class="form-group"><label class="form-label">Текст</label>' +
-      '<textarea class="form-input" id="epBody" style="min-height:120px;">' + escapeHtml(post.body || "") + '</textarea></div>' +
-    '<div class="form-group"><label class="form-label">URL картинки</label>' +
-      '<input type="text" class="form-input" id="epImg" value="' + escapeHtml(post.img || "") + '"></div>' +
-    '<div class="form-actions">' +
-      '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
-      '<button class="btn success" id="epSave">💾 Сохранить</button></div>'
-  );
-  $("epSave").addEventListener("click", async function () {
-    try {
-      await api("/api/admin/post-edit", { id: id, title: $("epTitle").value.trim(), body: $("epBody").value.trim(), img: $("epImg").value.trim() });
-      toast("💾 Сохранено", "success");
-      closeModal(); loadPosts();
-    } catch (e) { toast("❌ " + e.message, "error"); }
-  });
-}
-function openCommentsModal(postId) {
-  var post = state.posts.filter(function (p) { return p.id === postId; })[0];
-  if (!post) return;
-  var comments = post.comments || [];
-  var html = '<div style="font-size:.82rem;color:var(--txt-2);margin-bottom:12px;">Пост: <b style="color:var(--gold-2);">' + escapeHtml(post.title) + '</b></div>';
-  if (!comments.length) {
-    html += '<div class="empty">Комментариев нет</div>';
-  } else {
-    html += '<div style="display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;">';
-    comments.forEach(function (c) {
-      html += '<div style="background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;">' +
-        '<div style="display:flex;justify-content:space-between;margin-bottom:5px;">' +
-          '<b style="color:var(--gold-2);font-size:.82rem;">' + escapeHtml(c.nick) + '</b>' +
-          '<span style="font-size:.66rem;color:var(--txt-3);">' + timeAgo(c.time) + '</span>' +
-        '</div>' +
-        '<div style="font-size:.84rem;margin-bottom:6px;">' + escapeHtml(c.text) + '</div>' +
-        '<button class="btn sm danger" data-delcomment="' + c.id + '">🗑 Удалить</button>' +
-      '</div>';
-    });
-    html += '</div>';
-  }
-  html += '<div class="form-actions"><button class="btn ghost" onclick="closeModal()">Закрыть</button></div>';
-  openModal("💬 Комментарии (" + comments.length + ")", html);
-  $("modalBody").querySelectorAll("[data-delcomment]").forEach(function (b) {
-    b.addEventListener("click", async function () {
-      var cid = b.getAttribute("data-delcomment");
-      if (!confirm("Удалить комментарий?")) return;
-      try {
-        await api("/api/admin/comment-delete", { postId: postId, commentId: cid });
-        toast("🗑 Удалён", "success");
-        await loadPosts();
-        var updated = state.posts.filter(function (p) { return p.id === postId; })[0];
-        if (updated) openCommentsModal(postId);
-      } catch (e) { toast("❌ " + e.message, "error"); }
-    });
-  });
-}
-if ($("createPostBtn")) $("createPostBtn").addEventListener("click", openCreatePost);
 
 // ============================================================
 // PROMOS
 // ============================================================
 async function loadPromos() {
-  var box = $("promosList");
-  if (!box) return;
+  var box = $("promosList"); if (!box) return;
   box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
   try {
     var r = await api("/api/admin/promo-list");
     state.promos = r.promos || [];
-    renderPromos();
-  } catch (e) {
-    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
-  }
-}
-function renderPromos() {
-  var box = $("promosList");
-  if (!box) return;
-  if (!state.promos.length) {
-    box.innerHTML = '<div class="empty"><span class="empty-icon">🎁</span>Промокодов нет</div>';
-    return;
-  }
-  box.innerHTML = "";
-  state.promos.forEach(function (p) {
-    var expired = p.expiresAt < Date.now();
-    var usedCount = (p.usedBy || []).length;
-    var card = document.createElement("div");
-    card.className = "promo-card";
-    if (expired) card.style.opacity = ".5";
-    card.innerHTML =
-      '<div class="promo-code">' + escapeHtml(p.code) + (expired ? " ⚠️ ИСТЁК" : "") + '</div>' +
-      '<div class="promo-info">' +
-        (p.coins > 0 ? '<span>🪙 <b>' + p.coins + '</b></span>' : '') +
-        (p.wipDays > 0 ? '<span>💎 <b>' + p.wipDays + 'д</b></span>' : '') +
-        (p.avatar ? '<span>🎨 <b>' + escapeHtml(p.avatar) + '</b></span>' : '') +
-        '<span>👥 <b>' + usedCount + '</b> активаций</span>' +
-        '<span>📅 до ' + fmtDateShort(p.expiresAt) + '</span>' +
-      '</div>' +
-      '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">' +
-        '<button class="btn sm ghost" data-copy="' + escapeHtml(p.code) + '">📋</button>' +
-        '<button class="btn sm danger" data-delete="' + escapeHtml(p.code) + '">🗑</button>' +
+    if (!state.promos.length) {
+      box.innerHTML = '<div class="empty">🎁 Нет промокодов</div>';
+      return;
+    }
+    box.innerHTML = state.promos.map(function (p) {
+      return '<div style="background:var(--bg-2);border:1.5px dashed var(--gold-2);border-radius:12px;padding:14px;margin-bottom:10px;">' +
+        '<div style="font-family:ui-monospace,monospace;font-size:1.1rem;font-weight:900;color:var(--gold-2);margin-bottom:6px;">' + escapeHtml(p.code) + '</div>' +
+        '<div style="font-size:.75rem;color:var(--txt-2);display:flex;gap:12px;flex-wrap:wrap;">' +
+          (p.coins > 0 ? '<span>🪙 <b>' + p.coins + '</b></span>' : '') +
+          (p.wipDays > 0 ? '<span>💎 <b>' + p.wipDays + 'д</b></span>' : '') +
+          '<span>👥 ' + (p.usedBy || []).length + '</span>' +
+        '</div>' +
+        '<button class="btn sm danger" style="margin-top:10px;" onclick="deletePromo(\'' + escapeHtml(p.code) + '\')">🗑</button>' +
       '</div>';
-    box.appendChild(card);
-  });
-  box.querySelectorAll("[data-copy]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      try { navigator.clipboard.writeText(b.getAttribute("data-copy")); toast("📋 Скопировано", "success"); } catch (e) {}
-    });
-  });
-  box.querySelectorAll("[data-delete]").forEach(function (b) {
-    b.addEventListener("click", async function () {
-      var code = b.getAttribute("data-delete");
-      if (!confirm("Удалить " + code + "?")) return;
-      try {
-        await api("/api/admin/promo-delete", { code: code });
-        toast("🗑 Удалён", "success");
-        loadPromos();
-      } catch (e) { toast("❌ " + e.message, "error"); }
-    });
-  });
+    }).join("");
+  } catch (e) { box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>'; }
 }
-function openCreatePromo() {
-  var randomCode = "ARTAMON" + Math.floor(Math.random() * 9000 + 1000);
-  openModal("🎁 Новый промокод",
-    '<div class="form-group"><label class="form-label">Код</label>' +
-      '<input type="text" class="form-input" id="pCode" value="' + randomCode + '" style="text-transform:uppercase;font-family:ui-monospace,monospace;letter-spacing:.1em;"></div>' +
-    '<div class="form-group"><label class="form-label">🪙 Монеты</label>' +
-      '<input type="number" class="form-input" id="pCoins" value="1000" min="0"></div>' +
-    '<div class="form-group"><label class="form-label">💎 WIP (дней)</label>' +
-      '<input type="number" class="form-input" id="pWip" value="0" min="0"></div>' +
-    '<div class="form-group"><label class="form-label">🎨 Аватарка</label>' +
-      '<input type="text" class="form-input" id="pAvatar" maxlength="4" placeholder="👑"></div>' +
-    '<div class="form-group"><label class="form-label">📅 Действует дней</label>' +
-      '<input type="number" class="form-input" id="pExpire" value="30" min="1"></div>' +
-    '<div class="form-actions">' +
-      '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
-      '<button class="btn success" id="pCreate">✅ Создать</button></div>'
-  );
-  $("pCreate").addEventListener("click", async function () {
-    var code = $("pCode").value.trim().toUpperCase();
-    if (code.length < 3) return toast("Код мин. 3 символа", "error");
-    try {
-      await api("/api/admin/promo-create", {
-        code: code,
-        coins: parseInt($("pCoins").value, 10) || 0,
-        wipDays: parseInt($("pWip").value, 10) || 0,
-        avatar: $("pAvatar").value.trim(),
-        expiresInDays: parseInt($("pExpire").value, 10) || 30,
-      });
-      toast("✅ Код создан: " + code, "success");
-      closeModal(); loadPromos(); loadStats();
-    } catch (e) { toast("❌ " + e.message, "error"); }
-  });
+async function deletePromo(code) {
+  if (!confirm("Удалить " + code + "?")) return;
+  try { await api("/api/admin/promo-delete", { code: code }); toast("🗑 Удалён", "success"); loadPromos(); }
+  catch (e) { toast("❌ " + e.message, "error"); }
 }
-if ($("createPromoBtn")) $("createPromoBtn").addEventListener("click", openCreatePromo);
+window.deletePromo = deletePromo;
 
 // ============================================================
 // BROADCAST
 // ============================================================
 async function loadBroadcasts() {
-  var box = $("broadcastsList");
-  if (!box) return;
+  var box = $("broadcastsList"); if (!box) return;
   box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
   try {
     var r = await api("/api/admin/broadcast-list");
     state.broadcasts = r.broadcasts || [];
-    renderBroadcasts();
-  } catch (e) {
-    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
-  }
+    if (!state.broadcasts.length) {
+      box.innerHTML = '<div class="empty">📢 Рассылок не было</div>';
+      return;
+    }
+    box.innerHTML = "";
+    state.broadcasts.forEach(function (b) {
+      var el = document.createElement("div");
+      el.className = "log-item";
+      el.innerHTML = '<div><span class="log-time">' + timeAgo(b.createdAt) + '</span></div><div class="log-detail">' + escapeHtml(b.message) + '</div>';
+      box.appendChild(el);
+    });
+  } catch (e) { box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>'; }
 }
-function renderBroadcasts() {
-  var box = $("broadcastsList");
-  if (!box) return;
-  if (!state.broadcasts.length) { box.innerHTML = '<div class="empty">📢 Рассылок не было</div>'; return; }
-  box.innerHTML = "";
-  state.broadcasts.forEach(function (b) {
-    var card = document.createElement("div");
-    card.className = "log-item";
-    card.innerHTML =
-      '<div><span class="log-time">' + timeAgo(b.createdAt) + '</span>' +
-      '<span class="log-action">' + escapeHtml(b.type || "info").toUpperCase() + '</span></div>' +
-      '<div class="log-detail">' + escapeHtml(b.message) + '</div>';
-    box.appendChild(card);
-  });
-}
-if ($("sendBroadcastBtn")) $("sendBroadcastBtn").addEventListener("click", async function () {
-  var message = $("bcMessage").value.trim();
-  if (!message) return toast("Введи сообщение", "error");
-  if (!confirm("Отправить рассылку?")) return;
-  try {
-    await api("/api/admin/broadcast-send", { message: message, type: $("bcType").value, duration: 15, target: $("bcTarget").value });
-    toast("📢 Рассылка отправлена", "success");
-    $("bcMessage").value = "";
-    loadBroadcasts();
-  } catch (e) { toast("❌ " + e.message, "error"); }
-});
 
 // ============================================================
 // TICKETS
 // ============================================================
 async function loadTickets() {
-  var box = $("ticketsList");
-  if (!box) return;
+  var box = $("ticketsList"); if (!box) return;
   box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
   try {
     var r = await api("/api/admin/tickets");
     state.tickets = r.tickets || [];
     renderTickets();
-  } catch (e) {
-    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
-  }
+  } catch (e) { box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>'; }
 }
 function renderTickets() {
-  var box = $("ticketsList");
-  if (!box) return;
+  var box = $("ticketsList"); if (!box) return;
   var filter = $("ticketFilter") ? $("ticketFilter").value : "all";
   var list = state.tickets.slice();
   if (filter !== "all") list = list.filter(function (t) { return t.status === filter; });
-  if (!list.length) { box.innerHTML = '<div class="empty"><span class="empty-icon">📭</span>Нет обращений</div>'; return; }
-  var catNames = { bug: "🐛 Баг", question: "❓ Вопрос", suggest: "💡 Идея", complaint: "😡 Жалоба", other: "📝 Другое" };
+  if (!list.length) { box.innerHTML = '<div class="empty">📭 Нет обращений</div>'; return; }
   box.innerHTML = "";
   list.forEach(function (t) {
     var el = document.createElement("div");
     el.className = "ticket-card " + (t.status || "open");
-    var repliesHtml = (t.replies || []).map(function (r) {
-      var who = r.role === "junior" ? "🛡️ Мл. Админ" : "👑 Владелец";
-      return '<div class="ticket-reply"><div class="reply-head">' + who + ' · ' + timeAgo(r.time) + '</div><div>' + escapeHtml(r.text) + '</div></div>';
-    }).join("");
-    var statusName = t.status === "closed" ? "🔒 Закрыто" : t.status === "answered" ? "✅ Отвечено" : "🆕 Открыто";
     el.innerHTML =
       '<div class="ticket-head">' +
         '<div class="ticket-subject">' + escapeHtml(t.subject) + '</div>' +
         '<div class="ticket-date">' + timeAgo(t.createdAt) + '</div>' +
       '</div>' +
       '<div class="ticket-meta">' +
-        '<span class="badge ' + (t.status || "open") + '">' + statusName + '</span>' +
-        '<span class="badge common">' + (catNames[t.category] || "📝") + '</span>' +
+        '<span class="badge ' + (t.status || "open") + '">' + (t.status === "closed" ? "🔒 Закрыто" : t.status === "answered" ? "✅ Отвечено" : "🆕 Открыто") + '</span>' +
         '<span class="badge common">👤 ' + escapeHtml(t.nick) + '</span>' +
       '</div>' +
       '<div class="ticket-message">' + escapeHtml(t.message) + '</div>' +
-      (repliesHtml ? '<div class="ticket-replies">' + repliesHtml + '</div>' : '') +
       '<div class="section-actions">' +
         '<button class="btn sm success" data-reply="' + t.id + '">💬 Ответить</button>' +
         (t.status !== "closed" ? '<button class="btn sm warn" data-close="' + t.id + '">🔒 Закрыть</button>' : '') +
-        '<button class="btn sm danger" data-delete="' + t.id + '">🗑 Удалить</button>' +
       '</div>';
     box.appendChild(el);
   });
@@ -2467,54 +1248,25 @@ function renderTickets() {
   box.querySelectorAll("[data-close]").forEach(function (b) {
     b.addEventListener("click", async function () {
       var id = b.getAttribute("data-close");
-      if (!confirm("Закрыть тикет?")) return;
-      try {
-        await api("/api/admin/ticket-close", { id: id });
-        toast("🔒 Тикет закрыт", "success");
-        loadTickets(); loadStats();
-      } catch (e) { toast("❌ " + e.message, "error"); }
-    });
-  });
-  box.querySelectorAll("[data-delete]").forEach(function (b) {
-    b.addEventListener("click", async function () {
-      var id = b.getAttribute("data-delete");
-      if (!confirm("Удалить тикет?")) return;
-      try {
-        await api("/api/admin/ticket-delete", { id: id });
-        toast("🗑 Удалён", "success");
-        loadTickets(); loadStats();
-      } catch (e) { toast("❌ " + e.message, "error"); }
+      if (!confirm("Закрыть?")) return;
+      try { await api("/api/admin/ticket-close", { id: id }); toast("🔒 Закрыт", "success"); loadTickets(); loadStats(); }
+      catch (e) { toast("❌ " + e.message, "error"); }
     });
   });
 }
 function openReplyModal(id) {
   var t = state.tickets.filter(function (x) { return x.id === id; })[0];
   if (!t) return;
-  var presets = [
-    { name: "👋 Приветствие", text: "Привет! Спасибо за обращение, разбираюсь." },
-    { name: "✅ Принято", text: "Принято в работу! Вернусь с ответом в ближайшее время." },
-    { name: "❌ Отказ", text: "К сожалению, по данному вопросу мы не можем помочь." },
-    { name: "🐛 Фикс", text: "Баг подтверждён, исправление будет в ближайшем обновлении." },
-    { name: "💡 Идея", text: "Спасибо за идею! Передал разработчику на рассмотрение." },
-  ];
-  var presetsHtml = '<div class="section-actions" style="margin-bottom:10px;">' +
-    presets.map(function (p, i) { return '<button class="btn ghost sm" data-preset="' + i + '">' + p.name + '</button>'; }).join("") + '</div>';
-  openModal("💬 Ответ на " + t.nick,
+  openModal("💬 Ответ " + t.nick,
     '<div style="font-size:.82rem;color:var(--txt-2);margin-bottom:12px;padding:10px;background:var(--bg-2);border-radius:8px;">' +
       '<b style="color:var(--gold-2);">' + escapeHtml(t.subject) + '</b><br>' + escapeHtml(t.message) +
-    '</div>' + presetsHtml +
+    '</div>' +
     '<div class="form-group"><label class="form-label">Ответ</label>' +
-      '<textarea class="form-input" id="repText" placeholder="Твой ответ..." style="min-height:120px;"></textarea></div>' +
+      '<textarea class="form-input" id="repText" style="min-height:120px;"></textarea></div>' +
     '<div class="form-actions">' +
       '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
       '<button class="btn success" id="repSend">💬 Отправить</button></div>'
   );
-  $("modalBody").querySelectorAll("[data-preset]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      var i = parseInt(b.getAttribute("data-preset"), 10);
-      if ($("repText")) $("repText").value = presets[i].text;
-    });
-  });
   $("repSend").addEventListener("click", async function () {
     var text = $("repText").value.trim();
     if (!text) return toast("Введи текст", "error");
@@ -2525,73 +1277,6 @@ function openReplyModal(id) {
     } catch (e) { toast("❌ " + e.message, "error"); }
   });
 }
-if ($("ticketFilter")) $("ticketFilter").addEventListener("change", renderTickets);
-
-// ============================================================
-// ACHIEVEMENTS
-// ============================================================
-var ACHIEVEMENTS_LIST = [
-  { id: "first_vote", name: "✅ Голос учтён" }, { id: "first_comment", name: "💬 Первое слово" },
-  { id: "first_poll", name: "🗳️ Первый опрос" }, { id: "book_reader", name: "📖 Читатель" },
-  { id: "bot_bio_read", name: "📖 Биограф" }, { id: "anniversary_2", name: "🎉 Юбилей 2.7" },
-  { id: "bot_argument", name: "🗣 Свидетель спора" }, { id: "bot_reaction_you", name: "❤️ Любимчик" },
-  { id: "first_dm", name: "💬 Переписка" }, { id: "theme_changed", name: "🎨 Стилист" },
-  { id: "bg_changed", name: "🌌 Декоратор" }, { id: "profile_customized", name: "👤 Личность" },
-  { id: "adult_mode", name: "🔞 18+" }, { id: "minor_mode", name: "👶 Юный" },
-  { id: "poll_with_image", name: "📸 Фотограф" }, { id: "bots_friend", name: "🤖 Друг ботов" },
-  { id: "clear_data", name: "💣 Чистый лист" }, { id: "first_account", name: "👤 Первый аккаунт" },
-  { id: "first_sync", name: "🔄 Синхронизатор" }, { id: "guest_start", name: "🎮 Гость" },
-  { id: "first_buy", name: "🛒 Первая покупка" }, { id: "shopaholic", name: "🛍️ Шопоголик" },
-  { id: "collector", name: "🗃️ Коллекционер" }, { id: "millionaire", name: "🤑 Миллионер" },
-  { id: "wip_subscriber", name: "💎 WIP-подписчик" }, { id: "rating_first", name: "⭐ Первая оценка" },
-  { id: "rating_10", name: "🌟 Ценитель" }, { id: "rating_50", name: "✨ Критик" },
-  { id: "rating_100", name: "💫 Эксперт" }, { id: "comment_rating", name: "💬 Обсуждатель" },
-  { id: "comment_rating_10", name: "🗣 Оратор" }, { id: "top_post_author", name: "👑 Автор топ-поста" },
-  { id: "first_daily", name: "🎁 Первый день" }, { id: "daily_streak_3", name: "🔥 3 дня" },
-  { id: "daily_streak_7", name: "💎 Неделя" }, { id: "daily_streak_30", name: "👑 Месяц" },
-  { id: "wheel_first", name: "🎡 Первый спин" }, { id: "wheel_jackpot", name: "🏆 Джекпот" },
-  { id: "quest_first", name: "🎯 Первый квест" }, { id: "quest_5", name: "🎖 Трудяга" },
-  { id: "friend_first", name: "👥 Первый друг" }, { id: "support_first", name: "📮 Обратился" },
-];
-function renderAchList() {
-  var box = $("achList");
-  if (!box) return;
-  box.innerHTML = "";
-  ACHIEVEMENTS_LIST.forEach(function (a) {
-    var el = document.createElement("div");
-    el.style.cssText = "background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:10px;";
-    el.innerHTML =
-      '<div><b style="font-size:.85rem;">' + a.name + '</b><br>' +
-      '<span style="font-size:.7rem;color:var(--txt-3);font-family:ui-monospace,monospace;">' + a.id + '</span></div>' +
-      '<button class="btn sm ghost" data-copy-ach="' + a.id + '">📋</button>';
-    box.appendChild(el);
-  });
-  box.querySelectorAll("[data-copy-ach]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      try { navigator.clipboard.writeText(b.getAttribute("data-copy-ach")); toast("📋 Скопировано", "success"); } catch (e) {}
-    });
-  });
-}
-if ($("giveAchBtn")) $("giveAchBtn").addEventListener("click", async function () {
-  var nick = $("achNick").value.trim();
-  var achId = $("achId").value.trim();
-  if (!nick || !achId) return toast("Ник и ID обязательны", "error");
-  try {
-    await api("/api/admin/give-ach", { nick: nick, achId: achId });
-    toast("🏆 Достижение выдано", "success");
-    $("achNick").value = ""; $("achId").value = "";
-  } catch (e) { toast("❌ " + e.message, "error"); }
-});
-if ($("removeAchBtn")) $("removeAchBtn").addEventListener("click", async function () {
-  var nick = $("achNick").value.trim();
-  var achId = $("achId").value.trim();
-  if (!nick || !achId) return toast("Ник и ID обязательны", "error");
-  try {
-    await api("/api/admin/remove-ach", { nick: nick, achId: achId });
-    toast("❌ Достижение забрано", "success");
-    $("achNick").value = ""; $("achId").value = "";
-  } catch (e) { toast("❌ " + e.message, "error"); }
-});
 
 // ============================================================
 // STATS
@@ -2600,261 +1285,87 @@ async function loadTopLists() {
   if (!state.users.length) {
     try { var r = await api("/api/admin/users"); state.users = r.users || []; } catch (e) {}
   }
-  var users = state.users;
-  var topCoinsBox = $("topCoinsList");
-  if (topCoinsBox) {
-    var topCoins = users.slice().sort(function (a, b) { return (b.coins || 0) - (a.coins || 0); }).slice(0, 10);
-    topCoinsBox.innerHTML = topCoins.map(function (u, i) {
+  var box = $("topCoinsList");
+  if (box) {
+    var top = state.users.slice().sort(function (a, b) { return (b.coins || 0) - (a.coins || 0); }).slice(0, 10);
+    box.innerHTML = top.map(function (u, i) {
       var medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i + 1);
       return '<div class="user-card"><div class="user-avatar">' + medal + '</div>' +
         '<div class="user-info"><div class="user-nick">' + escapeHtml(u.nick) + '</div></div>' +
         '<div style="font-weight:900;color:var(--gold-2);font-size:1.1rem;">🪙 ' + (u.coins || 0) + '</div></div>';
     }).join("") || '<div class="empty">Нет данных</div>';
   }
-  var topRatingsBox = $("topRatingsList");
-  if (topRatingsBox) {
-    var topR = users.slice().sort(function (a, b) { return (b.ratings || 0) - (a.ratings || 0); }).slice(0, 10);
-    topRatingsBox.innerHTML = topR.map(function (u, i) {
-      var medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i + 1);
-      return '<div class="user-card"><div class="user-avatar">' + medal + '</div>' +
-        '<div class="user-info"><div class="user-nick">' + escapeHtml(u.nick) + '</div></div>' +
-        '<div style="font-weight:900;color:var(--gold-2);font-size:1.1rem;">⭐ ' + (u.ratings || 0) + '</div></div>';
-    }).join("") || '<div class="empty">Нет данных</div>';
-  }
-  var topCommentsBox = $("topCommentsList");
-  if (topCommentsBox) {
-    var topC = users.slice().sort(function (a, b) { return (b.comments || 0) - (a.comments || 0); }).slice(0, 10);
-    topCommentsBox.innerHTML = topC.map(function (u, i) {
-      var medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i + 1);
-      return '<div class="user-card"><div class="user-avatar">' + medal + '</div>' +
-        '<div class="user-info"><div class="user-nick">' + escapeHtml(u.nick) + '</div></div>' +
-        '<div style="font-weight:900;color:var(--gold-2);font-size:1.1rem;">💬 ' + (u.comments || 0) + '</div></div>';
-    }).join("") || '<div class="empty">Нет данных</div>';
-  }
 }
 
 // ============================================================
-// SETTINGS
+// UPGRADER
 // ============================================================
-var SETTINGS_KEY = "artamon_admin_settings_v1";
-function loadSettings() {
-  try {
-    var s = localStorage.getItem(SETTINGS_KEY);
-    var data = s ? JSON.parse(s) : {};
-    if ($("setSiteName")) $("setSiteName").value = data.siteName || "Artamon";
-    if ($("setWelcome")) $("setWelcome").value = data.welcomeText || "";
-    if ($("setRegistration")) $("setRegistration").checked = data.registrationOpen !== false;
-  } catch (e) {}
-}
-if ($("saveSettings")) $("saveSettings").addEventListener("click", function () {
-  try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify({
-      siteName: $("setSiteName").value.trim(),
-      welcomeText: $("setWelcome").value.trim(),
-      registrationOpen: $("setRegistration").checked,
-    }));
-    toast("💾 Сохранено", "success");
-  } catch (e) { toast("❌ " + e.message, "error"); }
-});
-if ($("resetSettings")) $("resetSettings").addEventListener("click", function () {
-  if (!confirm("Сбросить настройки?")) return;
-  try { localStorage.removeItem(SETTINGS_KEY); } catch (e) {}
-  loadSettings();
-  toast("♻️ Сброшено", "success");
-});
-
-// ============================================================
-// DATA
-// ============================================================
-if ($("exportDb")) $("exportDb").addEventListener("click", async function () {
-  var out = $("dataOutput");
-  out.textContent = "Загрузка...";
-  try {
-    var r = await api("/api/admin/kv-dump");
-    out.textContent = JSON.stringify(r.dump, null, 2);
-    toast("📤 БД получена", "success");
-  } catch (e) { out.textContent = "❌ " + e.message; toast("❌ " + e.message, "error"); }
-});
-if ($("kvDump")) $("kvDump").addEventListener("click", async function () {
-  var out = $("dataOutput");
-  out.textContent = "Загрузка...";
-  try {
-    var r = await api("/api/admin/kv-dump");
-    out.textContent = JSON.stringify(r.dump, null, 2);
-    toast("📦 KV получен", "success");
-  } catch (e) { out.textContent = "❌ " + e.message; }
-});
-if ($("backupNow")) $("backupNow").addEventListener("click", async function () {
-  var out = $("dataOutput");
-  out.textContent = "Создание бэкапа...";
-  try {
-    var r = await api("/api/admin/kv-dump");
-    var data = JSON.stringify(r.dump, null, 2);
-    var blob = new Blob([data], { type: "application/json" });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url;
-    a.download = "artamon-backup-" + new Date().toISOString().slice(0, 10) + ".json";
-    a.click();
-    URL.revokeObjectURL(url);
-    out.textContent = "✅ Бэкап скачан\n\nРазмер: " + data.length + " байт";
-    toast("💾 Бэкап скачан", "success");
-  } catch (e) { out.textContent = "❌ " + e.message; }
-});
-
-// ============================================================
-// TOOLS
-// ============================================================
-if ($("apiTest")) $("apiTest").addEventListener("click", async function () {
-  var out = $("toolsOutput");
-  out.textContent = "Проверка API...";
-  try {
-    var r = await fetch(API + "/api/tech-status");
-    var data = await r.json();
-    out.textContent = "✅ API работает\n\n" + JSON.stringify(data, null, 2);
-    toast("🌐 API работает", "success");
-  } catch (e) { out.textContent = "❌ " + e.message; toast("❌ " + e.message, "error"); }
-});
-if ($("testRegister")) $("testRegister").addEventListener("click", async function () {
-  var out = $("toolsOutput");
-  out.textContent = "Тест регистрации...";
-  var nick = "test" + Math.floor(Math.random() * 999999);
-  try {
-    var r = await fetch(API + "/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nick: nick, password: "test1234" }),
-    });
-    var data = await r.json();
-    out.textContent = "Тестовый ник: " + nick + "\n\n" + JSON.stringify(data, null, 2);
-    toast(r.ok ? "✅ OK" : "❌ Ошибка", r.ok ? "success" : "error");
-  } catch (e) { out.textContent = "❌ " + e.message; }
-});
-if ($("viewLogs")) $("viewLogs").addEventListener("click", async function () {
-  var panel = $("logsFilterPanel");
-  if (panel) panel.style.display = "block";
-  renderLogsFiltered();
-});
-if ($("rebuildNickIndex")) $("rebuildNickIndex").addEventListener("click", async function () {
-  if (!confirm("Восстановить все nick:* индексы?")) return;
-  showLoader(true);
-  try {
-    var r = await api("/api/admin/rebuild-nick-index");
-    $("toolsOutput").textContent = "✅ Готово\n\n" +
-      "Всего: " + r.total + "\n" +
-      "Создано: " + r.created + "\n" +
-      "Исправлено: " + r.fixed + "\n" +
-      "Пропущено: " + r.skipped;
-    toast("🔧 Готово: " + r.created + " создано, " + r.fixed + " исправлено", "success");
-  } catch (e) { toast("❌ " + e.message, "error"); }
-  finally { showLoader(false); }
-});
-
-async function renderLogsFiltered() {
-  var box = $("logsList");
-  if (!box) return;
+async function loadUpgradeItems() {
+  var box = $("upgradeItemsList"); if (!box) return;
   box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
   try {
-    var r = await api("/api/admin/logs");
-    state.logs = r.logs || [];
-    applyLogsFilter();
+    var r = await api("/api/admin/upgrade-items");
+    state.upgradeItems = r.items || [];
+    state.upgradeConfig = r.config || {};
+    renderUpgradeItems();
+    if ($("cfgCommission")) $("cfgCommission").value = ((state.upgradeConfig.commission || 0.05) * 100).toFixed(2);
+    if ($("cfgMinMult")) $("cfgMinMult").value = state.upgradeConfig.minMultiplier || 1.1;
+    if ($("cfgMaxMult")) $("cfgMaxMult").value = state.upgradeConfig.maxMultiplier || 100;
+    if ($("cfgSellPercent")) $("cfgSellPercent").value = Math.round((state.upgradeConfig.sellPercent || 0.7) * 100);
+    if ($("badgeUpgrader")) $("badgeUpgrader").textContent = state.upgradeItems.length;
   } catch (e) {
     box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
   }
 }
-function applyLogsFilter() {
-  var box = $("logsList");
-  if (!box) return;
-  var search = ($("logsSearch") ? $("logsSearch").value : "").toLowerCase().trim();
-  var type = $("logsTypeFilter") ? $("logsTypeFilter").value : "all";
-  var list = state.logs.slice();
-  if (search) list = list.filter(function (l) {
-    return (l.action || "").toLowerCase().indexOf(search) !== -1 || (l.detail || "").toLowerCase().indexOf(search) !== -1;
-  });
-  if (type !== "all") {
-    list = list.filter(function (l) {
-      var a = (l.action || "").toLowerCase();
-      if (type === "ban") return a.indexOf("ban") !== -1;
-      if (type === "mute") return a.indexOf("mute") !== -1;
-      if (type === "coins") return a.indexOf("coin") !== -1;
-      if (type === "post") return a.indexOf("post") !== -1;
-      if (type === "tech") return a.indexOf("tech") !== -1;
-      if (type === "curfew") return a.indexOf("curfew") !== -1;
-      if (type === "upgrade") return a.indexOf("upgrade") !== -1;
-      if (type === "login") return a.indexOf("login") !== -1;
-      return true;
-    });
-  }
-  if (!list.length) { box.innerHTML = '<div class="empty">Нет записей</div>'; return; }
+function renderUpgradeItems() {
+  var box = $("upgradeItemsList"); if (!box) return;
+  if (!state.upgradeItems.length) { box.innerHTML = '<div class="empty">Нет предметов</div>'; return; }
   box.innerHTML = "";
-  list.slice(0, 200).forEach(function (l) {
+  state.upgradeItems.forEach(function (it) {
     var el = document.createElement("div");
-    el.className = "log-item";
+    el.className = "upg-item" + (it.enabled === false ? " disabled" : "");
     el.innerHTML =
-      '<div><span class="log-time">' + timeAgo(l.time) + '</span>' +
-      '<span class="log-action">' + escapeHtml(l.action) + '</span>' +
-      '<span style="font-size:.66rem;color:var(--txt-3);">[' + escapeHtml(l.role || "?") + ']</span></div>' +
-      '<div class="log-detail">' + escapeHtml(l.detail) + '</div>';
+      '<div class="upg-icon">' + (it.icon || "❓") + '</div>' +
+      '<div class="upg-info">' +
+        '<div class="upg-name">' + escapeHtml(it.name) + '</div>' +
+        '<div class="upg-meta">' +
+          '<span>🆔 <b>' + escapeHtml(it.id) + '</b></span>' +
+          '<span>🏷 <b>' + (it.rarity || "common").toUpperCase() + '</b></span>' +
+          '<span>🪙 <b>' + (it.price || 0).toLocaleString("ru-RU") + '</b></span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="upg-actions">' +
+        '<button class="btn sm danger" data-del="' + escapeHtml(it.id) + '">🗑</button>' +
+      '</div>';
     box.appendChild(el);
   });
+  box.querySelectorAll("[data-del]").forEach(function (b) {
+    b.addEventListener("click", async function () {
+      if (!confirm("Удалить?")) return;
+      try { await api("/api/admin/upgrade-item-delete", { id: b.getAttribute("data-del") }); toast("🗑", "success"); loadUpgradeItems(); }
+      catch (e) { toast("❌ " + e.message, "error"); }
+    });
+  });
 }
-document.addEventListener("input", function (e) { if (e.target.id === "logsSearch") applyLogsFilter(); });
-document.addEventListener("change", function (e) { if (e.target.id === "logsTypeFilter") applyLogsFilter(); });
-
-// ============================================================
-// CSV EXPORT
-// ============================================================
-function exportCSV(filename, headers, rows) {
-  var csv = headers.join(",") + "\n" + rows.map(function (r) {
-    return r.map(function (v) {
-      var s = String(v == null ? "" : v).replace(/"/g, '""');
-      if (s.indexOf(",") !== -1 || s.indexOf("\n") !== -1) s = '"' + s + '"';
-      return s;
-    }).join(",");
-  }).join("\n");
-  var blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement("a");
-  a.href = url;
-  a.download = filename + "-" + new Date().toISOString().slice(0, 10) + ".csv";
-  a.click();
-  URL.revokeObjectURL(url);
-  toast("📤 Скачано", "success");
-}
-if ($("exportBansCsv")) $("exportBansCsv").addEventListener("click", function () {
-  if (!state.bans.length) return toast("Нет банов", "error");
-  exportCSV("artamon-bans", ["Ник", "Причина", "Забанен", "До"], state.bans.map(function (b) {
-    return [b.nick, b.reason, fmtDate(b.bannedAt), b.until > 0 ? fmtDate(b.until) : "∞"];
-  }));
-});
-if ($("exportTicketsCsv")) $("exportTicketsCsv").addEventListener("click", function () {
-  if (!state.tickets.length) return toast("Нет тикетов", "error");
-  exportCSV("artamon-tickets", ["ID", "Ник", "Тема", "Категория", "Статус", "Создан"], state.tickets.map(function (t) {
-    return [t.id, t.nick, t.subject, t.category, t.status, fmtDate(t.createdAt)];
-  }));
-});
-if ($("exportPromosCsv")) $("exportPromosCsv").addEventListener("click", function () {
-  if (!state.promos.length) return toast("Нет промо", "error");
-  exportCSV("artamon-promos", ["Код", "Монеты", "WIP", "Аватар", "Использован", "Истекает"], state.promos.map(function (p) {
-    return [p.code, p.coins, p.wipDays, p.avatar, (p.usedBy || []).length, fmtDate(p.expiresAt)];
-  }));
-});
-if ($("exportLogsCsv")) $("exportLogsCsv").addEventListener("click", async function () {
+async function loadUpgradeLogs() {
+  var box = $("upgradeLogsList"); if (!box) return;
+  box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
   try {
-    var r = await api("/api/admin/logs");
+    var r = await api("/api/admin/upgrade-logs");
     var logs = r.logs || [];
-    if (!logs.length) return toast("Нет логов", "error");
-    exportCSV("artamon-logs", ["Время", "Роль", "Действие", "Детали"], logs.map(function (l) {
-      return [fmtDate(l.time), l.role, l.action, l.detail];
-    }));
-  } catch (e) { toast("❌ " + e.message, "error"); }
-});
-if ($("exportStats")) $("exportStats").addEventListener("click", function () {
-  if (!state.users.length) return toast("Нет данных", "error");
-  exportCSV("artamon-stats", ["Ник", "Монеты", "Оценки", "Комментарии", "Регистрация"], state.users.map(function (u) {
-    return [u.nick, u.coins || 0, u.ratings || 0, u.comments || 0, fmtDateShort(u.createdAt)];
-  }));
-});
+    if (!logs.length) { box.innerHTML = '<div class="empty">Апгрейдов не было</div>'; return; }
+    box.innerHTML = "";
+    logs.slice(0, 50).forEach(function (l) {
+      var el = document.createElement("div");
+      el.className = "log-item";
+      el.style.borderLeftColor = l.win ? "var(--success)" : "var(--danger)";
+      el.innerHTML = '<div><span class="log-time">' + timeAgo(l.ts) + '</span>' +
+        '<span class="log-action">' + escapeHtml(l.nick) + '</span></div>' +
+        '<div class="log-detail">x' + (l.multiplier || 0).toFixed(2) + ' · ' + (l.win ? "✅ WIN" : "❌ LOSE") + '</div>';
+      box.appendChild(el);
+    });
+  } catch (e) { box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>'; }
+}
 
 // ============================================================
 // INIT
@@ -2870,57 +1381,189 @@ document.addEventListener("DOMContentLoaded", function () {
     if (confirm("Выйти?")) logout();
   });
   if ($("refreshBtn")) $("refreshBtn").addEventListener("click", function () {
-    switchTab(state.currentTab);
-    toast("🔄 Обновлено", "success");
+    switchTab(state.currentTab); toast("🔄 Обновлено", "success");
   });
-  if ($("burger")) $("burger").addEventListener("click", function () {
-    $("sidebar").classList.toggle("mobile-open");
-  });
+  if ($("burger")) $("burger").addEventListener("click", function () { $("sidebar").classList.toggle("mobile-open"); });
   if ($("modalClose")) $("modalClose").addEventListener("click", closeModal);
-  if ($("modal")) $("modal").addEventListener("click", function (e) {
-    if (e.target === $("modal")) closeModal();
-  });
-  $$(".nav-item").forEach(function (b) {
-    b.addEventListener("click", function () { switchTab(b.getAttribute("data-tab")); });
-  });
-  $$(".theme-switch button").forEach(function (b) {
-    b.addEventListener("click", function () { applyTheme(b.getAttribute("data-theme")); });
+  if ($("modal")) $("modal").addEventListener("click", function (e) { if (e.target === $("modal")) closeModal(); });
+
+  $$(".nav-item").forEach(function (b) { b.addEventListener("click", function () { switchTab(b.getAttribute("data-tab")); }); });
+  $$(".theme-switch button").forEach(function (b) { b.addEventListener("click", function () { applyTheme(b.getAttribute("data-theme")); }); });
+  $$("[data-tech-msg]").forEach(function (b) { b.addEventListener("click", function () { $("techMessage").value = b.getAttribute("data-tech-msg"); }); });
+
+  if ($("techToggleBtn")) $("techToggleBtn").addEventListener("click", async function () {
+    try {
+      var r = await api("/api/admin/tech-toggle", { enable: !state.tech.enabled, message: $("techMessage").value.trim() || "🛠 Идут технические работы." });
+      state.tech = { enabled: r.tech, message: r.message };
+      renderTech();
+      toast(state.tech.enabled ? "🛠 Включён" : "✅ Выключен", state.tech.enabled ? "warn" : "success");
+    } catch (e) { toast("❌ " + e.message, "error"); }
   });
 
-  // Быстрые действия
-  if ($("quickCreatePost")) $("quickCreatePost").addEventListener("click", function () { switchTab("posts"); setTimeout(openCreatePost, 300); });
-  if ($("quickCreatePromo")) $("quickCreatePromo").addEventListener("click", function () { switchTab("promos"); setTimeout(openCreatePromo, 300); });
-  if ($("quickBroadcast")) $("quickBroadcast").addEventListener("click", function () { switchTab("broadcast"); });
-  if ($("quickUpgrader")) $("quickUpgrader").addEventListener("click", function () { switchTab("upgrader"); });
+  if ($("curfewToggleBtn")) $("curfewToggleBtn").addEventListener("click", async function () {
+    try {
+      var r = await api("/api/admin/curfew-toggle", {
+        enable: !state.curfew.enabled,
+        reason: $("curfewReason").value.trim(),
+        message: $("curfewMessage").value.trim() || "🚨 Комендантский час.",
+        durationMin: parseInt($("curfewDuration").value, 10) || 0,
+      });
+      state.curfew = { enabled: r.curfew, message: r.message, reason: r.reason };
+      renderCurfew();
+      toast(state.curfew.enabled ? "🚨 Включён" : "✅ Выключен", state.curfew.enabled ? "error" : "success");
+    } catch (e) { toast("❌ " + e.message, "error"); }
+  });
 
-  // Reload кнопки
-  if ($("reloadChart")) $("reloadChart").addEventListener("click", loadChart);
   if ($("reloadUsers")) $("reloadUsers").addEventListener("click", loadUsers);
   if ($("reloadBans")) $("reloadBans").addEventListener("click", loadBans);
   if ($("reloadPosts")) $("reloadPosts").addEventListener("click", loadPosts);
   if ($("reloadPromos")) $("reloadPromos").addEventListener("click", loadPromos);
   if ($("reloadBroadcasts")) $("reloadBroadcasts").addEventListener("click", loadBroadcasts);
   if ($("reloadTickets")) $("reloadTickets").addEventListener("click", loadTickets);
-  if ($("reloadUpgradeStats")) $("reloadUpgradeStats").addEventListener("click", function () { if (window.loadUpgradeStats) window.loadUpgradeStats(); });
-  if ($("reloadUpgradeItems")) $("reloadUpgradeItems").addEventListener("click", function () { if (window.loadUpgradeItems) window.loadUpgradeItems(); });
-  if ($("reloadUpgradeLogs")) $("reloadUpgradeLogs").addEventListener("click", function () { if (window.loadUpgradeLogs) window.loadUpgradeLogs(); });
-
-  // User filters
+  if ($("reloadUpgradeItems")) $("reloadUpgradeItems").addEventListener("click", loadUpgradeItems);
+  if ($("reloadUpgradeLogs")) $("reloadUpgradeLogs").addEventListener("click", loadUpgradeLogs);
   if ($("userSearch")) $("userSearch").addEventListener("input", renderUsers);
   if ($("userFilter")) $("userFilter").addEventListener("change", renderUsers);
   if ($("userSort")) $("userSort").addEventListener("change", renderUsers);
+  if ($("ticketFilter")) $("ticketFilter").addEventListener("change", renderTickets);
 
-  // Delete test accounts
-  if ($("deleteTestAccounts")) $("deleteTestAccounts").addEventListener("click", async function () {
-    if (!confirm("Удалить все test* аккаунты?")) return;
+  if ($("banBtn")) $("banBtn").addEventListener("click", async function () {
+    var nick = $("banNick").value.trim();
+    if (!nick) return toast("Введи ник", "error");
     try {
-      var r = await api("/api/admin/delete-test-accounts");
-      toast("🧹 Удалено: " + r.deleted, "success");
-      loadUsers(); loadStats();
+      await api("/api/admin/ban", { nick: nick, reason: $("banReason").value.trim() || "Без причины", hours: parseInt($("banHours").value, 10) || 0 });
+      toast("🚫 Забанен", "success");
+      $("banNick").value = ""; $("banReason").value = "";
+      loadBans(); loadUsers(); loadStats();
+    } catch (e) { toast("❌ " + e.message, "error"); }
+  });
+  if ($("muteBtn")) $("muteBtn").addEventListener("click", async function () {
+    var nick = $("muteNick").value.trim();
+    if (!nick) return toast("Введи ник", "error");
+    try {
+      await api("/api/admin/mute", { nick: nick, hours: parseInt($("muteHours").value, 10) || 1 });
+      toast("🔕 Мут", "success");
+      $("muteNick").value = "";
+      loadUsers();
+    } catch (e) { toast("❌ " + e.message, "error"); }
+  });
+  if ($("unmuteBtn")) $("unmuteBtn").addEventListener("click", async function () {
+    var nick = $("muteNick").value.trim();
+    if (!nick) return toast("Введи ник", "error");
+    try {
+      await api("/api/admin/unmute", { nick: nick });
+      toast("✅ Снят", "success");
+      $("muteNick").value = "";
+    } catch (e) { toast("❌ " + e.message, "error"); }
+  });
+  if ($("unbanAll")) $("unbanAll").addEventListener("click", async function () {
+    if (!confirm("Разбанить всех?")) return;
+    try {
+      for (var i = 0; i < state.bans.length; i++) {
+        await api("/api/admin/unban", { nick: state.bans[i].nick });
+      }
+      toast("✅ Готово", "success");
+      loadBans(); loadUsers();
     } catch (e) { toast("❌ " + e.message, "error"); }
   });
 
-  // Autologin
+  if ($("sendBroadcastBtn")) $("sendBroadcastBtn").addEventListener("click", async function () {
+    var msg = $("bcMessage").value.trim();
+    if (!msg) return toast("Введи текст", "error");
+    try {
+      await api("/api/admin/broadcast-send", { message: msg, type: $("bcType").value, duration: 15 });
+      toast("📢 Отправлено", "success");
+      $("bcMessage").value = "";
+      loadBroadcasts();
+    } catch (e) { toast("❌ " + e.message, "error"); }
+  });
+
+  if ($("giveAchBtn")) $("giveAchBtn").addEventListener("click", async function () {
+    var n = $("achNick").value.trim(), a = $("achId").value.trim();
+    if (!n || !a) return toast("Заполни всё", "error");
+    try { await api("/api/admin/give-ach", { nick: n, achId: a }); toast("🏆 Выдано", "success"); $("achNick").value="";$("achId").value=""; }
+    catch (e) { toast("❌ " + e.message, "error"); }
+  });
+  if ($("removeAchBtn")) $("removeAchBtn").addEventListener("click", async function () {
+    var n = $("achNick").value.trim(), a = $("achId").value.trim();
+    if (!n || !a) return toast("Заполни всё", "error");
+    try { await api("/api/admin/remove-ach", { nick: n, achId: a }); toast("❌ Забрано", "success"); }
+    catch (e) { toast("❌ " + e.message, "error"); }
+  });
+
+  if ($("createPostBtn")) $("createPostBtn").addEventListener("click", function () {
+    openModal("➕ Новый пост",
+      '<div class="form-group"><label class="form-label">Заголовок</label><input type="text" class="form-input" id="npTitle"></div>' +
+      '<div class="form-group"><label class="form-label">Текст</label><textarea class="form-input" id="npBody" style="min-height:120px;"></textarea></div>' +
+      '<label class="checkbox-row"><input type="checkbox" id="npPinned"> 📌 Закрепить</label>' +
+      '<div class="form-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn success" id="npCreate">✅ Создать</button></div>'
+    );
+    $("npCreate").addEventListener("click", async function () {
+      var t = $("npTitle").value.trim();
+      if (!t) return toast("Введи заголовок", "error");
+      try {
+        await api("/api/admin/post-create", { title: t, body: $("npBody").value.trim(), pinned: $("npPinned").checked });
+        toast("✅ Создан", "success"); closeModal(); loadPosts(); loadStats();
+      } catch (e) { toast("❌ " + e.message, "error"); }
+    });
+  });
+
+  if ($("createPromoBtn")) $("createPromoBtn").addEventListener("click", function () {
+    var code = "ARTAMON" + Math.floor(Math.random() * 9000 + 1000);
+    openModal("🎁 Промокод",
+      '<div class="form-group"><label class="form-label">Код</label><input type="text" class="form-input" id="pCode" value="' + code + '"></div>' +
+      '<div class="form-group"><label class="form-label">🪙 Монеты</label><input type="number" class="form-input" id="pCoins" value="1000"></div>' +
+      '<div class="form-group"><label class="form-label">💎 WIP дней</label><input type="number" class="form-input" id="pWip" value="0"></div>' +
+      '<div class="form-group"><label class="form-label">📅 Дней</label><input type="number" class="form-input" id="pExpire" value="30"></div>' +
+      '<div class="form-actions"><button class="btn ghost" onclick="closeModal()">Отмена</button><button class="btn success" id="pCreate">✅ Создать</button></div>'
+    );
+    $("pCreate").addEventListener("click", async function () {
+      try {
+        await api("/api/admin/promo-create", {
+          code: $("pCode").value.trim().toUpperCase(),
+          coins: parseInt($("pCoins").value, 10) || 0,
+          wipDays: parseInt($("pWip").value, 10) || 0,
+          expiresInDays: parseInt($("pExpire").value, 10) || 30,
+        });
+        toast("✅ Создан", "success"); closeModal(); loadPromos();
+      } catch (e) { toast("❌ " + e.message, "error"); }
+    });
+  });
+
+  if ($("saveUpgradeSettings")) $("saveUpgradeSettings").addEventListener("click", async function () {
+    try {
+      await api("/api/admin/upgrade-settings", {
+        action: "save",
+        commission: (parseFloat($("cfgCommission").value) || 5) / 100,
+        minMultiplier: parseFloat($("cfgMinMult").value) || 1.1,
+        maxMultiplier: parseFloat($("cfgMaxMult").value) || 100,
+        sellPercent: (parseFloat($("cfgSellPercent").value) || 70) / 100,
+      });
+      toast("💾 Сохранено", "success");
+    } catch (e) { toast("❌ " + e.message, "error"); }
+  });
+
+  if ($("kvDump")) $("kvDump").addEventListener("click", async function () {
+    $("dataOutput").textContent = "Загрузка...";
+    try { var r = await api("/api/admin/kv-dump"); $("dataOutput").textContent = JSON.stringify(r, null, 2); }
+    catch (e) { $("dataOutput").textContent = "❌ " + e.message; }
+  });
+
+  if ($("apiTest")) $("apiTest").addEventListener("click", async function () {
+    $("toolsOutput").textContent = "Проверка...";
+    try {
+      var r = await fetch(API + "/api/posts/list");
+      var d = await r.json();
+      $("toolsOutput").textContent = "✅ API работает\n" + JSON.stringify(d, null, 2).slice(0, 500);
+    } catch (e) { $("toolsOutput").textContent = "❌ " + e.message; }
+  });
+
+  if ($("quickCreatePost")) $("quickCreatePost").addEventListener("click", function () { switchTab("posts"); setTimeout(function () { $("createPostBtn").click(); }, 200); });
+  if ($("quickCreatePromo")) $("quickCreatePromo").addEventListener("click", function () { switchTab("promos"); setTimeout(function () { $("createPromoBtn").click(); }, 200); });
+  if ($("quickBroadcast")) $("quickBroadcast").addEventListener("click", function () { switchTab("broadcast"); });
+  if ($("quickUpgrader")) $("quickUpgrader").addEventListener("click", function () { switchTab("upgrader"); });
+
+  // Auto-login
   try {
     var saved = localStorage.getItem("artamon_admin_pass");
     if (saved) {
@@ -2931,473 +1574,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 window.closeModal = closeModal;
-console.log("✅ Admin v3.0 ч.2 загружена");
-  </script>
-
-<script>
-// ============================================================
-// ARTAMON ADMIN v3.0 — ЧАСТЬ 3/3 (UPGRADER + фишки)
-// ============================================================
-
-// ============================================================
-// UPGRADER — загрузка предметов
-// ============================================================
-async function loadUpgradeItems() {
-  var box = $("upgradeItemsList");
-  if (!box) return;
-  box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
-  try {
-    var r = await api("/api/admin/upgrade-items");
-    state.upgradeItems = r.items || [];
-    state.upgradeConfig = r.config || {};
-    renderUpgradeItems();
-    updateUpgradeConfigUI();
-    var badge = $("badgeUpgrader");
-    if (badge) badge.textContent = state.upgradeItems.length;
-  } catch (e) {
-    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
-  }
-}
-
-function updateUpgradeConfigUI() {
-  if ($("cfgCommission")) $("cfgCommission").value = ((state.upgradeConfig.commission || 0.05) * 100).toFixed(2);
-  if ($("cfgMinMult")) $("cfgMinMult").value = state.upgradeConfig.minMultiplier || 1.1;
-  if ($("cfgMaxMult")) $("cfgMaxMult").value = state.upgradeConfig.maxMultiplier || 100;
-  if ($("cfgSellPercent")) $("cfgSellPercent").value = Math.round((state.upgradeConfig.sellPercent || 0.7) * 100);
-  if ($("cfgEnabled")) $("cfgEnabled").checked = state.upgradeConfig.enabled !== false;
-}
-
-function renderUpgradeItems() {
-  var box = $("upgradeItemsList");
-  if (!box) return;
-  if (!state.upgradeItems.length) {
-    box.innerHTML = '<div class="empty">Нет предметов</div>';
-    return;
-  }
-  box.innerHTML = "";
-  state.upgradeItems.forEach(function (item) {
-    var el = document.createElement("div");
-    el.className = "upg-item" + (item.enabled === false ? " disabled" : "");
-    el.setAttribute("data-rarity", item.rarity);
-    el.innerHTML =
-      '<div class="upg-icon">' + (item.icon || "❓") + '</div>' +
-      '<div class="upg-info">' +
-        '<div class="upg-name ' + 'rarity-' + item.rarity + '">' + escapeHtml(item.name) + '</div>' +
-        '<div class="upg-meta">' +
-          '<span>🆔 <b>' + escapeHtml(item.id) + '</b></span>' +
-          '<span>🏷 <b>' + item.rarity.toUpperCase() + '</b></span>' +
-          '<span>🪙 <b>' + (item.price || 0).toLocaleString("ru-RU") + '</b></span>' +
-          '<span>✨ <b>+' + (item.bonus || 0) + '%</b></span>' +
-          (item.enabled === false ? '<span class="badge badge-common" style="background:rgba(248,113,113,.2);color:var(--danger);">ВЫКЛ</span>' : '') +
-        '</div>' +
-      '</div>' +
-      '<div class="upg-actions">' +
-        '<button class="btn sm" data-edit="' + escapeHtml(item.id) + '">✏️</button>' +
-        '<button class="btn sm danger" data-del="' + escapeHtml(item.id) + '">🗑</button>' +
-      '</div>';
-    box.appendChild(el);
-  });
-  box.querySelectorAll("[data-edit]").forEach(function (b) {
-    b.addEventListener("click", function () { openEditUpgradeItem(b.getAttribute("data-edit")); });
-  });
-  box.querySelectorAll("[data-del]").forEach(function (b) {
-    b.addEventListener("click", function () { deleteUpgradeItem(b.getAttribute("data-del")); });
-  });
-}
-
-function openEditUpgradeItem(id) {
-  var item = null;
-  for (var i = 0; i < state.upgradeItems.length; i++) {
-    if (state.upgradeItems[i].id === id) item = state.upgradeItems[i];
-  }
-  if (!item) return;
-  openModal("✏️ " + item.name,
-    '<div class="form-group"><label class="form-label">Иконка (эмодзи)</label>' +
-      '<input type="text" class="form-input" id="eiIcon" value="' + escapeHtml(item.icon) + '" maxlength="4"></div>' +
-    '<div class="form-group"><label class="form-label">Название</label>' +
-      '<input type="text" class="form-input" id="eiName" value="' + escapeHtml(item.name) + '" maxlength="50"></div>' +
-    '<div class="form-group"><label class="form-label">Редкость</label>' +
-      '<select class="form-input" id="eiRarity">' +
-        '<option value="common"' + (item.rarity === "common" ? " selected" : "") + '>Common (серый)</option>' +
-        '<option value="rare"' + (item.rarity === "rare" ? " selected" : "") + '>Rare (синий)</option>' +
-        '<option value="epic"' + (item.rarity === "epic" ? " selected" : "") + '>Epic (фиолетовый)</option>' +
-        '<option value="legendary"' + (item.rarity === "legendary" ? " selected" : "") + '>Legendary (золотой)</option>' +
-      '</select></div>' +
-    '<div class="form-group"><label class="form-label">Цена (монет)</label>' +
-      '<input type="number" class="form-input" id="eiPrice" value="' + (item.price || 0) + '" min="1"></div>' +
-    '<div class="form-group"><label class="form-label">Бонус к монетам (%)</label>' +
-      '<input type="number" class="form-input" id="eiBonus" value="' + (item.bonus || 0) + '" step="1" min="0"></div>' +
-    '<label class="checkbox-row"><input type="checkbox" id="eiEnabled"' + (item.enabled !== false ? " checked" : "") + '> Включён в магазине</label>' +
-    '<div class="form-actions">' +
-      '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
-      '<button class="btn success" id="eiSave">💾 Сохранить</button></div>'
-  );
-  $("eiSave").addEventListener("click", async function () {
-    try {
-      await api("/api/admin/upgrade-item-set", {
-        id: item.id,
-        icon: $("eiIcon").value.trim() || item.icon,
-        name: $("eiName").value.trim() || item.name,
-        rarity: $("eiRarity").value,
-        price: parseInt($("eiPrice").value, 10) || item.price,
-        bonus: parseFloat($("eiBonus").value) || 0,
-        enabled: $("eiEnabled").checked,
-      });
-      toast("✅ Сохранено", "success");
-      closeModal();
-      loadUpgradeItems();
-    } catch (e) { toast("❌ " + e.message, "error"); }
-  });
-}
-
-async function deleteUpgradeItem(id) {
-  if (!confirm("Удалить предмет " + id + "?")) return;
-  try {
-    await api("/api/admin/upgrade-item-delete", { id: id });
-    toast("🗑 Удалён", "success");
-    loadUpgradeItems();
-  } catch (e) { toast("❌ " + e.message, "error"); }
-}
-
-if ($("addUpgradeItemBtn")) $("addUpgradeItemBtn").addEventListener("click", function () {
-  openModal("➕ Новый предмет",
-    '<div class="form-group"><label class="form-label">ID (латиница, без пробелов)</label>' +
-      '<input type="text" class="form-input" id="niId" placeholder="myitem" maxlength="20"></div>' +
-    '<div class="form-group"><label class="form-label">Иконка (эмодзи)</label>' +
-      '<input type="text" class="form-input" id="niIcon" value="🎁" maxlength="4"></div>' +
-    '<div class="form-group"><label class="form-label">Название</label>' +
-      '<input type="text" class="form-input" id="niName" placeholder="Мой предмет" maxlength="50"></div>' +
-    '<div class="form-group"><label class="form-label">Редкость</label>' +
-      '<select class="form-input" id="niRarity">' +
-        '<option value="common">Common</option>' +
-        '<option value="rare">Rare</option>' +
-        '<option value="epic">Epic</option>' +
-        '<option value="legendary">Legendary</option>' +
-      '</select></div>' +
-    '<div class="form-group"><label class="form-label">Цена</label>' +
-      '<input type="number" class="form-input" id="niPrice" value="100" min="1"></div>' +
-    '<div class="form-group"><label class="form-label">Бонус %</label>' +
-      '<input type="number" class="form-input" id="niBonus" value="1" min="0"></div>' +
-    '<div class="form-actions">' +
-      '<button class="btn ghost" onclick="closeModal()">Отмена</button>' +
-      '<button class="btn success" id="niSave">✅ Создать</button></div>'
-  );
-  $("niSave").addEventListener("click", async function () {
-    try {
-      await api("/api/admin/upgrade-item-add", {
-        id: $("niId").value.trim(),
-        icon: $("niIcon").value.trim(),
-        name: $("niName").value.trim(),
-        rarity: $("niRarity").value,
-        price: parseInt($("niPrice").value, 10) || 100,
-        bonus: parseFloat($("niBonus").value) || 1,
-      });
-      toast("✅ Создан", "success");
-      closeModal();
-      loadUpgradeItems();
-    } catch (e) { toast("❌ " + e.message, "error"); }
-  });
-});
-
-if ($("saveUpgradeSettings")) $("saveUpgradeSettings").addEventListener("click", async function () {
-  try {
-    await api("/api/admin/upgrade-settings", {
-      action: "save",
-      commission: (parseFloat($("cfgCommission").value) || 5) / 100,
-      minMultiplier: parseFloat($("cfgMinMult").value) || 1.1,
-      maxMultiplier: parseFloat($("cfgMaxMult").value) || 100,
-      sellPercent: (parseFloat($("cfgSellPercent").value) || 70) / 100,
-      enabled: $("cfgEnabled").checked,
-    });
-    toast("💾 Настройки сохранены", "success");
-  } catch (e) { toast("❌ " + e.message, "error"); }
-});
-
-// ============================================================
-// UPGRADER — статистика
-// ============================================================
-async function loadUpgradeStats() {
-  try {
-    var r = await api("/api/admin/upgrade-stats");
-    var s = r.stats || {};
-    if ($("ustTotal")) $("ustTotal").textContent = s.total || 0;
-    if ($("ustWins")) $("ustWins").textContent = s.wins || 0;
-    if ($("ustLoses")) $("ustLoses").textContent = s.loses || 0;
-    if ($("ustWinrate")) $("ustWinrate").textContent = s.total ? Math.round(s.wins / s.total * 100) + "%" : "—";
-    if ($("ustBet")) $("ustBet").textContent = (s.totalBet || 0).toLocaleString("ru-RU");
-    if ($("ustWinSum")) $("ustWinSum").textContent = (s.totalWin || 0).toLocaleString("ru-RU");
-    if ($("ustLoseSum")) $("ustLoseSum").textContent = (s.totalLose || 0).toLocaleString("ru-RU");
-    if ($("ustProfit")) $("ustProfit").textContent = ((s.totalLose || 0) - (s.totalWin || 0)).toLocaleString("ru-RU");
-  } catch (e) { toast("❌ " + e.message, "error"); }
-}
-
-// ============================================================
-// UPGRADER — логи
-// ============================================================
-async function loadUpgradeLogs() {
-  var box = $("upgradeLogsList");
-  if (!box) return;
-  box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
-  try {
-    var r = await api("/api/admin/upgrade-logs");
-    var logs = r.logs || [];
-    if (!logs.length) {
-      box.innerHTML = '<div class="empty">Апгрейдов ещё не было</div>';
-      return;
-    }
-    box.innerHTML = "";
-    logs.slice(0, 50).forEach(function (l) {
-      var el = document.createElement("div");
-      el.className = "log-item";
-      el.style.borderLeftColor = l.win ? "var(--success)" : "var(--danger)";
-      var betItem = state.upgradeItems.filter(function (x) { return x.id === l.betItemId; })[0];
-      var targetItem = state.upgradeItems.filter(function (x) { return x.id === l.targetItemId; })[0];
-      var betIcon = betItem ? betItem.icon : "❓";
-      var targetIcon = targetItem ? targetItem.icon : "❓";
-      el.innerHTML =
-        '<div><span class="log-time">' + timeAgo(l.ts) + '</span>' +
-        '<span class="log-action">' + escapeHtml(l.nick) + '</span>' +
-        '<span style="font-size:.7rem;color:var(--txt-3);">x' + (l.multiplier || 0).toFixed(2) + ' · шанс ' + (l.chance || 0).toFixed(1) + '%</span></div>' +
-        '<div class="log-detail">' + betIcon + ' → ' + targetIcon + ' · ' + (l.win ? "✅ ПОБЕДА" : "❌ Проигрыш") + '</div>';
-      box.appendChild(el);
-    });
-  } catch (e) { box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>'; }
-}
-
-// ============================================================
-// UPGRADER — инвентарь игрока
-// ============================================================
-if ($("loadUserInv")) $("loadUserInv").addEventListener("click", async function () {
-  var nick = $("invSearchNick").value.trim();
-  if (!nick) return toast("Введи ник", "error");
-  var box = $("userInvResult");
-  box.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
-  try {
-    var r = await api("/api/admin/upgrade-user-inventory", { nick: nick });
-    var u = r.user;
-    var inv = u.inventory || {};
-    var entries = Object.keys(inv);
-
-    var html = '<div style="margin-top:12px;padding:12px;background:var(--bg-2);border-radius:10px;border:1px solid var(--border);">';
-    html += '<div style="font-weight:900;margin-bottom:12px;font-size:.95rem;">' +
-      escapeHtml(u.nick) + ' · ✨ Бонус: <span style="color:var(--gold-2);">+' + (u.bonusPercent || 0) + '%</span></div>';
-
-    if (!entries.length) {
-      html += '<div class="empty" style="padding:20px;">Инвентарь пуст</div>';
-    } else {
-      html += '<div class="users-list">';
-      entries.forEach(function (id) {
-        var item = state.upgradeItems.filter(function (x) { return x.id === id; })[0];
-        var icon = item ? item.icon : "❓";
-        var name = item ? item.name : id;
-        var rarity = item ? item.rarity : "common";
-        html += '<div class="user-card rarity-' + rarity + '" style="padding:8px 12px;border-left:3px solid currentColor;">' +
-          '<div class="user-avatar">' + icon + '</div>' +
-          '<div class="user-info">' +
-            '<div class="user-nick">' + escapeHtml(name) + '</div>' +
-            '<div class="user-meta"><span>×<b>' + inv[id] + '</b></span><span>' + rarity.toUpperCase() + '</span></div>' +
-          '</div>' +
-          '<div class="user-actions">' +
-            '<button class="btn sm success" data-give="' + id + '">➕</button>' +
-            '<button class="btn sm danger" data-take="' + id + '">➖</button>' +
-          '</div></div>';
-      });
-      html += '</div>';
-      html += '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">' +
-        '<button class="btn danger full" id="clearInvBtn">🗑 Очистить инвентарь</button>' +
-        '</div>';
-    }
-    html += '</div>';
-    box.innerHTML = html;
-
-    box.querySelectorAll("[data-give]").forEach(function (b) {
-      b.addEventListener("click", async function () {
-        var cnt = parseInt(prompt("Сколько выдать?", "1"), 10) || 1;
-        try {
-          await api("/api/admin/upgrade-user-give", { nick: nick, itemId: b.getAttribute("data-give"), count: cnt });
-          $("loadUserInv").click();
-        } catch (e) { toast("❌ " + e.message, "error"); }
-      });
-    });
-    box.querySelectorAll("[data-take]").forEach(function (b) {
-      b.addEventListener("click", async function () {
-        var cnt = parseInt(prompt("Сколько забрать?", "1"), 10) || 1;
-        try {
-          await api("/api/admin/upgrade-user-take", { nick: nick, itemId: b.getAttribute("data-take"), count: cnt });
-          $("loadUserInv").click();
-        } catch (e) { toast("❌ " + e.message, "error"); }
-      });
-    });
-    if ($("clearInvBtn")) $("clearInvBtn").addEventListener("click", async function () {
-      if (!confirm("Очистить инвентарь " + nick + "?")) return;
-      try {
-        await api("/api/admin/upgrade-user-clear", { nick: nick });
-        toast("🗑 Очищено", "success");
-        $("loadUserInv").click();
-      } catch (e) { toast("❌ " + e.message, "error"); }
-    });
-  } catch (e) {
-    box.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
-  }
-});
-
-// ============================================================
-// УЛУЧШЕНИЯ — МИНИ-ГРАФИК АКТИВНОСТИ АПГРЕЙДЕРА
-// ============================================================
-async function renderUpgraderActivityChart() {
-  var box = $("activityChart");
-  if (!box) return;
-  // Не реализуем — оставлено на будущее, сейчас график регистраций
-}
-
-// ============================================================
-// УЛУЧШЕНИЯ — ГОРЯЧИЕ КЛАВИШИ
-// ============================================================
-document.addEventListener("keydown", function (e) {
-  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT") return;
-  if (e.ctrlKey || e.metaKey || e.altKey) return;
-
-  if (e.key === "Escape") closeModal();
-  else if (e.key === "u" || e.key === "U" || e.key === "г" || e.key === "Г") switchTab("users");
-  else if (e.key === "b" || e.key === "B" || e.key === "и" || e.key === "И") {
-    switchTab("bans");
-    setTimeout(function () { if ($("banNick")) $("banNick").focus(); }, 200);
-  } else if (e.key === "t" || e.key === "T" || e.key === "е" || e.key === "Е") switchTab("tickets");
-  else if (e.key === "g" || e.key === "G" || e.key === "п" || e.key === "П") switchTab("upgrader");
-});
-
-// ============================================================
-// УЛУЧШЕНИЯ — ПЛАНИРОВЩИК ТЕХРЕЖИМА (на дашборд)
-// ============================================================
-(function () {
-  var panel = document.querySelector(".tech-panel");
-  if (!panel) return;
-  if ($("techTimerBox")) return;
-
-  var box = document.createElement("div");
-  box.id = "techTimerBox";
-  box.style.cssText = "margin-top:12px;padding-top:12px;border-top:1px solid rgba(251,191,36,.3);";
-  box.innerHTML =
-    '<label class="form-label">⏰ Отложенное включение (минут)</label>' +
-    '<div class="form-row">' +
-      '<input type="number" class="form-input" id="techTimerMin" placeholder="30" value="30" min="1" max="1440">' +
-      '<button class="btn warn sm" id="techTimerStart">▶️ Запустить</button>' +
-      '<button class="btn ghost sm" id="techTimerCancel">⏹ Отмена</button>' +
-    '</div>' +
-    '<div class="form-hint" id="techTimerInfo">Неактивно</div>';
-  panel.appendChild(box);
-
-  var timerHandle = null;
-  var timerEndsAt = 0;
-
-  $("techTimerStart").addEventListener("click", function () {
-    var mins = parseInt($("techTimerMin").value, 10) || 30;
-    if (mins < 1 || mins > 1440) return toast("От 1 до 1440 минут", "error");
-    if (!confirm("Включить техрежим через " + mins + " мин?")) return;
-
-    timerEndsAt = Date.now() + mins * 60000;
-    if (timerHandle) clearInterval(timerHandle);
-
-    timerHandle = setInterval(async function () {
-      var left = timerEndsAt - Date.now();
-      if (left <= 0) {
-        clearInterval(timerHandle);
-        timerHandle = null;
-        $("techTimerInfo").textContent = "Активация...";
-        try {
-          var msg = ($("techMessage").value || "").trim() || "🛠 Идут технические работы. Мы скоро вернёмся!";
-          await api("/api/admin/tech-toggle", { enable: true, message: msg });
-          toast("🛠 Техрежим включён по расписанию!", "warn");
-          loadTechStatus();
-          $("techTimerInfo").textContent = "✅ Активировано";
-        } catch (e) {
-          toast("❌ " + e.message, "error");
-          $("techTimerInfo").textContent = "❌ Ошибка";
-        }
-        return;
-      }
-      var m = Math.floor(left / 60000);
-      var s = Math.floor((left % 60000) / 1000);
-      $("techTimerInfo").textContent = "⏳ Осталось: " + m + ":" + (s < 10 ? "0" : "") + s;
-    }, 1000);
-
-    toast("⏰ Планировщик запущен на " + mins + " мин", "success");
-  });
-
-  $("techTimerCancel").addEventListener("click", function () {
-    if (timerHandle) {
-      clearInterval(timerHandle);
-      timerHandle = null;
-      $("techTimerInfo").textContent = "Отменено";
-      toast("⏹ Отменено", "info");
-    }
-  });
-})();
-
-// ============================================================
-// УЛУЧШЕНИЯ — ПОЛНЫЙ ЭКСПОРТ БД
-// ============================================================
-if ($("exportFullBtn")) $("exportFullBtn").addEventListener("click", async function () {
-  if (!confirm("Скачать полный экспорт всех данных?")) return;
-  showLoader(true);
-  try {
-    var results = {};
-    var endpoints = [
-      ["users", "/api/admin/users"],
-      ["bans", "/api/admin/bans"],
-      ["posts", "/api/admin/posts"],
-      ["promos", "/api/admin/promo-list"],
-      ["tickets", "/api/admin/tickets"],
-      ["broadcasts", "/api/admin/broadcast-list"],
-      ["logs", "/api/admin/logs"],
-      ["stats", "/api/admin/stats"],
-      ["upgradeItems", "/api/admin/upgrade-items"],
-      ["upgradeStats", "/api/admin/upgrade-stats"],
-      ["upgradeLogs", "/api/admin/upgrade-logs"],
-    ];
-    for (var i = 0; i < endpoints.length; i++) {
-      try {
-        var r = await api(endpoints[i][1]);
-        results[endpoints[i][0]] = r;
-      } catch (e) { results[endpoints[i][0]] = { error: e.message }; }
-    }
-    var full = {
-      exportedAt: new Date().toISOString(),
-      version: "3.0",
-      data: results,
-    };
-    var blob = new Blob([JSON.stringify(full, null, 2)], { type: "application/json" });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url;
-    a.download = "artamon-full-export-" + new Date().toISOString().slice(0, 10) + ".json";
-    a.click();
-    URL.revokeObjectURL(url);
-    toast("📦 Полный экспорт скачан", "success");
-  } catch (e) { toast("❌ " + e.message, "error"); }
-  finally { showLoader(false); }
-});
-
-// ============================================================
-// ХУК НА switchTab
-// ============================================================
-var _origSwitchTab = window.switchTab;
-window.switchTab = function (tab) {
-  _origSwitchTab.apply(this, arguments);
-  if (tab === "upgrader") {
-    loadUpgradeItems();
-    loadUpgradeStats();
-    loadUpgradeLogs();
-  }
-};
-
-// Экспортируем функции в глобал
-window.loadUpgradeItems = loadUpgradeItems;
-window.loadUpgradeStats = loadUpgradeStats;
-window.loadUpgradeLogs = loadUpgradeLogs;
-
-console.log("✅ Admin v3.0 ч.3 (Upgrader) загружена");
-</script>                                                                        </script>
-  
+console.log("✅ Artamon Admin v3.1 загружена");
+</script>
 </body>
 </html>
