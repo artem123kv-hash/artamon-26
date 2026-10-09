@@ -3001,41 +3001,106 @@ var AUTH_UI = (function(){
     else switchTab(tab || "login");
   }
   function close() { $("authModal").classList.remove("on"); }
-  function doLogin() {
-    var nick = $("authLoginNick").value.trim();
-    var pass = $("authLoginPass").value;
-    if (!nick || !pass) { toast("❌ Заполни все поля"); return; }
-    var acc = { nick: nick, pass: pass, createdAt: Date.now() };
-    SAFE_STORE.set(ACC_KEY, JSON.stringify(acc));
-    toast("👋 Привет, " + nick + "!");
+  async function doLogin() {
+  var nick = $("authLoginNick").value.trim();
+  var pass = $("authLoginPass").value;
+  if (!nick || !pass) { toast("❌ Заполни все поля"); return; }
+
+  var btn = $("authLoginBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "⏳ Входим..."; }
+
+  try {
+    var r = await fetch("https://artamon-api.artem123kv.workers.dev/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nick: nick, password: pass })
+    });
+    var data = await r.json();
+
+    if (!r.ok || !data.ok) throw new Error(data.error || "Неверный пароль");
+
+    try {
+      localStorage.setItem("artamon_nick", data.user.nick);
+      localStorage.setItem("artamon_coins_v1", String(data.user.coins || 0));
+      localStorage.setItem("artamon_user_cache", JSON.stringify(data.user));
+    } catch (e) {}
+
+    try { if (window.COINS && COINS.setFromServer) COINS.setFromServer(data.user.coins || 0); } catch (e) {}
+
+    toast("👋 Привет, " + data.user.nick + "!");
     try { AUDIO.online(); } catch (e) {}
     try { ACH.unlock("first_account"); } catch (e) {}
+
     updateUserBtn();
     updateLoggedPane();
     switchTab("logged");
+
+    var coinEl = $("coinBalance");
+    if (coinEl) coinEl.textContent = data.user.coins || 0;
+
+  } catch (e) {
+    toast("❌ " + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = "Войти"; }
   }
-  function doRegister() {
-    var nick = $("authRegNick").value.trim();
-    var pass = $("authRegPass").value;
-    var pass2 = $("authRegPass2").value;
-    if (!nick || nick.length < 3) { toast("❌ Ник: 3+ символов"); return; }
-    if (!pass || pass.length < 4) { toast("❌ Пароль: 4+ символов"); return; }
-    if (pass !== pass2) { toast("❌ Пароли не совпадают"); return; }
-    var acc = { nick: nick, pass: pass, createdAt: Date.now() };
-    SAFE_STORE.set(ACC_KEY, JSON.stringify(acc));
-    toast("🎉 Аккаунт создан: " + nick);
+}
+
+async function doRegister() {
+  var nick = $("authRegNick").value.trim();
+  var pass = $("authRegPass").value;
+  var pass2 = $("authRegPass2").value;
+
+  if (!nick || nick.length < 3) { toast("❌ Ник: 3+ символов"); return; }
+  if (!pass || pass.length < 4) { toast("❌ Пароль: 4+ символов"); return; }
+  if (pass !== pass2) { toast("❌ Пароли не совпадают"); return; }
+
+  var btn = $("authRegBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "⏳ Создаём..."; }
+
+  try {
+    var r = await fetch("https://artamon-api.artem123kv.workers.dev/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nick: nick, password: pass })
+    });
+    var data = await r.json();
+
+    if (!r.ok || !data.ok) throw new Error(data.error || "Ошибка регистрации");
+
+    try {
+      localStorage.setItem("artamon_nick", data.user.nick);
+      localStorage.setItem("artamon_coins_v1", String(data.user.coins || 100));
+      localStorage.setItem("artamon_user_cache", JSON.stringify(data.user));
+    } catch (e) {}
+
+    try { if (window.COINS && COINS.setFromServer) COINS.setFromServer(data.user.coins || 100); } catch (e) {}
+
+    toast("🎉 Аккаунт создан: " + data.user.nick);
     try { AUDIO.online(); } catch (e) {}
     try { ACH.unlock("first_account"); } catch (e) {}
+
     updateUserBtn();
     updateLoggedPane();
     switchTab("logged");
+
+    var coinEl = $("coinBalance");
+    if (coinEl) coinEl.textContent = data.user.coins || 100;
+
+  } catch (e) {
+    toast("❌ " + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = "Создать аккаунт"; }
   }
+}
   function doLogout() {
-    SAFE_STORE.remove(ACC_KEY);
-    toast("🚪 Вы вышли");
-    switchTab("login");
-    updateUserBtn();
-  }
+  try { localStorage.removeItem("artamon_nick"); } catch (e) {}
+  try { localStorage.removeItem("artamon_coins_v1"); } catch (e) {}
+  try { localStorage.removeItem("artamon_user_cache"); } catch (e) {}
+  try { SAFE_STORE.remove(ACC_KEY); } catch (e) {}
+  toast("🚪 Вы вышли");
+  switchTab("login");
+  updateUserBtn();
+}
   function doGuest() {
     try { ACH.unlock("guest_start"); } catch (e) {}
     toast("🎮 Гостевой режим");
