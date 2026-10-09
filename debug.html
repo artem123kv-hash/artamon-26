@@ -2,1880 +2,1278 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#0a0a10">
-<meta name="color-scheme" content="dark light">
-<title>Artamon Debug v9</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Artamon Debug</title>
 <style>
-/* ═══════════ DESIGN TOKENS ═══════════ */
-:root {
-  --bg-0:#050507; --bg-1:#0a0a10; --bg-2:#12121a; --bg-3:#1a1a24; --bg-4:#22222e;
-  --bd:#252532; --bd-2:#353545; --bd-3:#4a4a5c;
-  --fg-1:#e8e8f0; --fg-2:#8888a0; --fg-3:#555568;
-  --gold:#d4af37; --gold-lt:#f6e6a8; --gold-dk:#8f6f1a;
-  --ok:#4ade80; --err:#f87171; --warn:#fbbf24; --info:#60a5fa;
-  --purple:#a78bfa; --cyan:#22d3ee; --pink:#f472b6;
-  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px;
-  --sh-1:0 4px 12px rgba(0,0,0,.3);
-  --sh-2:0 12px 32px rgba(0,0,0,.5);
-  --sh-gold:0 8px 24px rgba(212,175,55,.25);
-  --t-fast:.15s cubic-bezier(.4,0,.2,1);
-  --t-base:.25s cubic-bezier(.4,0,.2,1);
-  --t-spring:.4s cubic-bezier(.5,1.5,.5,1);
-  --font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
-  --font-mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
-}
-[data-theme="light"] {
-  --bg-0:#f1f5f9; --bg-1:#f8fafc; --bg-2:#ffffff; --bg-3:#f1f5f9; --bg-4:#e2e8f0;
-  --bd:#e2e8f0; --bd-2:#cbd5e1; --bd-3:#94a3b8;
-  --fg-1:#0f172a; --fg-2:#475569; --fg-3:#94a3b8;
-  --sh-1:0 4px 12px rgba(15,23,42,.08);
-  --sh-2:0 12px 32px rgba(15,23,42,.15);
-}
-@media (prefers-reduced-motion:reduce) {
-  *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; }
-}
-
-/* ═══════════ RESET ═══════════ */
-*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
-html,body { min-height:100dvh; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  background:var(--bg-1); color:var(--fg-1);
-  font:13px/1.5 var(--font-ui);
-  overflow-x:hidden; -webkit-tap-highlight-color:transparent;
-  background-image:
-    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(212,175,55,.10), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(96,165,250,.08), transparent 60%);
-  background-attachment:fixed;
-  padding:16px 14px calc(60px + env(safe-area-inset-bottom));
-  transition:background var(--t-base), color var(--t-base);
+  background: #0a0a10;
+  color: #e8e8f0;
+  font: 13px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif;
+  padding: 12px;
+  min-height: 100vh;
 }
-button { font:inherit; color:inherit; background:none; border:none; cursor:pointer; }
-input,textarea { font:inherit; color:inherit; }
+h1 {
+  text-align: center;
+  color: #d4af37;
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+.sub {
+  text-align: center;
+  color: #8888a0;
+  font-size: 11px;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.status {
+  text-align: center;
+  font-size: 11px;
+  color: #8888a0;
+  margin-bottom: 16px;
+}
+.status b { color: #4ade80; }
+.status b.off { color: #f87171; }
 
-/* ═══════════ STARFIELD ═══════════ */
-.stars { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
-.star {
-  position:absolute; width:2px; height:2px; border-radius:50%;
-  background:var(--gold); opacity:0;
-  animation:star-pulse 4s ease-in-out infinite;
-}
-@keyframes star-pulse { 0%,100%{opacity:0} 50%{opacity:.55} }
-
-/* ═══════════ HEADER ═══════════ */
-.header {
-  position:relative; z-index:1; text-align:center;
-  padding:22px 16px 18px; margin-bottom:20px;
-  background:linear-gradient(180deg, rgba(212,175,55,.10), transparent 80%);
-  border:1px solid var(--bd); border-radius:var(--r-xl);
-  overflow:hidden; animation:fade-down .5s ease-out both;
-}
-@keyframes fade-down { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:none} }
-.header::before {
-  content:""; position:absolute; inset:0;
-  background:linear-gradient(105deg,transparent 30%,rgba(212,175,55,.18) 50%,transparent 70%);
-  transform:translateX(-100%);
-  animation:shimmer 4s ease-in-out infinite;
-}
-@keyframes shimmer { 0%,100%{transform:translateX(-100%)} 50%{transform:translateX(100%)} }
-.header h1 {
-  position:relative; font-size:1.5rem; font-weight:900; letter-spacing:.06em;
-  background:linear-gradient(180deg,var(--gold-lt),var(--gold) 55%,var(--gold-dk));
-  -webkit-background-clip:text; background-clip:text; color:transparent;
-  margin-bottom:6px; filter:drop-shadow(0 0 24px rgba(212,175,55,.35));
-}
-.header .version {
-  position:relative; font-size:.66rem; color:var(--fg-3);
-  letter-spacing:.22em; text-transform:uppercase; font-weight:800;
-}
-.net-pill {
-  position:relative; display:inline-flex; align-items:center; gap:8px;
-  margin-top:12px; padding:5px 14px;
-  background:var(--bg-2); border:1px solid var(--bd);
-  border-radius:999px; font-size:.68rem; font-weight:700;
-  color:var(--fg-2); letter-spacing:.08em;
-}
-.net-pill .dot {
-  width:8px; height:8px; border-radius:50%; background:var(--fg-3);
-  transition:all var(--t-base);
-}
-.net-pill .dot.on { background:var(--ok); box-shadow:0 0 10px var(--ok); animation:pulse 2s infinite; }
-.net-pill .dot.off { background:var(--err); box-shadow:0 0 10px var(--err); }
-@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.35)} }
-
-.icon-btn {
-  position:absolute; top:14px; width:38px; height:38px; border-radius:50%;
-  background:var(--bg-2); border:1.5px solid var(--bd);
-  display:grid; place-items:center; font-size:1.05rem;
-  transition:all var(--t-base); z-index:2;
-}
-.icon-btn:hover { border-color:var(--gold); transform:rotate(180deg); }
-.icon-btn.left  { left:14px; }
-.icon-btn.right { right:14px; }
-.icon-btn:active { transform:scale(.92) rotate(180deg); }
-
-/* ═══════════ GROUP TITLE ═══════════ */
 .group {
-  position:relative; z-index:1;
-  display:flex; align-items:center; gap:10px;
-  margin:26px 4px 12px;
-  font-size:.68rem; font-weight:900;
-  letter-spacing:.2em; text-transform:uppercase;
-  color:var(--gold);
-  opacity:0; animation:fade-in .5s ease forwards;
-  cursor:pointer; user-select:none;
-}
-.group:hover { color:var(--gold-lt); }
-.group .chev { transition:transform var(--t-base); font-size:.7rem; }
-.group.collapsed .chev { transform:rotate(-90deg); }
-.group::after {
-  content:""; flex:1; height:1px;
-  background:linear-gradient(90deg,var(--bd),transparent);
-}
-@keyframes fade-in { to{opacity:1} }
-.group-body { display:contents; }
-.group.collapsed + .group-body > * { display:none; }
-
-/* ═══════════ BUTTON CARD ═══════════ */
-.btn {
-  position:relative; z-index:1;
-  display:flex; align-items:center; gap:14px;
-  width:100%; padding:14px 16px; margin-bottom:8px;
-  background:linear-gradient(135deg, var(--bg-3), var(--bg-2));
-  border:1.5px solid var(--bd); border-radius:var(--r-md);
-  text-align:left; overflow:hidden;
-  transition:all var(--t-base);
-  animation:slide-up .4s ease-out backwards;
-}
-@keyframes slide-up { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
-.btn::before {
-  content:""; position:absolute; inset:0;
-  background:linear-gradient(90deg,transparent,rgba(212,175,55,.14),transparent);
-  transform:translateX(-100%); transition:transform .6s;
-}
-.btn:hover::before { transform:translateX(100%); }
-.btn:hover {
-  border-color:var(--gold); transform:translateY(-2px);
-  box-shadow:var(--sh-gold);
-}
-.btn:active { transform:scale(.985); }
-.btn:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
-.btn[disabled] { opacity:.5; cursor:wait; pointer-events:none; }
-
-.btn .ico {
-  width:38px; height:38px; flex-shrink:0;
-  display:grid; place-items:center; font-size:1.4rem;
-  border-radius:10px; background:rgba(212,175,55,.1);
-  transition:all var(--t-base);
-}
-.btn:hover .ico { background:rgba(212,175,55,.22); transform:scale(1.08) rotate(-5deg); }
-.btn .lbl { flex:1; min-width:0; font-weight:700; font-size:.88rem; }
-.btn .lbl small {
-  display:block; font-size:.7rem; font-weight:400;
-  color:var(--fg-2); margin-top:2px;
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  color: #d4af37;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 16px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #252532;
 }
 
-.btn.primary {
-  background:linear-gradient(135deg,var(--gold-lt),var(--gold) 55%,var(--gold-dk));
-  color:#0a0a0a; border-color:var(--gold-lt); font-weight:900;
-  box-shadow:var(--sh-gold);
+button.test {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  background: #1a1a24;
+  border: 1px solid #252532;
+  border-radius: 10px;
+  color: #e8e8f0;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.15s;
 }
-.btn.primary:hover { box-shadow:0 14px 36px rgba(212,175,55,.5); }
-.btn.primary .ico { background:rgba(0,0,0,.15); }
-.btn.primary .lbl small { color:rgba(0,0,0,.65); }
+button.test:hover { background: #22222e; border-color: #d4af37; }
+button.test:active { transform: scale(0.98); }
+button.test:disabled { opacity: 0.5; cursor: wait; }
+button.test .sub { display: block; font-size: 11px; color: #8888a0; font-weight: 400; margin-top: 2px; }
+button.test.primary { background: linear-gradient(135deg, #f6e6a8, #d4af37); color: #0a0a0a; border-color: #f6e6a8; }
+button.test.primary .sub { color: rgba(0,0,0,0.6); }
+button.test.danger { background: #2a1010; border-color: #4a2020; color: #fecaca; }
+button.test.success { background: #0f2a10; border-color: #204a20; color: #bbf7d0; }
+button.test.info { background: #0f1a2a; border-color: #20405a; color: #bfdbfe; }
 
-.btn.danger  { background:linear-gradient(135deg,#2a1010,#1a0808); border-color:#4a2020; color:#fecaca; }
-.btn.danger:hover  { border-color:var(--err); box-shadow:0 8px 24px rgba(248,113,113,.28); }
-.btn.danger .ico  { background:rgba(248,113,113,.15); }
+#out {
+  background: #000;
+  border: 1px solid #252532;
+  border-radius: 10px;
+  padding: 12px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.7;
+  color: #d4d4d4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 60vh;
+  overflow-y: auto;
+  min-height: 200px;
+  margin-top: 8px;
+}
+#out .t { color: #d4af37; font-weight: 700; margin-top: 8px; }
+#out .ok { color: #4ade80; }
+#out .err { color: #f87171; }
+#out .warn { color: #fbbf24; }
+#out .info { color: #60a5fa; }
+#out .dim { color: #6b6b6b; }
+#out .box { display: block; padding: 6px 10px; margin: 4px 0; border-radius: 6px; }
+#out .box.ok { background: rgba(74,222,128,0.12); border-left: 3px solid #4ade80; }
+#out .box.err { background: rgba(248,113,113,0.15); border-left: 3px solid #f87171; }
+#out .box.info { background: rgba(96,165,250,0.12); border-left: 3px solid #60a5fa; }
+#out .box.warn { background: rgba(251,191,36,0.12); border-left: 3px solid #fbbf24; }
 
-.btn.success { background:linear-gradient(135deg,#0f2a10,#081a08); border-color:#204a20; color:#bbf7d0; }
-.btn.success:hover { border-color:var(--ok); box-shadow:0 8px 24px rgba(74,222,128,.28); }
-.btn.success .ico { background:rgba(74,222,128,.15); }
+.toolbar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.toolbar button {
+  padding: 6px 10px;
+  background: #1a1a24;
+  border: 1px solid #252532;
+  border-radius: 6px;
+  color: #8888a0;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.toolbar button:hover { border-color: #d4af37; color: #d4af37; }
 
-.btn.info { background:linear-gradient(135deg,#0f1a2a,#081018); border-color:#20405a; color:#bfdbfe; }
-.btn.info:hover { border-color:var(--info); box-shadow:0 8px 24px rgba(96,165,250,.28); }
-.btn.info .ico { background:rgba(96,165,250,.15); }
-
-/* ═══════════ PROGRESS ═══════════ */
 .progress {
-  display:none; align-items:center; gap:12px;
-  padding:14px 16px; margin-bottom:12px;
-  background:linear-gradient(135deg,var(--bg-2),var(--bg-3));
-  border:1.5px solid var(--gold); border-radius:var(--r-md);
-  font-size:.82rem; font-weight:600;
-  position:relative; overflow:hidden; z-index:1;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  background: #12121a;
+  border: 1px solid #d4af37;
+  border-radius: 10px;
+  font-size: 12px;
 }
-.progress.on { display:flex; animation:slide-up .3s ease; }
-.progress::after {
-  content:""; position:absolute; bottom:0; left:0;
-  height:2px; width:30%;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
-  animation:loader 1.4s linear infinite;
+.progress.on { display: flex; }
+.progress .spin {
+  width: 16px; height: 16px;
+  border: 2px solid #252532;
+  border-top-color: #d4af37;
+  border-radius: 50%;
+  animation: sp 0.8s linear infinite;
 }
-@keyframes loader { 0%{left:-30%} 100%{left:100%} }
-.spinner {
-  width:18px; height:18px; flex-shrink:0;
-  border:2px solid var(--bd); border-top-color:var(--gold);
-  border-radius:50%; animation:spin .8s linear infinite;
-}
-@keyframes spin { to{transform:rotate(360deg)} }
+@keyframes sp { to { transform: rotate(360deg); } }
 
-/* ═══════════ LOG ═══════════ */
-.log-wrap { position:relative; z-index:1; margin-top:18px; }
-.log-bar {
-  display:flex; align-items:center; gap:8px;
-  padding:10px 12px;
-  background:var(--bg-2); border:1px solid var(--bd);
-  border-bottom:none; border-radius:var(--r-md) var(--r-md) 0 0;
-  font-size:.7rem; font-weight:700;
-  color:var(--fg-2); letter-spacing:.08em; text-transform:uppercase;
-  flex-wrap:wrap;
-}
-.log-bar .title { flex:1; min-width:80px; }
-.log-bar .tools { display:flex; gap:6px; flex-wrap:wrap; }
-.tool {
-  padding:4px 9px; background:transparent;
-  border:1px solid var(--bd); border-radius:6px;
-  color:var(--fg-2); font-size:.64rem; font-weight:700;
-  transition:all var(--t-fast); letter-spacing:.04em;
-}
-.tool:hover { border-color:var(--gold); color:var(--gold); }
-.tool[aria-pressed="true"] { border-color:var(--gold); color:var(--gold); background:rgba(212,175,55,.08); }
-
-.log {
-  background:#020204; border:1px solid var(--bd);
-  border-radius:0 0 var(--r-md) var(--r-md);
-  padding:14px; font:11.5px/1.7 var(--font-mono);
-  color:#d4d4d4; white-space:pre-wrap; word-break:break-word;
-  max-height:65dvh; overflow-y:auto; min-height:180px;
-  position:relative; scroll-behavior:smooth;
-}
-.log .line {
-  padding:1px 0; opacity:0;
-  animation:line-in .3s ease forwards;
-}
-@keyframes line-in { from{opacity:0;transform:translateX(-6px)} to{opacity:1;transform:none} }
-.log .line.hidden { display:none; }
-.log .title {
-  color:var(--gold); font-weight:800; font-size:12.5px;
-  margin-top:10px; padding-top:8px; border-top:1px solid #1a1a1a;
-  letter-spacing:.05em;
-}
-.log .title:first-child { margin-top:0; padding-top:0; border-top:none; }
-.log .ok    { color:var(--ok); font-weight:700; }
-.log .err   { color:var(--err); font-weight:700; }
-.log .warn  { color:var(--warn); font-weight:700; }
-.log .info  { color:var(--info); font-weight:700; }
-.log .dim   { color:#6b6b6b; }
-.log .purple{ color:var(--purple); font-weight:700; }
-.log .cyan  { color:var(--cyan); font-weight:700; }
-.log .box-err {
-  display:block; padding:6px 10px; margin:4px 0;
-  background:rgba(248,113,113,.15); color:var(--err); font-weight:800;
-  border-left:3px solid var(--err); border-radius:6px;
-}
-.log .box-ok {
-  display:block; padding:6px 10px; margin:4px 0;
-  background:rgba(74,222,128,.12); color:var(--ok);
-  border-left:3px solid var(--ok); border-radius:6px;
-}
-.log .box-info {
-  display:block; padding:6px 10px; margin:4px 0;
-  background:rgba(96,165,250,.12); color:var(--info);
-  border-left:3px solid var(--info); border-radius:6px;
-}
-.log .box-warn {
-  display:block; padding:6px 10px; margin:4px 0;
-  background:rgba(251,191,36,.12); color:var(--warn);
-  border-left:3px solid var(--warn); border-radius:6px;
-}
-.log .ctx {
-  display:block; color:#8a8a8a; padding-left:12px;
-  border-left:2px solid var(--bd);
-}
-
-/* ═══════════ MODAL ═══════════ */
-.modal-bg {
-  position:fixed; inset:0; z-index:1000;
-  background:rgba(0,0,0,.7); backdrop-filter:blur(6px);
-  display:none; align-items:center; justify-content:center; padding:20px;
-  animation:fade-in .2s ease;
-}
-.modal-bg.on { display:flex; }
-.modal {
-  width:100%; max-width:420px;
-  background:var(--bg-2); border:1.5px solid var(--gold);
-  border-radius:var(--r-lg); padding:22px;
-  box-shadow:var(--sh-2);
-  animation:pop .3s var(--t-spring);
-}
-@keyframes pop { from{opacity:0;transform:scale(.9)} to{opacity:1;transform:none} }
-.modal h3 { color:var(--gold); font-size:1rem; margin-bottom:12px; font-weight:900; }
-.modal input {
-  width:100%; padding:11px 13px; margin-bottom:14px;
-  background:var(--bg-0); border:1.5px solid var(--bd);
-  border-radius:var(--r-sm); color:var(--fg-1);
-  transition:border-color var(--t-fast);
-}
-.modal input:focus { outline:none; border-color:var(--gold); }
-.modal-actions { display:flex; gap:8px; justify-content:flex-end; }
-.modal-actions button {
-  padding:9px 18px; border-radius:var(--r-sm);
-  border:1.5px solid var(--bd); font-weight:700; font-size:.82rem;
-  transition:all var(--t-fast);
-}
-.modal-actions .ok  { background:var(--gold); color:#0a0a0a; border-color:var(--gold-lt); }
-.modal-actions .ok:hover { filter:brightness(1.1); }
-.modal-actions .cancel:hover { border-color:var(--fg-2); }
-
-/* ═══════════ TOASTS ═══════════ */
-.toasts {
-  position:fixed; top:16px; right:14px; z-index:2000;
-  display:flex; flex-direction:column; gap:8px;
-  pointer-events:none; max-width:min(340px,calc(100vw - 28px));
+#toasts {
+  position: fixed;
+  top: 12px; right: 12px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 300px;
 }
 .toast {
-  padding:12px 16px;
-  background:linear-gradient(135deg,var(--bg-2),var(--bg-3));
-  border:1.5px solid var(--gold); border-radius:var(--r-md);
-  font-size:.82rem; font-weight:600; color:var(--fg-1);
-  box-shadow:var(--sh-2);
-  transform:translateX(140%); opacity:0;
-  transition:all var(--t-spring);
-  pointer-events:auto;
+  padding: 10px 14px;
+  background: #12121a;
+  border: 1.5px solid #d4af37;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  transform: translateX(150%);
+  transition: 0.3s;
 }
-.toast.show { transform:translateX(0); opacity:1; }
-.toast.ok  { border-color:var(--ok);   color:var(--ok); }
-.toast.err { border-color:var(--err);  color:var(--err); }
-.toast.warn{ border-color:var(--warn); color:var(--warn); }
-.toast.info{ border-color:var(--info); color:var(--info); }
+.toast.on { transform: translateX(0); }
+.toast.ok { border-color: #4ade80; color: #4ade80; }
+.toast.err { border-color: #f87171; color: #f87171; }
+.toast.warn { border-color: #fbbf24; color: #fbbf24; }
 
-/* ═══════════ FOOTER ═══════════ */
-.footer {
-  position:relative; z-index:1; text-align:center;
-  padding:26px 14px 14px; font-size:.66rem; color:var(--fg-3);
-  letter-spacing:.14em; text-transform:uppercase; font-weight:700;
+#fatal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #000;
+  color: #f87171;
+  padding: 20px;
+  font: 12px/1.6 ui-monospace, monospace;
+  white-space: pre-wrap;
+  overflow: auto;
+  z-index: 99999;
 }
-.footer b {
-  background:linear-gradient(180deg,var(--gold-lt),var(--gold));
-  -webkit-background-clip:text; background-clip:text; color:transparent;
-}
-
-/* ═══════════ SCROLLBAR ═══════════ */
-::-webkit-scrollbar { width:8px; height:8px; }
-::-webkit-scrollbar-track { background:var(--bg-0); }
-::-webkit-scrollbar-thumb { background:var(--bd); border-radius:4px; }
-::-webkit-scrollbar-thumb:hover { background:var(--gold); }
-
-/* ═══════════ RESPONSIVE ═══════════ */
-@media (max-width:480px) {
-  body { padding:12px 10px calc(50px + env(safe-area-inset-bottom)); }
-  .header { padding:18px 12px 14px; }
-  .header h1 { font-size:1.25rem; }
-  .btn { padding:12px 14px; gap:12px; }
-  .btn .ico { width:34px; height:34px; font-size:1.25rem; }
-  .log { font-size:11px; padding:12px; }
-}
-.hidden { display:none !important; }
 </style>
 </head>
-<body data-theme="dark">
+<body>
 
-<div class="stars" id="stars" aria-hidden="true"></div>
+<h1>🔍 Artamon Debug</h1>
+<div class="sub">Version 10 · Simple</div>
+<div class="status" id="net">Онлайн: <b>—</b></div>
 
-<header class="header">
-  <button class="icon-btn left"  id="themeBtn" title="Тема" aria-label="Переключить тему">🌙</button>
-  <button class="icon-btn right" id="resetBtn" title="Сбросить всё" aria-label="Сбросить состояние">↺</button>
-  <h1>🔍 Artamon Debug</h1>
-  <div class="version">Version 9.0 · Nova+</div>
-  <div class="net-pill" role="status" aria-live="polite">
-    <span class="dot" id="netDot"></span>
-    <span id="netText">Проверка...</span>
-  </div>
-</header>
-
-<main id="app" role="main"></main>
-
-<footer class="footer">
-  Powered by <b>Artamon v2.9</b> · Debug v9 Nova+
-</footer>
-
-<div class="modal-bg" id="modalBg" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal" id="modal">
-    <h3 id="modalTitle">Ввод</h3>
-    <input id="modalInput" type="text" autocomplete="off">
-    <div class="modal-actions">
-      <button class="cancel" id="modalCancel">Отмена</button>
-      <button class="ok" id="modalOk">OK</button>
-    </div>
-  </div>
+<div class="toolbar">
+  <button onclick="filterLog('all')">Все</button>
+  <button onclick="filterLog('err')">Ошибки</button>
+  <button onclick="filterLog('warn')">Warn+</button>
+  <button onclick="copyLog()">📋 Копировать</button>
+  <button onclick="clearLog()">🗑 Очистить</button>
 </div>
 
-<div class="toasts" id="toasts" role="region" aria-label="Уведомления" aria-live="polite"></div>
+<div class="progress" id="prog">
+  <div class="spin"></div>
+  <span id="progText">Работаю...</span>
+</div>
+
+<div id="out"></div>
+
+<div id="toasts"></div>
+<pre id="fatal"></pre>
 
 <script>
-"use strict";
 /* ═══════════════════════════════════════════════════════════
-   ARTAMON DEBUG v9 — Nova+
-   Modern rewrite: async/await, fetch, registry-based tests
+   ARTAMON DEBUG v10 — Simple & Working
    ═══════════════════════════════════════════════════════════ */
 
-// ─── CONFIG ───────────────────────────────────────────────
-const CONFIG = Object.freeze({
-  API_BASE: "https://artamon-api.artem123kv.workers.dev",
-  GAME_FILE_CANDIDATES: [
-    "./index_v4.html", "./index_v4.HTML",
-    "./index.html", "./index.htm",
-    "../index_v4.html", "../index.html",
-    "/index_v4.html", "/index.html",
-    "./game/index_v4.html", "./game/index.html",
-    "./artamon/index_v4.html", "./artamon/index.html",
-    "./src/index_v4.html", "./public/index_v4.html", "./dist/index_v4.html",
-  ],
-  HISTORY_KEY: "artamon_debug_v9_history",
-  THEME_KEY: "artamon_debug_v9_theme",
-  LOG_FILTER_KEY: "artamon_debug_v9_logfilter",
-  FETCH_TIMEOUT: 12000,
-  PING_COUNT: 5,
-  MAX_HISTORY: 30,
-});
-
-// ─── SAFE TAGS (avoid breaking HTML when parsing) ────────
-const TAG = Object.freeze({
-  SCRIPT_OPEN: "<" + "script",
-  SCRIPT_CLOSE: "<" + "/" + "script>",
-  STYLE_OPEN: "<" + "style",
-  STYLE_CLOSE: "<" + "/" + "style>",
-});
-
-// ═══════════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════════
-const State = {
-  gamePath: null,
-  gameContent: null,
-  logFilter: "all",
-  logSearch: "",
-  collapsedGroups: new Set(),
+// ─── ЛОВИМ ЛЮБУЮ ОШИБКУ ───
+window.onerror = function(msg, src, line, col) {
+  var f = document.getElementById("fatal");
+  f.style.display = "block";
+  f.textContent = "❌ ОШИБКА\n\n" + msg + "\n\n" + src + " : " + line + ":" + col;
+  return false;
 };
 
-// ═══════════════════════════════════════════════════════════
-// DOM HELPERS
-// ═══════════════════════════════════════════════════════════
-const $  = (s, r = document) => r.querySelector(s);
-const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const el = (tag, props = {}, ...children) => {
-  const node = Object.assign(document.createElement(tag), props);
-  for (const c of children) {
-    if (c == null) continue;
-    node.append(c.nodeType ? c : document.createTextNode(String(c)));
-  }
-  return node;
-};
-
-// ═══════════════════════════════════════════════════════════
-// LOGGER
-// ═══════════════════════════════════════════════════════════
-const Logger = (() => {
-  let root = null;
-  const counts = { ok: 0, err: 0, warn: 0, info: 0, dim: 0, plain: 0 };
-
-  const init = (el) => { root = el; };
-
-  const LEVELS = new Set(["ok","err","warn","info","dim","title","error-line","success-line","info-line","warn-line","context-line"]);
-
-  function write(text, level = "") {
-    if (!root) return;
-    const line = document.createElement("div");
-    line.className = "line" + (level ? " " + level : "");
-    line.textContent = text;
-    line.dataset.level = normalizeLevel(level);
-    root.appendChild(line);
-
-    counts[normalizeLevel(level)] = (counts[normalizeLevel(level)] || 0) + 1;
-    applyFilter(line);
-    root.scrollTop = root.scrollHeight;
-  }
-
-  const normalizeLevel = (lvl) => {
-    if (!lvl) return "plain";
-    if (lvl === "title") return "title";
-    if (lvl.includes("error")) return "err";
-    if (lvl.includes("success") || lvl === "ok") return "ok";
-    if (lvl.includes("warn")) return "warn";
-    if (lvl.includes("info")) return "info";
-    if (lvl === "dim" || lvl === "context-line") return "dim";
-    return "plain";
-  };
-
-  function applyFilter(line) {
-    if (!line) return;
-    const lvl = line.dataset.level || "plain";
-    const f = State.logFilter;
-    const q = State.logSearch.toLowerCase();
-    const text = (line.textContent || "").toLowerCase();
-
-    let visible = true;
-    if (f === "errors") visible = lvl === "err";
-    else if (f === "warn") visible = lvl === "err" || lvl === "warn";
-    else if (f === "ok") visible = lvl === "ok";
-    if (visible && q) visible = text.includes(q);
-    line.classList.toggle("hidden", !visible);
-  }
-
-  function refilter() {
-    if (!root) return;
-    $$(".line", root).forEach(applyFilter);
-  }
-
-  function clear() {
-    if (!root) return;
-    root.innerHTML = "";
-    for (const k in counts) counts[k] = 0;
-    write("🗑 Лог очищен", "dim");
-  }
-
-  const title = (t) => write("═══ " + t + " ═══", "title");
-  const ok    = (t) => write(t, "ok");
-  const err   = (t) => write(t, "err");
-  const warn  = (t) => write(t, "warn");
-  const info  = (t) => write(t, "info");
-  const dim   = (t) => write(t, "dim");
-  const blank = ()  => write("");
-  const box   = (t, type) => write(t, {
-    ok: "success-line", err: "error-line", warn: "warn-line", info: "info-line"
-  }[type] || "info-line");
-  const ctx   = (t) => write(t, "context-line");
-
-  const counts$ = counts;
-  const text = () => root ? (root.textContent || "") : "";
-
-  return { init, write, clear, refilter, title, ok, err, warn, info, dim, blank, box, ctx, text, counts: counts$ };
-})();
-
-const log = (...a) => Logger.write(a.join(" "));
-
-// ═══════════════════════════════════════════════════════════
-// TOASTS
-// ═══════════════════════════════════════════════════════════
-const Toast = (() => {
-  let root;
-  const init = (el) => { root = el; };
-  function show(msg, type = "info", ttl = 3500) {
-    if (!root) return;
-    const node = el("div", { className: "toast " + type, role: "status" }, msg);
-    root.append(node);
-    requestAnimationFrame(() => node.classList.add("show"));
-    setTimeout(() => {
-      node.classList.remove("show");
-      setTimeout(() => node.remove(), 400);
-    }, ttl);
-  }
-  return { init, show };
-})();
-
-// ═══════════════════════════════════════════════════════════
-// HTTP CLIENT (fetch + timeout + retry)
-// ═══════════════════════════════════════════════════════════
-const HTTP = {
-  async request(url, { method = "GET", body, timeout = CONFIG.FETCH_TIMEOUT, signal } = {}) {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort("timeout"), timeout);
-    if (signal) signal.addEventListener("abort", () => ctrl.abort(signal.reason));
-
-    const opts = {
-      method,
-      signal: ctrl.signal,
-      cache: "no-store",
-    };
-    if (body !== undefined) {
-      opts.headers = { "Content-Type": "application/json" };
-      opts.body = typeof body === "string" ? body : JSON.stringify(body);
-    }
-
-    const t0 = performance.now();
-    try {
-      const res = await fetch(url, opts);
-      const ms = Math.round(performance.now() - t0);
-      let data = null;
-      const ct = res.headers.get("content-type") || "";
-      if (ct.includes("application/json")) {
-        try { data = await res.json(); } catch { data = null; }
-      } else {
-        try { data = await res.text(); } catch { data = null; }
-      }
-      return { ok: res.ok, status: res.status, data, ms, headers: res.headers };
-    } catch (e) {
-      const ms = Math.round(performance.now() - t0);
-      const isAbort = e?.name === "AbortError" || String(e).includes("abort");
-      return { ok: false, status: 0, data: null, ms, error: isAbort ? "timeout" : (e?.message || String(e)) };
-    } finally {
-      clearTimeout(timer);
-    }
-  },
-  get(url, opts)  { return HTTP.request(url, { ...opts, method: "GET" }); },
-  post(url, body, opts) { return HTTP.request(url, { ...opts, method: "POST", body }); },
-};
-
-// ═══════════════════════════════════════════════════════════
-// MODAL
-// ═══════════════════════════════════════════════════════════
-const Modal = (() => {
-  let bg, input, titleEl, okBtn, cancelBtn;
-  let currentResolve = null;
-
-  const init = () => {
-    bg = $("#modalBg"); input = $("#modalInput");
-    titleEl = $("#modalTitle"); okBtn = $("#modalOk"); cancelBtn = $("#modalCancel");
-
-    const close = (val) => {
-      bg.classList.remove("on"); bg.setAttribute("aria-hidden", "true");
-      input.value = "";
-      const r = currentResolve; currentResolve = null;
-      if (r) r(val);
-    };
-
-    okBtn.addEventListener("click", () => close(input.value));
-    cancelBtn.addEventListener("click", () => close(null));
-    bg.addEventListener("click", (e) => { if (e.target === bg) close(null); });
-    bg.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") { e.preventDefault(); close(input.value); }
-      else if (e.key === "Escape") { e.preventDefault(); close(null); }
-    });
-  };
-
-  function open(title, { value = "", placeholder = "" } = {}) {
-    return new Promise((resolve) => {
-      currentResolve = resolve;
-      titleEl.textContent = title;
-      input.value = value;
-      input.placeholder = placeholder;
-      bg.classList.add("on");
-      bg.setAttribute("aria-hidden", "false");
-      setTimeout(() => input.focus(), 40);
-    });
-  }
-
-  function confirm(title) {
-    return new Promise((resolve) => {
-      currentResolve = resolve;
-      titleEl.textContent = title;
-      input.value = "";
-      input.placeholder = "(нажми OK для подтверждения)";
-      input.style.display = "none";
-      bg.classList.add("on");
-      bg.setAttribute("aria-hidden", "false");
-      setTimeout(() => okBtn.focus(), 40);
-      const restore = () => { input.style.display = ""; okBtn.removeEventListener("click", restore); };
-      okBtn.addEventListener("click", restore, { once: true });
-    }).then((v) => v !== null);
-  }
-
-  return { init, open, confirm };
-})();
-
-// ═══════════════════════════════════════════════════════════
-// PROGRESS
-// ═══════════════════════════════════════════════════════════
-const Progress = (() => {
-  let node, textNode;
-  const init = () => { node = $("#progress"); textNode = $("#progressText"); };
-  const show = (t = "Работаю...") => { textNode.textContent = t; node.classList.add("on"); };
-  const set  = (t) => { textNode.textContent = t; };
-  const hide = () => node.classList.remove("on");
-  return { init, show, set, hide };
-})();
-
-// ═══════════════════════════════════════════════════════════
-// HISTORY
-// ═══════════════════════════════════════════════════════════
-const History = {
-  add(action) {
-    try {
-      const h = JSON.parse(localStorage.getItem(CONFIG.HISTORY_KEY) || "[]");
-      h.unshift({ action, ts: Date.now() });
-      localStorage.setItem(CONFIG.HISTORY_KEY, JSON.stringify(h.slice(0, CONFIG.MAX_HISTORY)));
-    } catch {}
-  },
-  list() {
-    try { return JSON.parse(localStorage.getItem(CONFIG.HISTORY_KEY) || "[]"); }
-    catch { return []; }
-  },
-  clear() { try { localStorage.removeItem(CONFIG.HISTORY_KEY); } catch {} },
-};
-
-// ═══════════════════════════════════════════════════════════
-// GAME FILE LOADER
-// ═══════════════════════════════════════════════════════════
-const GameFile = {
-  async find(signal) {
-    for (const path of CONFIG.GAME_FILE_CANDIDATES) {
-      if (signal?.aborted) return null;
-      try {
-        const res = await fetch(path + "?t=" + Date.now(), { cache: "no-store", signal });
-        if (res.ok) return path;
-      } catch (e) { if (signal?.aborted) return null; }
-    }
-    return null;
-  },
-
-  async load({ signal } = {}) {
-    if (State.gameContent) return { content: State.gameContent, path: State.gamePath };
-    if (!State.gamePath) {
-      Progress.show("🔍 Ищу файл игры...");
-      State.gamePath = await GameFile.find(signal);
-      Progress.hide();
-      if (!State.gamePath) return null;
-    }
-    try {
-      const res = await fetch(State.gamePath + "?t=" + Date.now(), { cache: "no-store", signal });
-      if (!res.ok) return null;
-      State.gameContent = await res.text();
-      return { content: State.gameContent, path: State.gamePath };
-    } catch { return null; }
-  },
-
-  reset() {
-    State.gamePath = null;
-    State.gameContent = null;
-  },
-};
-
-// ═══════════════════════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════════════════════
-const Utils = {
-  bytes(n) { return n.toLocaleString("ru-RU"); },
-  pct(a, b) { return Math.round((a / b) * 100); },
-  pad(s, n, c = " ") { return String(s).padEnd(n, c); },
-  padNum(n, w) { return String(n).padStart(w, " "); },
-  bar(n, max, width = 30) {
-    const fill = Math.max(1, Math.min(width, Math.round((n / Math.max(1, max)) * width)));
-    return "█".repeat(fill);
-  },
-  debounce(fn, ms = 150) {
-    let t;
-    return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
-  },
-  escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-  },
-  splitScripts(html) {
-    return html.split(TAG.SCRIPT_OPEN + ">").slice(1).map(p => p.split(TAG.SCRIPT_CLOSE)[0] || "");
-  },
-  splitStyles(html) {
-    const re = new RegExp(TAG.STYLE_OPEN + "[^>]*>([\\s\\S]*?)" + TAG.STYLE_CLOSE, "g");
-    const out = [];
-    let m;
-    while ((m = re.exec(html)) !== null) out.push(m[1]);
-    return out;
-  },
-  async withGameFile(handler) {
-    Progress.show("🔍 Загружаю файл...");
-    const loaded = await GameFile.load();
-    Progress.hide();
-    if (!loaded) {
-      Logger.err("❌ Файл игры НЕ найден ни по одному пути");
-      Logger.blank();
-      Logger.warn("Проверенные пути:");
-      CONFIG.GAME_FILE_CANDIDATES.forEach(p => Logger.dim("  " + p));
-      Toast.show("Файл игры не найден", "err");
-      return;
-    }
-    Logger.ok("✅ Найден: " + loaded.path);
-    Logger.dim("📄 Размер: " + Utils.bytes(loaded.content.length) + " симв., строк: " + loaded.content.split("\n").length);
-    Logger.blank();
-    await handler(loaded.content, loaded.path);
-  },
-};
-
-// ═══════════════════════════════════════════════════════════
-// BINARY SEARCH for first invalid line in JS
-// ═══════════════════════════════════════════════════════════
-function findFirstInvalidLine(code) {
-  const lines = code.split("\n");
-  const total = lines.length;
-  if (!total) return 0;
-  let lo = 1, hi = total, firstInvalid = 0;
-  while (lo <= hi) {
-    const mid = (lo + hi) >> 1;
-    const test = lines.slice(0, mid).join("\n");
-    let valid = false;
-    try { new Function(test); valid = true; } catch {}
-    if (valid) lo = mid + 1;
-    else { firstInvalid = mid; hi = mid - 1; }
-  }
-  return firstInvalid || 1;
-}
-
-// ═══════════════════════════════════════════════════════════
-// TEST REGISTRY
-// ═══════════════════════════════════════════════════════════
-const TESTS = [
-  // ─── DIAGNOSTICS ────────────────────────────────────────
-  {
-    id: "js", group: "🩺 Диагностика", icon: "🎯", color: "primary",
-    title: "Найти ошибку в JS",
-    subtitle: "Авто-поиск + точная строка",
-    async run() {
-      Logger.title("УМНЫЙ ПОИСК ОШИБКИ В JS");
-      History.add("Поиск ошибки в JS");
-      await Utils.withGameFile(async (html) => {
-        const scripts = Utils.splitScripts(html);
-        Logger.ok("📦 Найдено скриптов: " + scripts.length);
-        Logger.blank();
-
-        let errors = 0;
-        for (let i = 0; i < scripts.length; i++) {
-          const code = scripts[i];
-          const lines = code.split("\n");
-          Logger.title(`Скрипт #${i + 1} (${Utils.bytes(code.length)} симв., ${lines.length} строк)`);
-          let syntaxError = null;
-          try { new Function(code); }
-          catch (e) { syntaxError = e; }
-
-          if (!syntaxError) { Logger.ok("✅ Синтаксис OK"); Logger.blank(); continue; }
-
-          errors++;
-          Logger.err("❌ ОШИБКА: " + syntaxError.message);
-
-          const lineNum = findFirstInvalidLine(code);
-          if (lineNum > 0 && lineNum <= lines.length) {
-            Logger.blank();
-            Logger.err("🎯 ПРОБЛЕМНАЯ СТРОКА: #" + lineNum);
-            Logger.blank();
-            Logger.info("Контекст:");
-            const start = Math.max(0, lineNum - 5);
-            const end = Math.min(lines.length, lineNum + 4);
-            for (let j = start; j < end; j++) {
-              const txt = lines[j] || "(пустая строка)";
-              const num = Utils.padNum(j + 1, 4);
-              if (j === lineNum - 1) Logger.box(`>>> [${num}] ${txt}`, "err");
-              else Logger.ctx(`    [${num}] ${txt}`);
-            }
-            Logger.blank();
-            Logger.warn("👆 Ошибка в строке с >>>");
-          } else {
-            Logger.warn("⚠️ Не удалось вычислить точную строку. Первые 20:");
-            lines.slice(0, 20).forEach((l, k) => Logger.ctx(`[${k + 1}] ${l || ""}`));
-          }
-          Logger.blank();
-        }
-        Logger.title("ИТОГ");
-        if (errors === 0) {
-          Logger.ok(`✅ Все ${scripts.length} скриптов валидны`);
-          Toast.show("Все скрипты OK", "ok");
-        } else {
-          Logger.err(`❌ Ошибок: ${errors} из ${scripts.length}`);
-          Toast.show(`Ошибок: ${errors}`, "err");
-        }
-      });
-    },
-  },
-  {
-    id: "html", group: "🩺 Диагностика", icon: "📄",
-    title: "Проверить HTML", subtitle: "Теги, скрипты, ключевые элементы",
-    async run() {
-      Logger.title("ПРОВЕРКА HTML");
-      History.add("Проверка HTML");
-      await Utils.withGameFile(async (html) => {
-        const sOpen  = (html.match(new RegExp(TAG.SCRIPT_OPEN, "g")) || []).length;
-        const sClose = (html.match(new RegExp(TAG.SCRIPT_CLOSE.replace(/[<>/]/g, m => "\\" + m), "g")) || []).length;
-        Logger.info(`📦 <${"script"}: ${sOpen}`);
-        Logger.info(`📦 </${"script"}>: ${sClose}`);
-        if (sOpen !== sClose) Logger.err(`❌ Разница: ${sOpen - sClose}`);
-        else Logger.ok("✅ Скрипты сбалансированы");
-        Logger.blank();
-
-        const checks = [
-          ['id="intro"', "Интро"], ['id="anniversary"', "Юбилей"],
-          ['id="mainSite"', "Основной сайт"], ['id="preloader"', "Прелоадер"],
-          ["SAFE_STORE", "Хранилище"], ["INTRO", "Модуль интро"],
-          ["COINS", "Монеты"], ["ARTAMON_API", "API"],
-          ["WHEEL", "Колесо"], ["QUESTS", "Квесты"],
-          ["FRIENDS", "Друзья"], ["SUPPORT", "Поддержка"],
-        ];
-        let found = 0;
-        Logger.info("Ключевые элементы:");
-        checks.forEach(([needle, name]) => {
-          const ok = html.includes(needle);
-          if (ok) found++;
-          Logger.write(`  ${ok ? "✅" : "❌"} ${name}`, ok ? "ok" : "err");
-        });
-        Logger.blank();
-        const pct = Utils.pct(found, checks.length);
-        Logger.write(`Найдено: ${found} / ${checks.length} (${pct}%)`,
-          pct === 100 ? "ok" : pct > 70 ? "warn" : "err");
-        Toast.show(`Найдено: ${found}/${checks.length}`, pct === 100 ? "ok" : "warn");
-      });
-    },
-  },
-  {
-    id: "size", group: "🩺 Диагностика", icon: "📊",
-    title: "Анализ размера", subtitle: "CSS / HTML / JS",
-    async run() {
-      Logger.title("АНАЛИЗ РАЗМЕРА");
-      History.add("Анализ размера");
-      await Utils.withGameFile(async (html) => {
-        const total = html.length;
-        Logger.info("📊 Всего: " + Utils.bytes(total) + " символов");
-        Logger.blank();
-
-        const headEnd = html.indexOf("</head>");
-        const bodyStart = html.indexOf("<body");
-        const bodyEnd = html.lastIndexOf("</body>");
-        if (headEnd > 0) Logger.dim(`HEAD: ${Utils.bytes(headEnd)} симв. (${Utils.pct(headEnd, total)}%)`);
-        if (bodyEnd > 0) Logger.dim(`BODY: ${Utils.bytes(bodyEnd - bodyStart)} симв. (${Utils.pct(bodyEnd - bodyStart, total)}%)`);
-        Logger.blank();
-
-        const cssBlocks = Utils.splitStyles(html);
-        const cssSize = cssBlocks.reduce((a, s) => a + s.length, 0);
-        Logger.info(`🎨 CSS: ${Utils.bytes(cssSize)} симв., блоков: ${cssBlocks.length}`);
-
-        const scripts = Utils.splitScripts(html);
-        const jsSize = scripts.reduce((a, s) => a + s.length, 0);
-        Logger.info(`⚙️ JS: ${Utils.bytes(jsSize)} симв., блоков: ${scripts.length}`);
-        Logger.blank();
-
-        Logger.title("Размеры скриптов");
-        const max = Math.max(...scripts.map(s => s.length), 1);
-        scripts.forEach((s, i) => {
-          Logger.dim(`  #${i + 1} ${Utils.padNum(Utils.bytes(s.length), 9)} симв. ${Utils.padNum(s.split("\n").length, 5)} стр. ${Utils.bar(s.length, max, 30)}`);
-        });
-        Logger.blank();
-        if (total > 500000) Logger.warn("⚠️ Файл > 500КБ — стоит разделить");
-        else Logger.ok("✅ Размер в норме");
-        Toast.show(`Размер: ${Math.round(total / 1024)} КБ`, "info");
-      });
-    },
-  },
-  {
-    id: "search", group: "🩺 Диагностика", icon: "🔎",
-    title: "Поиск по коду", subtitle: "Найти подстроку с контекстом",
-    async run() {
-      const q = await Modal.open("Что искать в файле?", { value: "ARTAMON_API" });
-      if (!q) return;
-      Logger.title("ПОИСК: " + q);
-      History.add("Поиск: " + q);
-      await Utils.withGameFile(async (html) => {
-        const lines = html.split("\n");
-        let count = 0;
-        for (let i = 0; i < lines.length; i++) {
-          const pos = lines[i].indexOf(q);
-          if (pos === -1) continue;
-          count++;
-          if (count <= 30) {
-            const before = lines[i].slice(Math.max(0, pos - 30), pos);
-            const after  = lines[i].slice(pos + q.length, pos + q.length + 30);
-            Logger.box(`[${i + 1}] …${before}⟨${q}⟩${after}…`, "info");
-          }
-        }
-        Logger.blank();
-        if (count === 0) { Logger.err("❌ Ничего не найдено"); Toast.show("Не найдено", "err"); }
-        else {
-          Logger.ok(count > 30 ? `✅ Найдено: ${count} (показаны 30)` : `✅ Найдено: ${count}`);
-          Toast.show(`Найдено: ${count}`, "ok");
-        }
-      });
-    },
-  },
-  {
-    id: "css", group: "🩺 Диагностика", icon: "🎨",
-    title: "Проверить CSS", subtitle: "Скобки, комментарии, правила",
-    async run() {
-      Logger.title("ПРОВЕРКА CSS");
-      History.add("Проверка CSS");
-      await Utils.withGameFile(async (html) => {
-        const blocks = Utils.splitStyles(html);
-        Logger.info("📦 CSS-блоков: " + blocks.length);
-        Logger.blank();
-        let allOk = true;
-        blocks.forEach((css, idx) => {
-          Logger.title(`Блок #${idx + 1} (${Utils.bytes(css.length)} симв.)`);
-          const open = (css.match(/\{/g) || []).length;
-          const close = (css.match(/\}/g) || []).length;
-          Logger.dim(`  { : ${open}   } : ${close}`);
-          if (open !== close) { Logger.err("  ❌ Не сбалансированы! Δ=" + (open - close)); allOk = false; }
-          else Logger.ok("  ✅ Скобки OK");
-
-          const cOpen = (css.match(/\/\*/g) || []).length;
-          const cClose = (css.match(/\*\//g) || []).length;
-          if (cOpen !== cClose) { Logger.err("  ❌ Комментарии /* */ не сбалансированы"); allOk = false; }
-
-          const rules = (css.match(/[^{}]+\{[^{}]*\}/g) || []).length;
-          Logger.dim("  📐 Правил: " + rules);
-          Logger.blank();
-        });
-        Logger.title("ИТОГ");
-        Logger.write(allOk ? "✅ CSS корректен" : "❌ Есть проблемы", allOk ? "ok" : "err");
-        Toast.show(allOk ? "CSS корректен" : "Проблемы в CSS", allOk ? "ok" : "err");
-      });
-    },
-  },
-  {
-    id: "dups", group: "🩺 Диагностика", icon: "🆔",
-    title: "Дубликаты id", subtitle: "Одинаковые id в HTML",
-    async run() {
-      Logger.title("ДУБЛИКАТЫ id");
-      History.add("Дубликаты id");
-      await Utils.withGameFile(async (html) => {
-        const re = /id\s*=\s*["']([^"']+)["']/g;
-        const map = new Map();
-        let m;
-        while ((m = re.exec(html)) !== null) {
-          map.set(m[1], (map.get(m[1]) || 0) + 1);
-        }
-        const dups = [...map.entries()].filter(([, n]) => n > 1);
-        Logger.info("📦 Всего id: " + map.size);
-        Logger.blank();
-        if (!dups.length) { Logger.ok("✅ Дубликатов нет"); Toast.show("Дубликатов нет", "ok"); return; }
-        Logger.err(`❌ Найдено ${dups.length} дубликатов:`);
-        dups.forEach(([id, n]) => Logger.box(`  ${id} — ${n} раз`, "err"));
-        Toast.show(`Дубликатов: ${dups.length}`, "err");
-      });
-    },
-  },
-
-  // ─── NETWORK ────────────────────────────────────────────
-  {
-    id: "worker", group: "🌐 Сеть и API", icon: "🌐", color: "info",
-    title: "Проверить воркер", subtitle: "Безопасный пинг корня API",
-    async run() {
-      Logger.title("ПРОВЕРКА ВОРКЕРА");
-      Logger.dim("ℹ️ Проверяю корень API (безопасно, без /api/tech-status)");
-      Logger.blank();
-      History.add("Проверка воркера");
-      const r = await HTTP.get(CONFIG.API_BASE + "/?t=" + Date.now());
-      if (r.status === 200) {
-        Logger.ok(`✅ Воркер отвечает (${r.ms} мс)`);
-        Logger.blank();
-        Logger.info("Ответ:");
-        if (r.data && typeof r.data === "object") {
-          JSON.stringify(r.data, null, 2).split("\n").forEach(l => Logger.dim(l));
-        } else {
-          Logger.dim(String(r.data).slice(0, 300));
-        }
-        Toast.show(`Воркер OK (${r.ms}ms)`, "ok");
-      } else if (r.status === 404) {
-        Logger.ok(`✅ Воркер отвечает (${r.ms} мс)`);
-        Logger.dim("⚠️ Корень вернул 404 — нормально, воркер работает");
-        Toast.show("Воркер OK", "ok");
-      } else if (r.status === 0) {
-        Logger.err("❌ Воркер НЕ отвечает" + (r.error ? ` (${r.error})` : ""));
-        Logger.warn("Проверь, задеплоен ли он на Cloudflare");
-        Toast.show("Воркер недоступен", "err");
-      } else {
-        Logger.warn(`⚠️ HTTP ${r.status}`);
-        Toast.show(`HTTP ${r.status}`, "warn");
-      }
-    },
-  },
-  {
-    id: "endpoints", group: "🌐 Сеть и API", icon: "🧪", color: "info",
-    title: "Тест всех эндпоинтов", subtitle: "14+ ручек воркера (параллельно)",
-    async run() {
-      Logger.title("ТЕСТ ВСЕХ ЭНДПОИНТОВ");
-      Logger.dim("ℹ️ Без /api/tech-status. Параллельный запуск.");
-      Logger.blank();
-      History.add("Тест всех эндпоинтов");
-
-      const password = await Modal.open("Пароль owner (пусто = без admin):", { placeholder: "" });
-      if (password === null) return;
-
-      const tests = [
-        { m: "GET",  p: "/api/leaderboard",        n: "Leaderboard" },
-        { m: "GET",  p: "/api/posts",              n: "Public posts" },
-        { m: "POST", p: "/api/admin/login",        n: "Admin login",   body: { password } },
-        { m: "POST", p: "/api/admin/stats",        n: "Admin stats",   pass: true },
-        { m: "POST", p: "/api/admin/users",        n: "Admin users",   pass: true },
-        { m: "POST", p: "/api/admin/bans",         n: "Admin bans",    pass: true },
-        { m: "POST", p: "/api/admin/posts",        n: "Admin posts",   pass: true },
-        { m: "POST", p: "/api/admin/promo-list",   n: "Promo list",    pass: true },
-        { m: "POST", p: "/api/admin/broadcast-list", n: "Broadcast",   pass: true },
-        { m: "POST", p: "/api/admin/tickets",      n: "Tickets",       pass: true },
-        { m: "POST", p: "/api/admin/logs",         n: "Logs",          pass: true },
-        { m: "POST", p: "/api/admin/registrations-chart", n: "Reg chart", pass: true },
-      ];
-
-      let done = 0, errors = 0;
-      const total = tests.length;
-      Progress.show(`Тестирую 0/${total}...`);
-
-      const tasks = tests.map(async (t, idx) => {
-        const body = { ...(t.body || {}) };
-        if (t.pass && password) body.password = password;
-        const opts = { method: t.m, body: t.m === "POST" ? body : undefined };
-        const r = await HTTP.request(CONFIG.API_BASE + t.p + "?t=" + Date.now(), opts);
-        Progress.set(`Тестирую ${++done}/${total}...`);
-
-        let icon, cls;
-        if (r.status === 200)         { icon = "✅"; cls = "ok"; }
-        else if (r.status === 403)    { icon = "🔒"; cls = "warn"; errors++; }
-        else if (r.status === 503)    { icon = "⚠️"; cls = "warn"; errors++; }
-        else if (r.status === 0)      { icon = "❌"; cls = "err"; errors++; }
-        else                          { icon = "⚠️"; cls = "warn"; errors++; }
-        if (r.status === 200) done--; // will be re-counted below
-
-        const preview = r.data && typeof r.data === "object"
-          ? (r.data.error ? " · " + r.data.error : r.data.ok ? " · OK" : "")
-          : "";
-        Logger.write(`${icon} [${r.status}] ${Utils.pad(t.n, 22)} (${r.ms}ms)${preview}`, cls);
-        return r.status === 200;
-      });
-
-      const results = await Promise.allSettled(tasks);
-      const success = results.filter(r => r.status === "fulfilled" && r.value).length;
-      Progress.hide();
-
-      Logger.blank();
-      Logger.title("ИТОГ");
-      Logger.info("Всего: " + total);
-      Logger.write("Успешно: " + success, success === total ? "ok" : "warn");
-      Logger.write("Ошибок: " + errors, errors === 0 ? "ok" : "err");
-      Toast.show(`Готово: ${success}/${total}`, success === total ? "ok" : "warn");
-    },
-  },
-  {
-    id: "ping", group: "🌐 Сеть и API", icon: "📡", color: "info",
-    title: "Ping воркера", subtitle: "5 запросов, среднее/min/max",
-    async run() {
-      Logger.title("PING ВОРКЕРА");
-      History.add("Ping воркера");
-      const times = [];
-      for (let i = 0; i < CONFIG.PING_COUNT; i++) {
-        const r = await HTTP.get(CONFIG.API_BASE + "/?t=" + Date.now());
-        times.push(r.ms);
-        const cls = r.ms < 300 ? "ok" : r.ms < 1000 ? "warn" : "err";
-        const dots = ".".repeat(i + 1) + " ".repeat(CONFIG.PING_COUNT - i - 1);
-        Logger.write(`Пинг ${i + 1}: [${dots}] ${r.ms} мс`, cls);
-      }
-      const avg = Math.round(times.reduce((a, b) => a + b, 0) / times.length);
-      const min = Math.min(...times);
-      const max = Math.max(...times);
-      Logger.blank();
-      Logger.title("ИТОГ");
-      Logger.write(`Средний: ${avg} мс`, avg < 300 ? "ok" : avg < 1000 ? "warn" : "err");
-      Logger.dim(`Минимум: ${min} мс`);
-      Logger.dim(`Максимум: ${max} мс`);
-      Toast.show(`Средний пинг: ${avg}ms`, avg < 500 ? "ok" : "warn");
-    },
-  },
-  {
-    id: "external", group: "🌐 Сеть и API", icon: "🔗", color: "info",
-    title: "Внешние ресурсы", subtitle: "CDN, шрифты, ссылки",
-    async run() {
-      Logger.title("ВНЕШНИЕ РЕСУРСЫ");
-      History.add("Внешние ресурсы");
-      await Utils.withGameFile(async (html) => {
-        const re = /(?:src|href)\s*=\s*["']([^"']+)["']/g;
-        const all = [];
-        let m;
-        while ((m = re.exec(html)) !== null) all.push(m[1]);
-        const external = all.filter(u => /^https?:\/\//i.test(u));
-        const internal = all.filter(u => !/^https?:\/\//i.test(u) && !/^(data:|#|javascript:)/i.test(u));
-
-        Logger.info(`📦 Всего ссылок: ${all.length}`);
-        Logger.dim(`🔗 Внешних: ${external.length}`);
-        Logger.dim(`📁 Внутренних: ${internal.length}`);
-        Logger.blank();
-
-        if (external.length) {
-          Logger.title("Домены");
-          const domains = new Map();
-          external.forEach(u => {
-            try { const d = new URL(u).hostname; domains.set(d, (domains.get(d) || 0) + 1); } catch {}
-          });
-          [...domains.entries()].sort((a, b) => b[1] - a[1]).forEach(([d, n]) => {
-            Logger.dim(`  ${d} — ${n} шт.`);
-          });
-        }
-        Toast.show(`Внешних ресурсов: ${external.length}`, "info");
-      });
-    },
-  },
-
-  // ─── ENVIRONMENT ────────────────────────────────────────
-  {
-    id: "device", group: "💻 Окружение", icon: "📱",
-    title: "Устройство", subtitle: "UA, экран, память",
-    async run() {
-      Logger.title("УСТРОЙСТВО");
-      History.add("Инфо об устройстве");
-      Logger.title("🌐 Браузер");
-      Logger.dim("  UA: " + navigator.userAgent);
-      Logger.dim("  Язык: " + navigator.language);
-      Logger.dim("  Платформа: " + (navigator.platform || "—"));
-      Logger.write("  Онлайн: " + (navigator.onLine ? "✅ Да" : "❌ Нет"), navigator.onLine ? "ok" : "err");
-      Logger.blank();
-      Logger.title("📱 Экран");
-      Logger.dim(`  Размер: ${screen.width}×${screen.height} px`);
-      Logger.dim(`  Окно: ${innerWidth}×${innerHeight} px`);
-      Logger.dim(`  DPR: ${devicePixelRatio || 1}`);
-      if (screen.orientation) Logger.dim("  Ориентация: " + screen.orientation.type);
-      Logger.blank();
-      Logger.title("💾 Память");
-      if (performance.memory) Logger.dim(`  JS heap: ${Math.round(performance.memory.usedJSHeapSize / 1048576)} МБ`);
-      else Logger.dim("  performance.memory недоступен");
-      Logger.blank();
-      Logger.title("⏱ Время");
-      Logger.dim("  Локальное: " + new Date().toLocaleString("ru-RU"));
-      Logger.dim("  TZ: " + (Intl.DateTimeFormat().resolvedOptions().timeZone || "—"));
-      Logger.blank();
-      Logger.title("🌍 URL");
-      Logger.dim("  Origin: " + location.origin);
-      Logger.dim("  Path: " + location.pathname);
-      Toast.show("Инфо получено", "ok");
-    },
-  },
-  {
-    id: "storage", group: "💻 Окружение", icon: "💾",
-    title: "localStorage", subtitle: "Что лежит в хранилище",
-    async run() {
-      Logger.title("LOCALSTORAGE");
-      History.add("LocalStorage");
-      try {
-        const keys = [];
-        let total = 0;
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          const v = localStorage.getItem(k) || "";
-          total += k.length + v.length;
-          keys.push({ key: k, size: v.length, value: v });
-        }
-        keys.sort((a, b) => b.size - a.size);
-        Logger.info("📦 Ключей: " + keys.length);
-        Logger.info("📊 Размер: " + (total / 1024).toFixed(2) + " КБ");
-        Logger.blank();
-        if (!keys.length) { Logger.dim("ℹ️ Пусто"); Toast.show("Пусто", "info"); return; }
-        Logger.title("Ключи");
-        keys.slice(0, 50).forEach(({ key, size }) =>
-          Logger.dim("  " + Utils.pad(key, 40) + " " + Utils.padNum(size, 8) + " б"));
-        if (keys.length > 50) Logger.dim("  … и ещё " + (keys.length - 50));
-        Logger.blank();
-        Logger.title("Artamon-ключи");
-        const own = keys.filter(k => k.key.includes("artamon"));
-        if (!own.length) Logger.dim("Нет ключей с 'artamon'");
-        else own.forEach(({ key, value }) => {
-          const preview = value.length > 100 ? value.slice(0, 100) + "…" : value;
-          Logger.info("  " + key);
-          Logger.dim("    = " + preview);
-        });
-        Toast.show("Ключей: " + keys.length, "ok");
-      } catch (e) {
-        Logger.err("❌ " + e.message);
-        Toast.show("Ошибка localStorage", "err");
-      }
-    },
-  },
-  {
-    id: "features", group: "💻 Окружение", icon: "🔬",
-    title: "Поддержка фич", subtitle: "fetch, SW, уведомления",
-    async run() {
-      Logger.title("ПОДДЕРЖКА ФИЧ");
-      History.add("Тест фич");
-      const tryFn = (fn) => { try { return !!fn(); } catch { return false; } };
-      const features = [
-        ["fetch",              typeof fetch === "function"],
-        ["XMLHttpRequest",     typeof XMLHttpRequest === "function"],
-        ["Promise",            typeof Promise === "function"],
-        ["async/await",        (() => { try { return !!Object.getPrototypeOf(async function(){}); } catch { return false; } })()],
-        ["localStorage",       tryFn(() => { localStorage.setItem("_t", "1"); localStorage.removeItem("_t"); return true; })],
-        ["sessionStorage",     typeof sessionStorage !== "undefined"],
-        ["Service Worker",     "serviceWorker" in navigator],
-        ["Cache API",          "caches" in window],
-        ["Notification",       "Notification" in window],
-        ["IndexedDB",          "indexedDB" in window],
-        ["WebSocket",          "WebSocket" in window],
-        ["Canvas",             !!document.createElement("canvas").getContext],
-        ["Web Audio",          "AudioContext" in window || "webkitAudioContext" in window],
-        ["Geolocation",        "geolocation" in navigator],
-        ["Clipboard",          "clipboard" in navigator],
-        ["Share API",          "share" in navigator],
-        ["Vibration",          "vibrate" in navigator],
-        ["Touch events",       "ontouchstart" in window],
-        ["Pointer events",     "PointerEvent" in window],
-        ["CSS Grid",           CSS.supports?.("display", "grid")],
-        ["CSS Flex",           CSS.supports?.("display", "flex")],
-        ["CSS Variables",      CSS.supports?.("--x", "0")],
-        ["backdrop-filter",    CSS.supports?.("backdrop-filter", "blur(1px)")],
-        ["WebAssembly",        typeof WebAssembly !== "undefined"],
-      ];
-      let yes = 0;
-      features.forEach(([n, ok]) => {
-        if (ok) yes++;
-        Logger.write(`${ok ? "✅" : "❌"} ${n}`, ok ? "ok" : "dim");
-      });
-      Logger.blank();
-      Logger.info(`Поддерживается: ${yes} / ${features.length}`);
-      Toast.show(`Фич: ${yes}/${features.length}`, "info");
-    },
-  },
-  {
-    id: "meta", group: "💻 Окружение", icon: "🏷",
-    title: "Meta-теги игры", subtitle: "viewport, og:, theme-color",
-    async run() {
-      Logger.title("META-ТЕГИ");
-      History.add("Meta-теги");
-      await Utils.withGameFile(async (html) => {
-        const re = /<meta\s+([^>]+)>/gi;
-        const metas = [];
-        let m;
-        while ((m = re.exec(html)) !== null) metas.push(m[1]);
-        Logger.info("📦 Найдено: " + metas.length);
-        Logger.blank();
-
-        const found = {};
-        metas.forEach(mt => {
-          const nameMatch = mt.match(/name\s*=\s*["']([^"']+)["']/i);
-          const propMatch = mt.match(/property\s*=\s*["']([^"']+)["']/i);
-          const contentMatch = mt.match(/content\s*=\s*["']([^"']+)["']/i);
-          const key = (nameMatch?.[1] || propMatch?.[1] || "?").toLowerCase();
-          found[key] = contentMatch?.[1] || "";
-        });
-
-        ["viewport","theme-color","description","og:title","og:description","og:image"].forEach(k => {
-          if (found[k] !== undefined) {
-            const val = found[k].length > 60 ? found[k].slice(0, 60) + "…" : found[k];
-            Logger.ok(`✅ ${k} = ${val}`);
-          } else Logger.warn(`❌ ${k} отсутствует`);
-        });
-        Logger.blank();
-        const t = html.match(/<title>([^<]*)<\/title>/i);
-        Logger.info("📌 Title: " + (t ? t[1] : "(нет)"));
-        Toast.show("Meta: " + metas.length, "ok");
-      });
-    },
-  },
-
-  // ─── CODE ANALYSIS ──────────────────────────────────────
-  {
-    id: "console", group: "🔬 Анализ кода", icon: "📝",
-    title: "console.log", subtitle: "Все вызовы логирования",
-    async run() {
-      Logger.title("CONSOLE.LOG");
-      History.add("Поиск console.log");
-      await Utils.withGameFile(async (html) => {
-        const re = /console\.(log|warn|error|info|debug|trace)\s*\(/g;
-        const counts = { log: 0, warn: 0, error: 0, info: 0, debug: 0, trace: 0 };
-        let m;
-        while ((m = re.exec(html)) !== null) counts[m[1]]++;
-        const total = Object.values(counts).reduce((a, b) => a + b, 0);
-        Logger.info("📦 Всего: " + total);
-        Logger.blank();
-        Logger.dim("  console.log:   " + counts.log);
-        Logger.dim("  console.warn:  " + counts.warn);
-        Logger.dim("  console.error: " + counts.error);
-        Logger.dim("  console.info:  " + counts.info);
-        Logger.dim("  console.debug: " + counts.debug);
-        Logger.dim("  console.trace: " + counts.trace);
-        Logger.blank();
-        if (total > 50) Logger.warn("⚠️ Много логов — убери перед релизом");
-        else Logger.ok("✅ В норме");
-        Toast.show("Логов: " + total, "info");
-      });
-    },
-  },
-  {
-    id: "todos", group: "🔬 Анализ кода", icon: "📌",
-    title: "TODO / FIXME", subtitle: "Комментарии-напоминания",
-    async run() {
-      Logger.title("TODO / FIXME");
-      History.add("Поиск TODO/FIXME");
-      await Utils.withGameFile(async (html) => {
-        const lines = html.split("\n");
-        const re = /\/\/\s*(TODO|FIXME|XXX|HACK|BUG|NOTE)[\s:]/i;
-        const found = [];
-        for (let i = 0; i < lines.length; i++) {
-          const m = lines[i].match(re);
-          if (m) found.push({ line: i + 1, type: m[1].toUpperCase(), text: lines[i].trim() });
-        }
-        Logger.info("📦 Найдено: " + found.length);
-        Logger.blank();
-        if (!found.length) { Logger.ok("✅ Ничего не найдено"); Toast.show("Чисто", "ok"); return; }
-        const byType = found.reduce((a, f) => (a[f.type] = (a[f.type] || 0) + 1, a), {});
-        Object.entries(byType).forEach(([t, n]) => Logger.warn(`  ${t}: ${n}`));
-        Logger.blank();
-        Logger.title("Список");
-        found.slice(0, 30).forEach(f => Logger.box(`[${f.line}] ${f.type} — ${f.text.slice(0, 80)}`, "info"));
-        Toast.show(`Найдено: ${found.length}`, "warn");
-      });
-    },
-  },
-  {
-    id: "emoji", group: "🔬 Анализ кода", icon: "😀",
-    title: "Эмодзи в файле", subtitle: "Сколько и каких",
-    async run() {
-      Logger.title("ЭМОДЗИ");
-      History.add("Подсчёт эмодзи");
-      await Utils.withGameFile(async (html) => {
-        const re = /[\u{1F300}-\u{1FAFF}]|[\u{2600}-\u{27BF}]|[\u{1F1E6}-\u{1F1FF}]/gu;
-        const matches = html.match(re) || [];
-        Logger.info("📦 Всего: " + matches.length);
-        Logger.dim("📄 На 1000 символов: " + Math.round(matches.length / html.length * 1000));
-        Logger.blank();
-        const map = new Map();
-        matches.forEach(e => map.set(e, (map.get(e) || 0) + 1));
-        const sorted = [...map.entries()].sort((a, b) => b[1] - a[1]);
-        Logger.title("Топ-15");
-        sorted.slice(0, 15).forEach(([e, n], i) => {
-          Logger.dim(`  ${Utils.padNum(i + 1, 2)}. ${e}  ${Utils.padNum(n, 4)}  ${"█".repeat(Math.min(30, n))}`);
-        });
-        Logger.blank();
-        Logger.info("Уникальных: " + sorted.length);
-        Toast.show("Эмодзи: " + matches.length, "ok");
-      });
-    },
-  },
-  {
-    id: "unsafe", group: "🔬 Анализ кода", icon: "⚠️",
-    title: "Небезопасные паттерны", subtitle: "eval, innerHTML, http://",
-    async run() {
-      Logger.title("НЕБЕЗОПАСНЫЕ ПАТТЕРНЫ");
-      History.add("Поиск небезопасных паттернов");
-      await Utils.withGameFile(async (html) => {
-        const patterns = [
-          { re: /\beval\s*\(/g,                  name: "eval()",            lvl: "high" },
-          { re: /new\s+Function\s*\(/g,          name: "new Function()",    lvl: "high" },
-          { re: /document\.write\s*\(/g,         name: "document.write()",  lvl: "med" },
-          { re: /\.innerHTML\s*=/g,              name: ".innerHTML =",      lvl: "med" },
-          { re: /\.outerHTML\s*=/g,              name: ".outerHTML =",      lvl: "med" },
-          { re: /http:\/\//g,                    name: "http:// (не HTTPS)", lvl: "med" },
-          { re: /javascript:/g,                  name: "javascript: URL",   lvl: "high" },
-          { re: /setTimeout\s*\(\s*["']/g,       name: 'setTimeout("str")', lvl: "med" },
-          { re: /setInterval\s*\(\s*["']/g,      name: 'setInterval("str")', lvl: "med" },
-        ];
-        const found = [];
-        patterns.forEach(p => {
-          const m = html.match(p.re);
-          if (m) found.push({ ...p, count: m.length });
-        });
-        if (!found.length) { Logger.ok("✅ Чисто"); Toast.show("Чисто!", "ok"); return; }
-        Logger.err(`❌ Типов: ${found.length}`);
-        Logger.blank();
-        found.sort((a, b) => b.count - a.count).forEach(f => {
-          const icon = f.lvl === "high" ? "🔴" : f.lvl === "med" ? "🟡" : "🟢";
-          Logger.write(`  ${icon} ${f.name} — ${f.count} раз`,
-            f.lvl === "high" ? "err" : f.lvl === "med" ? "warn" : "dim");
-        });
-        Logger.blank();
-        Logger.title("Пояснение");
-        Logger.err("🔴 high = серьёзная уязвимость");
-        Logger.warn("🟡 med  = потенциальная проблема");
-        Logger.dim("🟢 low  = не критично");
-        Toast.show(`Найдено: ${found.length} типов`, "warn");
-      });
-    },
-  },
-  {
-    id: "colors", group: "🔬 Анализ кода", icon: "🎨",
-    title: "Цветовая палитра", subtitle: "Все цвета в CSS",
-    async run() {
-      Logger.title("ЦВЕТА");
-      History.add("Анализ цветов");
-      await Utils.withGameFile(async (html) => {
-        const hex = html.match(/#[0-9a-f]{3,8}\b/gi) || [];
-        const rgb = html.match(/rgba?\s*\([^)]+\)/gi) || [];
-        const hsl = html.match(/hsla?\s*\([^)]+\)/gi) || [];
-        Logger.info(`🎨 HEX: ${hex.length}`);
-        Logger.info(`🎨 RGB/RGBA: ${rgb.length}`);
-        Logger.info(`🎨 HSL/HSLA: ${hsl.length}`);
-        Logger.blank();
-        const map = new Map();
-        hex.forEach(c => { const k = c.toLowerCase(); map.set(k, (map.get(k) || 0) + 1); });
-        const sorted = [...map.entries()].sort((a, b) => b[1] - a[1]);
-        Logger.title("Топ-20 HEX");
-        sorted.slice(0, 20).forEach(([c, n]) => {
-          Logger.dim(`  ${c}  ${Utils.padNum(n, 4)}  ${"█".repeat(Math.min(20, n))}`);
-        });
-        Logger.blank();
-        Logger.info("Уникальных: " + sorted.length);
-        if (sorted.length > 100) Logger.warn("⚠️ Много цветов — унифицируй");
-        Toast.show(`HEX: ${hex.length}`, "info");
-      });
-    },
-  },
-
-  // ─── ACTIONS ────────────────────────────────────────────
-  {
-    id: "export", group: "⚙️ Действия", icon: "📤", color: "success",
-    title: "Экспорт лога", subtitle: "Скачать .txt",
-    async run() {
-      const txt = Logger.text();
-      if (!txt || txt.length < 10) { Toast.show("Лог пуст", "warn"); return; }
-      History.add("Экспорт лога");
-      const header =
-        `=== ARTAMON DEBUG v9 LOG ===\n` +
-        `Дата: ${new Date().toLocaleString("ru-RU")}\n` +
-        `URL: ${location.href}\n` +
-        `UA: ${navigator.userAgent}\n` +
-        `================================\n\n`;
-      const blob = new Blob([header + txt], { type: "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = el("a", { href: url, download: `artamon-debug-${new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19)}.txt` });
-      document.body.append(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
-      Logger.ok("📤 Лог скачан");
-      Toast.show("Лог скачан", "ok");
-    },
-  },
-  {
-    id: "exportJSON", group: "⚙️ Действия", icon: "🧾", color: "info",
-    title: "Экспорт лога (JSON)", subtitle: "Структурированный .json",
-    async run() {
-      History.add("Экспорт JSON");
-      const lines = $$(".line", $("#out")).map(l => ({
-        level: l.dataset.level || "plain",
-        text: l.textContent,
-      }));
-      const payload = {
-        generator: "Artamon Debug v9",
-        timestamp: new Date().toISOString(),
-        url: location.href,
-        ua: navigator.userAgent,
-        counts: Logger.counts,
-        lines,
-      };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = el("a", { href: url, download: `artamon-debug-${Date.now()}.json` });
-      document.body.append(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
-      Toast.show("JSON скачан", "ok");
-    },
-  },
-  {
-    id: "history", group: "⚙️ Действия", icon: "📜", color: "info",
-    title: "История действий", subtitle: "Что делал в Debug",
-    async run() {
-      Logger.title("ИСТОРИЯ ДЕЙСТВИЙ");
-      History.add("Просмотр истории");
-      const h = History.list();
-      if (!h.length) { Logger.dim("История пуста"); return; }
-      h.forEach(item => {
-        Logger.info(new Date(item.ts).toLocaleString("ru-RU") + "  ·  " + item.action);
-      });
-    },
-  },
-  {
-    id: "clearSW", group: "⚙️ Действия", icon: "🧹", color: "danger",
-    title: "Очистить кэш (SW)", subtitle: "Service Worker + Cache",
-    async run() {
-      Logger.title("ОЧИСТКА КЭША");
-      History.add("Очистка кэша");
-      if (!("serviceWorker" in navigator)) {
-        Logger.warn("⚠️ Service Worker не поддерживается");
-        Toast.show("SW не поддерживается", "warn");
-        return;
-      }
-      try {
-        const regs = await navigator.serviceWorker.getRegistrations();
-        Logger.info("Найдено SW: " + regs.length);
-        await Promise.all(regs.map(r => r.unregister()));
-        Logger.ok("✅ Service Workers удалены");
-
-        if ("caches" in window) {
-          const names = await caches.keys();
-          Logger.info("Найдено кэшей: " + names.length);
-          await Promise.all(names.map(n => caches.delete(n)));
-          Logger.ok("✅ Кэши удалены");
-        }
-        Logger.blank();
-        Logger.info("💡 Перезагрузи страницу для применения");
-        Toast.show("Кэш очищен", "ok");
-      } catch (e) {
-        Logger.err("❌ " + e.message);
-        Toast.show("Ошибка", "err");
-      }
-    },
-  },
-  {
-    id: "hardReset", group: "⚙️ Действия", icon: "💣", color: "danger",
-    title: "Полный сброс localStorage", subtitle: "Осторожно: удалит сохранения",
-    async run() {
-      if (!await Modal.confirm("Удалить ВСЁ из localStorage?\nЭто сотрёт сохранения, темы и настройки.")) return;
-      if (!await Modal.confirm("Точно? Действие необратимо!")) return;
-      Logger.title("ПОЛНЫЙ СБРОС");
-      History.add("Hard reset");
-      try {
-        const n = localStorage.length;
-        localStorage.clear();
-        Logger.ok("✅ Удалено ключей: " + n);
-        Logger.info("💡 Обнови страницу");
-        Toast.show("Удалено ключей: " + n, "ok");
-      } catch (e) {
-        Logger.err("❌ " + e.message);
-        Toast.show("Ошибка", "err");
-      }
-    },
-  },
-  {
-    id: "clearLog", group: "⚙️ Действия", icon: "🗑",
-    title: "Очистить лог", subtitle: "Стереть вывод",
-    async run() { Logger.clear(); },
-  },
+// ─── КОНСТАНТЫ ───
+var API_BASE = "https://artamon-api.artem123kv.workers.dev";
+var GAME_PATHS = [
+  "./index_v4.html", "./index.html", "../index.html",
+  "/index.html", "./game/index.html", "./artamon/index.html",
+  "./src/index.html", "./public/index.html", "./dist/index.html"
 ];
 
-// ═══════════════════════════════════════════════════════════
-// RENDER
-// ═══════════════════════════════════════════════════════════
-function buildUI() {
-  const app = $("#app");
-  app.innerHTML = "";
+// ─── СОСТОЯНИЕ ───
+var gamePath = null;
+var gameContent = null;
+var logFilter = "all";
+var busy = false;
 
-  // Group tests
-  const groups = new Map();
-  for (const t of TESTS) {
-    if (!groups.has(t.group)) groups.set(t.group, []);
-    groups.get(t.group).push(t);
-  }
+// ─── DOM ───
+var out = document.getElementById("out");
 
-  for (const [groupName, tests] of groups) {
-    const collapsed = State.collapsedGroups.has(groupName);
-    const groupHead = el("div", {
-      className: "group" + (collapsed ? " collapsed" : ""),
-      role: "button", tabIndex: 0,
-      "aria-expanded": String(!collapsed),
-    });
-    groupHead.append(
-      el("span", { className: "chev" }, "▾"),
-      document.createTextNode(groupName),
-    );
-    groupHead.addEventListener("click", () => toggleGroup(groupName, groupHead));
-    groupHead.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleGroup(groupName, groupHead); }
-    });
-    app.append(groupHead);
-
-    const body = el("div", { className: "group-body" });
-    tests.forEach((t, i) => {
-      const btn = el("button", {
-        className: "btn" + (t.color ? " " + t.color : ""),
-        type: "button",
-        dataset: { testId: t.id },
-        style: `animation-delay:${i * 0.03}s`,
-      });
-      btn.append(
-        el("span", { className: "ico", "aria-hidden": "true" }, t.icon),
-        el("span", { className: "lbl" }, t.title, el("small", {}, t.subtitle)),
-      );
-      body.append(btn);
-    });
-    app.append(body);
-  }
-
-  // Progress
-  const progress = el("div", { className: "progress", id: "progress", role: "status", "aria-live": "polite" });
-  progress.append(
-    el("div", { className: "spinner", "aria-hidden": "true" }),
-    el("span", { id: "progressText" }, "Работаю..."),
-  );
-  app.append(progress);
-
-  // Log wrap
-  const logWrap = el("div", { className: "log-wrap" });
-  const logBar = el("div", { className: "log-bar" });
-  logBar.append(
-    el("span", { className: "title" }, "📋 Лог"),
-    (() => {
-      const tools = el("div", { className: "tools" });
-      const mk = (label, action, pressed) => {
-        const b = el("button", { className: "tool", type: "button" }, label);
-        if (pressed !== undefined) b.setAttribute("aria-pressed", String(pressed));
-        b.addEventListener("click", action);
-        return b;
-      };
-      tools.append(
-        mk("Все", () => setLogFilter("all"), true),
-        mk("Ошибки", () => setLogFilter("errors"), false),
-        mk("Warn+", () => setLogFilter("warn"), false),
-        mk("OK", () => setLogFilter("ok"), false),
-        mk("📋 Копировать", copyLog),
-        mk("⬆", () => { $("#out").scrollTop = 0; }),
-        mk("⬇", () => { const o = $("#out"); o.scrollTop = o.scrollHeight; }),
-      );
-      return tools;
-    })(),
-  );
-  const out = el("div", { className: "log", id: "out", role: "log", "aria-live": "polite" });
-  logWrap.append(logBar, out);
-  app.append(logWrap);
-
-  Logger.init(out);
+// ─── ЛОГИРОВАНИЕ ───
+function log(text, cls) {
+  var d = document.createElement("div");
+  if (cls) d.className = cls;
+  d.textContent = text;
+  d.dataset.level = cls || "";
+  if (!matchesFilter(d)) d.style.display = "none";
+  out.appendChild(d);
+  out.scrollTop = out.scrollHeight;
 }
 
-function toggleGroup(name, head) {
-  const collapsed = State.collapsedGroups.has(name);
-  if (collapsed) State.collapsedGroups.delete(name);
-  else State.collapsedGroups.add(name);
-  head.classList.toggle("collapsed", !collapsed);
-  head.setAttribute("aria-expanded", String(collapsed));
+function matchesFilter(node) {
+  var lvl = node.dataset.level || "";
+  if (logFilter === "all") return true;
+  if (logFilter === "err") return lvl.indexOf("err") !== -1;
+  if (logFilter === "warn") return lvl.indexOf("err") !== -1 || lvl.indexOf("warn") !== -1;
+  return true;
 }
 
-function setLogFilter(filter) {
-  State.logFilter = filter;
-  $$(".tool").forEach(b => {
-    const label = b.textContent.trim();
-    const map = { "Все": "all", "Ошибки": "errors", "Warn+": "warn", "OK": "ok" };
-    if (map[label] !== undefined) b.setAttribute("aria-pressed", String(map[label] === filter));
-  });
-  Logger.refilter();
+function filterLog(f) {
+  logFilter = f;
+  var nodes = out.children;
+  for (var i = 0; i < nodes.length; i++) {
+    nodes[i].style.display = matchesFilter(nodes[i]) ? "" : "none";
+  }
+}
+
+function clearLog() {
+  out.innerHTML = "";
+  log("Лог очищен", "dim");
 }
 
 function copyLog() {
-  const text = Logger.text();
-  if (!text) { Toast.show("Лог пуст", "warn"); return; }
-  navigator.clipboard.writeText(text)
-    .then(() => Toast.show("📋 Скопировано", "ok"))
-    .catch(() => Toast.show("❌ Не удалось", "err"));
+  var t = out.textContent || "";
+  if (!t) { toast("Лог пуст", "warn"); return; }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(t).then(function() {
+      toast("Скопировано", "ok");
+    }).catch(function() {
+      toast("Не удалось", "err");
+    });
+  } else {
+    toast("Clipboard недоступен", "warn");
+  }
 }
 
-// ═══════════════════════════════════════════════════════════
-// EVENT DELEGATION
-// ═══════════════════════════════════════════════════════════
-let running = false;
+// ─── КРАСИВЫЕ ОБЁРТКИ ───
+function title(t)  { log("═══ " + t + " ═══", "t"); }
+function ok(t)     { log(t, "ok"); }
+function err(t)    { log(t, "err"); }
+function warn(t)   { log(t, "warn"); }
+function info(t)   { log(t, "info"); }
+function dim(t)    { log(t, "dim"); }
+function blank()   { log(""); }
+function box(t, k) { log(t, "box " + (k || "info")); }
 
-function attachTestHandlers() {
-  $("#app").addEventListener("click", async (e) => {
-    const btn = e.target.closest("[data-test-id]");
-    if (!btn) return;
-    if (running) { Toast.show("Уже выполняется...", "warn"); return; }
+// ─── ПРОГРЕСС ───
+function showProg(text) {
+  document.getElementById("progText").textContent = text || "Работаю...";
+  document.getElementById("prog").classList.add("on");
+}
+function setProg(text) {
+  document.getElementById("progText").textContent = text;
+}
+function hideProg() {
+  document.getElementById("prog").classList.remove("on");
+}
 
-    const test = TESTS.find(t => t.id === btn.dataset.testId);
-    if (!test) return;
+// ─── ТОСТЫ ───
+function toast(msg, type) {
+  var t = document.createElement("div");
+  t.className = "toast " + (type || "");
+  t.textContent = msg;
+  document.getElementById("toasts").appendChild(t);
+  setTimeout(function() { t.classList.add("on"); }, 20);
+  setTimeout(function() {
+    t.classList.remove("on");
+    setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 400);
+  }, 3000);
+}
 
-    running = true;
-    btn.disabled = true;
-    btn.style.opacity = ".6";
+// ─── СТАТУС СЕТИ ───
+function updateNet() {
+  var b = document.querySelector("#net b");
+  if (navigator.onLine) { b.textContent = "Да"; b.className = ""; }
+  else { b.textContent = "Нет"; b.className = "off"; }
+}
+window.addEventListener("online", updateNet);
+window.addEventListener("offline", updateNet);
 
-    // Reset scroll to top of log
-    const out = $("#out");
-    out.scrollTop = 0;
+// ─── HTTP ───
+function httpGet(url, cb) {
+  var xhr = new XMLHttpRequest();
+  var t0 = Date.now();
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState !== 4) return;
+    cb(xhr.status, xhr.responseText, Date.now() - t0);
+  };
+  try {
+    xhr.open("GET", url, true);
+    xhr.timeout = 12000;
+    xhr.send();
+  } catch (e) {
+    cb(0, "", 0);
+  }
+}
 
-    // Separator
-    Logger.write("");
+function httpPost(url, body, cb) {
+  var xhr = new XMLHttpRequest();
+  var t0 = Date.now();
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState !== 4) return;
+    cb(xhr.status, xhr.responseText, Date.now() - t0);
+  };
+  try {
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.timeout = 12000;
+    xhr.send(JSON.stringify(body || {}));
+  } catch (e) {
+    cb(0, "", 0);
+  }
+}
 
+// ─── ПОИСК ФАЙЛА ИГРЫ ───
+function findGameFile(cb) {
+  var i = 0;
+  function next() {
+    if (i >= GAME_PATHS.length) { cb(null); return; }
+    var p = GAME_PATHS[i++];
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status === 200) cb(p);
+      else next();
+    };
     try {
-      await test.run();
-    } catch (e) {
-      Logger.err("❌ Ошибка выполнения теста: " + (e?.message || e));
-      console.error(e);
-    } finally {
-      running = false;
-      btn.disabled = false;
-      btn.style.opacity = "";
+      xhr.open("GET", p + "?t=" + Date.now(), true);
+      xhr.send();
+    } catch (e) { next(); }
+  }
+  next();
+}
+
+function withGameFile(handler) {
+  if (gameContent) { handler(gameContent, gamePath); return; }
+  showProg("🔍 Ищу файл игры...");
+  findGameFile(function(found) {
+    if (!found) {
+      hideProg();
+      err("❌ Файл игры не найден");
+      blank();
+      warn("Проверенные пути:");
+      for (var i = 0; i < GAME_PATHS.length; i++) dim("  " + GAME_PATHS[i]);
+      toast("Файл не найден", "err");
+      return;
+    }
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState !== 4) return;
+      hideProg();
+      if (xhr.status !== 200) {
+        err("❌ Не удалось загрузить: " + found);
+        toast("Ошибка загрузки", "err");
+        return;
+      }
+      gamePath = found;
+      gameContent = xhr.responseText;
+      ok("✅ Найден: " + found);
+      dim("📄 Размер: " + gameContent.length.toLocaleString() + " симв., строк: " + gameContent.split("\n").length);
+      blank();
+      handler(gameContent, gamePath);
+    };
+    xhr.open("GET", found + "?t=" + Date.now(), true);
+    xhr.send();
+  });
+}
+
+// ─── УТИЛИТЫ ───
+function bytes(n) { return n.toLocaleString("ru-RU"); }
+function pct(a, b) { return Math.round((a / b) * 100); }
+function pad(s, n) { s = String(s); while (s.length < n) s += " "; return s; }
+function padNum(n, w) { n = String(n); while (n.length < w) n = " " + n; return n; }
+
+function splitScripts(html) {
+  var tag = "<" + "script" + ">";
+  var endTag = "<" + "/" + "script>";
+  var parts = html.split(tag);
+  var out = [];
+  for (var i = 1; i < parts.length; i++) {
+    out.push(parts[i].split(endTag)[0] || "");
+  }
+  return out;
+}
+
+function splitStyles(html) {
+  var re = new RegExp("<" + "style[^>]*>([\\s\\S]*?)<" + "/" + "style>", "g");
+  var out = [];
+  var m;
+  while ((m = re.exec(html)) !== null) out.push(m[1]);
+  return out;
+}
+
+// ─── ПОИСК ТОЧНОЙ СТРОКИ ───
+function findErrorLine(code) {
+  var lines = code.split("\n");
+  var total = lines.length;
+  if (!total) return 0;
+  var lo = 1, hi = total, firstBad = 0;
+  while (lo <= hi) {
+    var mid = Math.floor((lo + hi) / 2);
+    var test = lines.slice(0, mid).join("\n");
+    var valid = false;
+    try { new Function(test); valid = true; } catch (e) { valid = false; }
+    if (valid) lo = mid + 1;
+    else { firstBad = mid; hi = mid - 1; }
+  }
+  return firstBad || 1;
+}
+
+// ─── ЗАПРОС ПАРОЛЯ ───
+function askPassword(cb) {
+  var p = prompt("Пароль owner (можно пусто):", "");
+  if (p === null) { cb(null); return; }
+  cb(p);
+}
+
+// ─── МОДАЛКА-ПОДТВЕРЖДЕНИЕ ───
+function askConfirm(msg, cb) {
+  cb(confirm(msg));
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ТЕСТЫ
+   ═══════════════════════════════════════════════════════════ */
+
+function testJS() {
+  title("ПОИСК ОШИБКИ В JS");
+  withGameFile(function(html) {
+    var scripts = splitScripts(html);
+    ok("Найдено скриптов: " + scripts.length);
+    blank();
+    var errors = 0;
+    for (var i = 0; i < scripts.length; i++) {
+      var code = scripts[i];
+      var lines = code.split("\n");
+      title("Скрипт #" + (i + 1) + " (" + bytes(code.length) + " симв., " + lines.length + " строк)");
+      var syntaxErr = null;
+      try { new Function(code); } catch (e) { syntaxErr = e; }
+      if (!syntaxErr) {
+        ok("✅ Синтаксис OK");
+        blank();
+        continue;
+      }
+      errors++;
+      err("❌ ОШИБКА: " + syntaxErr.message);
+      var ln = findErrorLine(code);
+      if (ln > 0 && ln <= lines.length) {
+        blank();
+        err("🎯 ПРОБЛЕМНАЯ СТРОКА: #" + ln);
+        blank();
+        info("Контекст:");
+        var s = Math.max(0, ln - 5);
+        var e = Math.min(lines.length, ln + 4);
+        for (var j = s; j < e; j++) {
+          var txt = lines[j] || "(пусто)";
+          var num = padNum(j + 1, 4);
+          if (j === ln - 1) box(">>> [" + num + "] " + txt, "err");
+          else log("    [" + num + "] " + txt, "dim");
+        }
+        blank();
+        warn("👆 Ошибка в строке с >>>");
+      } else {
+        warn("⚠️ Первые 20 строк:");
+        for (var k = 0; k < Math.min(20, lines.length); k++) {
+          log("[" + (k + 1) + "] " + (lines[k] || ""), "dim");
+        }
+      }
+      blank();
+    }
+    title("ИТОГ");
+    if (errors === 0) { ok("✅ Все " + scripts.length + " скриптов валидны"); toast("Скрипты OK", "ok"); }
+    else { err("❌ Ошибок: " + errors + " из " + scripts.length); toast("Ошибок: " + errors, "err"); }
+  });
+}
+
+function testHTML() {
+  title("ПРОВЕРКА HTML");
+  withGameFile(function(html) {
+    var scriptOpen = "<" + "script";
+    var scriptClose = "<" + "/" + "script>";
+    var sOpen = html.split(scriptOpen).length - 1;
+    var sClose = html.split(scriptClose).length - 1;
+    info("Открывающих " + scriptOpen + ": " + sOpen);
+    info("Закрывающих " + scriptClose + ": " + sClose);
+    if (sOpen !== sClose) err("❌ Разница: " + (sOpen - sClose));
+    else ok("✅ Скрипты сбалансированы");
+    blank();
+    var checks = [
+      ['id="intro"', "Интро"],
+      ['id="anniversary"', "Юбилей"],
+      ['id="mainSite"', "Основной сайт"],
+      ['id="preloader"', "Прелоадер"],
+      ["SAFE_STORE", "Хранилище"],
+      ["INTRO", "Модуль интро"],
+      ["COINS", "Монеты"],
+      ["ARTAMON_API", "API"],
+      ["WHEEL", "Колесо"],
+      ["QUESTS", "Квесты"],
+      ["FRIENDS", "Друзья"],
+      ["SUPPORT", "Поддержка"]
+    ];
+    var found = 0;
+    info("Ключевые элементы:");
+    for (var i = 0; i < checks.length; i++) {
+      var has = html.indexOf(checks[i][0]) !== -1;
+      if (has) found++;
+      log("  " + (has ? "✅" : "❌") + " " + checks[i][1], has ? "ok" : "err");
+    }
+    blank();
+    var p = pct(found, checks.length);
+    log("Найдено: " + found + " / " + checks.length + " (" + p + "%)", p === 100 ? "ok" : p > 70 ? "warn" : "err");
+    toast("Найдено: " + found + "/" + checks.length, p === 100 ? "ok" : "warn");
+  });
+}
+
+function testSize() {
+  title("АНАЛИЗ РАЗМЕРА");
+  withGameFile(function(html) {
+    var total = html.length;
+    info("📊 Всего: " + bytes(total) + " символов");
+    blank();
+    var headEnd = html.indexOf("</head>");
+    var bodyStart = html.indexOf("<body");
+    var bodyEnd = html.lastIndexOf("</body>");
+    if (headEnd > 0) dim("HEAD: " + bytes(headEnd) + " симв. (" + pct(headEnd, total) + "%)");
+    if (bodyEnd > 0) dim("BODY: " + bytes(bodyEnd - bodyStart) + " симв. (" + pct(bodyEnd - bodyStart, total) + "%)");
+    blank();
+    var cssBlocks = splitStyles(html);
+    var cssSize = 0;
+    for (var i = 0; i < cssBlocks.length; i++) cssSize += cssBlocks[i].length;
+    info("🎨 CSS: " + bytes(cssSize) + " симв., блоков: " + cssBlocks.length);
+    var scripts = splitScripts(html);
+    var jsSize = 0;
+    for (var j = 0; j < scripts.length; j++) jsSize += scripts[j].length;
+    info("⚙️ JS: " + bytes(jsSize) + " симв., блоков: " + scripts.length);
+    blank();
+    title("Размеры скриптов");
+    for (var k = 0; k < scripts.length; k++) {
+      dim("  #" + (k + 1) + " " + padNum(bytes(scripts[k].length), 9) + " симв. " + padNum(scripts[k].split("\n").length, 5) + " строк");
+    }
+    blank();
+    if (total > 500000) warn("⚠️ Файл > 500КБ");
+    else ok("✅ Размер в норме");
+    toast("Размер: " + Math.round(total / 1024) + " КБ", "info");
+  });
+}
+
+function testSearch() {
+  var q = prompt("Что искать в файле игры?", "ARTAMON_API");
+  if (!q) return;
+  title("ПОИСК: " + q);
+  withGameFile(function(html) {
+    var lines = html.split("\n");
+    var count = 0;
+    for (var i = 0; i < lines.length; i++) {
+      var pos = lines[i].indexOf(q);
+      if (pos === -1) continue;
+      count++;
+      if (count <= 30) {
+        var before = lines[i].slice(Math.max(0, pos - 30), pos);
+        var after = lines[i].slice(pos + q.length, pos + q.length + 30);
+        box("[" + (i + 1) + "] ..." + before + "«" + q + "»" + after + "...", "info");
+      }
+    }
+    blank();
+    if (count === 0) { err("❌ Ничего не найдено"); toast("Не найдено", "err"); }
+    else { ok("✅ Найдено: " + count); toast("Найдено: " + count, "ok"); }
+  });
+}
+
+function testCSS() {
+  title("ПРОВЕРКА CSS");
+  withGameFile(function(html) {
+    var blocks = splitStyles(html);
+    info("Найдено CSS-блоков: " + blocks.length);
+    blank();
+    var allOk = true;
+    for (var i = 0; i < blocks.length; i++) {
+      var css = blocks[i];
+      title("Блок #" + (i + 1) + " (" + bytes(css.length) + " симв.)");
+      var open = (css.match(/\{/g) || []).length;
+      var close = (css.match(/\}/g) || []).length;
+      dim("  { : " + open + "    } : " + close);
+      if (open !== close) { err("  ❌ Не сбалансированы! Разница: " + (open - close)); allOk = false; }
+      else ok("  ✅ Скобки OK");
+      var cOpen = (css.match(/\/\*/g) || []).length;
+      var cClose = (css.match(/\*\//g) || []).length;
+      if (cOpen !== cClose) { err("  ❌ Комментарии не сбалансированы"); allOk = false; }
+      var rules = (css.match(/[^{}]+\{[^{}]*\}/g) || []).length;
+      dim("  📐 Правил: " + rules);
+      blank();
+    }
+    title("ИТОГ");
+    if (allOk) { ok("✅ CSS корректен"); toast("CSS OK", "ok"); }
+    else { err("❌ Есть проблемы"); toast("Проблемы в CSS", "err"); }
+  });
+}
+
+function testDupIds() {
+  title("ДУБЛИКАТЫ ID");
+  withGameFile(function(html) {
+    var re = /id\s*=\s*["']([^"']+)["']/g;
+    var map = {};
+    var m;
+    while ((m = re.exec(html)) !== null) {
+      map[m[1]] = (map[m[1]] || 0) + 1;
+    }
+    var dups = [];
+    for (var k in map) if (map[k] > 1) dups.push(k);
+    var total = 0;
+    for (var k2 in map) total++;
+    info("Всего id: " + total);
+    blank();
+    if (!dups.length) { ok("✅ Дубликатов нет"); toast("Дубликатов нет", "ok"); return; }
+    err("❌ Найдено " + dups.length + " дубликатов:");
+    for (var i = 0; i < dups.length; i++) {
+      box("  " + dups[i] + " — " + map[dups[i]] + " раз", "err");
+    }
+    toast("Дубликатов: " + dups.length, "err");
+  });
+}
+
+function testWorker() {
+  title("ПРОВЕРКА ВОРКЕРА");
+  dim("ℹ️ Безопасно: /api/tech-status НЕ вызывается");
+  blank();
+  httpGet(API_BASE + "/?t=" + Date.now(), function(status, text, ms) {
+    if (status === 200) {
+      ok("✅ Воркер отвечает (" + ms + " мс)");
+      blank();
+      info("Ответ:");
+      try {
+        var d = JSON.parse(text);
+        var s = JSON.stringify(d, null, 2).split("\n");
+        for (var i = 0; i < s.length; i++) dim(s[i]);
+      } catch (e) { dim(text.slice(0, 300)); }
+      toast("Воркер OK (" + ms + "ms)", "ok");
+    } else if (status === 404) {
+      ok("✅ Воркер отвечает (" + ms + " мс)");
+      dim("⚠️ 404 — нормально");
+      toast("Воркер OK", "ok");
+    } else if (status === 0) {
+      err("❌ Воркер не отвечает");
+      toast("Воркер недоступен", "err");
+    } else {
+      warn("⚠️ HTTP " + status);
+      toast("HTTP " + status, "warn");
     }
   });
 }
 
-// ═══════════════════════════════════════════════════════════
-// THEME
-// ═══════════════════════════════════════════════════════════
-function applyTheme(theme) {
-  document.body.setAttribute("data-theme", theme);
-  try { localStorage.setItem(CONFIG.THEME_KEY, theme); } catch {}
-  const btn = $("#themeBtn");
-  if (btn) btn.textContent = theme === "light" ? "☀️" : "🌙";
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", theme === "light" ? "#f8fafc" : "#0a0a10");
-}
+function testEndpoints() {
+  title("ТЕСТ ЭНДПОИНТОВ");
+  dim("ℹ️ Без /api/tech-status");
+  blank();
+  askPassword(function(password) {
+    if (password === null) return;
+    var tests = [
+      { m: "GET",  p: "/api/leaderboard",             n: "Leaderboard" },
+      { m: "GET",  p: "/api/posts",                   n: "Public posts" },
+      { m: "POST", p: "/api/admin/login",             n: "Admin login", body: { password: password } },
+      { m: "POST", p: "/api/admin/stats",             n: "Admin stats", pass: true },
+      { m: "POST", p: "/api/admin/users",             n: "Admin users", pass: true },
+      { m: "POST", p: "/api/admin/bans",              n: "Admin bans",  pass: true },
+      { m: "POST", p: "/api/admin/posts",             n: "Admin posts", pass: true },
+      { m: "POST", p: "/api/admin/promo-list",        n: "Promo list",  pass: true },
+      { m: "POST", p: "/api/admin/broadcast-list",    n: "Broadcast",   pass: true },
+      { m: "POST", p: "/api/admin/tickets",           n: "Tickets",     pass: true },
+      { m: "POST", p: "/api/admin/logs",              n: "Logs",        pass: true },
+      { m: "POST", p: "/api/admin/registrations-chart", n: "Reg chart", pass: true }
+    ];
+    var total = tests.length;
+    var done = 0, success = 0, errors = 0;
+    showProg("Тестирую 0/" + total + "...");
 
-function toggleTheme() {
-  const cur = document.body.getAttribute("data-theme");
-  applyTheme(cur === "light" ? "dark" : "light");
-  Toast.show("Тема: " + (cur === "light" ? "Тёмная" : "Светлая"), "info");
-}
+    var idx = 0;
+    function next() {
+      if (idx >= tests.length) {
+        hideProg();
+        blank();
+        title("ИТОГ");
+        info("Всего: " + total);
+        log("Успешно: " + success, success === total ? "ok" : "warn");
+        log("Ошибок: " + errors, errors === 0 ? "ok" : "err");
+        toast("Готово: " + success + "/" + total, success === total ? "ok" : "warn");
+        return;
+      }
+      var t = tests[idx++];
+      var body = {};
+      if (t.body) { for (var k in t.body) body[k] = t.body[k]; }
+      if (t.pass && password) body.password = password;
 
-// ═══════════════════════════════════════════════════════════
-// NET STATUS
-// ═══════════════════════════════════════════════════════════
-function updateNetStatus() {
-  const dot = $("#netDot"), txt = $("#netText");
-  if (navigator.onLine) { dot.className = "dot on";  txt.textContent = "Онлайн"; }
-  else                  { dot.className = "dot off"; txt.textContent = "Офлайн"; }
-}
+      function handle(status, text, ms) {
+        done++;
+        setProg("Тестирую " + done + "/" + total + "...");
+        var icon, cls;
+        if (status === 200) { icon = "✅"; cls = "ok"; success++; }
+        else if (status === 403) { icon = "🔒"; cls = "warn"; errors++; }
+        else if (status === 503) { icon = "⚠️"; cls = "warn"; errors++; }
+        else if (status === 0) { icon = "❌"; cls = "err"; errors++; }
+        else { icon = "⚠️"; cls = "warn"; errors++; }
 
-// ═══════════════════════════════════════════════════════════
-// STARFIELD
-// ═══════════════════════════════════════════════════════════
-function createStars(count = 40) {
-  const c = $("#stars");
-  if (!c) return;
-  const frag = document.createDocumentFragment();
-  for (let i = 0; i < count; i++) {
-    const s = el("div", { className: "star" });
-    s.style.left = Math.random() * 100 + "%";
-    s.style.top  = Math.random() * 100 + "%";
-    s.style.animationDelay = (Math.random() * 4) + "s";
-    s.style.animationDuration = (3 + Math.random() * 3) + "s";
-    frag.append(s);
-  }
-  c.append(frag);
-}
+        var preview = "";
+        try {
+          var d = JSON.parse(text);
+          if (d.error) preview = " · " + d.error;
+          else if (d.ok) preview = " · OK";
+        } catch (e) {}
 
-// ═══════════════════════════════════════════════════════════
-// GLOBAL ERROR HANDLERS
-// ═══════════════════════════════════════════════════════════
-window.addEventListener("error", (e) => {
-  Logger.write("❗ Uncaught: " + (e.message || e.error) + " @ " +
-    (e.filename || "?") + ":" + (e.lineno || "?"), "err");
-});
-window.addEventListener("unhandledrejection", (e) => {
-  const msg = e.reason?.message || e.reason || "(unknown)";
-  Logger.write("❗ Promise rejection: " + msg, "err");
-});
+        log(icon + " [" + status + "] " + pad(t.n, 22) + " (" + ms + "ms)" + preview, cls);
+        next();
+      }
 
-// ═══════════════════════════════════════════════════════════
-// BOOT
-// ═══════════════════════════════════════════════════════════
-(function boot() {
-  // Init modules first
-  Modal.init();
-  Progress.init();
-  Toast.init($("#toasts"));
-
-  // Build UI (this also inits Logger)
-  buildUI();
-  attachTestHandlers();
-
-  // Theme
-  let savedTheme = "dark";
-  try { savedTheme = localStorage.getItem(CONFIG.THEME_KEY) || "dark"; } catch {}
-  applyTheme(savedTheme);
-  $("#themeBtn").addEventListener("click", toggleTheme);
-  $("#resetBtn").addEventListener("click", async () => {
-    if (!await Modal.confirm("Сбросить состояние Debug? Файл игры будет перезагружен.")) return;
-    GameFile.reset();
-    State.collapsedGroups.clear();
-    localStorage.removeItem(CONFIG.HISTORY_KEY);
-    Toast.show("Состояние сброшено", "ok");
-    buildUI();
-    attachTestHandlers();
-    greet();
+      if (t.m === "POST") httpPost(API_BASE + t.p + "?t=" + Date.now(), body, handle);
+      else httpGet(API_BASE + t.p + "?t=" + Date.now(), handle);
+    }
+    next();
   });
+}
 
-  // Net status
-  updateNetStatus();
-  window.addEventListener("online",  updateNetStatus);
-  window.addEventListener("offline", updateNetStatus);
+function testPing() {
+  title("PING ВОРКЕРА");
+  var times = [];
+  var total = 5;
+  var i = 0;
+  function next() {
+    if (i >= total) {
+      var avg = 0;
+      for (var k = 0; k < times.length; k++) avg += times[k];
+      avg = Math.round(avg / times.length);
+      blank();
+      title("ИТОГ");
+      log("Средний: " + avg + " мс", avg < 300 ? "ok" : avg < 1000 ? "warn" : "err");
+      dim("Минимум: " + Math.min.apply(null, times) + " мс");
+      dim("Максимум: " + Math.max.apply(null, times) + " мс");
+      toast("Средний пинг: " + avg + "ms", avg < 500 ? "ok" : "warn");
+      return;
+    }
+    httpGet(API_BASE + "/?t=" + Date.now(), function(status, text, ms) {
+      times.push(ms);
+      var cls = ms < 300 ? "ok" : ms < 1000 ? "warn" : "err";
+      var dots = "";
+      for (var d = 0; d < total; d++) dots += (d <= i ? "." : " ");
+      log("Пинг " + (i + 1) + ": [" + dots + "] " + ms + " мс", cls);
+      i++;
+      next();
+    });
+  }
+  next();
+}
 
-  // Stars
-  createStars(40);
+function testExternal() {
+  title("ВНЕШНИЕ РЕСУРСЫ");
+  withGameFile(function(html) {
+    var re = /(?:src|href)\s*=\s*["']([^"']+)["']/g;
+    var all = [];
+    var m;
+    while ((m = re.exec(html)) !== null) all.push(m[1]);
+    var external = [];
+    var internal = [];
+    for (var i = 0; i < all.length; i++) {
+      var u = all[i];
+      if (/^https?:\/\//i.test(u)) external.push(u);
+      else if (!/^(data:|#|javascript:)/i.test(u)) internal.push(u);
+    }
+    info("📦 Всего: " + all.length);
+    dim("🔗 Внешних: " + external.length);
+    dim("📁 Внутренних: " + internal.length);
+    blank();
+    if (external.length) {
+      title("Домены");
+      var dom = {};
+      for (var j = 0; j < external.length; j++) {
+        try {
+          var host = external[j].split("/")[2];
+          if (host) dom[host] = (dom[host] || 0) + 1;
+        } catch (e) {}
+      }
+      for (var k in dom) dim("  " + k + " — " + dom[k] + " шт.");
+    }
+    toast("Внешних: " + external.length, "info");
+  });
+}
 
-  // Greeting
-  greet();
+function testDevice() {
+  title("УСТРОЙСТВО");
+  title("🌐 Браузер");
+  dim("  UA: " + navigator.userAgent);
+  dim("  Язык: " + navigator.language);
+  dim("  Платформа: " + (navigator.platform || "—"));
+  log("  Онлайн: " + (navigator.onLine ? "✅ Да" : "❌ Нет"), navigator.onLine ? "ok" : "err");
+  blank();
+  title("📱 Экран");
+  dim("  Размер: " + screen.width + " × " + screen.height + " px");
+  dim("  Окно: " + window.innerWidth + " × " + window.innerHeight + " px");
+  dim("  DPR: " + (window.devicePixelRatio || 1));
+  blank();
+  title("⏱ Время");
+  dim("  Локальное: " + new Date().toLocaleString("ru-RU"));
+  blank();
+  title("🌍 URL");
+  dim("  Origin: " + location.origin);
+  dim("  Path: " + location.pathname);
+  toast("Инфо получено", "ok");
+}
+
+function testStorage() {
+  title("LOCALSTORAGE");
+  try {
+    var keys = [];
+    var total = 0;
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      var v = localStorage.getItem(k) || "";
+      total += k.length + v.length;
+      keys.push({ key: k, size: v.length, value: v });
+    }
+    keys.sort(function(a, b) { return b.size - a.size; });
+    info("📦 Ключей: " + keys.length);
+    info("📊 Размер: " + (total / 1024).toFixed(2) + " КБ");
+    blank();
+    if (!keys.length) { dim("Пусто"); toast("Пусто", "info"); return; }
+    title("Ключи");
+    var lim = Math.min(50, keys.length);
+    for (var j = 0; j < lim; j++) {
+      dim("  " + pad(keys[j].key, 40) + " " + padNum(keys[j].size, 8) + " б");
+    }
+    if (keys.length > 50) dim("  ... и ещё " + (keys.length - 50));
+    blank();
+    title("Artamon-ключи");
+    var own = [];
+    for (var m = 0; m < keys.length; m++) {
+      if (keys[m].key.indexOf("artamon") !== -1) own.push(keys[m]);
+    }
+    if (!own.length) dim("Нет ключей с 'artamon'");
+    else for (var n = 0; n < own.length; n++) {
+      info("  " + own[n].key);
+      var preview = own[n].value.length > 100 ? own[n].value.slice(0, 100) + "..." : own[n].value;
+      dim("    = " + preview);
+    }
+    toast("Ключей: " + keys.length, "ok");
+  } catch (e) {
+    err("❌ " + e.message);
+    toast("Ошибка localStorage", "err");
+  }
+}
+
+function testFeatures() {
+  title("ПОДДЕРЖКА ФИЧ");
+  var features = [
+    ["fetch", typeof fetch === "function"],
+    ["XMLHttpRequest", typeof XMLHttpRequest === "function"],
+    ["Promise", typeof Promise === "function"],
+    ["localStorage", (function() { try { localStorage.setItem("_t","1"); localStorage.removeItem("_t"); return true; } catch (e) { return false; } })()],
+    ["sessionStorage", typeof sessionStorage !== "undefined"],
+    ["Service Worker", "serviceWorker" in navigator],
+    ["Cache API", "caches" in window],
+    ["Notification", "Notification" in window],
+    ["IndexedDB", "indexedDB" in window],
+    ["WebSocket", "WebSocket" in window],
+    ["Canvas", !!document.createElement("canvas").getContext],
+    ["Web Audio", "AudioContext" in window || "webkitAudioContext" in window],
+    ["Geolocation", "geolocation" in navigator],
+    ["Clipboard", "clipboard" in navigator],
+    ["Share API", "share" in navigator],
+    ["Vibration", "vibrate" in navigator],
+    ["Touch events", "ontouchstart" in window],
+    ["Pointer events", "PointerEvent" in window],
+    ["CSS Grid", !!(window.CSS && CSS.supports && CSS.supports("display", "grid"))],
+    ["CSS Flex", !!(window.CSS && CSS.supports && CSS.supports("display", "flex"))],
+    ["CSS Variables", !!(window.CSS && CSS.supports && CSS.supports("--x", "0"))],
+    ["backdrop-filter", !!(window.CSS && CSS.supports && CSS.supports("backdrop-filter", "blur(1px)"))],
+    ["WebAssembly", typeof WebAssembly !== "undefined"]
+  ];
+  var yes = 0;
+  for (var i = 0; i < features.length; i++) {
+    var ok2 = features[i][1];
+    if (ok2) yes++;
+    log((ok2 ? "✅" : "❌") + " " + features[i][0], ok2 ? "ok" : "dim");
+  }
+  blank();
+  info("Поддерживается: " + yes + " / " + features.length);
+  toast("Фич: " + yes + "/" + features.length, "info");
+}
+
+function testMeta() {
+  title("META-ТЕГИ");
+  withGameFile(function(html) {
+    var re = /<meta\s+([^>]+)>/gi;
+    var metas = [];
+    var m;
+    while ((m = re.exec(html)) !== null) metas.push(m[1]);
+    info("Найдено: " + metas.length);
+    blank();
+    var found = {};
+    for (var i = 0; i < metas.length; i++) {
+      var mt = metas[i];
+      var nm = mt.match(/name\s*=\s*["']([^"']+)["']/i);
+      var pr = mt.match(/property\s*=\s*["']([^"']+)["']/i);
+      var ct = mt.match(/content\s*=\s*["']([^"']+)["']/i);
+      var key = ((nm && nm[1]) || (pr && pr[1]) || "?").toLowerCase();
+      found[key] = (ct && ct[1]) || "";
+    }
+    var important = ["viewport", "theme-color", "description", "og:title", "og:description", "og:image"];
+    for (var j = 0; j < important.length; j++) {
+      var k = important[j];
+      if (found[k] !== undefined) {
+        var val = found[k].length > 60 ? found[k].slice(0, 60) + "..." : found[k];
+        ok("✅ " + k + " = " + val);
+      } else warn("❌ " + k + " отсутствует");
+    }
+    blank();
+    var t = html.match(/<title>([^<]*)<\/title>/i);
+    info("📌 Title: " + (t ? t[1] : "(нет)"));
+    toast("Meta: " + metas.length, "ok");
+  });
+}
+
+function testConsoleLogs() {
+  title("CONSOLE.LOG");
+  withGameFile(function(html) {
+    var re = /console\.(log|warn|error|info|debug|trace)\s*\(/g;
+    var c = { log: 0, warn: 0, error: 0, info: 0, debug: 0, trace: 0 };
+    var m;
+    while ((m = re.exec(html)) !== null) c[m[1]]++;
+    var total = c.log + c.warn + c.error + c.info + c.debug + c.trace;
+    info("Всего: " + total);
+    blank();
+    dim("  console.log:   " + c.log);
+    dim("  console.warn:  " + c.warn);
+    dim("  console.error: " + c.error);
+    dim("  console.info:  " + c.info);
+    dim("  console.debug: " + c.debug);
+    dim("  console.trace: " + c.trace);
+    blank();
+    if (total > 50) warn("⚠️ Много логов");
+    else ok("✅ В норме");
+    toast("Логов: " + total, "info");
+  });
+}
+
+function testTodos() {
+  title("TODO / FIXME");
+  withGameFile(function(html) {
+    var lines = html.split("\n");
+    var re = /\/\/\s*(TODO|FIXME|XXX|HACK|BUG|NOTE)[\s:]/i;
+    var found = [];
+    for (var i = 0; i < lines.length; i++) {
+      var m = lines[i].match(re);
+      if (m) found.push({ line: i + 1, type: m[1].toUpperCase(), text: lines[i].trim() });
+    }
+    info("Найдено: " + found.length);
+    blank();
+    if (!found.length) { ok("✅ Ничего не найдено"); toast("Чисто", "ok"); return; }
+    for (var j = 0; j < Math.min(30, found.length); j++) {
+      box("[" + found[j].line + "] " + found[j].type + " — " + found[j].text.slice(0, 80), "info");
+    }
+    toast("Найдено: " + found.length, "warn");
+  });
+}
+
+function testEmoji() {
+  title("ЭМОДЗИ");
+  withGameFile(function(html) {
+    var re = /[\u{1F300}-\u{1FAFF}]|[\u{2600}-\u{27BF}]/gu;
+    var matches = html.match(re) || [];
+    info("Всего: " + matches.length);
+    blank();
+    var map = {};
+    for (var i = 0; i < matches.length; i++) {
+      map[matches[i]] = (map[matches[i]] || 0) + 1;
+    }
+    var sorted = [];
+    for (var k in map) sorted.push([k, map[k]]);
+    sorted.sort(function(a, b) { return b[1] - a[1]; });
+    title("Топ-15");
+    for (var j = 0; j < Math.min(15, sorted.length); j++) {
+      dim("  " + (j + 1) + ". " + sorted[j][0] + "  " + sorted[j][1]);
+    }
+    blank();
+    info("Уникальных: " + sorted.length);
+    toast("Эмодзи: " + matches.length, "ok");
+  });
+}
+
+function testUnsafe() {
+  title("НЕБЕЗОПАСНЫЕ ПАТТЕРНЫ");
+  withGameFile(function(html) {
+    var patterns = [
+      { re: /\beval\s*\(/g, name: "eval()", lvl: "high" },
+      { re: /new\s+Function\s*\(/g, name: "new Function()", lvl: "high" },
+      { re: /document\.write\s*\(/g, name: "document.write()", lvl: "med" },
+      { re: /\.innerHTML\s*=/g, name: ".innerHTML =", lvl: "med" },
+      { re: /\.outerHTML\s*=/g, name: ".outerHTML =", lvl: "med" },
+      { re: /http:\/\//g, name: "http:// (не HTTPS)", lvl: "med" },
+      { re: /javascript:/g, name: "javascript: URL", lvl: "high" }
+    ];
+    var found = [];
+    for (var i = 0; i < patterns.length; i++) {
+      var m = html.match(patterns[i].re);
+      if (m) found.push({ name: patterns[i].name, count: m.length, lvl: patterns[i].lvl });
+    }
+    if (!found.length) { ok("✅ Чисто"); toast("Чисто!", "ok"); return; }
+    err("Найдено " + found.length + " типов:");
+    blank();
+    for (var j = 0; j < found.length; j++) {
+      var icon = found[j].lvl === "high" ? "🔴" : "🟡";
+      log("  " + icon + " " + found[j].name + " — " + found[j].count + " раз", found[j].lvl === "high" ? "err" : "warn");
+    }
+    toast("Найдено: " + found.length + " типов", "warn");
+  });
+}
+
+function testColors() {
+  title("ЦВЕТА");
+  withGameFile(function(html) {
+    var hex = html.match(/#[0-9a-f]{3,8}\b/gi) || [];
+    var rgb = html.match(/rgba?\s*\([^)]+\)/gi) || [];
+    var hsl = html.match(/hsla?\s*\([^)]+\)/gi) || [];
+    info("🎨 HEX: " + hex.length);
+    info("🎨 RGB/RGBA: " + rgb.length);
+    info("🎨 HSL/HSLA: " + hsl.length);
+    blank();
+    var map = {};
+    for (var i = 0; i < hex.length; i++) {
+      var c = hex[i].toLowerCase();
+      map[c] = (map[c] || 0) + 1;
+    }
+    var sorted = [];
+    for (var k in map) sorted.push([k, map[k]]);
+    sorted.sort(function(a, b) { return b[1] - a[1]; });
+    title("Топ-20 HEX");
+    for (var j = 0; j < Math.min(20, sorted.length); j++) {
+      dim("  " + sorted[j][0] + "  " + sorted[j][1]);
+    }
+    blank();
+    info("Уникальных: " + sorted.length);
+    toast("HEX: " + hex.length, "info");
+  });
+}
+
+function testClearSW() {
+  title("ОЧИСТКА КЭША");
+  if (!("serviceWorker" in navigator)) {
+    warn("⚠️ SW не поддерживается");
+    toast("SW не поддерживается", "warn");
+    return;
+  }
+  navigator.serviceWorker.getRegistrations().then(function(regs) {
+    info("Найдено SW: " + regs.length);
+    var promises = [];
+    for (var i = 0; i < regs.length; i++) promises.push(regs[i].unregister());
+    return Promise.all(promises);
+  }).then(function() {
+    ok("✅ Service Workers удалены");
+    if ("caches" in window) {
+      return caches.keys().then(function(names) {
+        info("Найдено кэшей: " + names.length);
+        var promises = [];
+        for (var i = 0; i < names.length; i++) promises.push(caches.delete(names[i]));
+        return Promise.all(promises);
+      });
+    }
+  }).then(function() {
+    ok("✅ Кэши удалены");
+    info("💡 Перезагрузи страницу");
+    toast("Кэш очищен", "ok");
+  }).catch(function(e) {
+    err("❌ " + e.message);
+    toast("Ошибка", "err");
+  });
+}
+
+function testHardReset() {
+  askConfirm("⚠️ УДАЛИТЬ ВСЁ ИЗ localStorage?", function(yes) {
+    if (!yes) return;
+    title("ПОЛНЫЙ СБРОС");
+    try {
+      var n = localStorage.length;
+      localStorage.clear();
+      ok("✅ Удалено ключей: " + n);
+      info("💡 Обнови страницу");
+      toast("Удалено: " + n, "ok");
+    } catch (e) {
+      err("❌ " + e.message);
+      toast("Ошибка", "err");
+    }
+  });
+}
+
+function testExportLog() {
+  var text = out.textContent || "";
+  if (!text || text.length < 10) { toast("Лог пуст", "warn"); return; }
+  var header = "=== ARTAMON DEBUG ===\n" +
+               "Дата: " + new Date().toLocaleString("ru-RU") + "\n" +
+               "URL: " + location.href + "\n" +
+               "UA: " + navigator.userAgent + "\n" +
+               "=====================\n\n";
+  var blob = new Blob([header + text], { type: "text/plain;charset=utf-8" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "artamon-debug-" + Date.now() + ".txt";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  ok("📤 Лог скачан");
+  toast("Лог скачан", "ok");
+}
+
+function testHistory() {
+  title("ИСТОРИЯ");
+  try {
+    var h = JSON.parse(localStorage.getItem("artamon_debug_history") || "[]");
+    if (!h.length) { dim("История пуста"); return; }
+    for (var i = 0; i < h.length; i++) {
+      info(new Date(h[i].ts).toLocaleString("ru-RU") + "  ·  " + h[i].action);
+    }
+  } catch (e) {
+    err("❌ " + e.message);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ЗАПУСК ТЕСТА
+   ═══════════════════════════════════════════════════════════ */
+
+function runTest(fn, name) {
+  if (busy) { toast("Подожди, идёт другой тест", "warn"); return; }
+  busy = true;
+  log("");
+  try {
+    fn();
+  } catch (e) {
+    err("❌ Исключение: " + (e.message || e));
+    hideProg();
+  }
+  busy = false;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   СТРОИМ UI
+   ═══════════════════════════════════════════════════════════ */
+
+var GROUPS = [
+  {
+    name: "🩺 Диагностика",
+    items: [
+      { label: "Найти ошибку в JS",   sub: "Авто-поиск + точная строка", cls: "primary", fn: testJS },
+      { label: "Проверить HTML",       sub: "Теги, скрипты, элементы",     fn: testHTML },
+      { label: "Анализ размера",       sub: "CSS / HTML / JS",             fn: testSize },
+      { label: "Поиск по коду",        sub: "Найти подстроку",             fn: testSearch },
+      { label: "Проверить CSS",        sub: "Скобки, комментарии",         fn: testCSS },
+      { label: "Дубликаты id",         sub: "Одинаковые id",               fn: testDupIds }
+    ]
+  },
+  {
+    name: "🌐 Сеть и API",
+    items: [
+      { label: "Проверить воркер",    sub: "Безопасный пинг",     cls: "info", fn: testWorker },
+      { label: "Тест всех эндпоинтов", sub: "12 ручек по очереди", cls: "info", fn: testEndpoints },
+      { label: "Ping воркера",         sub: "5 запросов",          cls: "info", fn: testPing },
+      { label: "Внешние ресурсы",      sub: "CDN, шрифты",         cls: "info", fn: testExternal }
+    ]
+  },
+  {
+    name: "💻 Окружение",
+    items: [
+      { label: "Устройство",       sub: "UA, экран",      fn: testDevice },
+      { label: "localStorage",     sub: "Что в хранилище", fn: testStorage },
+      { label: "Поддержка фич",    sub: "fetch, SW",       fn: testFeatures },
+      { label: "Meta-теги",        sub: "og:, viewport",   fn: testMeta }
+    ]
+  },
+  {
+    name: "🔬 Анализ кода",
+    items: [
+      { label: "console.log",          sub: "Все вызовы",       fn: testConsoleLogs },
+      { label: "TODO / FIXME",         sub: "Комментарии",      fn: testTodos },
+      { label: "Эмодзи",               sub: "Сколько и каких",  fn: testEmoji },
+      { label: "Небезопасные паттерны", sub: "eval, innerHTML", fn: testUnsafe },
+      { label: "Цвета",                sub: "Палитра CSS",      fn: testColors }
+    ]
+  },
+  {
+    name: "⚙️ Действия",
+    items: [
+      { label: "Экспорт лога",              sub: "Скачать .txt",  cls: "success", fn: testExportLog },
+      { label: "История действий",          sub: "Что делал",     cls: "info",    fn: testHistory },
+      { label: "Очистить кэш (SW)",         sub: "SW + Cache",    cls: "danger",  fn: testClearSW },
+      { label: "Полный сброс localStorage", sub: "Удалит всё",    cls: "danger",  fn: testHardReset }
+    ]
+  }
+];
+
+(function buildUI() {
+  var container = document.createElement("div");
+  for (var g = 0; g < GROUPS.length; g++) {
+    var grp = GROUPS[g];
+    var h = document.createElement("div");
+    h.className = "group";
+    h.textContent = grp.name;
+    container.appendChild(h);
+
+    for (var i = 0; i < grp.items.length; i++) {
+      var item = grp.items[i];
+      var btn = document.createElement("button");
+      btn.className = "test" + (item.cls ? " " + item.cls : "");
+      btn.innerHTML = item.label + '<span class="sub">' + item.sub + '</span>';
+      (function(fn, name) {
+        btn.onclick = function() { runTest(fn, name); };
+      })(item.fn, item.label);
+      container.appendChild(btn);
+    }
+  }
+  var outEl = document.getElementById("out");
+  document.body.insertBefore(container, outEl);
 })();
 
-function greet() {
-  Logger.ok("✅ Artamon Debug v9 Nova+ загружен");
-  Logger.info("🔍 Автопоиск файла игры готов");
-  Logger.warn("⚠️ /api/tech-status НЕ вызывается (защита от tech.html)");
-  Logger.blank();
-  Logger.dim("Подсказка: нажми любую кнопку выше.");
-  Logger.blank();
-  Logger.dim("Проверяемые пути к файлу игры:");
-  CONFIG.GAME_FILE_CANDIDATES.forEach(p => Logger.dim("  " + p));
-}
+/* ═══════════════════════════════════════════════════════════
+   СТАРТ
+   ═══════════════════════════════════════════════════════════ */
+
+updateNet();
+
+log("✅ Artamon Debug v10 загружен", "ok");
+log("🔍 Автопоиск файла игры готов", "info");
+log("⚠️ /api/tech-status НЕ вызывается", "warn");
+log("");
+log("Подсказка: нажми любую кнопку выше.", "dim");
 </script>
 </body>
 </html>
