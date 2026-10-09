@@ -4043,30 +4043,9 @@ var TUTORIAL = (function(){
 })();
 
 // ============================================================
-// РЕЙТИНГ
+// РЕЙТИНГ — через API воркер
 // ============================================================
-function openRatingFeed() {
-  var rf = $("ratingFeed");
-  var main = $("viewMain");
-  if (!rf) return;
-  if (main) main.style.display = "";
-  rf.style.display = "block";
-  rf.scrollIntoView({ behavior: "smooth", block: "start" });
-  loadPosts();
-}
-function closeRatingFeed() {
-  var rf = $("ratingFeed");
-  if (rf) rf.style.display = "none";
-  var main = $("viewMain");
-  if (main) main.style.display = "";
-}
-window.openRatingFeed = openRatingFeed;
-window.closeRatingFeed = closeRatingFeed;
-
-// ============================================================
-// РЕЙТИНГ — лента постов с админ-панелью
-// ============================================================
-var ADMIN_PASSWORD = "artamon2026"; // ← поменяй на свой пароль
+const API_BASE = "https://artamon-api.artem123kv.workers.dev";
 
 function isAdmin() {
   try { return SAFE_STORE.get("artamon_is_admin") === "1"; } catch (e) { return false; }
@@ -4074,80 +4053,101 @@ function isAdmin() {
 function setAdmin(v) {
   try { SAFE_STORE.set("artamon_is_admin", v ? "1" : "0"); } catch (e) {}
 }
+function getAdminPass() {
+  try { return SAFE_STORE.get("artamon_admin_pass") || ""; } catch (e) { return ""; }
+}
+function setAdminPass(p) {
+  try { SAFE_STORE.set("artamon_admin_pass", p || ""); } catch (e) {}
+}
 
-function loadPosts() {
-  var box = $("ratingContent"); if (!box) return;
-  var posts = [];
-  try { posts = JSON.parse(SAFE_STORE.get("artamon_posts_v1") || "[]"); } catch (e) { posts = []; }
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return "только что";
+  if (min < 60) return min + " мин назад";
+  const hrs = Math.floor(min / 60);
+  if (hrs < 24) return hrs + " ч назад";
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return days + " дн назад";
+  return new Date(ts).toLocaleDateString("ru-RU");
+}
 
-  // Дефолтные посты если пусто
-  if (!posts.length) {
-    posts = [
-      { id:"p1", author:"Арт Ам Он", avatar:"🎩", isAdmin:true, pinned:true, date:"сегодня", title:"Добро пожаловать в Artamon 2.7!", body:"Это большое обновление с апгрейдером, квестами, друзьями и поддержкой. Оставляйте оценки и комментарии!", avgRating:5, ratingCount:1 },
-      { id:"p2", author:"Липовец Максим", avatar:"🎯", isAdmin:true, date:"вчера", title:"Квесты — топ!", body:"Ежедневные квесты — отличный способ заработать монеты. 5 заданий в день, сброс в полночь.", avgRating:4.5, ratingCount:2 },
-      { id:"p3", author:"Рамзан Грабарь", avatar:"🐉", isAdmin:true, date:"2 дня назад", title:"Апгрейдер — это огонь", body:"Умножил x10 и получил легендарку. Стоит попробовать!", avgRating:4, ratingCount:3 }
-    ];
-    try { SAFE_STORE.set("artamon_posts_v1", JSON.stringify(posts)); } catch (e) {}
-  }
-
-  // Сортировка: закреплённые наверху
-  posts.sort(function(a, b){
-    if (a.pinned && !b.pinned) return -1;
-    if (!a.pinned && b.pinned) return 1;
-    return 0;
-  });
-
-  // Комментарии
-  var allComments = [];
-  try { allComments = JSON.parse(SAFE_STORE.get("artamon_comments_v1") || "[]"); } catch (e) { allComments = []; }
+async function loadPosts() {
+  var box = $("ratingContent");
+  if (!box) return;
 
   var adminMode = isAdmin();
-  var acc = (typeof AUTH_UI !== "undefined" && AUTH_UI.getAccount) ? AUTH_UI.getAccount() : null;
-  var userNick = acc && acc.nick ? acc.nick : "";
 
-  // ===== Верхняя панель (Админ / Выход) =====
+  // Верхняя панель
   var topBar =
     '<div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:14px;flex-wrap:wrap;">' +
+      '<button id="ratingRefresh" style="border:1px solid var(--border);background:transparent;color:var(--txt-2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:.75rem;font-weight:700;">🔄 Обновить</button>' +
       (adminMode
         ? '<button id="adminNewPost" style="border:1.5px solid var(--gold-2);background:rgba(212,175,55,.15);color:var(--gold-2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:.75rem;font-weight:800;text-transform:uppercase;">✍️ Создать пост</button>' +
           '<button id="adminExit" style="border:1px solid var(--border);background:transparent;color:var(--txt-2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:.75rem;font-weight:700;">🚪 Выйти из админа</button>'
         : '<button id="adminLogin" style="border:1px solid var(--border);background:transparent;color:var(--txt-2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:.75rem;font-weight:700;">🔐 Админ</button>') +
     '</div>';
 
+  box.innerHTML = topBar + '<div style="text-align:center;padding:40px;color:var(--txt-3);">⏳ Загрузка...</div>';
+
+  // Запрос к API
+  let data;
+  try {
+    const r = await fetch(API_BASE + "/api/posts/list", { cache: "no-store" });
+    data = await r.json();
+  } catch (e) {
+    box.innerHTML = topBar + '<div style="text-align:center;padding:40px;color:var(--err);">❌ Ошибка сети: ' + e.message + '</div>';
+    bindTopBarAdmin(adminMode);
+    return;
+  }
+
+  if (!data || !data.ok) {
+    box.innerHTML = topBar + '<div style="text-align:center;padding:40px;color:var(--err);">❌ ' + ((data && data.error) || "Ошибка загрузки") + '</div>';
+    bindTopBarAdmin(adminMode);
+    return;
+  }
+
+  var posts = data.posts || [];
+  var allComments = data.comments || [];
+  var acc = (typeof AUTH_UI !== "undefined" && AUTH_UI.getAccount) ? AUTH_UI.getAccount() : null;
+  var userNick = acc && acc.nick ? acc.nick : "";
+
+  if (!posts.length) {
+    box.innerHTML = topBar + '<div style="text-align:center;padding:40px;color:var(--txt-3);">📭 Постов пока нет</div>';
+    bindTopBarAdmin(adminMode);
+    return;
+  }
+
   var html = topBar;
 
   html += posts.map(function(p){
-    // Звёзды
     var starsHtml = "";
     for (var i = 1; i <= 5; i++) {
-      var active = i <= Math.round(p.avgRating);
+      var active = i <= Math.round(p.avgRating || 0);
       starsHtml += '<button class="star-btn" data-post="' + p.id + '" data-value="' + i + '" style="background:none;border:none;font-size:1.6rem;cursor:pointer;color:' + (active ? "var(--warn)" : "var(--border)") + ';">★</button>';
     }
 
-    // Комментарии поста
     var postComments = allComments.filter(function(c){ return c.postId === p.id; });
     var commentsHtml = "";
     if (postComments.length) {
       commentsHtml = postComments.map(function(c){
-        var canDel = adminMode || (userNick && c.nick === userNick);
-        return '<div class="pc-item" data-cid="' + c.id + '" style="background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;">' +
+        return '<div style="background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;">' +
           '<div style="display:flex;justify-content:space-between;margin-bottom:6px;">' +
             '<div style="font-size:.82rem;font-weight:800;color:' + (c.isAdmin ? "var(--gold-2)" : "var(--info)") + ';">' +
               escapeHtml(c.nick) + (c.isAdmin ? ' <span style="font-size:.6rem;background:rgba(212,175,55,.2);padding:1px 6px;border-radius:6px;margin-left:4px;">АДМИН</span>' : '') +
             '</div>' +
             '<div style="display:flex;gap:8px;align-items:baseline;">' +
-              '<div style="font-size:.64rem;color:var(--txt-3);">' + fmtTime(c.time) + '</div>' +
-              (canDel ? '<button class="pc-del" data-cid="' + c.id + '" style="background:none;border:none;color:var(--txt-3);cursor:pointer;font-size:.75rem;">×</button>' : '') +
+              '<div style="font-size:.64rem;color:var(--txt-3);">' + timeAgo(c.time) + '</div>' +
+              (adminMode ? '<button class="pc-del" data-cid="' + c.id + '" style="background:none;border:none;color:var(--txt-3);cursor:pointer;font-size:.75rem;">×</button>' : '') +
             '</div>' +
           '</div>' +
           '<div style="font-size:.88rem;line-height:1.5;word-break:break-word;">' + escapeHtml(c.text) + '</div>' +
         '</div>';
       }).join("");
     } else {
-      commentsHtml = '<div style="text-align:center;color:var(--txt-3);font-size:.78rem;padding:12px;">Пока нет комментариев. Будь первым!</div>';
+      commentsHtml = '<div style="text-align:center;color:var(--txt-3);font-size:.78rem;padding:12px;">Пока нет комментариев</div>';
     }
 
-    // Админские действия над постом
     var adminActions = adminMode
       ? '<div style="display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);">' +
           '<button class="post-pin" data-pid="' + p.id + '" style="flex:1;border:1px solid var(--border);background:transparent;color:var(--txt-2);padding:8px;border-radius:8px;cursor:pointer;font-size:.72rem;font-weight:700;">' + (p.pinned ? "📌 Открепить" : "📌 Закрепить") + '</button>' +
@@ -4161,14 +4161,14 @@ function loadPosts() {
         '<div style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:1.4rem;background:var(--bg-3);border:2px solid ' + (p.isAdmin ? "var(--gold-2)" : "var(--border)") + ';">' + p.avatar + '</div>' +
         '<div style="flex:1;"><div style="font-size:.88rem;font-weight:800;color:' + (p.isAdmin ? "var(--gold-2)" : "var(--info)") + ';">' +
           escapeHtml(p.author) + (p.isAdmin ? ' <span style="font-size:.6rem;background:rgba(212,175,55,.2);padding:1px 6px;border-radius:6px;margin-left:4px;">АДМИН</span>' : '') +
-        '</div><div style="font-size:.68rem;color:var(--txt-3);">' + p.date + '</div></div>' +
+        '</div><div style="font-size:.68rem;color:var(--txt-3);">' + timeAgo(p.date) + '</div></div>' +
       '</div>' +
       '<div style="font-size:1.1rem;font-weight:800;margin-bottom:8px;">' + escapeHtml(p.title) + '</div>' +
       '<div style="font-size:.9rem;line-height:1.6;margin-bottom:14px;">' + escapeHtml(p.body) + '</div>' +
       '<div style="display:flex;align-items:center;gap:12px;padding-top:12px;border-top:1px solid var(--border);">' +
         '<div style="display:flex;gap:2px;">' + starsHtml + '</div>' +
-        '<div style="font-size:.8rem;color:var(--warn);font-weight:800;">' + p.avgRating.toFixed(1) + ' ⭐</div>' +
-        '<div style="font-size:.7rem;color:var(--txt-3);">' + p.ratingCount + ' оценок</div>' +
+        '<div style="font-size:.8rem;color:var(--warn);font-weight:800;">' + (p.avgRating || 0).toFixed(1) + ' ⭐</div>' +
+        '<div style="font-size:.7rem;color:var(--txt-3);">' + (p.ratingCount || 0) + ' оценок</div>' +
       '</div>' +
       '<button class="post-comments-toggle" data-toggle="' + p.id + '" style="width:100%;margin-top:12px;background:transparent;border:1px solid var(--border);color:var(--txt-2);padding:10px;border-radius:10px;cursor:pointer;font-size:.78rem;font-weight:700;text-transform:uppercase;">' +
         '💬 Комментарии (' + postComments.length + ')' +
@@ -4179,7 +4179,7 @@ function loadPosts() {
           '<textarea class="pc-text" data-post="' + p.id + '" maxlength="500" placeholder="Напиши комментарий..." style="width:100%;background:var(--bg-3);border:1px solid var(--border);color:var(--txt-1);border-radius:10px;padding:10px 12px;font-size:.9rem;outline:none;min-height:60px;resize:vertical;"></textarea>' +
           '<button class="pc-send" data-post="' + p.id + '" style="align-self:flex-end;border:1px solid var(--gold-3);background:rgba(212,175,55,.1);color:var(--gold-2);padding:8px 18px;border-radius:10px;cursor:pointer;font-size:.75rem;font-weight:800;text-transform:uppercase;">📨 Отправить</button>' +
         '</div>' +
-        '<div class="pc-list" data-post="' + p.id + '">' + commentsHtml + '</div>' +
+        '<div>' + commentsHtml + '</div>' +
       '</div>' +
       adminActions +
     '</div>';
@@ -4189,51 +4189,29 @@ function loadPosts() {
 
   // ============ ОБРАБОТЧИКИ ============
 
-  // Админ-логин
-  var loginBtn = $("adminLogin");
-  if (loginBtn) loginBtn.addEventListener("click", function(){
-    var pass = prompt("🔐 Введи пароль админа:");
-    if (pass === null) return;
-    if (pass === ADMIN_PASSWORD) {
-      setAdmin(true);
-      toast("👑 Админ-режим активирован!");
-      loadPosts();
-    } else {
-      toast("❌ Неверный пароль");
-    }
-  });
+  bindTopBarAdmin(adminMode);
 
-  // Выход из админа
-  var exitBtn = $("adminExit");
-  if (exitBtn) exitBtn.addEventListener("click", function(){
-    if (!confirm("Выйти из админ-режима?")) return;
-    setAdmin(false);
-    toast("🚪 Вы вышли из админа");
-    loadPosts();
-  });
+  // Обновить
+  var rBtn = $("ratingRefresh");
+  if (rBtn) rBtn.addEventListener("click", function(){ loadPosts(); });
 
-  // Создать пост
-  var newPostBtn = $("adminNewPost");
-  if (newPostBtn) newPostBtn.addEventListener("click", function(){
-    openCreatePostModal();
-  });
-
-  // Звёзды
+  // Оценка
   box.querySelectorAll(".star-btn").forEach(function(btn){
-    btn.addEventListener("click", function(){
+    btn.addEventListener("click", async function(){
       var val = parseInt(btn.getAttribute("data-value"), 10);
       var pid = btn.getAttribute("data-post");
-      var posts = JSON.parse(SAFE_STORE.get("artamon_posts_v1") || "[]");
-      var p = posts.filter(function(x){ return x.id === pid; })[0];
-      if (p) {
-        var oldSum = (p.avgRating || 0) * (p.ratingCount || 0);
-        p.ratingCount = (p.ratingCount || 0) + 1;
-        p.avgRating = (oldSum + val) / p.ratingCount;
-        SAFE_STORE.set("artamon_posts_v1", JSON.stringify(posts));
-      }
-      toast("⭐ Оценка " + val + " сохранена!");
-      ACH.unlock("rating_first");
-      loadPosts();
+      var nick = userNick;
+      if (!nick) { toast("❌ Войди в аккаунт"); return; }
+      try {
+        await fetch(API_BASE + "/api/posts/rate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ postId: pid, nick: nick, value: val })
+        });
+        toast("⭐ Оценка " + val + " сохранена!");
+        ACH.unlock("rating_first");
+        loadPosts();
+      } catch (e) { toast("❌ Ошибка сети"); }
     });
   });
 
@@ -4249,77 +4227,192 @@ function loadPosts() {
 
   // Отправить комментарий
   box.querySelectorAll(".pc-send").forEach(function(btn){
-    btn.addEventListener("click", function(){
+    btn.addEventListener("click", async function(){
       var pid = btn.getAttribute("data-post");
       var nickEl = box.querySelector('.pc-nick[data-post="' + pid + '"]');
       var textEl = box.querySelector('.pc-text[data-post="' + pid + '"]');
       if (!nickEl || !textEl) return;
+
       var nick = nickEl.value.trim();
       var text = textEl.value.trim();
+
       if (!nick) { toast("❌ Укажи имя"); nickEl.focus(); return; }
       if (!text || text.length < 2) { toast("❌ Напиши комментарий"); textEl.focus(); return; }
 
-      var comments = JSON.parse(SAFE_STORE.get("artamon_comments_v1") || "[]");
-      comments.push({
-        id: uid(),
-        postId: pid,
-        nick: nick,
-        text: text,
-        time: Date.now(),
-        isAdmin: adminMode && nick === userNick
-      });
-      SAFE_STORE.set("artamon_comments_v1", JSON.stringify(comments));
-      try { AUDIO.click(); } catch (e) {}
-      toast("✅ Комментарий добавлен!");
-      ACH.unlock("comment_rating");
-      try { if (window.QUEST_HOOK) window.QUEST_HOOK("comment"); } catch (e) {}
-      loadPosts();
+      try {
+        await fetch(API_BASE + "/api/posts/comment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ postId: pid, nick: nick, text: text, isAdmin: adminMode && nick === userNick })
+        });
+        try { AUDIO.click(); } catch (e) {}
+        toast("✅ Комментарий добавлен!");
+        ACH.unlock("comment_rating");
+        loadPosts();
+      } catch (e) { toast("❌ Ошибка сети"); }
     });
   });
 
-  // Удалить комментарий
+  // Удалить комментарий (админ)
   box.querySelectorAll(".pc-del").forEach(function(btn){
-    btn.addEventListener("click", function(){
+    btn.addEventListener("click", async function(){
       if (!confirm("Удалить комментарий?")) return;
       var cid = btn.getAttribute("data-cid");
-      var comments = JSON.parse(SAFE_STORE.get("artamon_comments_v1") || "[]");
-      comments = comments.filter(function(c){ return c.id !== cid; });
-      SAFE_STORE.set("artamon_comments_v1", JSON.stringify(comments));
-      toast("🗑 Удалено");
-      loadPosts();
-    });
-  });
-
-  // Админ: Закрепить / Открепить
-  box.querySelectorAll(".post-pin").forEach(function(btn){
-    btn.addEventListener("click", function(){
-      var pid = btn.getAttribute("data-pid");
-      var posts = JSON.parse(SAFE_STORE.get("artamon_posts_v1") || "[]");
-      var p = posts.filter(function(x){ return x.id === pid; })[0];
-      if (p) {
-        p.pinned = !p.pinned;
-        SAFE_STORE.set("artamon_posts_v1", JSON.stringify(posts));
-        toast(p.pinned ? "📌 Закреплено" : "📌 Откреплено");
+      try {
+        await fetch(API_BASE + "/api/posts/comment-delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: getAdminPass(), commentId: cid })
+        });
+        toast("🗑 Удалено");
         loadPosts();
-      }
+      } catch (e) { toast("❌ Ошибка"); }
     });
   });
 
-  // Админ: Удалить пост
+  // Закрепить
+  box.querySelectorAll(".post-pin").forEach(function(btn){
+    btn.addEventListener("click", async function(){
+      var pid = btn.getAttribute("data-pid");
+      try {
+        const r = await fetch(API_BASE + "/api/posts/pin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: getAdminPass(), postId: pid })
+        });
+        const d = await r.json();
+        toast(d.pinned ? "📌 Закреплено" : "📌 Откреплено");
+        loadPosts();
+      } catch (e) { toast("❌ Ошибка"); }
+    });
+  });
+
+  // Удалить пост
   box.querySelectorAll(".post-del").forEach(function(btn){
-    btn.addEventListener("click", function(){
+    btn.addEventListener("click", async function(){
       if (!confirm("Удалить пост?")) return;
       var pid = btn.getAttribute("data-pid");
-      var posts = JSON.parse(SAFE_STORE.get("artamon_posts_v1") || "[]");
-      posts = posts.filter(function(x){ return x.id !== pid; });
-      SAFE_STORE.set("artamon_posts_v1", JSON.stringify(posts));
-      // Удалить и комментарии
-      var comments = JSON.parse(SAFE_STORE.get("artamon_comments_v1") || "[]");
-      comments = comments.filter(function(c){ return c.postId !== pid; });
-      SAFE_STORE.set("artamon_comments_v1", JSON.stringify(comments));
-      toast("🗑 Пост удалён");
+      try {
+        await fetch(API_BASE + "/api/posts/delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: getAdminPass(), postId: pid })
+        });
+        toast("🗑 Пост удалён");
+        loadPosts();
+      } catch (e) { toast("❌ Ошибка"); }
+    });
+  });
+}
+
+function bindTopBarAdmin(adminMode) {
+  var loginBtn = $("adminLogin");
+  if (loginBtn && !loginBtn._bound) {
+    loginBtn._bound = true;
+    loginBtn.addEventListener("click", async function(){
+      var pass = prompt("🔐 Введи пароль админа:");
+      if (pass === null) return;
+      try {
+        const r = await fetch(API_BASE + "/api/posts/admin-check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: pass })
+        });
+        const d = await r.json();
+        if (d.admin) {
+          setAdmin(true);
+          setAdminPass(pass);
+          toast("👑 Админ-режим активирован!");
+          loadPosts();
+        } else {
+          toast("❌ Неверный пароль");
+        }
+      } catch (e) { toast("❌ Ошибка сети"); }
+    });
+  }
+
+  var exitBtn = $("adminExit");
+  if (exitBtn && !exitBtn._bound) {
+    exitBtn._bound = true;
+    exitBtn.addEventListener("click", function(){
+      if (!confirm("Выйти из админ-режима?")) return;
+      setAdmin(false);
+      setAdminPass("");
+      toast("🚪 Вы вышли");
       loadPosts();
     });
+  }
+
+  var newPostBtn = $("adminNewPost");
+  if (newPostBtn && !newPostBtn._bound) {
+    newPostBtn._bound = true;
+    newPostBtn.addEventListener("click", openCreatePostModal);
+  }
+}
+
+// ============================================================
+// МОДАЛКА СОЗДАНИЯ ПОСТА
+// ============================================================
+function openCreatePostModal() {
+  var m = document.createElement("div");
+  m.style.cssText = "position:fixed;inset:0;z-index:9800;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.94);backdrop-filter:blur(10px);";
+  m.innerHTML =
+    '<div style="max-width:560px;width:100%;max-height:92vh;overflow-y:auto;background:linear-gradient(180deg,var(--card-1),var(--card-2));border:1px solid rgba(212,175,55,.4);border-radius:20px;padding:24px 22px;position:relative;">' +
+      '<button id="cpClose" style="position:absolute;top:14px;right:14px;background:transparent;border:1px solid var(--border);color:var(--txt-2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:1.1rem;">×</button>' +
+      '<div style="font-size:1.3rem;font-weight:900;text-transform:uppercase;background:linear-gradient(180deg,var(--gold-1),var(--gold-2) 45%,var(--gold-3));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px;">✍️ Новый пост</div>' +
+      '<div style="color:var(--txt-2);font-size:.78rem;margin-bottom:20px;">От имени администрации</div>' +
+      '<div style="margin-bottom:12px;"><label style="display:block;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-2);margin-bottom:6px;">Заголовок</label><input id="cpTitle" type="text" maxlength="120" placeholder="О чём пост?" style="width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--txt-1);border-radius:10px;padding:12px 14px;font-size:16px;outline:none;"></div>' +
+      '<div style="margin-bottom:12px;"><label style="display:block;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-2);margin-bottom:6px;">Текст</label><textarea id="cpBody" maxlength="2000" placeholder="Подробнее..." style="width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--txt-1);border-radius:10px;padding:12px 14px;font-size:16px;outline:none;min-height:120px;resize:vertical;"></textarea></div>' +
+      '<div style="margin-bottom:12px;"><label style="display:block;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-2);margin-bottom:6px;">Ник автора</label><input id="cpNick" type="text" maxlength="30" value="Арт Ам Он" style="width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--txt-1);border-radius:10px;padding:12px 14px;font-size:16px;outline:none;"></div>' +
+      '<div style="margin-bottom:12px;"><label style="display:block;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-2);margin-bottom:6px;">Аватар (эмодзи)</label><input id="cpAvatar" type="text" maxlength="4" value="🎩" style="width:100%;background:var(--bg-2);border:1px solid var(--border);color:var(--txt-1);border-radius:10px;padding:12px 14px;font-size:16px;outline:none;text-align:center;"></div>' +
+      '<label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:20px;font-size:.85rem;"><input id="cpPin" type="checkbox" style="width:18px;height:18px;accent-color:var(--gold-2);"><span>📌 Закрепить наверху</span></label>' +
+      '<div style="display:flex;gap:10px;justify-content:flex-end;">' +
+        '<button id="cpCancel" style="border:1px solid var(--border);background:transparent;color:var(--txt-2);padding:12px 22px;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700;text-transform:uppercase;">Отмена</button>' +
+        '<button id="cpCreate" style="border:1.5px solid var(--gold-2);background:linear-gradient(180deg,rgba(212,175,55,.35),rgba(212,175,55,.15));color:#fff;padding:12px 22px;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:800;text-transform:uppercase;">📤 Опубликовать</button>' +
+      '</div>' +
+    '</div>';
+
+  document.body.appendChild(m);
+
+  function close() { m.remove(); }
+
+  m.querySelector("#cpClose").addEventListener("click", close);
+  m.querySelector("#cpCancel").addEventListener("click", close);
+  m.addEventListener("click", function(e){ if (e.target === m) close(); });
+
+  m.querySelector("#cpCreate").addEventListener("click", async function(){
+    var title = m.querySelector("#cpTitle").value.trim();
+    var body = m.querySelector("#cpBody").value.trim();
+    var nick = m.querySelector("#cpNick").value.trim() || "Админ";
+    var avatar = m.querySelector("#cpAvatar").value.trim() || "🎩";
+    var pinned = m.querySelector("#cpPin").checked;
+
+    if (!title) { toast("❌ Введи заголовок"); return; }
+    if (!body || body.length < 5) { toast("❌ Напиши текст"); return; }
+
+    try {
+      const r = await fetch(API_BASE + "/api/posts/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          password: getAdminPass(),
+          title: title,
+          body: body,
+          nick: nick,
+          avatar: avatar,
+          pinned: pinned
+        })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        try { AUDIO.achEpic(); } catch (e) {}
+        toast("✅ Пост опубликован!");
+        close();
+        loadPosts();
+      } else {
+        toast("❌ " + (d.error || "Ошибка"));
+      }
+    } catch (e) { toast("❌ Ошибка сети"); }
   });
 }
 
