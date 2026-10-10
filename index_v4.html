@@ -988,6 +988,15 @@ footer b { color: var(--gold-3); font-weight: 800; }
       </div>
     </button>
 
+<button class="feature-launch" id="promoLaunch" type="button" style="background:linear-gradient(135deg,rgba(168,85,247,.12),rgba(168,85,247,.03));border-color:rgba(168,85,247,.5);">
+  <span class="rl-badge">NEW</span>
+  <span class="rl-icon">🎁</span>
+  <div class="rl-body">
+    <div class="rl-title" style="color:var(--rar-epic);">Промокод</div>
+    <div class="rl-desc">Активируй код — получи награду</div>
+  </div>
+</button>
+
     <main id="viewMain">
       <section class="card" id="createCard">
         <h2 data-i18n="create.title">Новый опрос</h2>
@@ -1163,6 +1172,7 @@ footer b { color: var(--gold-3); font-weight: 800; }
   <button class="menu-item" id="miFriends" type="button"><span>👥</span><span>Друзья</span></button>
   <button class="menu-item" id="miRating" type="button"><span>⭐</span><span>Лента рейтинга</span></button>
   <button class="menu-item" id="miShop" type="button"><span>🛒</span><span>Магазин</span><span class="badge-count" id="miShopCoins">0</span></button>
+  <button class="menu-item" id="miPromo" type="button"><span>🎁</span><span>Промокод</span></button>
   <button class="menu-item" id="miWip" type="button"><span>💎</span><span>WIP-подписка</span></button>
   <button class="menu-item" id="miDaily" type="button"><span>🎁</span><span>Ежедневка</span></button>
   <button class="menu-item" id="miStats" type="button"><span>📊</span><span>Статистика</span></button>
@@ -1301,6 +1311,15 @@ footer b { color: var(--gold-3); font-weight: 800; }
 </div>
 
 <div id="toast"></div>
+<div id="promoModal">
+  <div class="modal-box" style="max-width:420px;">
+    <button class="modal-close" type="button" id="promoClose">×</button>
+    <div class="modal-title">🎁 Промокод</div>
+    <div class="modal-sub">Введи код и получи награду</div>
+    <input type="text" id="promoInput" placeholder="ARTAMON2024" maxlength="30" style="text-transform:uppercase;text-align:center;font-family:ui-monospace,monospace;font-size:1.2rem;letter-spacing:.1em;">
+    <button class="btn full" id="promoActivate" type="button" style="margin-top:14px;">🎁 Активировать</button>
+  </div>
+</div>
 <script>
 // ============================================================
 // SAFE STORAGE
@@ -2397,33 +2416,110 @@ var FRIENDS = (function(){
 // SUPPORT
 // ============================================================
 var SUPPORT = (function(){
-  var KEY = "artamon_support_v1";
-  function open() { $("supportModal").classList.add("on"); try { AUDIO.click(); } catch (e) {} }
+  var currentCategory = "bug";
+  function open() {
+    $("supportModal").classList.add("on");
+    try { AUDIO.click(); } catch (e) {}
+    loadMyTickets();
+  }
   function close() { $("supportModal").classList.remove("on"); }
+
+  function renderMyTickets(tickets) {
+    var box = $("myTicketsList"); if (!box) return;
+    if (!tickets || !tickets.length) {
+      box.innerHTML = '<div style="text-align:center;padding:20px;color:var(--txt-3);">Обращений пока нет</div>';
+      return;
+    }
+    var statusNames = { open: "🆕 Открыт", answered: "✅ Отвечен", closed: "🔒 Закрыт" };
+    box.innerHTML = tickets.map(function(t) {
+      var replies = (t.replies || []).map(function(r) {
+        var who = r.role === "owner" ? "👑 Владелец" : "🛡️ Админ";
+        return '<div style="background:rgba(0,0,0,.3);border-radius:8px;padding:8px 10px;margin-top:6px;font-size:.82rem;">' +
+          '<div style="font-size:.62rem;color:var(--gold-2);font-weight:800;margin-bottom:3px;">' + who + ' · ' + fmtTime(r.time) + '</div>' +
+          escapeHtml(r.text) + '</div>';
+      }).join("");
+      return '<div style="background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;">' +
+        '<div style="display:flex;justify-content:space-between;margin-bottom:6px;">' +
+          '<b style="font-size:.85rem;">' + escapeHtml(t.subject) + '</b>' +
+          '<span style="font-size:.68rem;color:var(--txt-3);">' + fmtTime(t.createdAt) + '</span>' +
+        '</div>' +
+        '<div style="font-size:.7rem;color:var(--txt-2);margin-bottom:6px;">' + (statusNames[t.status] || "—") + '</div>' +
+        '<div style="font-size:.82rem;color:var(--txt-1);">' + escapeHtml(t.message) + '</div>' + replies + '</div>';
+    }).join("");
+  }
+
+  function loadMyTickets() {
+    var acc = (typeof AUTH_UI !== "undefined" && AUTH_UI.getAccount) ? AUTH_UI.getAccount() : null;
+    var nick = acc && acc.nick ? acc.nick : "";
+    var box = $("myTicketsList");
+    if (!nick) {
+      if (box) box.innerHTML = '<div style="text-align:center;padding:20px;color:var(--txt-3);">Войди в аккаунт, чтобы увидеть обращения</div>';
+      return;
+    }
+    fetch("https://artamon-api.artem123kv.workers.dev/api/ticket/list", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nick: nick })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { if (d.ok) renderMyTickets(d.tickets); })
+    .catch(function() {});
+  }
+
   function init() {
     var c = $("supportClose");
     if (c && !c._bound) { c._bound = true; c.addEventListener("click", close); }
+
+    var cats = document.querySelectorAll("#supportCats .support-cat");
+    for (var i = 0; i < cats.length; i++) {
+      (function(cat) {
+        if (cat._bound) return;
+        cat._bound = true;
+        cat.addEventListener("click", function() {
+          for (var j = 0; j < cats.length; j++) cats[j].classList.remove("active");
+          cat.classList.add("active");
+          currentCategory = cat.getAttribute("data-cat");
+        });
+      })(cats[i]);
+    }
+
     var s = $("supportSend");
     if (s && !s._bound) {
       s._bound = true;
-      s.addEventListener("click", function(){
+      s.addEventListener("click", function() {
         var subject = $("supportSubject").value.trim();
         var message = $("supportMessage").value.trim();
-        if (!subject || !message) return toast("Заполни тему и сообщение");
-        if (message.length < 10) return toast("Опиши подробнее");
-        try {
-          var arr = JSON.parse(SAFE_STORE.get(KEY) || "[]");
-          arr.push({ subject: subject, message: message, date: Date.now() });
-          SAFE_STORE.set(KEY, JSON.stringify(arr));
-        } catch (e) {}
-        toast("📨 Обращение сохранено!");
-        ACH.unlock("support_first");
-        $("supportSubject").value = "";
-        $("supportMessage").value = "";
-        close();
+        if (!subject || subject.length < 3) { toast("Тема минимум 3 символа"); return; }
+        if (!message || message.length < 10) { toast("Опиши подробнее (мин. 10)"); return; }
+
+        var acc = (typeof AUTH_UI !== "undefined" && AUTH_UI.getAccount) ? AUTH_UI.getAccount() : null;
+        var nick = acc && acc.nick ? acc.nick : "";
+        if (!nick) { toast("Сначала войди в аккаунт"); return; }
+
+        s.disabled = true;
+        s.textContent = "⏳ Отправка...";
+
+        fetch("https://artamon-api.artem123kv.workers.dev/api/ticket/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nick: nick, subject: subject, message: message, category: currentCategory })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.ok) {
+            toast("✅ Обращение создано");
+            $("supportSubject").value = "";
+            $("supportMessage").value = "";
+            try { ACH.unlock("support_first"); } catch (e) {}
+            loadMyTickets();
+          } else toast("❌ " + (d.error || "Ошибка"));
+        })
+        .catch(function() { toast("❌ Ошибка сети"); })
+        .then(function() { s.disabled = false; s.textContent = "📨 Отправить"; });
       });
     }
   }
+
   return { open: open, close: close, init: init };
 })();
 
@@ -3940,6 +4036,82 @@ console.log("✅ Artamon 2.7 загружен полностью");
   setTimeout(bind, 500);
   setTimeout(bind, 1500);
   setTimeout(bind, 3000);
+})();
+</script>
+<script>
+(function(){
+  function setupPromo() {
+    var modal = document.getElementById("promoModal");
+    if (!modal) return;
+
+    function open() {
+      modal.classList.add("on");
+      var inp = document.getElementById("promoInput");
+      if (inp) { inp.value = ""; setTimeout(function(){ try{ inp.focus(); }catch(e){} }, 200); }
+    }
+    function close() { modal.classList.remove("on"); }
+
+    var pl = document.getElementById("promoLaunch");
+    if (pl && !pl._bound) { pl._bound = true; pl.addEventListener("click", open); }
+
+    var mip = document.getElementById("miPromo");
+    if (mip && !mip._bound) {
+      mip._bound = true;
+      mip.addEventListener("click", function(){
+        var d = document.getElementById("drawer"); if (d) d.classList.remove("on");
+        var o = document.getElementById("overlay"); if (o) o.classList.remove("on");
+        open();
+      });
+    }
+
+    var pc = document.getElementById("promoClose");
+    if (pc && !pc._bound) { pc._bound = true; pc.addEventListener("click", close); }
+
+    if (!modal._bound) {
+      modal._bound = true;
+      modal.addEventListener("click", function(e){ if (e.target === modal) close(); });
+    }
+
+    var pa = document.getElementById("promoActivate");
+    if (pa && !pa._bound) {
+      pa._bound = true;
+      pa.addEventListener("click", function() {
+        var code = document.getElementById("promoInput").value.trim().toUpperCase();
+        if (!code) { if (window.toast) toast("Введи код"); return; }
+        var acc = null;
+        try { acc = window.AUTH_UI && AUTH_UI.getAccount ? AUTH_UI.getAccount() : null; } catch(e) {}
+        var nick = acc && acc.nick ? acc.nick : "";
+        if (!nick) { if (window.toast) toast("Сначала войди в аккаунт"); return; }
+        pa.disabled = true; pa.textContent = "⏳ Активация...";
+        fetch("https://artamon-api.artem123kv.workers.dev/api/promo/activate", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nick: nick, code: code })
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if (d.ok) {
+            var r = d.reward || {};
+            var lines = [];
+            if (r.coins) lines.push("🪙 +" + r.coins);
+            if (r.wipDays) lines.push("💎 +" + r.wipDays + " дн.");
+            if (r.avatar) lines.push("🎨 " + r.avatar);
+            if (window.toast) toast("🎉 Получено: " + lines.join(", "));
+            if (window.COINS && d.user) try { COINS.setFromServer(d.user.coins || 0); } catch(e) {}
+            try { if (window.AUDIO) AUDIO.achEpic(); } catch(e) {}
+            setTimeout(close, 1500);
+          } else if (window.toast) toast("❌ " + (d.error || "Ошибка"));
+        })
+        .catch(function(){ if (window.toast) toast("❌ Ошибка сети"); })
+        .then(function(){ pa.disabled = false; pa.textContent = "🎁 Активировать"; });
+      });
+    }
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", setupPromo);
+  else setupPromo();
+  setTimeout(setupPromo, 500);
+  setTimeout(setupPromo, 1500);
+  setTimeout(setupPromo, 3000);
 })();
 </script>
 </body>
