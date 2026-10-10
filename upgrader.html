@@ -515,6 +515,134 @@ input, select { font-family: inherit; font-size: 16px; }
 
 @media (max-width: 640px) {
   .topbar { grid-template-columns: 1fr auto; gap: 8px; padding: 10px 12px; }
+  /* ============================================================
+   ЭТАП 5 — ПАТЧ 2: ИВЕНТОВЫЕ СТИЛИ
+   ============================================================ */
+
+/* Баннер ивента в шапке */
+.upg-event-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9999;
+  padding: 10px 16px;
+  text-align: center;
+  font-size: .82rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(90deg, rgba(212,175,55,.9), rgba(246,230,168,.9), rgba(212,175,55,.9));
+  color: #0a0a0a;
+  box-shadow: 0 2px 20px rgba(0,0,0,.6);
+  animation: upg-banner-slide .5s ease;
+}
+@keyframes upg-banner-slide {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+/* Тело сдвигается вниз, чтобы баннер не перекрывал */
+body[data-event] { padding-top: 40px; }
+
+/* Темы по ивентам */
+body[data-event="pride"] .upg-event-banner {
+  background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e, #3b82f6, #a855f7, #ef4444);
+  background-size: 200% 100%;
+  color: #fff;
+  animation: upg-banner-slide .5s ease, upg-pride-flow 4s linear infinite;
+}
+@keyframes upg-pride-flow {
+  from { background-position: 0% 50%; }
+  to { background-position: 200% 50%; }
+}
+
+body[data-event="newyear"] .upg-event-banner {
+  background: linear-gradient(90deg, #dc2626, #fff, #16a34a);
+  color: #0a0a0a;
+}
+
+body[data-event="halloween"] .upg-event-banner {
+  background: linear-gradient(90deg, #7c2d12, #fb923c, #7c2d12);
+  color: #fff;
+}
+
+body[data-event="valentine"] .upg-event-banner {
+  background: linear-gradient(90deg, #f43f5e, #fda4af, #f43f5e);
+  color: #fff;
+}
+
+body[data-event="march8"] .upg-event-banner {
+  background: linear-gradient(90deg, #ec4899, #fbcfe8, #ec4899);
+  color: #fff;
+}
+
+body[data-event="autumn"] .upg-event-banner {
+  background: linear-gradient(90deg, #92400e, #f59e0b, #92400e);
+  color: #fff;
+}
+
+body[data-event="spring"] .upg-event-banner {
+  background: linear-gradient(90deg, #22c55e, #86efac, #22c55e);
+  color: #0a0a0a;
+}
+
+body[data-event="summer"] .upg-event-banner {
+  background: linear-gradient(90deg, #f59e0b, #fde68a, #f59e0b);
+  color: #0a0a0a;
+}
+
+body[data-event="wintertale"] .upg-event-banner {
+  background: linear-gradient(90deg, #3b82f6, #dbeafe, #3b82f6);
+  color: #0a0a0a;
+}
+
+/* Акценты темы: кнопка крутить, круг, слоты */
+body[data-event="pride"] .spin-btn {
+  background: linear-gradient(135deg, #fef3c7, #a855f7 40%, #3b82f6 100%);
+  border-color: #f6e6a8;
+  box-shadow: 0 10px 40px rgba(168,85,247,.5);
+}
+body[data-event="pride"] .circle-chance { text-shadow: 0 0 30px rgba(168,85,247,.6); }
+
+body[data-event="newyear"] .spin-btn {
+  background: linear-gradient(135deg, #fee2e2, #dc2626 40%, #16a34a 100%);
+  border-color: #fff;
+}
+body[data-event="halloween"] .spin-btn {
+  background: linear-gradient(135deg, #fed7aa, #fb923c 40%, #7c2d12 100%);
+  border-color: #fb923c;
+}
+body[data-event="valentine"] .spin-btn {
+  background: linear-gradient(135deg, #fecdd3, #f43f5e 40%, #881337 100%);
+  border-color: #fda4af;
+}
+body[data-event="spring"] .spin-btn {
+  background: linear-gradient(135deg, #bbf7d0, #22c55e 40%, #166534 100%);
+  border-color: #86efac;
+}
+body[data-event="autumn"] .spin-btn {
+  background: linear-gradient(135deg, #fed7aa, #f59e0b 40%, #78350f 100%);
+  border-color: #f59e0b;
+}
+
+/* Индикатор бонуса рядом с балансом */
+.event-bonus-badge {
+  display: none;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  color: #0a0a0a;
+  border-radius: 8px;
+  font-size: .68rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  margin-left: 6px;
+  animation: upg-pulse-badge 1.5s ease infinite;
+}
+body[data-event] .event-bonus-badge { display: inline-flex; align-items: center; gap: 3px; }
+@keyframes upg-pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
   .topbar-center { display: none; }
   .topbar-logo { font-size: .95rem; }
   .navbar { top: 55px; padding: 6px 12px; }
@@ -544,6 +672,7 @@ input, select { font-family: inherit; font-size: 16px; }
     <div class="topbar-right">
       <div class="balance-box" id="balanceBox">
         <span>🪙</span><span class="num" id="balanceDisplay">—</span>
+                <span class="event-bonus-badge" id="eventBonusBadge">×1</span>
       </div>
       <div class="user-avatar" id="userAvatar" title="Профиль">?</div>
     </div>
@@ -760,7 +889,9 @@ var State = {
   betItem: null,
   targetItem: null,
   spinning: false,
-  currentTab: "upgrade"
+  currentTab: "upgrade",
+  event: null,
+  eventBonus: 1
 };
 
 // ============================================================
@@ -1665,9 +1796,27 @@ function doUpgrade() {
       var isWin = result.win;
       var isJackpot = isWin && multiplier >= 25;
 
-      // Обновляем состояние
+// Обновляем состояние
       if (result.inventory) State.inventory = result.inventory;
       if (typeof result.coins === "number") State.balance = result.coins;
+
+      // ЭТАП 5 — ПАТЧ 4: бонус монет при победе
+      if (isWin && State.eventBonus > 1) {
+        var bonusCoins = Math.floor(targetItem.price * (State.eventBonus - 1));
+        State.balance += bonusCoins;
+        apiCall("/api/upgrade-give-coins", {
+          nick: State.user.nick,
+          amount: bonusCoins
+        }).then(function(r) {
+          if (r && r.ok && typeof r.coins === "number") {
+            State.balance = r.coins;
+            UI.renderBalance();
+          }
+        });
+        setTimeout(function() {
+          toast("🎁 +" + bonusCoins.toLocaleString("ru-RU") + " 🪙 бонус ивента ×" + State.eventBonus.toFixed(1), "success");
+        }, 500);
+      }
 
       // Точное позиционирование
       var winZoneAngle = (chance / 100) * 360;
@@ -1724,14 +1873,90 @@ pointer.style.transform = "rotate(" + (360 * 4 + finalAngle) + "deg)";
 // ============================================================
 function loadItems() {
   return apiGet("/api/upgrade-items").then(function(d) {
-    if (d.ok && Array.isArray(d.items)) {
-      State.items = d.items;
+    var baseItems;
+    if (d.ok && Array.isArray(d.items) && d.items.length) {
+      baseItems = d.items;
     } else {
-      State.items = getDefaultItems();
+      baseItems = getDefaultItems();
     }
+    State.items = mergeItemsWithEvent(baseItems, State.event);
     return true;
   });
 }
+
+// ============================================================
+// ЭТАП 5 — ПАТЧ 3: ИВЕНТОВЫЕ ПРЕДМЕТЫ
+// ============================================================
+var EVENT_ITEMS = {
+  pride: [
+    { id: "pride_flag", icon: "🌈", name: "Радужный флаг", price: 1500, rarity: "rare" },
+    { id: "pride_crystal", icon: "✨", name: "Радужный кристалл", price: 5000, rarity: "epic" },
+    { id: "pride_unicorn", icon: "🦄", name: "Единорог", price: 15000, rarity: "legendary" }
+  ],
+  newyear: [
+    { id: "ny_tree", icon: "🎄", name: "Ёлочка", price: 800, rarity: "common" },
+    { id: "ny_ball", icon: "🎁", name: "Подарок", price: 2500, rarity: "rare" },
+    { id: "ny_snowman", icon: "⛄", name: "Снеговик", price: 6000, rarity: "epic" },
+    { id: "ny_santa", icon: "🎅", name: "Дед Мороз", price: 20000, rarity: "legendary" }
+  ],
+  halloween: [
+    { id: "hw_pumpkin", icon: "🎃", name: "Тыква", price: 1000, rarity: "common" },
+    { id: "hw_bat", icon: "🦇", name: "Летучая мышь", price: 3000, rarity: "rare" },
+    { id: "hw_ghost", icon: "👻", name: "Призрак", price: 7000, rarity: "epic" },
+    { id: "hw_vampire", icon: "🧛", name: "Вампир", price: 25000, rarity: "legendary" }
+  ],
+  easter: [
+    { id: "ea_egg", icon: "🥚", name: "Яйцо", price: 500, rarity: "common" },
+    { id: "ea_bunny", icon: "🐰", name: "Кролик", price: 3000, rarity: "rare" },
+    { id: "ea_chick", icon: "🐣", name: "Цыплёнок", price: 8000, rarity: "epic" }
+  ],
+  valentine: [
+    { id: "vl_heart", icon: "❤️", name: "Сердце", price: 800, rarity: "common" },
+    { id: "vl_rose", icon: "🌹", name: "Роза", price: 3000, rarity: "rare" },
+    { id: "vl_cupid", icon: "💘", name: "Купидон", price: 10000, rarity: "epic" }
+  ],
+  autumn: [
+    { id: "au_leaf", icon: "🍁", name: "Кленовый лист", price: 500, rarity: "common" },
+    { id: "au_pumpkin", icon: "🍂", name: "Осенний лист", price: 2000, rarity: "rare" },
+    { id: "au_chestnut", icon: "🌰", name: "Каштан", price: 5000, rarity: "epic" }
+  ],
+  spring: [
+    { id: "sp_flower", icon: "🌸", name: "Сакура", price: 1000, rarity: "common" },
+    { id: "sp_tulip", icon: "🌷", name: "Тюльпан", price: 3000, rarity: "rare" },
+    { id: "sp_butterfly", icon: "🦋", name: "Бабочка", price: 8000, rarity: "epic" }
+  ],
+  march8: [
+    { id: "m8_flower", icon: "🌺", name: "Цветок", price: 800, rarity: "common" },
+    { id: "m8_tulip", icon: "🌷", name: "Тюльпан", price: 2500, rarity: "rare" },
+    { id: "m8_bouquet", icon: "💐", name: "Букет", price: 8000, rarity: "epic" }
+  ],
+  summer: [
+    { id: "sm_sun", icon: "☀️", name: "Солнце", price: 800, rarity: "common" },
+    { id: "sm_palm", icon: "🌴", name: "Пальма", price: 3000, rarity: "rare" },
+    { id: "sm_wave", icon: "🌊", name: "Волна", price: 7000, rarity: "epic" }
+  ],
+  space: [
+    { id: "sp_star", icon: "⭐", name: "Звезда", price: 1000, rarity: "common" },
+    { id: "sp_rocket", icon: "🚀", name: "Ракета", price: 5000, rarity: "rare" },
+    { id: "sp_planet", icon: "🪐", name: "Планета", price: 15000, rarity: "epic" }
+  ]
+};
+
+function getEventItems(ev) {
+  if (!ev || !ev.id) return [];
+  return EVENT_ITEMS[ev.id] || [];
+}
+
+function mergeItemsWithEvent(baseItems, ev) {
+  var extra = getEventItems(ev);
+  if (!extra.length) return baseItems;
+  var seen = {};
+  var merged = [];
+  baseItems.forEach(function(it) { if (!seen[it.id]) { seen[it.id] = 1; merged.push(it); } });
+  extra.forEach(function(it) { if (!seen[it.id]) { seen[it.id] = 1; merged.push(it); } });
+  return merged;
+}
+
 
 function getDefaultItems() {
   return [
@@ -1873,11 +2098,48 @@ function init() {
       );
     });
   }
+  
+    // ============================================================
+  // ПАТЧ 7: музыка апгрейдера (синтез)
+  // ============================================================
+  (function initUpgraderMusic() {
+    try {
+      var actx = new (window.AudioContext || window.webkitAudioContext)();
+      var master = actx.createGain();
+      master.gain.value = 0.04;
+      master.connect(actx.destination);
+      var notes = [261.63,329.63,392.00,329.63, 293.66,349.23,440.00,349.23, 261.63,329.63,392.00,523.25, 392.00,329.63,293.66,261.63];
+      var i = 0;
+      function tick() {
+        try {
+          var o = actx.createOscillator();
+          var g = actx.createGain();
+          o.type = "triangle";
+          o.frequency.value = notes[i % notes.length];
+          g.gain.setValueAtTime(0, actx.currentTime);
+          g.gain.linearRampToValueAtTime(0.05, actx.currentTime + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.5);
+          o.connect(g); g.connect(master);
+          o.start(); o.stop(actx.currentTime + 0.55);
+        } catch (e) {}
+        i++;
+        setTimeout(tick, 550);
+      }
+      document.addEventListener("click", function once() {
+        try { if (actx.state === "suspended") actx.resume(); } catch (e) {}
+        document.removeEventListener("click", once);
+      });
+      tick();
+    } catch (e) {}
+  })();
+
 
   // ===== ЗАГРУЗКА ДАННЫХ =====
-  loadItems().then(function() {
-    return loadProfile();
-  }).then(function(ok) {
+loadEvent().then(function() {
+  return loadItems();
+}).then(function() {
+  return loadProfile();
+}).then(function(ok) {
     if (!ok) {
       // Показываем экран "войди через игру"
       var app = $("app");
@@ -1932,6 +2194,69 @@ if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", init);
 } else {
   init();
+}
+
+// ============================================================
+// ЭТАП 5 — ПАТЧ 1: ЗАГРУЗКА ИВЕНТА
+// ============================================================
+function loadEvent() {
+  return fetch("https://artamon-api.artem123kv.workers.dev/api/event/current", { cache: "no-store" })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d && d.ok && d.event) {
+        State.event = d.event;
+        State.eventBonus = d.event.bonus || 1;
+        applyEventTheme(d.event);
+        applyEventBots(d.event);
+        if (typeof UI !== "undefined" && UI.renderEventBadge) UI.renderEventBadge();
+        console.log("[Upgrader Event] ✅ Активен: " + d.event.id + " (" + d.event.title + ") · x" + State.eventBonus);
+      } else {
+        State.event = null;
+        State.eventBonus = 1;
+        console.log("[Upgrader Event] Нет активного ивента");
+      }
+      return true;
+    })
+    .catch(function(e) {
+      console.log("[Upgrader Event] ❌ Ошибка: " + e.message);
+      State.event = null;
+      State.eventBonus = 1;
+      return false;
+    });
+}
+
+function applyEventTheme(ev) {
+  if (!ev || !ev.id) {
+    document.body.removeAttribute("data-event");
+    var old = document.getElementById("eventBannerUpg");
+    if (old) old.remove();
+        var badge2 = document.getElementById("eventBonusBadge");
+    if (badge2) badge2.style.display = "none";
+    return;
+  }
+
+  document.body.setAttribute("data-event", ev.id);
+
+  // Баннер в шапке
+  var banner = document.getElementById("eventBannerUpg");
+  if (!banner) {
+    banner = document.createElement("div");
+    banner.id = "eventBannerUpg";
+    document.body.insertBefore(banner, document.body.firstChild);
+  }
+    banner.innerHTML = (ev.emoji || "🎉") + " " + ev.title + " · x" + (ev.bonus || 1).toFixed(1) + " бонус к монетам";
+  banner.className = "upg-event-banner";
+
+  // Обновляем бейдж у баланса
+  var badge = document.getElementById("eventBonusBadge");
+  if (badge) {
+    badge.textContent = "×" + (ev.bonus || 1).toFixed(1);
+    badge.style.display = "inline-flex";
+  }
+}
+function applyEventBots(ev) {
+  // Просто заглушка — боты в апгрейдере не нужны
+  // Можно потом сюда добавить ивентовых NPC
 }
 
 console.log("%c🎰 Artamon Upgrader v5.0", "color:#d4af37;font-size:20px;font-weight:900;");

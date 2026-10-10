@@ -1593,7 +1593,17 @@ var DM = (function(){
     el.querySelector(".dm-x").addEventListener("click", dis);
     setTimeout(dis, 8000);
   }
-  return { show: show, setEnabled: setEnabled, isEnabled: isEnabled, loadSettings: loadSettings };
+
+    function greet() {
+  if (!enabled) return;
+  var bot = rand(BOTS);
+  var age = AGE.isAdult();
+  var phrases = age
+    ? ["О, ты вернулся.","Здарова.","Ну чё, погнали.","Опять ты.","Хай."]
+    : ["Привет! 👋","О, ты онлайн!","Рад тебя видеть!","Хэй!"];
+  setTimeout(function() { show(bot, rand(phrases)); }, 2500);
+}
+return { show: show, setEnabled: setEnabled, isEnabled: isEnabled, loadSettings: loadSettings, greet: greet };
 })();
 
 // ============================================================
@@ -1646,7 +1656,141 @@ var AUDIO = (function(){
   function questDone() { playNote(523.25, 0.1, "sine", null, 0.16); playNote(659.25, 0.12, "sine", null, 0.16); playNote(783.99, 0.18, "triangle", null, 0.16); }
 
   function stopTrack() { for (var i=0;i<timers.length;i++) clearTimeout(timers[i]); timers = []; }
-  function stopAll() { stopTrack(); }
+  // ============================================================
+// ПАТЧ 1: МУЗЫКА (синтез треков)
+// ============================================================
+var currentTrack = null;
+var trackTimer = null;
+var trackStep = 0;
+
+// Ноты: частота в Гц
+var N = {
+  C3:130.81, D3:146.83, E3:164.81, F3:174.61, G3:196.00, A3:220.00, B3:246.94,
+  C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392.00, A4:440.00, B4:493.88,
+  C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99, A5:880.00, B5:987.77,
+  C6:1046.50, E6:1318.51, G6:1567.98
+};
+
+// Треки: массив нот (частота, длительность в сек, тип волны)
+// null = пауза
+var TRACKS = {
+  main: {
+    bpm: 90,
+    wave: "triangle",
+    gain: 0.06,
+    notes: [
+      [N.C4,1],[N.E4,1],[N.G4,1],[N.E4,1],
+      [N.A3,1],[N.C4,1],[N.E4,1],[N.C4,1],
+      [N.F3,1],[N.A3,1],[N.C4,1],[N.A3,1],
+      [N.G3,1],[N.B3,1],[N.D4,1],[N.G3,1]
+    ]
+  },
+  upgrader: {
+    bpm: 110,
+    wave: "sawtooth",
+    gain: 0.04,
+    notes: [
+      [N.E4,0.5],[N.G4,0.5],[N.B4,0.5],[N.E5,0.5],
+      [N.D4,0.5],[N.F4,0.5],[N.A4,0.5],[N.D5,0.5],
+      [N.C4,0.5],[N.E4,0.5],[N.G4,0.5],[N.C5,0.5],
+      [N.B3,0.5],[N.D4,0.5],[N.F4,0.5],[N.B4,0.5]
+    ]
+  },
+  victory: {
+    bpm: 130,
+    wave: "square",
+    gain: 0.08,
+    notes: [
+      [N.C5,0.3],[N.E5,0.3],[N.G5,0.3],[N.C6,0.6],
+      [N.G5,0.3],[N.C6,0.8]
+    ]
+  },
+  event_newyear: {
+    bpm: 100,
+    wave: "sine",
+    gain: 0.05,
+    notes: [
+      [N.C5,0.5],[N.C5,0.5],[N.C5,0.5],[N.G4,0.75],
+      [N.A4,0.25],[N.C5,0.5],[N.B4,0.5],[N.A4,0.5],[N.G4,0.5]
+    ]
+  },
+  event_halloween: {
+    bpm: 80,
+    wave: "sawtooth",
+    gain: 0.05,
+    notes: [
+      [N.A3,0.5],[N.C4,0.5],[N.E4,0.5],[N.A4,1],
+      [N.G3,0.5],[N.B3,0.5],[N.D4,0.5],[N.G4,1]
+    ]
+  },
+  event_pride: {
+    bpm: 120,
+    wave: "triangle",
+    gain: 0.06,
+    notes: [
+      [N.C5,0.4],[N.D5,0.4],[N.E5,0.4],[N.F5,0.4],[N.G5,0.8],
+      [N.G5,0.4],[N.F5,0.4],[N.E5,0.4],[N.D5,0.4],[N.C5,0.8]
+    ]
+  },
+  event_valentine: {
+    bpm: 85,
+    wave: "sine",
+    gain: 0.05,
+    notes: [
+      [N.E4,0.6],[N.G4,0.6],[N.B4,0.6],[N.E5,1.2],
+      [N.D4,0.6],[N.F4,0.6],[N.A4,0.6],[N.D5,1.2]
+    ]
+  },
+  event_autumn: {
+    bpm: 70,
+    wave: "triangle",
+    gain: 0.05,
+    notes: [
+      [N.D4,0.8],[N.F4,0.8],[N.A4,1.2],
+      [N.C4,0.8],[N.E4,0.8],[N.G4,1.2]
+    ]
+  },
+  event_spring: {
+    bpm: 95,
+    wave: "sine",
+    gain: 0.05,
+    notes: [
+      [N.G4,0.5],[N.B4,0.5],[N.D5,0.5],[N.G5,1],
+      [N.E4,0.5],[N.G4,0.5],[N.B4,0.5],[N.E5,1]
+    ]
+  }
+};
+
+function playTrack(id) {
+  if (!ctx || !enabled) return;
+  if (currentTrack === id) return;
+  stopTrackInternal();
+  var track = TRACKS[id];
+  if (!track) return;
+  currentTrack = id;
+  trackStep = 0;
+  var beat = 60 / track.bpm;
+  function tick() {
+    if (!currentTrack || currentTrack !== id) return;
+    var note = track.notes[trackStep % track.notes.length];
+    if (note && note[0]) {
+      var dur = (note[1] || 1) * beat;
+      playNote(note[0], dur * 0.85, track.wave, null, track.gain);
+    }
+    trackStep++;
+    trackTimer = setTimeout(tick, beat * 1000 * (note ? (note[1] || 1) : 1));
+  }
+  tick();
+}
+
+function stopTrackInternal() {
+  if (trackTimer) { clearTimeout(trackTimer); trackTimer = null; }
+  currentTrack = null;
+  trackStep = 0;
+}
+
+function getCurrentTrack() { return currentTrack; }
+function stopAll() { stopTrackInternal(); for (var i=0;i<timers.length;i++) clearTimeout(timers[i]); timers = []; }
   function setEnabled(v) { enabled = !!v; try { if (master) master.gain.value = enabled ? vol : 0; } catch (e) {} }
   function setVolume(v) { vol = Math.max(0, Math.min(1, v)); try { if (master) master.gain.value = enabled ? vol : 0; } catch (e) {} }
   function isEnabled() { return enabled; }
@@ -1658,7 +1802,7 @@ var AUDIO = (function(){
     achCommon: achCommon, achRare: achRare, achEpic: achEpic, achLegendary: achLegendary,
     dm: dm, online: online, anniversary: anniversary,
     questDone: questDone,
-    stopTrack: stopTrack, stopAll: stopAll
+    stopTrack: stopTrackInternal, stopAll: stopAll, playTrack: playTrack, getCurrentTrack: getCurrentTrack,
   };
 })();
 
@@ -1991,6 +2135,86 @@ var BOTS = [
   { nick:"Rainbow", emoji:"🌈", color:"#a3e635", role:"Оптимист", bio:"Радужно." },
   { nick:"Темми", emoji:"🐶", color:"#fcd34d", role:"Весёлая собачка", bio:"ВАУ!!!" }
 ];
+
+// ============================================================
+// ПАТЧ 2: БОТЫ — ДИАЛОГИ
+// ============================================================
+var BOT_DIALOGUES = {
+  vote: {
+    minor: ["Проголосовал 👍","Ок, за.","Норм вариант.","Поддерживаю.","Голос ушёл.","Согласен.","Хороший выбор.","+1"],
+    adult: ["Ну норм.","Пох, за.","Ок, чё.","За, хули.","Норм тема.","Погнали.","Го.","Заебись вариант."]
+  },
+  comment: {
+    minor: ["Согласен!","Ага.","Хорошо сказал.","Логично.","Поддерживаю.","Интересно.","Ок.","Правда."],
+    adult: ["База.","Согласен, бля.","Ну ты выдал.","Красава.","Хуйня, но ок.","Зачёт.","В точку.","Реально."]
+  },
+  win: {
+    minor: ["Поздравляю! 🎉","Ого, повезло!","Красава!","Вот это да!","Круто!","Молодец!","🎊"],
+    adult: ["Ни хуя себе!","Красава, бля!","Охуенно!","Затащил!","Вот это удача!","Пиздато!","🔥"]
+  },
+  lose: {
+    minor: ["Не повезло...","В следующий раз!","Бывает.","Не расстраивайся.","Всё норм."],
+    adult: ["Хуёво.","Ну ты лох.","Зато весело.","Бывает, чё.","Соболезную.","В след раз затащишь."]
+  },
+  achievement: {
+    minor: ["Поздравляю с достижением!","🎉 Круто!","Так держать!","Молодец!","Ого!"],
+    adult: ["Красава, бля!","Охуеть!","Поздравляю, чё.","Ну ты даёшь!","🎉"]
+  },
+  category_politics: {
+    minor: ["Политика — сложная тема.","Интересный вопрос.","Не буду спорить."],
+    adult: ["Политика — хуйня.","Опять эти.","Без комментариев.","Знаем мы этих."]
+  },
+  category_food: {
+    minor: ["Мням! 🍕","Вкусно!","Я бы съел.","Обожаю еду!"],
+    adult: ["Жрать охота.","Пицца — топ.","Голоден, бля.","Ням-ням."]
+  },
+  category_games: {
+    minor: ["Я в это играю!","Крутая игра!","Го катку?","🎮"],
+    adult: ["Го катку, бля.","Изи катка.","Нубы.","Затащим."]
+  },
+  category_sport: {
+    minor: ["Спорт — это круто!","⚽","Го на матч!"],
+    adult: ["Ну спорт, чё.","Здоровье, бля.","Качаемся."]
+  },
+  category_music: {
+    minor: ["Обожаю музыку!","🎵","Классный трек!"],
+    adult: ["Врубай, бля!","Бит качает.","🎵 Норм трек."]
+  },
+  category_tech: {
+    minor: ["Технологии — это будущее!","💻","Круто!"],
+    adult: ["Код — сила.","Технологии, чё.","💻"]
+  },
+  category_humor: {
+    minor: ["😂😂","Ржу!","Смешно!","Ахахах!"],
+    adult: ["Ахаха, бля!","😂 Ржунимагу.","Ор!","Смешно, чёрт."]
+  },
+  category_memes: {
+    minor: ["🗿","Мемчик!","Жиза!","Кринж 😂"],
+    adult: ["🗿 База.","Жиза, бля.","Кринж.","Мем топ."]
+  },
+  idle: {
+    minor: ["Тут кто-то есть?","Эй!","Скучно...","Давайте активнее!"],
+    adult: ["Ну чё там, бля?","Скукота.","Эй, народ!","Живые есть?"]
+  }
+};
+
+function getBotPhrase(kind, category) {
+  var age = AGE.isAdult();
+  var bucket = age ? "adult" : "minor";
+  var arr = null;
+  if (kind === "category" && category) {
+    var catKey = "category_" + category.id;
+    arr = BOT_DIALOGUES[catKey];
+    if (arr) arr = arr[bucket];
+  }
+  if (!arr) {
+    arr = BOT_DIALOGUES[kind];
+    if (arr) arr = arr[bucket];
+  }
+  if (!arr || !arr.length) arr = BOT_DIALOGUES.idle[bucket];
+  return rand(arr);
+}
+
 function findBotByNick(nick) {
   for (var i = 0; i < BOTS.length; i++) if (BOTS[i].nick === nick) return BOTS[i];
   return null;
@@ -2022,11 +2246,15 @@ var BOTS_ENGINE = (function(){
       if (saveFn) saveFn();
       if (renderPollFn) renderPollFn();
       if (renderStatsFn) renderStatsFn();
-      if (Math.random() < 0.6) {
-        var bot = rand(BOTS);
-        var texts = ["Ок.","Согласен.","Норм.","Ага.","Хм."];
-        pushComment(bot, rand(texts));
-      }
+if (Math.random() < 0.6) {
+  var bot = rand(BOTS);
+  var cat = null;
+  try { cat = detectCategory(stateRef.question); } catch (e) {}
+  var phrase = Math.random() < 0.5
+    ? getBotPhrase("category", cat)
+    : getBotPhrase("vote");
+  pushComment(bot, phrase);
+}
       scheduleTick();
     }, randInt(2500, 5000));
     timers.push(id);
@@ -2046,7 +2274,18 @@ var BOTS_ENGINE = (function(){
     timers = [];
     DIAG.hide();
   }
-  return { start: start, stop: stop, isActive: function(){ return active; } };
+  function react(kind, payload) {
+  if (!active || !stateRef) return;
+  var chance = kind === "win" ? 0.7 : (kind === "lose" ? 0.5 : 0.4);
+  if (Math.random() > chance) return;
+  var bot = rand(BOTS);
+  var phrase = getBotPhrase(kind);
+  pushComment(bot, phrase);
+  if (Math.random() < 0.15) {
+    try { DM.show(bot, phrase); } catch (e) {}
+  }
+}
+return { start: start, stop: stop, react: react, isActive: function(){ return active; } };
 })();
 
 function tryStartBots() {
@@ -2059,6 +2298,13 @@ function tryStartBots() {
     BOTS_ENGINE.start(window._artamonState, window._artamonSave,
       window._artamonRenderComments, window._artamonRenderPoll, window._artamonRenderStats);
   } catch (e) {}
+}
+
+// ============================================================
+// ПАТЧ 4.1: БОТЫ — вызов реакций
+// ============================================================
+function botsReact(kind, payload) {
+  try { BOTS_ENGINE.react(kind, payload); } catch (e) {}
 }
 
 // ============================================================
@@ -3473,6 +3719,7 @@ function initMain(mode) {
           renderPoll();
           renderStats();
           toast(I18N.t("toast.voted"));
+          botsReact("vote");
         });
       }
       box.appendChild(el);
@@ -3641,6 +3888,7 @@ function initMain(mode) {
       toast(I18N.t("toast.commentAdded"));
       ACH.unlock("first_comment");
       try { if (window.QUEST_HOOK) window.QUEST_HOOK("comment"); } catch (e) {}
+            botsReact("comment");
     });
   }
 
@@ -3750,10 +3998,14 @@ function initMain(mode) {
   renderAll();
   renderStats();
 
-  setTimeout(function(){
-    try { SAFE_STORE.set("artamon_mode_v1", currentMode); } catch (e) {}
-    tryStartBots();
-  }, 800);
+setTimeout(function(){
+  try { SAFE_STORE.set("artamon_mode_v1", currentMode); } catch (e) {}
+  tryStartBots();
+  if (currentMode === "bots") {
+    try { DM.greet(); } catch (e) {}
+    try { AUDIO.playTrack("main"); } catch (e) {}
+  }
+}, 800);
 
   setTimeout(function(){ UPDATE.autoShow(); }, 500);
 }
@@ -4105,6 +4357,14 @@ function _bindScreenButtons() {
 // ============================================================
 function boot() {
   console.log("[Artamon] Запуск 2.7");
+  document.addEventListener("click", function once() {
+    try { AUDIO.unlockAndInit(); } catch (e) {}
+    document.removeEventListener("click", once);
+  });
+  document.addEventListener("touchstart", function once() {
+    try { AUDIO.unlockAndInit(); } catch (e) {}
+    document.removeEventListener("touchstart", once);
+  });
   try { THEME.load(); } catch (e) {}
   try { PROFILE.load(); } catch (e) {}
   try { I18N.load(); } catch (e) {}
@@ -4511,10 +4771,15 @@ console.log("✅ Artamon 2.7 загружен полностью");
   // ============================================================
   // МУЗЫКА
   // ============================================================
-  function applyEventMusic(id) {
-    if (typeof AUDIO === "undefined") return;
-    console.log("[Event] Music: " + id);
+function applyEventMusic(id) {
+  if (typeof AUDIO === "undefined") return;
+  var trackId = id ? ("event_" + id) : "main";
+  if (typeof TRACKS !== "undefined" && TRACKS[trackId]) {
+    AUDIO.playTrack(trackId);
+  } else {
+    AUDIO.playTrack("main");
   }
+}
 
   function loadEvent() {
     fetch("https://artamon-api.artem123kv.workers.dev/api/event/current")
