@@ -4139,5 +4139,80 @@ console.log("✅ Artamon 2.7 загружен полностью");
   setTimeout(setupPromo, 3000);
 })();
 </script>
+
+<script>
+(function(){
+  function applyEvent(ev) {
+    if (!ev || !ev.id) {
+      document.body.classList.remove("event-active");
+      var old = document.getElementById("eventBanner");
+      if (old) { old.classList.remove("show"); setTimeout(function(){ old.style.display = "none"; }, 500); }
+      return;
+    }
+    var id = ev.id;
+    var emoji = ev.emoji || "🎉";
+    var title = ev.title || id;
+    var bonus = ev.bonus || 1;
+    var bonusText = bonus > 1 ? " · x" + bonus.toFixed(1) + " бонус" : "";
+    document.body.classList.add("event-active");
+    document.body.setAttribute("data-event", id);
+    var banner = document.getElementById("eventBanner");
+    if (!banner) {
+      banner = document.createElement("div");
+      banner.id = "eventBanner";
+      document.body.insertBefore(banner, document.body.firstChild);
+    }
+    banner.className = "event-" + id;
+    banner.textContent = emoji + " " + title + " · " + (ev.source === "manual" ? "спец-режим" : "сезон") + bonusText;
+    banner.style.display = "block";
+    setTimeout(function(){ banner.classList.add("show"); }, 100);
+    var themeColors = {
+      winter: { g1: "#dbeafe", g2: "#60a5fa", g3: "#1e40af" },
+      dark: { g1: "#e9d5ff", g2: "#a855f7", g3: "#4c1d95" },
+      spring: { g1: "#bbf7d0", g2: "#22c55e", g3: "#166534" },
+      flowers: { g1: "#fbcfe8", g2: "#ec4899", g3: "#831843" },
+      military: { g1: "#fed7aa", g2: "#ea580c", g3: "#7c2d12" },
+      tricolor: { g1: "#fecaca", g2: "#ef4444", g3: "#7f1d1d" },
+      love: { g1: "#fecdd3", g2: "#f43f5e", g3: "#881337" },
+      gold: { g1: "#f6e6a8", g2: "#d4af37", g3: "#8f6f1a" },
+      blue: { g1: "#dbeafe", g2: "#3b82f6", g3: "#1e40af" },
+      pink: { g1: "#fce7f3", g2: "#ec4899", g3: "#9d174d" },
+      autumn: { g1: "#fed7aa", g2: "#f59e0b", g3: "#78350f" },
+      rainbow: { g1: "#fca5a5", g2: "#a78bfa", g3: "#3b82f6" },
+      neon: { g1: "#e9d5ff", g2: "#a855f7", g3: "#6b21a8" },
+      retro: { g1: "#a7f3d0", g2: "#10b981", g3: "#065f46" },
+      space: { g1: "#bfdbfe", g2: "#3b82f6", g3: "#1e3a8a" },
+      fantasy: { g1: "#ddd6fe", g2: "#8b5cf6", g3: "#5b21b6" },
+      summer: { g1: "#fde68a", g2: "#f59e0b", g3: "#92400e" },
+      ice: { g1: "#e0f2fe", g2: "#38bdf8", g3: "#0369a1" },
+      joke: { g1: "#fef08a", g2: "#eab308", g3: "#854d0e" },
+      bright: { g1: "#fed7aa", g2: "#fb923c", g3: "#9a3412" },
+      horror: { g1: "#fca5a5", g2: "#dc2626", g3: "#7f1d1d" },
+      sakura: { g1: "#fbcfe8", g2: "#f472b6", g3: "#9d174d" },
+      shop: { g1: "#bbf7d0", g2: "#22c55e", g3: "#15803d" },
+      orient: { g1: "#fecaca", g2: "#dc2626", g3: "#7f1d1d" }
+    };
+    var theme = themeColors[ev.theme] || themeColors.gold;
+    document.documentElement.style.setProperty("--gold-1", theme.g1);
+    document.documentElement.style.setProperty("--gold-2", theme.g2);
+    document.documentElement.style.setProperty("--gold-3", theme.g3);
+    console.log("[Event] ✅ Активирован: " + id + " (" + title + ")");
+  }
+
+  function loadEvent() {
+    fetch("https://artamon-api.artem123kv.workers.dev/api/event/current")
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d && d.ok && d.event) applyEvent(d.event);
+        else applyEvent(null);
+      })
+      .catch(function(e){ console.log("[Event] Ошибка:", e.message); });
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", loadEvent);
+  else loadEvent();
+  setInterval(loadEvent, 5 * 60 * 1000);
+})();
+</script>
 </body>
 </html>
