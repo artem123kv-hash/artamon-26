@@ -753,6 +753,149 @@ footer b { color: var(--gold-3); font-weight: 800; }
 #eventBanner.event-wintertale { background: linear-gradient(90deg, #3b82f6, #dbeafe, #3b82f6); }
 
 body.event-active { padding-top: 38px; }
+/* ===== EVENT BACKGROUNDS ===== */
+.event-fx {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 1;
+  overflow: hidden;
+}
+.event-fx .fx-particle {
+  position: absolute;
+  pointer-events: none;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.fx-snow {
+  top: -30px; color: #fff; opacity: .9;
+  font-size: 1.2rem;
+  animation-name: fxFall;
+  text-shadow: 0 0 8px rgba(255,255,255,.8);
+}
+@keyframes fxFall {
+  0% { transform: translateY(-30px) translateX(0) rotate(0); opacity: 0; }
+  10% { opacity: .9; }
+  100% { transform: translateY(110vh) translateX(40px) rotate(360deg); opacity: .3; }
+}
+
+.fx-leaf {
+  top: -30px; color: #f59e0b;
+  font-size: 1.4rem;
+  animation-name: fxLeaf;
+  text-shadow: 0 0 6px rgba(245,158,11,.6);
+}
+@keyframes fxLeaf {
+  0% { transform: translateY(-30px) rotate(0); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(110vh) translateX(-60px) rotate(720deg); opacity: .4; }
+}
+
+.fx-heart {
+  top: -30px; color: #f43f5e;
+  font-size: 1.3rem;
+  animation-name: fxHeart;
+  text-shadow: 0 0 10px rgba(244,63,94,.7);
+}
+@keyframes fxHeart {
+  0% { transform: translateY(-30px) scale(.6); opacity: 0; }
+  15% { opacity: 1; transform: translateY(5vh) scale(1); }
+  100% { transform: translateY(110vh) scale(.8); opacity: .5; }
+}
+
+.fx-bat {
+  top: -30px;
+  animation-name: fxBat;
+  font-size: 1.6rem;
+  text-shadow: 0 0 12px rgba(168,85,247,.7);
+}
+@keyframes fxBat {
+  0% { transform: translate(-20vw, -20vh) rotate(0); opacity: 0; }
+  10% { opacity: 1; }
+  50% { transform: translate(120vw, 40vh) rotate(180deg); }
+  100% { transform: translate(-20vw, 110vh) rotate(360deg); opacity: .3; }
+}
+
+.fx-confetti {
+  top: -20px;
+  animation-name: fxConfetti;
+  border-radius: 2px;
+}
+@keyframes fxConfetti {
+  0% { transform: translateY(-20px) rotate(0); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(900deg); opacity: .3; }
+}
+
+.fx-rainbow-wave {
+  position: fixed; left: -10%; right: -10%; bottom: -20%;
+  height: 60vh; pointer-events: none; z-index: 1;
+  background: linear-gradient(90deg,
+    rgba(239,68,68,.3), rgba(245,158,11,.3), rgba(250,204,21,.3),
+    rgba(34,197,94,.3), rgba(59,130,246,.3), rgba(168,85,247,.3));
+  filter: blur(60px);
+  animation: rainbowWave 8s ease-in-out infinite alternate;
+}
+@keyframes rainbowWave {
+  0% { transform: translateY(0) scaleY(1); }
+  100% { transform: translateY(-15vh) scaleY(1.3); }
+}
+
+.rainbow-strip {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 4px; z-index: 9999;
+  background: linear-gradient(90deg,
+    #ef4444, #f59e0b, #22c55e, #3b82f6, #a855f7, #ef4444);
+  background-size: 200% 100%;
+  animation: rainbowSlide 4s linear infinite;
+}
+@keyframes rainbowSlide {
+  from { background-position: 0% 50%; }
+  to { background-position: 200% 50%; }
+}
+
+.fx-star {
+  width: 3px; height: 3px; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 8px #60a5fa;
+  animation-name: fxTwinkle;
+}
+@keyframes fxTwinkle {
+  0%, 100% { opacity: .3; transform: scale(.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.fx-sakura {
+  top: -30px; color: #fbcfe8;
+  font-size: 1.2rem;
+  animation-name: fxSakura;
+  text-shadow: 0 0 10px rgba(244,114,182,.7);
+}
+@keyframes fxSakura {
+  0% { transform: translateY(-30px) translateX(0) rotate(0); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(110vh) translateX(60px) rotate(720deg); opacity: .3; }
+}
+
+.fx-candy {
+  top: -30px;
+  animation-name: fxCandy;
+  font-size: 1.4rem;
+}
+@keyframes fxCandy {
+  0% { transform: translateY(-30px) rotate(0); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(-720deg); opacity: .3; }
+}
+
+.fx-egg {
+  top: -30px;
+  animation-name: fxEgg;
+  font-size: 1.4rem;
+}
+@keyframes fxEgg {
+  0% { transform: translateY(-30px) translateX(0) rotate(0); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translateY(110vh) translateX(-40px) rotate(360deg); opacity: .4; }
+}
 </style>
 </head>
 <body class="intro-lock" data-theme="gold" data-bg="aurora">
@@ -4197,6 +4340,180 @@ console.log("✅ Artamon 2.7 загружен полностью");
     document.documentElement.style.setProperty("--gold-2", theme.g2);
     document.documentElement.style.setProperty("--gold-3", theme.g3);
     console.log("[Event] ✅ Активирован: " + id + " (" + title + ")");
+    applyEventBackground(id);
+    applyEventBots(id);
+    applyEventMusic(id);
+  }
+
+  // ============================================================
+  // ФОН
+  // ============================================================
+  var _fxContainer = null;
+
+  function clearEventBackground() {
+    var old = document.querySelector(".event-fx");
+    if (old) old.remove();
+    var strip = document.querySelector(".rainbow-strip");
+    if (strip) strip.remove();
+  }
+
+  function applyEventBackground(id) {
+    clearEventBackground();
+    if (!id) return;
+
+    var container = document.createElement("div");
+    container.className = "event-fx";
+    document.body.appendChild(container);
+
+    if (id === "pride") {
+      var strip = document.createElement("div");
+      strip.className = "rainbow-strip";
+      document.body.appendChild(strip);
+      var wave = document.createElement("div");
+      wave.className = "fx-rainbow-wave";
+      container.appendChild(wave);
+      return;
+    }
+
+    var particleMap = {
+      newyear:      { cls: "fx-snow",     emojis: ["❄️","❄️","❄️","⛄"], count: 30 },
+      christmas:    { cls: "fx-snow",     emojis: ["❄️","⭐"], count: 25 },
+      halloween:    { cls: "fx-bat",      emojis: ["🦇","🦇","🎃"], count: 20 },
+      valentine:    { cls: "fx-heart",    emojis: ["❤️","💕","🌹"], count: 25 },
+      march8:       { cls: "fx-sakura",   emojis: ["🌷","🌹","🌺"], count: 25 },
+      autumn:       { cls: "fx-leaf",     emojis: ["🍁","🍂","🍃"], count: 25 },
+      spring:       { cls: "fx-sakura",   emojis: ["🌸","🌸","🌺"], count: 30 },
+      summer:       { cls: "fx-star",     emojis: ["☀️","🌊","🌴"], count: 20 },
+      space:        { cls: "fx-star",     emojis: ["⭐","✨","💫"], count: 40 },
+      knowledgeday: { cls: "fx-candy",    emojis: ["📚","📖","✏️"], count: 20 },
+      happyweek:    { cls: "fx-confetti", emojis: ["🎉","🎊","🥳"], count: 35 },
+      easter:       { cls: "fx-egg",      emojis: ["🥚","🐣","🐰"], count: 20 },
+      birthday:     { cls: "fx-confetti", emojis: ["🎂","🎉","🎈"], count: 40 },
+      wintertale:   { cls: "fx-snow",     emojis: ["❄️","⛄","🧊"], count: 30 },
+      fearnight:    { cls: "fx-bat",      emojis: ["🦇","💀","👻"], count: 25 },
+      fantasy:      { cls: "fx-star",     emojis: ["🐉","✨","🔮"], count: 25 },
+      retro:        { cls: "fx-confetti", emojis: ["👾","🎮","💾"], count: 25 },
+      gamers:       { cls: "fx-star",     emojis: ["🎮","🕹️","🎯"], count: 25 },
+      aprilfools:   { cls: "fx-confetti", emojis: ["🎈","😜","🤪"], count: 30 },
+      tricolor:     { cls: "fx-snow",     emojis: ["🇷🇺","⭐"], count: 20 },
+      russia:       { cls: "fx-snow",     emojis: ["🇷🇺","⭐"], count: 20 },
+      may9:         { cls: "fx-snow",     emojis: ["🎖","⭐","🌹"], count: 20 },
+      orient:       { cls: "fx-confetti", emojis: ["🐉","🏮","🎋"], count: 25 },
+      cybermonday:  { cls: "fx-confetti", emojis: ["💸","🛒","💰"], count: 25 },
+      fathersday:   { cls: "fx-star",     emojis: ["🧑","💙","🎁"], count: 15 },
+      mothersday:   { cls: "fx-heart",    emojis: ["👩","💗","🌷"], count: 20 }
+    };
+
+    var cfg = particleMap[id];
+    if (!cfg) return;
+
+    if (cfg.cls === "fx-star") {
+      for (var s = 0; s < cfg.count; s++) {
+        var star = document.createElement("div");
+        star.className = "event-fx fx-particle fx-star";
+        star.style.left = Math.random() * 100 + "%";
+        star.style.top = Math.random() * 100 + "%";
+        star.style.animationDuration = (1.5 + Math.random() * 3) + "s";
+        star.style.animationDelay = (Math.random() * 3) + "s";
+        container.appendChild(star);
+      }
+      return;
+    }
+
+    if (cfg.cls === "fx-confetti") {
+      var colors = ["#ef4444","#f59e0b","#22c55e","#3b82f6","#a855f7","#ec4899"];
+      for (var c = 0; c < cfg.count; c++) {
+        var conf = document.createElement("div");
+        conf.className = "event-fx fx-particle fx-confetti";
+        conf.style.background = colors[Math.floor(Math.random() * colors.length)];
+        conf.style.width = (6 + Math.random() * 6) + "px";
+        conf.style.height = (6 + Math.random() * 6) + "px";
+        conf.style.left = Math.random() * 100 + "%";
+        conf.style.animationDuration = (3 + Math.random() * 3) + "s";
+        conf.style.animationDelay = (Math.random() * 4) + "s";
+        container.appendChild(conf);
+      }
+      return;
+    }
+
+    var list = cfg.emojis || ["✨"];
+    for (var i = 0; i < cfg.count; i++) {
+      var el = document.createElement("div");
+      el.className = "event-fx fx-particle " + cfg.cls;
+      el.textContent = list[Math.floor(Math.random() * list.length)];
+      el.style.left = (Math.random() * 110 - 5) + "%";
+      el.style.fontSize = (0.9 + Math.random() * 0.9) + "rem";
+      el.style.animationDuration = (5 + Math.random() * 6) + "s";
+      el.style.animationDelay = (Math.random() * 8) + "s";
+      container.appendChild(el);
+    }
+  }
+
+  // ============================================================
+  // БОТЫ
+  // ============================================================
+  function applyEventBots(id) {
+    if (!id) return;
+    if (typeof BOTS === "undefined") return;
+    var eventBots = {
+      newyear: [
+        { nick: "Дед Мороз", emoji: "🎅", color: "#ef4444", role: "Волшебник", bio: "Приносит подарки!" },
+        { nick: "Снегурочка", emoji: "❄️", color: "#60a5fa", role: "Внучка", bio: "Любит снег." },
+        { nick: "Олень", emoji: "🦌", color: "#f59e0b", role: "Транспорт", bio: "Везёт сани." }
+      ],
+      halloween: [
+        { nick: "Тыква", emoji: "🎃", color: "#f97316", role: "Светильник", bio: "Светится в темноте." },
+        { nick: "Призрак", emoji: "👻", color: "#e5e7eb", role: "Дух", bio: "Бу!" },
+        { nick: "Вампир", emoji: "🧛", color: "#dc2626", role: "Ночной житель", bio: "Пьёт кровь." }
+      ],
+      pride: [
+        { nick: "Rainbow", emoji: "🌈", color: "#a855f7", role: "Радужный", bio: "Все цвета сразу." },
+        { nick: "Sparkle", emoji: "✨", color: "#f472b6", role: "Искра", bio: "Сияет." },
+        { nick: "PrideLion", emoji: "🦁", color: "#f59e0b", role: "Лев", bio: "Гордый." }
+      ],
+      valentine: [
+        { nick: "Cupid", emoji: "💘", color: "#f43f5e", role: "Амур", bio: "Стреляет в сердце." },
+        { nick: "Valentine", emoji: "❤️", color: "#ec4899", role: "Романтик", bio: "Любит всех." }
+      ],
+      autumn: [
+        { nick: "Осень", emoji: "🍂", color: "#f59e0b", role: "Сезон", bio: "Листопад." },
+        { nick: "Leaf", emoji: "🍁", color: "#dc2626", role: "Лист", bio: "Летит вниз." }
+      ],
+      spring: [
+        { nick: "Sakura", emoji: "🌸", color: "#f472b6", role: "Сакура", bio: "Цветёт." },
+        { nick: "Blossom", emoji: "🌷", color: "#ec4899", role: "Цветок", bio: "Пахнет." }
+      ],
+      easter: [
+        { nick: "Bunny", emoji: "🐰", color: "#fbcfe8", role: "Кролик", bio: "Прячет яйца." },
+        { nick: "Egg", emoji: "🥚", color: "#fde68a", role: "Яйцо", bio: "Сюрприз внутри." }
+      ],
+      space: [
+        { nick: "Cosmos", emoji: "🌌", color: "#60a5fa", role: "Вселенная", bio: "Бесконечен." },
+        { nick: "Star", emoji: "⭐", color: "#fcd34d", role: "Звезда", bio: "Светит." }
+      ],
+      happyweek: [
+        { nick: "Happy", emoji: "😄", color: "#fbbf24", role: "Радость", bio: "Всегда улыбается." },
+        { nick: "Joy", emoji: "🥳", color: "#a855f7", role: "Веселье", bio: "Празднует." }
+      ],
+      birthday: [
+        { nick: "Birthday", emoji: "🎂", color: "#f472b6", role: "Праздник", bio: "Именинник." },
+        { nick: "Cake", emoji: "🍰", color: "#fbbf24", role: "Тортик", bio: "Сладкий." }
+      ]
+    };
+    var bots = eventBots[id];
+    if (bots && bots.length) {
+      for (var i = 0; i < bots.length; i++) {
+        BOTS.push(bots[i]);
+      }
+    }
+  }
+
+  // ============================================================
+  // МУЗЫКА
+  // ============================================================
+  function applyEventMusic(id) {
+    if (typeof AUDIO === "undefined") return;
+    console.log("[Event] Music: " + id);
   }
 
   function loadEvent() {
