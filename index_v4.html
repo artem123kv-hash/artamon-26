@@ -2623,16 +2623,35 @@ function renderDaily() {
     $("dailyClaimBtn").textContent = canClaim ? ("🎁 Забрать Д" + rewards[idx].day) : "✅ Уже забрано";
   }
 }
+
 function claimDaily() {
   if (!DAILY.canClaim()) { try { AUDIO.error(); } catch (e) {} return; }
   var reward = DAILY.claim();
   if (!reward) return;
   try { AUDIO.achEpic(); } catch (e) {}
   haptic([50, 80, 50]);
-  toast("🎁 Получено: " + reward.icon + " +" + reward.label);
+
+  // ЭТАП 5 — ПАТЧ 5: множитель ивента
+  var eventMult = 1;
+  try {
+    var evJSON = SAFE_STORE.get("artamon_event_current");
+    if (evJSON) {
+      var ev = JSON.parse(evJSON);
+      if (ev && ev.bonus) eventMult = ev.bonus;
+    }
+  } catch (e) {}
+
+  var baseVal = reward.val;
+  var finalVal = Math.floor(baseVal * eventMult);
+  var extraText = eventMult > 1 ? (" (×" + eventMult.toFixed(1) + " 🎉)") : "";
+  toast("🎁 Получено: " + reward.icon + " +" + finalVal + extraText);
+
   if (reward.type === "coins") {
-    var bonus = COINS.wipActive() ? reward.val + 50 : reward.val;
-    COINS.add(bonus);
+    var wipBonus = COINS.wipActive() ? 50 : 0;
+    COINS.add(finalVal + wipBonus);
+    if (wipBonus) {
+      setTimeout(function() { toast("💎 +" + wipBonus + " 🪙 за WIP"); }, 900);
+    }
   }
   var streak = DAILY.getData().streak;
   try {
@@ -2643,6 +2662,7 @@ function claimDaily() {
   } catch (e) {}
   renderDaily();
 }
+
 function openDaily() { renderDaily(); $("dailyArtamon").classList.add("on"); try { AUDIO.click(); } catch (e) {} }
 function closeDaily() { $("dailyArtamon").classList.remove("on"); }
 
@@ -2652,7 +2672,7 @@ function closeDaily() { $("dailyArtamon").classList.remove("on"); }
 var QUESTS = (function(){
   var KEY = "artamon_quests_v1";
   var data = { list: [], day: "" };
-  var TEMPLATES = [
+   var TEMPLATES = [
     { id: "vote_3", icon: "🗳️", title: "Проголосуй 3 раза", target: 3, reward: 300 },
     { id: "comment_3", icon: "💬", title: "Напиши 3 комментария", target: 3, reward: 250 },
     { id: "create_1", icon: "📝", title: "Создай опрос", target: 1, reward: 200 },
@@ -2660,18 +2680,64 @@ var QUESTS = (function(){
     { id: "visit_1", icon: "🎯", title: "Заходи в игру", target: 1, reward: 100 }
   ];
 
-  function load() {
+  // ЭТАП 5 — ПАТЧ 6: ивентовые квесты
+  function getEventQuests() {
+    var ev = null;
+    try {
+      var evJSON = SAFE_STORE.get("artamon_event_current");
+      if (evJSON) ev = JSON.parse(evJSON);
+    } catch (e) {}
+    if (!ev || !ev.id) return [];
+
+    var bonus = ev.bonus || 1;
+    var emoji = ev.emoji || "🎉";
+    var baseList = [
+      { id: "event_login", icon: emoji, title: "Зайди в день " + ev.title, target: 1, reward: 200 },
+      { id: "event_comment", icon: "💬", title: "Праздничный коммент", target: 2, reward: 300 },
+      { id: "event_vote", icon: "🎊", title: "Проголосуй 5 раз в ивент", target: 5, reward: 400 }
+    ];
+    return baseList.map(function(q) {
+      return {
+        id: q.id,
+        icon: q.icon,
+        title: q.title,
+        target: q.target,
+        reward: Math.floor(q.reward * bonus),
+        progress: 0,
+        claimed: false,
+        isEvent: true
+      };
+    });
+  }
+ 
+function load() {
     try { var s = SAFE_STORE.get(KEY); if (s) { var p = JSON.parse(s); if (p && typeof p === "object") data = Object.assign(data, p); } } catch (e) {}
+
     if (data.day !== todayStr()) {
       data.day = todayStr();
       data.list = TEMPLATES.map(function(t){ return { id: t.id, icon: t.icon, title: t.title, target: t.target, reward: t.reward, progress: 0, claimed: false }; });
+      // ЭТАП 5 — ПАТЧ 6: добавляем ивентовые
+      var evq = getEventQuests();
+      if (evq.length) data.list = data.list.concat(evq);
       save();
     }
+
     if (!Array.isArray(data.list) || !data.list.length) {
       data.list = TEMPLATES.map(function(t){ return { id: t.id, icon: t.icon, title: t.title, target: t.target, reward: t.reward, progress: 0, claimed: false }; });
+      var evq2 = getEventQuests();
+      if (evq2.length) data.list = data.list.concat(evq2);
       save();
+    } else {
+      // Проверяем: если ивент включился а квестов нет — добавляем
+      var hasEventQuest = data.list.some(function(q){ return q.isEvent; });
+      var evq3 = getEventQuests();
+      if (evq3.length && !hasEventQuest) {
+        data.list = data.list.concat(evq3);
+        save();
+      }
     }
   }
+
   function save() { try { SAFE_STORE.set(KEY, JSON.stringify(data)); } catch (e) {} }
   function progress(id, inc) {
     load();
@@ -2738,11 +2804,16 @@ var QUESTS = (function(){
     if (c && !c._bound) { c._bound = true; c.addEventListener("click", close); }
     load();
   }
-  function QUEST_HOOK(action) {
+   function QUEST_HOOK(action) {
     var mapping = { vote: "vote_3", comment: "comment_3", create: "create_1", share: "share_1" };
     var questId = mapping[action];
     if (questId) progress(questId, 1);
+    // ЭТАП 5 — ПАТЧ 6: ивентовые квесты
+    if (action === "vote") progress("event_vote", 1);
+    if (action === "comment") progress("event_comment", 1);
+    if (action === "login") progress("event_login", 1);
   }
+ 
   return { open: open, close: close, init: init, render: render, QUEST_HOOK: QUEST_HOOK, progress: progress };
 })();
 window.QUEST_HOOK = QUESTS.QUEST_HOOK;
@@ -4001,6 +4072,7 @@ function initMain(mode) {
 setTimeout(function(){
   try { SAFE_STORE.set("artamon_mode_v1", currentMode); } catch (e) {}
   tryStartBots();
+  try { if (window.QUEST_HOOK) window.QUEST_HOOK("login"); } catch (e) {}
   if (currentMode === "bots") {
     try { DM.greet(); } catch (e) {}
     try { AUDIO.playTrack("main"); } catch (e) {}
@@ -4547,6 +4619,7 @@ console.log("✅ Artamon 2.7 загружен полностью");
 (function(){
   function applyEvent(ev) {
     if (!ev || !ev.id) {
+        try { SAFE_STORE.set("artamon_event_current", ""); } catch (e) {}
       document.body.classList.remove("event-active");
       var old = document.getElementById("eventBanner");
       if (old) { old.classList.remove("show"); setTimeout(function(){ old.style.display = "none"; }, 500); }
@@ -4556,6 +4629,7 @@ console.log("✅ Artamon 2.7 загружен полностью");
     var emoji = ev.emoji || "🎉";
     var title = ev.title || id;
     var bonus = ev.bonus || 1;
+    try { SAFE_STORE.set("artamon_event_current", JSON.stringify(ev)); } catch (e) {}
     var bonusText = bonus > 1 ? " · x" + bonus.toFixed(1) + " бонус" : "";
     document.body.classList.add("event-active");
     document.body.setAttribute("data-event", id);
