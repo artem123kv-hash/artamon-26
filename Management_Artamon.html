@@ -304,6 +304,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
     <button class="nav-item" data-tab="stats"><span class="nav-icon">📈</span><span>Статистика</span></button>
     <div class="nav-divider"></div>
     <button class="nav-item" data-tab="upgrader"><span class="nav-icon">🎰</span><span>Апгрейдер</span><span class="nav-badge" id="badgeUpgrader">0</span></button>
+    <button class="nav-item" data-tab="events"><span class="nav-icon">🎉</span><span>Ивенты</span><span class="nav-badge" id="badgeEvents">—</span></button>
     <div class="nav-divider"></div>
     <button class="nav-item" data-tab="settings"><span class="nav-icon">⚙️</span><span>Настройки</span></button>
     <button class="nav-item" data-tab="data"><span class="nav-icon">💾</span><span>Данные</span></button>
@@ -629,6 +630,39 @@ textarea.form-input { resize: vertical; min-height: 80px; }
   </div>
 </div>
 
+<!-- EVENTS -->
+<div class="tab-content" data-tab="events">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">🎉 Активный ивент</div>
+      <div class="section-actions">
+        <button class="btn ghost sm" id="reloadEvents">🔄</button>
+        <button class="btn danger sm" id="disableEventBtn">⏹ Выключить всё</button>
+      </div>
+    </div>
+    <div id="activeEventBox">
+      <div class="loading"><div class="spinner"></div>Загрузка...</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">📚 Каталог ивентов (26)</div>
+    </div>
+    <div class="search-bar">
+      <input type="text" class="search-input" id="eventSearch" placeholder="🔍 Поиск по названию...">
+      <select class="search-input" id="eventFilter" style="flex:0;min-width:140px;">
+        <option value="all">Все</option>
+        <option value="current">🟢 Активные сейчас</option>
+        <option value="manual">🔵 Включённые вручную</option>
+      </select>
+    </div>
+    <div id="eventCatalogGrid" class="event-grid">
+      <div class="loading"><div class="spinner"></div>Загрузка...</div>
+    </div>
+  </div>
+</div>
+
 <!-- SETTINGS -->
 <div class="tab-content" data-tab="settings">
   <div class="section">
@@ -834,6 +868,7 @@ function switchTab(tab) {
   else if (tab === "stats") loadTopLists();
   else if (tab === "settings") loadSettings();
   else if (tab === "upgrader") { loadUpgradeItems(); loadUpgradeStats(); loadUpgradeLogs(); }
+  else if (tab === "events") loadEvents();
 }
 window.switchTab = switchTab;
 
@@ -2171,6 +2206,142 @@ if (typeof renderTickets !== "function") {
 }
 
 console.log("✅ Admin v3.1 — часть 3/3 загружена");
+// ============================================================
+// EVENTS
+// ============================================================
+async function loadEvents() {
+  var activeBox = $("activeEventBox");
+  var grid = $("eventCatalogGrid");
+  if (activeBox) activeBox.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
+  if (grid) grid.innerHTML = '<div class="loading"><div class="spinner"></div>Загрузка...</div>';
+
+  try {
+    var r = await api("/api/admin/event/list");
+    if (!r.ok) throw new Error(r.error || "Ошибка загрузки");
+
+    var catalog = r.catalog || [];
+    var active = r.active || {};
+    var current = r.current || {};
+
+    if (activeBox) {
+      if (current && current.id) {
+        var sourceText = current.source === "manual" ? "🔵 Включён вручную" : "🟢 Автоматически по дате";
+        var untilText = "";
+        if (current.source === "manual" && active.until) {
+          untilText = '<br><span style="color:var(--warn);">⏰ До ' + fmtDate(active.until) + '</span>';
+        }
+        activeBox.innerHTML =
+          '<div class="active-event-display">' +
+            '<span class="big-emoji">' + (current.emoji || "🎉") + '</span>' +
+            '<div class="big-name">' + escapeHtml(current.title || "—") + '</div>' +
+            '<div class="big-info">' +
+              sourceText + '<br>' +
+              'Тема: <b>' + escapeHtml(current.theme || "—") + '</b> · ' +
+              'Бонус: <b>x' + (current.bonus || 1).toFixed(2) + '</b>' + untilText +
+            '</div>' +
+          '</div>';
+      } else {
+        activeBox.innerHTML =
+          '<div class="active-event-display none">' +
+            '<span class="big-emoji">⬛</span>' +
+            '<div class="big-name">Нет активного ивента</div>' +
+            '<div class="big-info">Стандартный режим</div>' +
+          '</div>';
+      }
+    }
+
+    var search = ($("eventSearch") ? $("eventSearch").value : "").toLowerCase().trim();
+    var filter = $("eventFilter") ? $("eventFilter").value : "all";
+
+    var list = catalog.slice();
+    if (search) list = list.filter(function(ev) { return (ev.title || "").toLowerCase().indexOf(search) !== -1 || (ev.id || "").indexOf(search) !== -1; });
+    if (filter === "current") list = list.filter(function(ev) { return current && current.id === ev.id; });
+    else if (filter === "manual") list = list.filter(function(ev) { return active && active.id === ev.id; });
+
+    if (grid) {
+      if (!list.length) {
+        grid.innerHTML = '<div class="empty" style="grid-column:1/-1;">📭 Ивенты не найдены</div>';
+      } else {
+        grid.innerHTML = "";
+        list.forEach(function(ev) {
+          var isActiveNow = current && current.id === ev.id && current.source === "auto";
+          var isManual = active && active.id === ev.id;
+          var cardClass = "event-card theme-" + (ev.theme || "gold");
+          if (isManual) cardClass += " active-manual";
+          else if (isActiveNow) cardClass += " active-now";
+
+          var statusHtml = "";
+          if (isManual) statusHtml = '<div class="event-status status-manual">🔵 Включён</div>';
+          else if (isActiveNow) statusHtml = '<div class="event-status status-now">🟢 Активен</div>';
+          else statusHtml = '<div class="event-status status-off">⚪ Выкл</div>';
+
+          var btnText = isManual ? "⏹ Выключить" : "▶ Включить";
+          var btnClass = isManual ? "event-toggle-btn disable" : "event-toggle-btn";
+
+          var card = document.createElement("div");
+          card.className = cardClass;
+          card.innerHTML =
+            '<span class="event-emoji">' + (ev.emoji || "🎉") + '</span>' +
+            '<div class="event-name">' + escapeHtml(ev.title) + '</div>' +
+            '<div class="event-dates">' + ev.start + ' → ' + ev.end + '</div>' +
+            '<div class="event-bonus">x' + (ev.bonus || 1).toFixed(2) + ' бонус</div>' +
+            statusHtml +
+            '<button class="' + btnClass + '" data-event="' + ev.id + '">' + btnText + '</button>';
+          grid.appendChild(card);
+        });
+
+        grid.querySelectorAll("[data-event]").forEach(function(btn) {
+          btn.addEventListener("click", async function() {
+            var evId = btn.getAttribute("data-event");
+            var isCurrentlyActive = active && active.id === evId;
+            try {
+              if (isCurrentlyActive) {
+                await api("/api/admin/event/disable", {});
+                toast("⏹ Ивент выключен", "success");
+              } else {
+                await api("/api/admin/event/enable", { id: evId, until: 0 });
+                toast("✅ Ивент включён: " + evId, "success");
+              }
+              loadEvents();
+              loadStats();
+            } catch (e) { toast("❌ " + e.message, "error"); }
+          });
+        });
+      }
+    }
+
+    var badge = $("badgeEvents");
+    if (badge) {
+      if (current && current.id) {
+        badge.textContent = current.emoji || "🎉";
+        badge.style.background = "rgba(74,222,128,.2)";
+        badge.style.color = "var(--success)";
+      } else {
+        badge.textContent = "—";
+        badge.style.background = "";
+        badge.style.color = "";
+      }
+    }
+
+  } catch (e) {
+    if (activeBox) activeBox.innerHTML = '<div class="empty">❌ ' + escapeHtml(e.message) + '</div>';
+    if (grid) grid.innerHTML = '<div class="empty" style="grid-column:1/-1;">❌ ' + escapeHtml(e.message) + '</div>';
+  }
+}
+window.loadEvents = loadEvents;
+
+if ($("reloadEvents")) $("reloadEvents").addEventListener("click", loadEvents);
+if ($("disableEventBtn")) $("disableEventBtn").addEventListener("click", async function() {
+  if (!confirm("Выключить все ивенты? Включится автоопределение по дате.")) return;
+  try {
+    await api("/api/admin/event/disable", {});
+    toast("⏹ Все ивенты выключены", "success");
+    loadEvents();
+    loadStats();
+  } catch (e) { toast("❌ " + e.message, "error"); }
+});
+if ($("eventSearch")) $("eventSearch").addEventListener("input", loadEvents);
+if ($("eventFilter")) $("eventFilter").addEventListener("change", loadEvents);
 </script>
 </body>
 </html>
