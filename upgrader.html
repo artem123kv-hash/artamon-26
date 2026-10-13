@@ -153,6 +153,14 @@ input, select { font-family: inherit; font-size: 16px; }
 }
 .slot-remove:hover { background: var(--err); color: white; transform: scale(1.1); }
 
+/* ============================================================
+   КРУГ + СТРЕЛКА (FIX)
+   Стрелка растянута на весь круг, transform-origin = центр.
+   rotate(0deg)   -> стрелка смотрит вверх (12 часов)
+   rotate(90deg)  -> вправо (3 часа)
+   rotate(180deg) -> вниз (6 часов)
+   SVG-круг повёрнут на -90°, поэтому 0° сектора = тоже 12 часов.
+   ============================================================ */
 .circle-wrap {
   position: relative; width: 240px; height: 240px; margin: 0 auto;
   filter: drop-shadow(0 0 30px rgba(212,175,55,.2));
@@ -165,6 +173,7 @@ input, select { font-family: inherit; font-size: 16px; }
   filter: drop-shadow(0 0 12px var(--ok)); }
 .circle-tick { stroke: rgba(255,255,255,.12); stroke-width: 2; }
 .circle-tick.major { stroke: rgba(212,175,55,.4); stroke-width: 3; }
+
 .circle-center {
   position: absolute; inset: 0; display: flex; flex-direction: column;
   align-items: center; justify-content: center; text-align: center; pointer-events: none;
@@ -181,22 +190,28 @@ input, select { font-family: inherit; font-size: 16px; }
   text-transform: uppercase; font-weight: 800; margin-top: 6px; }
 .circle-payout { font-size: .82rem; color: var(--gold-bright); font-weight: 800;
   margin-top: 4px; font-family: ui-monospace, monospace; }
-/* Стрелка: центр вращения — центр круга (по вертикали выше на радиус). */
+
+/* Стрелка: слой на весь круг, вращение вокруг центра круга */
 .circle-pointer {
   position: absolute;
-  bottom: -12px;
-  left: 50%;
-  font-size: 1.8rem;
-  filter: drop-shadow(0 0 12px var(--gold));
-  z-index: 5;
-  pointer-events: none;
+  inset: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: flex-start;   /* стрелка у верхнего края */
+  justify-content: center;
+  font-size: 1.6rem;
+  line-height: 1;
   color: var(--gold);
-  transform-origin: 50% -108px;
-  /* transform задаётся из JS */
+  filter: drop-shadow(0 0 12px var(--gold));
+  pointer-events: none;
+  z-index: 5;
+  transform-origin: 50% 50%;
   will-change: transform;
+  padding-top: 2px;
+  transform: rotate(0deg);
 }
 .circle-pointer.spinning { transition: transform 4.5s cubic-bezier(.15, .85, .25, 1); }
-.circle-pointer.win { color: var(--ok); }
+.circle-pointer.win  { color: var(--ok); }
 .circle-pointer.lose { color: var(--err); }
 
 .mult-section {
@@ -516,7 +531,7 @@ input, select { font-family: inherit; font-size: 16px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
 /* ============================================================
-   ЭТАП 5 — ПАТЧ 2: ИВЕНТОВЫЕ СТИЛИ
+   ИВЕНТОВЫЕ СТИЛИ
    ============================================================ */
 .upg-event-banner {
   position: fixed; top: 0; left: 0; right: 0; z-index: 9998;
@@ -877,9 +892,14 @@ function getNick() {
 // ============================================================
 // ГЕОМЕТРИЯ КРУГА
 // ------------------------------------------------------------
-// SVG круга повёрнут на -90°, т.е. точка старта arc (0°) — сверху.
-// Стрелка (▲) сидит снизу, transform-origin = центр круга,
-// 0° = смотрит вверх. Значит угол сектора = угол поворота стрелки.
+// Стрелка растянута на весь .circle-wrap, transform-origin = центр.
+// rotate(0)   -> ▲ смотрит вверх (12 часов) -> сектор 0°.
+// rotate(90)  -> вправо (3 часа) -> сектор 25%.
+// rotate(180) -> вниз (6 часов) -> сектор 50%.
+// rotate(270) -> влево (9 часов) -> сектор 75%.
+//
+// SVG-круг повёрнут rotate(-90deg), значит заливка (stroke-dasharray)
+// тоже начинается сверху и идёт по часовой. Совпадает со стрелкой.
 // ============================================================
 function angleForResult(isWin, chancePct) {
   var winSector = (chancePct / 100) * 360;
@@ -887,11 +907,13 @@ function angleForResult(isWin, chancePct) {
   if (winSector >= 360) winSector = 359.999;
 
   if (isWin) {
-    var pad = Math.min(winSector * 0.08, 6);
+    // Внутри [0 .. winSector], с отступом от краёв
+    var pad = Math.min(winSector * 0.10, 8);
     return pad + Math.random() * Math.max(winSector - 2 * pad, 0.001);
   } else {
+    // Внутри [winSector .. 360]
     var rest = 360 - winSector;
-    var pad2 = Math.min(rest * 0.05, 6);
+    var pad2 = Math.min(rest * 0.05, 8);
     return winSector + pad2 + Math.random() * Math.max(rest - 2 * pad2, 0.001);
   }
 }
@@ -921,7 +943,7 @@ function apiGet(path) {
 }
 
 // ============================================================
-// UI — РЕНДЕРЫ
+// UI
 // ============================================================
 var UI = {
 
@@ -1514,7 +1536,6 @@ var UI = {
     }
   },
 
-  // ---------- Продажа: защита от параллельных кликов ----------
   sellItem: function(id) {
     var it = State.findItem(id);
     if (!it || (State.inventory[id] || 0) <= 0) return;
@@ -1526,7 +1547,6 @@ var UI = {
 
     UI._selling[id] = true;
 
-    // Оптимистичное уменьшение, чтобы UI не дал кликнуть дважды
     var snapshot = State.inventory[id];
     State.inventory[id] = snapshot - 1;
     if (State.inventory[id] <= 0) delete State.inventory[id];
@@ -1537,7 +1557,6 @@ var UI = {
     apiCall("/api/upgrade-sell", { nick: State.user.nick, itemId: id }).then(function(d) {
       delete UI._selling[id];
       if (!d.ok) {
-        // Откат
         State.inventory[id] = snapshot;
         UI.renderInvBadge();
         UI.renderInventory();
@@ -1581,7 +1600,6 @@ var UI = {
       return;
     }
 
-    // Пробуем batch-эндпоинт
     var payload = {
       nick: State.user.nick,
       items: entries.map(function(e) { return { id: e[0], count: e[1] }; })
@@ -1600,7 +1618,6 @@ var UI = {
         return;
       }
 
-      // Фолбэк: последовательно, с защитой
       var queue = [];
       entries.forEach(function(e) {
         for (var i = 0; i < e[1]; i++) queue.push(e[0]);
@@ -1656,7 +1673,6 @@ var UI = {
     });
   },
 
-  // ---------- Результат ----------
   showResult: function(type, from, to) {
     var card = $("resultCard");
     var emoji = $("resultEmoji");
@@ -1706,13 +1722,11 @@ var UI = {
     }
   },
 
-  // Служебные флаги
   _selling: {},
   _sellingAll: false,
   _buying: false
 };
 
-// ---------- Поиск предмета ----------
 State.findItem = function(id) {
   for (var i = 0; i < this.items.length; i++) {
     if (this.items[i].id === id) return this.items[i];
@@ -1721,7 +1735,7 @@ State.findItem = function(id) {
 };
 
 // ============================================================
-// ЛОГИКА АПГРЕЙДА (FIXED)
+// ЛОГИКА АПГРЕЙДА
 // ============================================================
 var _upgradeLock = false;
 
@@ -1749,11 +1763,10 @@ function doUpgrade() {
   var multiplier = State.multiplier;
   var chancePct = Math.min((100 / multiplier) * 0.95, 95);
 
-  // ---- Честный локальный бросок (визуальный) ----
+  // Локальный бросок
   var localRoll = Math.random() * 100;
   var isWinVisual = localRoll < chancePct;
 
-  // ---- Запрос на сервер ----
   var spinPromise = apiCall("/api/upgrade-spin", {
     nick: State.user.nick,
     betItemId: betItem.id,
@@ -1761,23 +1774,22 @@ function doUpgrade() {
     multiplier: multiplier
   });
 
-  // ---- Анимация стрелки ----
+  // Анимация: сброс и запуск
   var pointer = $("circlePointer");
   pointer.classList.remove("win", "lose", "spinning");
   pointer.style.transition = "none";
   pointer.style.transform = "rotate(0deg)";
-  void pointer.offsetWidth; // reflow
+  void pointer.offsetWidth;
 
   var targetAngle = angleForResult(isWinVisual, chancePct);
   var totalRotation = 360 * 5 + targetAngle;
 
   setTimeout(function() {
     pointer.classList.add("spinning");
-    pointer.style.transition = ""; // вернуть CSS-transition
+    pointer.style.transition = "";
     pointer.style.transform = "rotate(" + totalRotation + "deg)";
   }, 30);
 
-  // ---- Ждём результат сервера ----
   spinPromise.then(function(result) {
     setTimeout(function() {
       State.spinning = false;
@@ -1792,10 +1804,9 @@ function doUpgrade() {
 
       var isWin = !!result.win;
 
-      // Если сервер сказал иначе — доворачиваем стрелку
+      // Если сервер сказал иначе — доворачиваем стрелку в правильную зону
       if (isWin !== isWinVisual) {
         var correctAngle = angleForResult(isWin, chancePct);
-        // Текущий угол — totalRotation. Доворачиваем с той же базой.
         var correctRotation = totalRotation + (correctAngle - targetAngle);
         pointer.style.transition = "transform .4s ease";
         pointer.style.transform = "rotate(" + correctRotation + "deg)";
@@ -1807,7 +1818,6 @@ function doUpgrade() {
       if (result.inventory) State.inventory = result.inventory;
       if (typeof result.coins === "number") State.balance = result.coins;
 
-      // Бонус ивента
       if (isWin && State.eventBonus > 1) {
         var bonusCoins = Math.floor(targetItem.price * (State.eventBonus - 1));
         State.balance += bonusCoins;
@@ -1827,7 +1837,6 @@ function doUpgrade() {
 
       pointer.classList.add(isWin ? "win" : "lose");
 
-      // История
       State.history.unshift({
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
         ts: Date.now(),
@@ -2008,7 +2017,6 @@ function init() {
     }
   }
 
-  // Навигация
   var navBtns = document.querySelectorAll(".nav-btn");
   for (var i = 0; i < navBtns.length; i++) {
     (function(btn) {
@@ -2019,7 +2027,6 @@ function init() {
     })(navBtns[i]);
   }
 
-  // Множители
   var multBtns = document.querySelectorAll(".mult-btn");
   for (var j = 0; j < multBtns.length; j++) {
     (function(btn) {
@@ -2032,7 +2039,6 @@ function init() {
     })(multBtns[j]);
   }
 
-  // Слайдер
   var slider = $("multSlider");
   if (slider) {
     slider.addEventListener("input", function() {
@@ -2045,15 +2051,12 @@ function init() {
     });
   }
 
-  // Кнопка крутить
   var spinBtn = $("spinBtn");
   if (spinBtn) spinBtn.addEventListener("click", doUpgrade);
 
-  // Фильтр магазина
   var shopFilter = $("shopFilter");
   if (shopFilter) shopFilter.addEventListener("change", UI.renderShop);
 
-  // Модалка
   var modal = $("modal");
   if (modal) {
     modal.addEventListener("click", function(e) {
@@ -2061,7 +2064,6 @@ function init() {
     });
   }
 
-  // Результат
   var resultOverlay = $("resultOverlay");
   if (resultOverlay) {
     resultOverlay.addEventListener("click", function(e) {
@@ -2069,13 +2071,11 @@ function init() {
     });
   }
 
-  // Аватар
   var avatar = $("userAvatar");
   if (avatar) {
     avatar.addEventListener("click", function() { UI.switchTab("profile"); });
   }
 
-  // Баланс
   var balanceBox = $("balanceBox");
   if (balanceBox) {
     balanceBox.addEventListener("click", function() {
@@ -2091,7 +2091,7 @@ function init() {
     });
   }
 
-  // ---- Музыка ----
+  // Музыка
   (function initUpgraderMusic() {
     try {
       var actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -2123,7 +2123,6 @@ function init() {
     } catch (e) {}
   })();
 
-  // Загрузка данных
   loadEvent().then(function() {
     return loadItems();
   }).then(function() {
@@ -2148,7 +2147,6 @@ function init() {
 
     UI.renderAll();
 
-    // Пинг
     var t0 = Date.now();
     fetch(API_URL + "/api/tech-status", { cache: "no-store" })
       .then(function() {
@@ -2168,15 +2166,9 @@ function init() {
   });
 }
 
-// ============================================================
-// ЭКСПОРТ
-// ============================================================
 window.UI = UI;
 window.State = State;
 
-// ============================================================
-// СТАРТ
-// ============================================================
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", init);
 } else {
@@ -2238,7 +2230,7 @@ function applyEventTheme(ev) {
   }
 }
 
-console.log("%c🎰 Artamon Upgrader v5.1 (fixed)", "color:#d4af37;font-size:20px;font-weight:900;");
+console.log("%c🎰 Artamon Upgrader v5.2 (arrow fixed)", "color:#d4af37;font-size:20px;font-weight:900;");
 </script>
 
 </body>
