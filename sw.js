@@ -1,18 +1,14 @@
 /* ============================================================
-   ARTAMON — Service Worker (PWA) v2.7
+   ARTAMON — Service Worker (PWA)
    ============================================================ */
 
-const CACHE_NAME = "artamon-v2.7.0-v2";
-const CACHE_FILES = [6
+const CACHE_NAME = "artamon-v2.6-v2";
+const CACHE_FILES = [
   "./",
   "./index.html",
-  "./index_v4.html",
   "./manifest.json",
   "./icon-192.png",
-  "./icon-512.png",
-  "./Wiki_Artamon.html",
-  "./Support_Artamon.html",
-  "./test.html"
+  "./icon-512.png"
 ];
 
 /* Установка — кешируем основные файлы */
@@ -21,10 +17,10 @@ self.addEventListener("install", function(event){
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache){
       return Promise.all(
-        CACHE_FILES.map(function(url){
-          return cache.add(url).catch(function(){});
-        })
-      );
+  CACHE_FILES.map(function(url){
+    return cache.add(url).catch(function(){});
+  })
+);
     })
   );
 });
