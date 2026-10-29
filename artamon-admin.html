@@ -116,6 +116,7 @@
       <button type="button" data-tab="tourn">Турниры</button>
       <button type="button" data-tab="users">Игроки</button>
       <button type="button" data-tab="tops">Топы</button>
+      <button type="button" data-tab="bans">Баны</button>
       <button type="button" data-tab="news">Объявление</button>
     </div>
 
@@ -191,7 +192,7 @@
         <p class="muted">Последние зарегистрированные</p>
         <div style="overflow-x:auto;margin-top:12px">
           <table>
-            <thead><tr><th>Ник</th><th>Doodle</th><th>Runner</th><th>Tetris</th><th>Rush</th><th>Fight</th><th>Создан</th></tr></thead>
+            <thead><tr><th>Ник</th><th>Doodle</th><th>Runner</th><th>Tetris</th><th>Rush</th><th>Fight</th><th>Статус</th><th></th></tr></thead>
             <tbody id="usersBody"><tr><td colspan="7">—</td></tr></tbody>
           </table>
         </div>
@@ -213,6 +214,34 @@
             <thead><tr><th>#</th><th>Игрок</th><th>Счёт</th></tr></thead>
             <tbody id="topsBody"><tr><td colspan="3">—</td></tr></tbody>
           </table>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="section" id="tab-bans">
+      <div class="split">
+        <div class="panel">
+          <div class="card-title">⛔ Забанить игрока</div>
+          <label>Ник</label>
+          <input id="banUser" placeholder="username" />
+          <label>Причина</label>
+          <input id="banReason" placeholder="читерство / токсик / ..." value="нарушение правил" />
+          <div class="row">
+            <button class="btn danger" id="btnBan">Забанить</button>
+          </div>
+          <div class="status" id="banStatus"></div>
+          <p class="muted" style="margin-top:12px;line-height:1.45">Забаненный не может сдавать рекорды и участвовать в турнирах. Вход покажет статус бана.</p>
+        </div>
+        <div class="panel">
+          <div class="card-title">Список банов</div>
+          <div class="row"><button class="btn" id="btnRefreshBans">↻ Обновить</button></div>
+          <div style="overflow-x:auto;margin-top:10px">
+            <table>
+              <thead><tr><th>Ник</th><th>Причина</th><th>Когда</th><th></th></tr></thead>
+              <tbody id="bansBody"><tr><td colspan="4">—</td></tr></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
@@ -373,13 +402,34 @@
     if(!rows.length){ $("usersBody").innerHTML = '<tr><td colspan="7">Нет игроков</td></tr>'; return; }
     $("usersBody").innerHTML = rows.map(u=>{
       const b = u.best||{};
+      const st = u.banned ? '<span class="pill ended">бан</span>' : '<span class="pill live">ok</span>';
       return `<tr>
         <td><b>${esc(u.username)}</b></td>
         <td>${b.doodle||0}</td><td>${b.runner||0}</td><td>${b.tetris||0}</td>
         <td>${b.bosses||0}</td><td>${b.bossfight||0}</td>
-        <td class="muted">${fmtDate(u.created)}</td>
+        <td>${st}</td>
+        <td>${u.banned
+          ? `<button class="btn ghost" data-unban="${esc(u.username)}">разбан</button>`
+          : `<button class="btn danger" data-ban="${esc(u.username)}">бан</button>`}</td>
       </tr>`;
     }).join("");
+    $("usersBody").querySelectorAll("[data-ban]").forEach(btn=>{
+      btn.onclick = async ()=>{
+        const name = btn.getAttribute("data-ban");
+        const reason = prompt("Причина бана для "+name, "нарушение правил") || "нарушение правил";
+        const data = await api("/api/admin/ban", { method:"POST", body:{ username:name, reason } });
+        alert(data.ok ? "Забанен" : (data.error||"ошибка"));
+        await refreshUsers(); await refreshBans();
+      };
+    });
+    $("usersBody").querySelectorAll("[data-unban]").forEach(btn=>{
+      btn.onclick = async ()=>{
+        const name = btn.getAttribute("data-unban");
+        const data = await api("/api/admin/unban", { method:"POST", body:{ username:name } });
+        alert(data.ok ? "Разбанен" : (data.error||"ошибка"));
+        await refreshUsers(); await refreshBans();
+      };
+    });
   }
 
   let topMode = "doodle";
@@ -405,8 +455,40 @@
     return String(s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
   }
 
+  
+  async function refreshBans(){
+    const data = await api("/api/admin/bans");
+    if(!data.ok) return;
+    const rows = data.bans || [];
+    if(!rows.length){ $("bansBody").innerHTML = '<tr><td colspan="4">Список пуст</td></tr>'; return; }
+    $("bansBody").innerHTML = rows.map(b=>`<tr>
+      <td><b>${esc(b.n||b.u)}</b></td>
+      <td>${esc(b.reason||"—")}</td>
+      <td class="muted">${fmtDate(b.at)}</td>
+      <td><button class="btn ghost" data-unban2="${esc(b.n||b.u)}">разбан</button></td>
+    </tr>`).join("");
+    $("bansBody").querySelectorAll("[data-unban2]").forEach(btn=>{
+      btn.onclick = async ()=>{
+        const name = btn.getAttribute("data-unban2");
+        const data = await api("/api/admin/unban", { method:"POST", body:{ username:name } });
+        alert(data.ok ? "Разбанен" : (data.error||"ошибка"));
+        await refreshBans(); await refreshUsers();
+      };
+    });
+  }
+  $("btnBan").onclick = async ()=>{
+    const username = $("banUser").value.trim();
+    const reason = $("banReason").value.trim() || "нарушение правил";
+    $("banStatus").textContent = "…";
+    const data = await api("/api/admin/ban", { method:"POST", body:{ username, reason } });
+    $("banStatus").className = "status " + (data.ok?"ok":"err");
+    $("banStatus").textContent = data.ok ? ("Забанен: "+data.banned) : (data.error||"ошибка");
+    if(data.ok){ $("banUser").value=""; await refreshBans(); await refreshUsers(); }
+  };
+  $("btnRefreshBans").onclick = ()=>refreshBans();
+
   async function refreshAll(){
-    await Promise.all([refreshDash(), refreshTourn(), refreshUsers(), refreshTops()]);
+    await Promise.all([refreshDash(), refreshTourn(), refreshUsers(), refreshTops(), refreshBans()]);
   }
 
   $("btnRefresh").onclick = ()=>refreshAll();
