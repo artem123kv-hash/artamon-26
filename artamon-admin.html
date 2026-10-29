@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Artamon · Owner Panel</title>
+<style>
+  :root{
+    --bg:#07070a; --card:#12121a; --card2:#1a1a26;
+    --gold:#d4af37; --gold2:#f6e6a8; --txt:#e8e8f0; --muted:#8b8ba0;
+    --line:rgba(212,175,55,.22); --ok:#4ade80; --bad:#f87171; --acc:#60a5fa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:radial-gradient(1200px 600px at 20% -10%,rgba(212,175,55,.12),transparent),
+               radial-gradient(900px 500px at 100% 0%,rgba(96,165,250,.08),transparent),
+               var(--bg);
+    color:var(--txt); min-height:100vh; min-height:100dvh;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px;}
+  header{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;
+    margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--line);
+  }
+  .logo{font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:1.1rem;
+    background:linear-gradient(90deg,var(--gold2),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .logo span{opacity:.6;font-weight:700;letter-spacing:.2em;font-size:.7rem;color:var(--muted);
+    -webkit-background-clip:initial;background-clip:initial;display:block;margin-top:2px;}
+  .login-box,.panel{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);
+    border-radius:18px;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.45);}
+  .login-box{max-width:420px;margin:80px auto;}
+  h1{font-size:1.25rem;margin-bottom:6px;}
+  .sub{color:var(--muted);font-size:.85rem;margin-bottom:16px;}
+  label{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:10px 0 6px;}
+  input,select,textarea{
+    width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);
+    background:rgba(0,0,0,.35);color:var(--txt);font:inherit;outline:none;
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+  textarea{min-height:80px;resize:vertical;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:12px 18px;border-radius:12px;border:1px solid var(--line);
+    background:rgba(212,175,55,.12);color:var(--gold2);font-weight:800;cursor:pointer;font:inherit;
+  }
+  .btn.primary{background:linear-gradient(180deg,rgba(212,175,55,.45),rgba(212,175,55,.15));border-color:var(--gold);color:#fff;}
+  .btn.danger{background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.4);color:#fca5a5;}
+  .btn.ghost{background:transparent;}
+  .btn:disabled{opacity:.45;cursor:default;}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:16px 0;}
+  .stat{
+    background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+  }
+  .stat b{display:block;font-size:1.4rem;color:var(--gold2);margin-top:4px;}
+  .stat span{font-size:.72rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+  .tabs button{
+    padding:10px 14px;border-radius:999px;border:1px solid var(--line);
+    background:rgba(0,0,0,.3);color:var(--muted);font-weight:800;font-size:.78rem;cursor:pointer;
+  }
+  .tabs button.on{border-color:var(--gold);color:var(--gold2);background:rgba(212,175,55,.12);}
+  .section{display:none;}
+  .section.on{display:block;}
+  table{width:100%;border-collapse:collapse;font-size:.85rem;}
+  th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;}
+  th{color:var(--muted);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;}
+  .status{font-size:.8rem;margin-top:10px;min-height:1.2em;}
+  .status.ok{color:var(--ok);} .status.err{color:var(--bad);}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:800;
+    border:1px solid var(--line);color:var(--muted);}
+  .pill.live{color:var(--ok);border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.08);}
+  .pill.ended{color:var(--bad);border-color:rgba(248,113,113,.35);}
+  .pill.scheduled{color:var(--acc);border-color:rgba(96,165,250,.4);}
+  .card-title{font-weight:900;font-size:1rem;margin-bottom:4px;}
+  .muted{color:var(--muted);font-size:.82rem;}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:800px){.split{grid-template-columns:1fr;}}
+  .hidden{display:none!important;}
+  footer{margin-top:28px;text-align:center;color:var(--muted);font-size:.75rem;}
+  code{background:rgba(0,0,0,.4);padding:2px 6px;border-radius:6px;font-size:.8em;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">Artamon Owner<span>control panel</span></div>
+    <div id="hdrRight" class="hidden">
+      <button class="btn ghost" id="btnLogout">Выйти</button>
+    </div>
+  </header>
+
+  <!-- LOGIN -->
+  <div class="login-box" id="loginView">
+    <h1>🔑 Вход владельца</h1>
+    <p class="sub">Ключ из Cloudflare Secrets → <code>ADMIN_KEY</code></p>
+    <label>URL воркера</label>
+    <input id="apiBase" value="https://artamon.artem123kv.workers.dev" />
+    <label>Admin Key</label>
+    <input id="adminKey" type="password" placeholder="твой ADMIN_KEY" />
+    <div class="row">
+      <button class="btn primary" id="btnLogin" style="flex:1">Войти в панель</button>
+    </div>
+    <div class="status" id="loginStatus"></div>
+    <p class="sub" style="margin-top:16px;line-height:1.5">
+      В Dashboard → Worker → Settings → Variables → Secrets добавь<br>
+      <code>ADMIN_KEY</code> = любой длинный пароль
+    </p>
+  </div>
+
+  <!-- PANEL -->
+  <div id="panelView" class="hidden">
+    <div class="tabs" id="tabs">
+      <button type="button" class="on" data-tab="dash">Обзор</button>
+      <button type="button" data-tab="tourn">Турниры</button>
+      <button type="button" data-tab="users">Игроки</button>
+      <button type="button" data-tab="tops">Топы</button>
+      <button type="button" data-tab="news">Объявление</button>
+    </div>
+
+    <section class="section on" id="tab-dash">
+      <div class="panel">
+        <div class="card-title">📊 Сервер</div>
+        <p class="muted" id="serverTime">—</p>
+        <div class="grid" id="statsGrid">
+          <div class="stat"><span>Игроки</span><b id="stUsers">0</b></div>
+          <div class="stat"><span>Турнир</span><b id="stTourn">—</b></div>
+          <div class="stat"><span>История турниров</span><b id="stHist">0</b></div>
+        </div>
+        <div class="card-title" style="margin-top:8px">Записи в глобальных топах</div>
+        <div class="grid" id="topCounts"></div>
+        <div class="row">
+          <button class="btn" id="btnRefresh">↻ Обновить</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="tab-tourn">
+      <div class="split">
+        <div class="panel">
+          <div class="card-title">🏆 Активный турнир</div>
+          <div id="activeBox" class="muted" style="margin:10px 0 14px">Нет активного</div>
+          <div class="row">
+            <button class="btn danger" id="btnEndTourn">Завершить</button>
+            <button class="btn" id="btnTournTop">Таблица</button>
+          </div>
+          <div id="tournTopBox" style="margin-top:14px"></div>
+        </div>
+        <div class="panel">
+          <div class="card-title">✨ Создать турнир</div>
+          <label>Название</label>
+          <input id="tTitle" value="Weekend Cup" />
+          <label>Режим</label>
+          <select id="tMode">
+            <option value="doodle">Doodle Jump</option>
+            <option value="runner">Dash Runner</option>
+            <option value="tetris">Tetris+</option>
+            <option value="bosses">Boss Rush (победы)</option>
+            <option value="bossfight">Boss Fight (победы)</option>
+          </select>
+          <label>Длительность</label>
+          <select id="tDuration">
+            <option value="3600000">1 час</option>
+            <option value="21600000">6 часов</option>
+            <option value="86400000" selected>1 день</option>
+            <option value="259200000">3 дня</option>
+            <option value="604800000">7 дней</option>
+          </select>
+          <label>Лимит попыток (0 = без лимита)</label>
+          <input id="tAttempts" type="number" min="0" max="100" value="0" />
+          <label>Приз (текст)</label>
+          <input id="tPrize" placeholder="например: 500 монет + скин" />
+          <label>Описание</label>
+          <textarea id="tDesc" placeholder="Правила для игроков"></textarea>
+          <div class="row">
+            <button class="btn primary" id="btnCreateTourn">Запустить турнир</button>
+          </div>
+          <div class="status" id="tournStatus"></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:16px">
+        <div class="card-title">Архив</div>
+        <div id="histBox" class="muted" style="margin-top:10px">—</div>
+      </div>
+    </section>
+
+    <section class="section" id="tab-users">
+      <div class="panel">
+        <div class="card-title">👥 Игроки</div>
+        <p class="muted">Последние зарегистрированные</p>
+        <div style="overflow-x:auto;margin-top:12px">
+          <table>
+            <thead><tr><th>Ник</th><th>Doodle</th><th>Runner</th><th>Tetris</th><th>Rush</th><th>Fight</th><th>Создан</th></tr></thead>
+            <tbody id="usersBody"><tr><td colspan="7">—</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="tab-tops">
+      <div class="panel">
+        <div class="card-title">🏅 Глобальные топы</div>
+        <div class="tabs" id="topModeTabs" style="margin-top:10px">
+          <button type="button" class="on" data-mode="doodle">Doodle</button>
+          <button type="button" data-mode="runner">Runner</button>
+          <button type="button" data-mode="tetris">Tetris</button>
+          <button type="button" data-mode="bosses">Rush</button>
+          <button type="button" data-mode="bossfight">Fight</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>#</th><th>Игрок</th><th>Счёт</th></tr></thead>
+            <tbody id="topsBody"><tr><td colspan="3">—</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="tab-news">
+      <div class="panel">
+        <div class="card-title">📢 Объявление в игре</div>
+        <p class="muted">Покажется игрокам (когда подключим баннер). Сейчас хранится на сервере.</p>
+        <label>Текст (до 280 символов)</label>
+        <textarea id="newsText" maxlength="280" placeholder="Например: Сегодня турнир Runner до 22:00!"></textarea>
+        <div class="row">
+          <button class="btn primary" id="btnNews">Сохранить</button>
+          <button class="btn ghost" id="btnNewsClear">Очистить</button>
+        </div>
+        <div class="status" id="newsStatus"></div>
+      </div>
+    </section>
+  </div>
+
+  <footer>Artamon Owner Panel · API <span id="footApi"></span></footer>
+</div>
+
+<script>
+(function(){
+  const $ = (id) => document.getElementById(id);
+  let API = localStorage.getItem("artamon_admin_api") || "https://artamon.artem123kv.workers.dev";
+  let KEY = localStorage.getItem("artamon_admin_key") || "";
+  $("apiBase").value = API;
+  if(KEY) $("adminKey").value = KEY;
+
+  async function api(path, opts){
+    opts = opts || {};
+    const headers = Object.assign({ "Content-Type":"application/json", "X-Admin-Key": KEY }, opts.headers||{});
+    const res = await fetch(API + path, {
+      method: opts.method || "GET",
+      headers,
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    });
+    let data;
+    try{ data = await res.json(); }catch(e){ data = { ok:false, error:"bad json" }; }
+    if(!res.ok && data && !data.error) data.error = "HTTP "+res.status;
+    return data;
+  }
+
+  function showLogin(){
+    $("loginView").classList.remove("hidden");
+    $("panelView").classList.add("hidden");
+    $("hdrRight").classList.add("hidden");
+  }
+  function showPanel(){
+    $("loginView").classList.add("hidden");
+    $("panelView").classList.remove("hidden");
+    $("hdrRight").classList.remove("hidden");
+    $("footApi").textContent = API;
+  }
+
+  // tabs
+  document.querySelectorAll("#tabs button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      document.querySelectorAll("#tabs button").forEach(b=>b.classList.remove("on"));
+      btn.classList.add("on");
+      document.querySelectorAll(".section").forEach(s=>s.classList.remove("on"));
+      $("tab-"+btn.dataset.tab).classList.add("on");
+    });
+  });
+
+  $("btnLogin").onclick = async ()=>{
+    API = $("apiBase").value.replace(/\/+$/,"") || API;
+    KEY = $("adminKey").value.trim();
+    $("loginStatus").className = "status";
+    $("loginStatus").textContent = "Проверка…";
+    try{
+      const data = await api("/api/admin/stats");
+      if(!data.ok){
+        $("loginStatus").className = "status err";
+        $("loginStatus").textContent = data.error || "Ошибка ключа";
+        return;
+      }
+      localStorage.setItem("artamon_admin_api", API);
+      localStorage.setItem("artamon_admin_key", KEY);
+      showPanel();
+      await refreshAll();
+    }catch(e){
+      $("loginStatus").className = "status err";
+      $("loginStatus").textContent = "Нет связи с воркером";
+    }
+  };
+  $("btnLogout").onclick = ()=>{ KEY=""; localStorage.removeItem("artamon_admin_key"); showLogin(); };
+
+  function fmtDate(ts){
+    if(!ts) return "—";
+    try{ return new Date(ts).toLocaleString("ru-RU"); }catch(e){ return String(ts); }
+  }
+
+  async function refreshDash(){
+    const data = await api("/api/admin/stats");
+    if(!data.ok) return;
+    $("stUsers").textContent = data.users;
+    $("stHist").textContent = data.tournamentsHistory;
+    $("serverTime").textContent = "Сервер: " + fmtDate(data.serverTime);
+    const t = data.activeTournament;
+    $("stTourn").textContent = t ? (t.title || t.id) : "нет";
+    const tc = data.topCounts || {};
+    $("topCounts").innerHTML = Object.keys(tc).map(k=>
+      `<div class="stat"><span>${k}</span><b>${tc[k]}</b></div>`
+    ).join("");
+    $("newsText").value = data.announcement || "";
+  }
+
+  async function refreshTourn(){
+    const data = await api("/api/admin/tournaments");
+    if(!data.ok) return;
+    const t = data.active;
+    if(!t){
+      $("activeBox").innerHTML = '<span class="muted">Нет активного турнира</span>';
+    } else {
+      const now = Date.now();
+      let st = "live";
+      if(t.endsAt && now > t.endsAt) st = "ended";
+      else if(t.startsAt && now < t.startsAt) st = "scheduled";
+      $("activeBox").innerHTML = `
+        <div style="font-weight:900;font-size:1.05rem;margin-bottom:6px">${esc(t.title)} <span class="pill ${st}">${st}</span></div>
+        <div class="muted">Режим: <b style="color:var(--gold2)">${t.mode}</b></div>
+        <div class="muted">ID: <code>${t.id}</code></div>
+        <div class="muted">Старт: ${fmtDate(t.startsAt)}</div>
+        <div class="muted">Конец: ${fmtDate(t.endsAt)}</div>
+        <div class="muted">Попытки: ${t.maxAttempts || "∞"}</div>
+        ${t.prize ? `<div class="muted">Приз: ${esc(t.prize)}</div>` : ""}
+        ${t.description ? `<div class="muted" style="margin-top:6px">${esc(t.description)}</div>` : ""}
+      `;
+    }
+    const hist = data.history || [];
+    if(!hist.length) $("histBox").textContent = "Пусто";
+    else $("histBox").innerHTML = hist.map(h=>
+      `<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${esc(h.title)}</b> · ${h.mode} · <span class="muted">${fmtDate(h.endedAt||h.archivedAt||h.createdAt)}</span></div>`
+    ).join("");
+  }
+
+  async function loadTournTop(){
+    const box = $("tournTopBox");
+    box.innerHTML = "Загрузка…";
+    // public endpoint
+    const res = await fetch(API + "/api/tournament/top?limit=20");
+    const data = await res.json().catch(()=>({}));
+    if(!data.ok || !(data.top||[]).length){
+      box.innerHTML = '<span class="muted">Таблица пуста</span>';
+      return;
+    }
+    box.innerHTML = `<table><thead><tr><th>#</th><th>Игрок</th><th>Счёт</th><th>Попытки</th></tr></thead><tbody>`+
+      data.top.map(r=>`<tr><td>${r.rank}</td><td>${esc(r.username)}</td><td><b>${r.score}</b></td><td>${r.attempts||1}</td></tr>`).join("")+
+      `</tbody></table>`;
+  }
+
+  async function refreshUsers(){
+    const data = await api("/api/admin/users?limit=50");
+    if(!data.ok) return;
+    const rows = data.users || [];
+    if(!rows.length){ $("usersBody").innerHTML = '<tr><td colspan="7">Нет игроков</td></tr>'; return; }
+    $("usersBody").innerHTML = rows.map(u=>{
+      const b = u.best||{};
+      return `<tr>
+        <td><b>${esc(u.username)}</b></td>
+        <td>${b.doodle||0}</td><td>${b.runner||0}</td><td>${b.tetris||0}</td>
+        <td>${b.bosses||0}</td><td>${b.bossfight||0}</td>
+        <td class="muted">${fmtDate(u.created)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  let topMode = "doodle";
+  async function refreshTops(){
+    const res = await fetch(API + "/api/top?mode="+topMode+"&limit=30");
+    const data = await res.json().catch(()=>({}));
+    const top = (data && data.top) || [];
+    if(!top.length){ $("topsBody").innerHTML = '<tr><td colspan="3">Пусто</td></tr>'; return; }
+    $("topsBody").innerHTML = top.map(r=>
+      `<tr><td>${r.rank}</td><td>${esc(r.username)}</td><td><b>${r.score}</b></td></tr>`
+    ).join("");
+  }
+  document.querySelectorAll("#topModeTabs button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      document.querySelectorAll("#topModeTabs button").forEach(b=>b.classList.remove("on"));
+      btn.classList.add("on");
+      topMode = btn.dataset.mode;
+      refreshTops();
+    });
+  });
+
+  function esc(s){
+    return String(s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+  }
+
+  async function refreshAll(){
+    await Promise.all([refreshDash(), refreshTourn(), refreshUsers(), refreshTops()]);
+  }
+
+  $("btnRefresh").onclick = ()=>refreshAll();
+  $("btnEndTourn").onclick = async ()=>{
+    if(!confirm("Завершить активный турнир?")) return;
+    const data = await api("/api/admin/tournament/end", { method:"POST", body:{} });
+    $("tournStatus").className = "status " + (data.ok?"ok":"err");
+    $("tournStatus").textContent = data.ok ? "Турнир завершён" : (data.error||"ошибка");
+    await refreshTourn(); await refreshDash();
+  };
+  $("btnTournTop").onclick = loadTournTop;
+  $("btnCreateTourn").onclick = async ()=>{
+    const duration = parseInt($("tDuration").value,10) || 86400000;
+    const body = {
+      title: $("tTitle").value.trim() || "Турнир",
+      mode: $("tMode").value,
+      startsAt: Date.now(),
+      endsAt: Date.now() + duration,
+      maxAttempts: parseInt($("tAttempts").value,10)||0,
+      prize: $("tPrize").value.trim(),
+      description: $("tDesc").value.trim()
+    };
+    $("tournStatus").textContent = "Создание…";
+    const data = await api("/api/admin/tournament/create", { method:"POST", body });
+    $("tournStatus").className = "status " + (data.ok?"ok":"err");
+    $("tournStatus").textContent = data.ok ? ("Запущен: " + data.tournament.id) : (data.error||"ошибка");
+    await refreshTourn(); await refreshDash();
+  };
+
+  $("btnNews").onclick = async ()=>{
+    const text = $("newsText").value.slice(0,280);
+    const data = await api("/api/admin/broadcast", { method:"POST", body:{ text } });
+    $("newsStatus").className = "status " + (data.ok?"ok":"err");
+    $("newsStatus").textContent = data.ok ? "Сохранено" : (data.error||"ошибка");
+  };
+  $("btnNewsClear").onclick = async ()=>{
+    $("newsText").value = "";
+    const data = await api("/api/admin/broadcast", { method:"POST", body:{ text:"" } });
+    $("newsStatus").className = "status " + (data.ok?"ok":"err");
+    $("newsStatus").textContent = data.ok ? "Очищено" : (data.error||"ошибка");
+  };
+
+  // auto try saved key
+  if(KEY){
+    api("/api/admin/stats").then(data=>{
+      if(data && data.ok){ showPanel(); refreshAll(); }
+    }).catch(()=>{});
+  }
+})();
+</script>
+</body>
+</html>
