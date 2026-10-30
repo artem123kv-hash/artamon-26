@@ -101,6 +101,10 @@ body.gaster-mode::before{content:"";position:fixed;inset:0;z-index:99999;pointer
 #gameStage.glitch{animation:stageGlitch .3s infinite;}
 #gameStage.wobble{animation:stageWobble 2s ease-in-out infinite;}
 #gameStage.spin{animation:stageSpin 3s linear infinite;}
+#gameStage.spin #utJoystick,#gameStage.spin #utDpad,#gameStage.spin .ut-joystick,#gameStage.spin .ut-dpad{
+  animation:counterStageSpin 3s linear infinite;transform-origin:center center;
+}
+@keyframes counterStageSpin{from{transform:rotate(0deg);}to{transform:rotate(-360deg);}}
 @media (min-width:768px){#gameStage{max-width:min(92vw,900px);max-height:min(92vh,1100px);border-radius:18px;}}
 @media (max-width:520px){#gameStage{border-radius:0;max-width:100vw;max-height:100vh;max-height:100dvh;}}
 #gameCanvas{display:block;width:100%;height:100%;touch-action:none;}
@@ -536,6 +540,24 @@ body.gaster-mode::before{content:"";position:fixed;inset:0;z-index:99999;pointer
 .top-my{margin:8px 0;padding:8px 10px;border-radius:10px;background:rgba(212,175,55,.1);border:1px solid var(--border);font-size:.8rem;color:var(--txt-2);}
 .top-my b{color:var(--gold-2);}
 
+
+#hudCombo{
+  position:absolute;top:calc(70px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);
+  z-index:8;font-weight:900;font-size:1.1rem;letter-spacing:.12em;color:var(--gold-1);
+  text-shadow:0 0 18px rgba(212,175,55,.8);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+  text-transform:uppercase;
+}
+#hudCombo.on{opacity:1;transform:translateX(-50%) scale(1.05);}
+#hudCombo.big{color:#f87171;text-shadow:0 0 22px rgba(248,113,113,.9);font-size:1.35rem;}
+#heightToast{
+  position:absolute;top:40%;left:50%;transform:translate(-50%,-50%) scale(.8);
+  z-index:12;font-weight:900;font-size:clamp(1.4rem,6vw,2.2rem);color:#fff;
+  text-shadow:0 0 30px var(--gold-2);opacity:0;pointer-events:none;letter-spacing:.08em;
+  transition:opacity .4s,transform .4s;
+}
+#heightToast.on{opacity:1;transform:translate(-50%,-50%) scale(1);}
+.pill.score-glow{box-shadow:0 0 16px rgba(212,175,55,.45);}
+
 </style>
 </head>
 <body data-theme="gold">
@@ -596,7 +618,7 @@ body.gaster-mode::before{content:"";position:fixed;inset:0;z-index:99999;pointer
       <button class="top-btn" id="shopBtn">🛒</button>
       <button class="top-btn" id="backBtn">←</button>
     </div>
-    <div id="hud">
+    <div id="hudCombo">COMBO x1</div><div id="heightToast"></div><div id="hud">
       <div class="hud-pill"><small>Счёт</small><b id="hudScore">0</b></div>
       <div class="hud-pill"><small>Выс.</small><b id="hudHeight">0</b>м</div>
       <div class="hud-pill coin" id="hudCoinsPill">🪙 <b id="hudCoins">0</b></div>
@@ -660,7 +682,7 @@ body.gaster-mode::before{content:"";position:fixed;inset:0;z-index:99999;pointer
         <div class="menu-subtitle">Games Collection</div>
         <div id="announceBar"></div>
         <div id="tournBanner"></div>
-        <button type="button" class="menu-version" id="menuVersionBtn" style="cursor:pointer;background:none;border:none;font:inherit;letter-spacing:.2em;text-transform:uppercase;color:var(--txt-3);margin-bottom:24px;padding:4px 8px;">v6.4 · HUB LINK</button>
+        <button type="button" class="menu-version" id="menuVersionBtn" style="cursor:pointer;background:none;border:none;font:inherit;letter-spacing:.2em;text-transform:uppercase;color:var(--txt-3);margin-bottom:24px;padding:4px 8px;">v7.5 · BOSSES+</button>
         <div class="menu-btn-wrap">
           <button class="menu-btn primary" id="mmPlay"><span class="mi-icon">🎮</span><div class="mi-body"><div class="mi-title">Играть</div><div class="mi-desc">Выбери игру</div></div></button>
           <button class="menu-btn" id="mmTutorial"><span class="mi-icon">📖</span><div class="mi-body"><div class="mi-title">Туториал</div><div class="mi-desc">Научись играть</div></div></button>
@@ -1164,7 +1186,17 @@ var AUDIO = (function(){
       [N.D5,0.25],[N.D5,0.25],[N.D5,0.25],[N.A4,0.25],[N.D5,0.25],[N.A4,0.25],[N.D5,0.5],
       [N.G4,0.25],[N.F4,0.25],[N.G4,0.25],[N.A4,0.5],[N.D4,0.5],[N.F4,0.5],
       [N.A4,0.25],[N.F4,0.25],[N.D4,0.25],[N.F4,0.25],[N.G4,0.5],[N.A4,0.5],[N.D5,1]
-    ]}
+    ]},
+    undyne:{bpm:160,wave:"sawtooth",gain:0.08,notes:[
+      [N.E3,0.25],[N.E3,0.25],[N.E4,0.5],[N.B3,0.5],[N.A3,0.25],[N.G3,0.25],[N.E3,0.25],[N.G3,0.25],[N.A3,0.25],
+      [N.E4,0.25],[N.G4,0.25],[N.B4,0.5],[N.A4,0.5],[N.G4,0.25],[N.E4,0.25],[N.B3,0.5],
+      [N.F3,0.25],[N.F3,0.25],[N.F4,0.5],[N.C4,0.5],[N.A3,0.5],[N.F3,0.5],
+      [N.G3,0.25],[N.G3,0.25],[N.G4,0.5],[N.D4,0.5],[N.B3,0.5],[N.G3,0.5]
+    ]},
+    dragon:{bpm:130,wave:"sawtooth",gain:0.075,notes:[[N.C3,0.5],[N.C3,0.5],[N.G3,0.5],[N.C4,0.5],[N.D3,0.5],[N.A3,0.5],[N.D4,0.5],[N.G3,0.5]]},
+    death:{bpm:90,wave:"triangle",gain:0.09,notes:[[N.A2,1],[N.E3,0.5],[N.A3,0.5],[N.G2,1],[N.D3,0.5],[N.G3,0.5],[N.F2,1],[N.C3,1],[N.A2,2]]},
+    abyss:{bpm:100,wave:"sine",gain:0.1,notes:[[N.E3,1],[N.G3,0.5],[N.B3,0.5],[N.A3,1],[N.E3,1],[N.C4,0.5],[N.B3,0.5],[N.G3,1],[N.E3,2]]},
+    rushwin:{bpm:140,wave:"triangle",gain:0.12,notes:[[N.C5,0.25],[N.E5,0.25],[N.G5,0.25],[N.C6,0.5],[N.B5,0.25],[N.G5,0.25],[N.E5,0.5],[N.C5,0.75]]}
   };
   function playTrack(id){
     if(!ctx || !musicEnabled){ currentTrack=null; return; }
@@ -1184,7 +1216,7 @@ var AUDIO = (function(){
         var dur = (nd[1]||1) * beat;
         var g = tr.gain * (0.65 + intensity * 0.9);
         if(id==="gaster" && gasterActive) g = gasterBoost * (1 + intensity * 0.5);
-        if(id==="sans") g = tr.gain * (0.75 + intensity * 1.1);
+        if(id==="sans"||id==="undyne") g = tr.gain * (0.75 + intensity * 1.1);
         var freq = nd[0];
         if(loopNum >= 1 && trackStep % 4 === 0) note(freq * 2, dur * 0.5, "sine", null, g * 0.35, musicGain);
         if(loopNum >= 2 && trackStep % 2 === 0) note(freq * 0.5, dur * 0.9, "triangle", null, g * 0.28, musicGain);
@@ -1962,59 +1994,77 @@ var BossBattle = (function(){
       enrageAt:0.5, enrageDialog:"* Летучая мышь в ярости!",
       specialDialog:"* ФИНАЛ: Рой мышей!",
       phrases:[ "* Летучая мышь готовит атаку.", "* Она хихикает в темноте.", "* Крылья шуршат.", "* Летучая мышь смотрит на тебя.", "* Она обнажает клыки.", "* Слышен писк." ],
-      attackPool:[ { kind:"orb", count:5, speed:2.5 }, { kind:"spread", count:4, speed:2.8 }, { kind:"homing", count:2, speed:2.2 }, { kind:"zigzag", count:3, speed:2.6 }, { kind:"sideRain", count:4, speed:2.6 }, { kind:"diagonal", count:4, speed:2.4 }, { kind:"orbit", count:5, speed:1.8 }, { kind:"ring", count:10, speed:2.4 } ],
-      specialAttack:[ { kind:"ring", count:16, speed:3.2 }, { kind:"homing", count:4, speed:2.8 }, { kind:"sideRain", count:6, speed:3.0 } ] },
+      attackPool:[ { kind:"orb", count:5, speed:2.5 }, { kind:"spread", count:4, speed:2.8 }, { kind:"homing", count:2, speed:2.2 }, { kind:"zigzag", count:3, speed:2.6 }, { kind:"sideRain", count:4, speed:2.6 }, { kind:"diagonal", count:4, speed:2.4 }, { kind:"orbit", count:5, speed:1.8 }, { kind:"ring", count:10, speed:2.4 }, { kind:"mirrorShot", count:3, speed:2.8 }, { kind:"voidRift", count:2, speed:2.4, color:"#7c3aed" }, { kind:"crossfire", count:5, speed:2.7 }, { kind:"bomb", count:3, speed:2.5 } ],
+      specialAttack:[ { kind:"ring", count:16, speed:3.2 }, { kind:"homing", count:4, speed:2.8 }, { kind:"sideRain", count:6, speed:3.0 } ],
+      finalAttack:[ { kind:"ring", count:16, speed:3.2 }, { kind:"homing", count:4, speed:2.8 }, { kind:"sideRain", count:6, speed:3.0 } ],
+      finalAttack: [ { kind:"ring", count:16, speed:3.2 }, { kind:"homing", count:4, speed:2.8 }, { kind:"sideRain", count:6, speed:3.0 } ] },
     dragon: { name:"ДРАКОН", emoji:"🐲", hp:45, color:"#dc2626", isBig:false,
       dialog:"* Дракон обнажает клыки.", enrageAt:0.5, enrageDialog:"* Дракон дышит огнём!",
       specialDialog:"* ФИНАЛ: Дыхание дракона!",
       phrases:[ "* Дракон вдыхает воздух.", "* Чешуя блестит.", "* Он рычит.", "* Пламя клубится.", "* Дракон взмахивает крыльями." ],
       attackPool:[ { kind:"rain", count:6, speed:3.2, color:"#f97316" }, { kind:"meteor", count:3, speed:2.5, color:"#f97316" }, { kind:"wall", count:5, gap:2, speed:3.5, color:"#f97316" }, { kind:"crossBeam", count:2, speed:4.5, color:"#f97316" }, { kind:"diagonal", count:5, speed:2.8, color:"#f97316" }, { kind:"wallH", count:4, gap:2, speed:3.5, color:"#ef4444" }, { kind:"laserSweep", count:1, speed:3.5, color:"#f97316" } ],
-      specialAttack:[ { kind:"laserSweep", count:2, speed:4.0, color:"#f97316" }, { kind:"meteor", count:6, speed:3.2, color:"#f97316" }, { kind:"rain", count:10, speed:3.8, color:"#ef4444" } ] },
+      specialAttack:[ { kind:"laserSweep", count:2, speed:4.0, color:"#f97316" }, { kind:"meteor", count:6, speed:3.2, color:"#f97316" }, { kind:"rain", count:10, speed:3.8, color:"#ef4444" } ],
+      finalAttack:[ { kind:"laserSweep", count:2, speed:4.0, color:"#f97316" }, { kind:"meteor", count:6, speed:3.2, color:"#f97316" }, { kind:"rain", count:10, speed:3.8, color:"#ef4444" } ],
+      finalAttack: [ { kind:"laserSweep", count:2, speed:4.0, color:"#f97316" }, { kind:"meteor", count:6, speed:3.2, color:"#f97316" }, { kind:"rain", count:10, speed:3.8, color:"#ef4444" } ] },
     eye: { name:"ОКО", emoji:"👁", hp:40, color:"#eab308", isBig:false,
       dialog:"* Око следит за тобой.", enrageAt:0.5, enrageDialog:"* Око расширяется!",
       specialDialog:"* ФИНАЛ: Всевидящий взгляд!",
       phrases:[ "* Зрачок сужается.", "* Око моргает.", "* Взгляд не отрывается.", "* Око смотрит прямо в душу." ],
       attackPool:[ { kind:"homing", count:3, speed:2.4 }, { kind:"beam", count:2, speed:5 }, { kind:"sniper", count:3, speed:6 }, { kind:"orbit", count:6, speed:2.0 }, { kind:"sideRain", count:4, speed:2.8 }, { kind:"ring", count:12, speed:2.5 } ],
-      specialAttack:[ { kind:"sniper", count:8, speed:7 }, { kind:"beam", count:4, speed:6 }, { kind:"orbit", count:10, speed:2.4 } ] },
+      specialAttack:[ { kind:"sniper", count:8, speed:7 }, { kind:"beam", count:4, speed:6 }, { kind:"orbit", count:10, speed:2.4 } ],
+      finalAttack:[ { kind:"sniper", count:8, speed:7 }, { kind:"beam", count:4, speed:6 }, { kind:"orbit", count:10, speed:2.4 } ],
+      finalAttack: [ { kind:"sniper", count:8, speed:7 }, { kind:"beam", count:4, speed:6 }, { kind:"orbit", count:10, speed:2.4 } ] },
     death: { name:"СМЕРТЬ", emoji:"💀", hp:60, color:"#e5e7eb", isBig:false,
       dialog:"* Смерть приближается.", enrageAt:0.5, enrageDialog:"* Смерть обретает форму!",
       specialDialog:"* ФИНАЛ: Жатва душ!",
       phrases:[ "* Смерть поднимает косу.", "* Холод пробегает по спине.", "* Кости стучат.", "* Тишина." ],
       attackPool:[ { kind:"orb", count:8, speed:2.8, color:"#e5e7eb" }, { kind:"saw", count:2, speed:2.8, color:"#e5e7eb" }, { kind:"shockwave", count:1, speed:3.0, color:"#9ca3af" }, { kind:"crossfire", count:6, speed:3.0, color:"#e5e7eb" }, { kind:"crossBeam", count:2, speed:4.0, color:"#9ca3af" }, { kind:"wallH", count:5, gap:2, speed:3.0, color:"#e5e7eb" }, { kind:"laserSweep", count:1, speed:3.8, color:"#e5e7eb" } ],
-      specialAttack:[ { kind:"shockwave", count:2, speed:3.5, color:"#9ca3af" }, { kind:"saw", count:5, speed:3.2, color:"#e5e7eb" }, { kind:"crossfire", count:10, speed:3.5, color:"#e5e7eb" } ] },
+      specialAttack:[ { kind:"shockwave", count:2, speed:3.5, color:"#9ca3af" }, { kind:"saw", count:5, speed:3.2, color:"#e5e7eb" }, { kind:"crossfire", count:10, speed:3.5, color:"#e5e7eb" } ],
+      finalAttack:[ { kind:"shockwave", count:2, speed:3.5, color:"#9ca3af" }, { kind:"saw", count:5, speed:3.2, color:"#e5e7eb" }, { kind:"crossfire", count:10, speed:3.5, color:"#e5e7eb" } ],
+      finalAttack: [ { kind:"shockwave", count:2, speed:3.5, color:"#9ca3af" }, { kind:"saw", count:5, speed:3.2, color:"#e5e7eb" }, { kind:"crossfire", count:10, speed:3.5, color:"#e5e7eb" } ] },
     robot: { name:"РОБОТ", emoji:"🤖", hp:55, color:"#60a5fa", isBig:false,
       dialog:"* Робот инициализирует бой.", enrageAt:0.5, enrageDialog:"* Робот перегружается!",
       specialDialog:"* ФИНАЛ: ПРОТОКОЛ УНИЧТОЖЕНИЯ!",
       phrases:[ "* Робот сканирует.", "* Система онлайн.", "* Ошибка. Ошибка.", "* Активация протокола." ],
       attackPool:[ { kind:"wall", count:6, gap:2, speed:3.2, color:"#60a5fa" }, { kind:"wallH", count:5, gap:2, speed:3.2, color:"#3b82f6" }, { kind:"beam", count:2, speed:6, color:"#3b82f6" }, { kind:"sniper", count:4, speed:6, color:"#60a5fa" }, { kind:"diagonal", count:6, speed:3.0, color:"#3b82f6" }, { kind:"laserSweep", count:1, speed:4.0, color:"#3b82f6" } ],
-      specialAttack:[ { kind:"wall", count:8, gap:1, speed:4.0, color:"#60a5fa" }, { kind:"beam", count:4, speed:7, color:"#3b82f6" }, { kind:"sniper", count:6, speed:7, color:"#60a5fa" } ] },
+      specialAttack:[ { kind:"wall", count:8, gap:1, speed:4.0, color:"#60a5fa" }, { kind:"beam", count:4, speed:7, color:"#3b82f6" }, { kind:"sniper", count:6, speed:7, color:"#60a5fa" } ],
+      finalAttack:[ { kind:"wall", count:8, gap:1, speed:4.0, color:"#60a5fa" }, { kind:"beam", count:4, speed:7, color:"#3b82f6" }, { kind:"sniper", count:6, speed:7, color:"#60a5fa" } ],
+      finalAttack: [ { kind:"wall", count:8, gap:1, speed:4.0, color:"#60a5fa" }, { kind:"beam", count:4, speed:7, color:"#3b82f6" }, { kind:"sniper", count:6, speed:7, color:"#60a5fa" } ] },
     kraken: { name:"КРАКЕН", emoji:"🦑", hp:70, color:"#10b981", isBig:false,
       dialog:"* Кракен поднимается из глубин.", enrageAt:0.5, enrageDialog:"* Кракен в ярости!",
       specialDialog:"* ФИНАЛ: Глубинный ужас!",
       phrases:[ "* Щупальца извиваются.", "* Вода бурлит.", "* Кракен ревёт.", "* Чернила в воде." ],
       attackPool:[ { kind:"vine", count:4, speed:2.5 }, { kind:"shockwave", count:1, speed:3.2 }, { kind:"rain", count:6, speed:3.2, color:"#059669" }, { kind:"saw", count:3, speed:2.6 }, { kind:"sideRain", count:6, speed:2.8, color:"#059669" }, { kind:"orbit", count:7, speed:1.8, color:"#10b981" }, { kind:"ring", count:12, speed:2.6, color:"#10b981" } ],
-      specialAttack:[ { kind:"vine", count:8, speed:3.0 }, { kind:"orbit", count:12, speed:2.2, color:"#10b981" }, { kind:"shockwave", count:2, speed:3.5 } ] },
+      specialAttack:[ { kind:"vine", count:8, speed:3.0 }, { kind:"orbit", count:12, speed:2.2, color:"#10b981" }, { kind:"shockwave", count:2, speed:3.5 } ],
+      finalAttack:[ { kind:"vine", count:8, speed:3.0 }, { kind:"orbit", count:12, speed:2.2, color:"#10b981" }, { kind:"shockwave", count:2, speed:3.5 } ],
+      finalAttack: [ { kind:"vine", count:8, speed:3.0 }, { kind:"orbit", count:12, speed:2.2, color:"#10b981" }, { kind:"shockwave", count:2, speed:3.5 } ] },
     distort: { name:"ИСКАЖЕНИЕ", emoji:"🌪", hp:80, color:"#a855f7", isBig:true,
       dialog:"* ИСКАЖЕНИЕ искривляет реальность...", enrageAt:0.5, enrageDialog:"* ИСКАЖЕНИЕ разрывает пространство!",
       specialDialog:"* ФИНАЛ: РАЗРЫВ РЕАЛЬНОСТИ!",
       phrases:[ "* Реальность плывёт.", "* Слои пространства сдвигаются.", "* Ты слышишь странные звуки." ],
       mechanics:{ invertControls:true, glitchScreen:true },
       attackPool:[ { kind:"spiral", count:12, speed:3.0, color:"#a855f7", rotate:0.6 }, { kind:"zigzag", count:6, speed:3.0, color:"#d946ef" }, { kind:"crossfire", count:6, speed:3.2, color:"#a855f7" }, { kind:"diagonal", count:7, speed:3.0, color:"#d946ef" }, { kind:"orbit", count:8, speed:2.0, color:"#a855f7" }, { kind:"laserSweep", count:1, speed:3.5, color:"#d946ef" } ],
-      specialAttack:[ { kind:"spiral", count:18, speed:3.5, color:"#a855f7", rotate:0.8 }, { kind:"zigzag", count:10, speed:3.4, color:"#d946ef" }, { kind:"crossfire", count:10, speed:3.6, color:"#a855f7" } ] },
+      specialAttack:[ { kind:"spiral", count:18, speed:3.5, color:"#a855f7", rotate:0.8 }, { kind:"zigzag", count:10, speed:3.4, color:"#d946ef" }, { kind:"crossfire", count:10, speed:3.6, color:"#a855f7" } ],
+      finalAttack:[ { kind:"spiral", count:18, speed:3.5, color:"#a855f7", rotate:0.8 }, { kind:"zigzag", count:10, speed:3.4, color:"#d946ef" }, { kind:"crossfire", count:10, speed:3.6, color:"#a855f7" } ],
+      finalAttack: [ { kind:"spiral", count:18, speed:3.5, color:"#a855f7", rotate:0.8 }, { kind:"zigzag", count:10, speed:3.4, color:"#d946ef" }, { kind:"crossfire", count:10, speed:3.6, color:"#a855f7" } ] },
     void: { name:"ПУСТОТА", emoji:"🕳", hp:95, color:"#1e1b4b", isBig:true,
       dialog:"* ПУСТОТА пожирает пространство...", enrageAt:0.5, enrageDialog:"* ПУСТОТА расширяется!",
       specialDialog:"* ФИНАЛ: КОЛЛАПС ВСЕЛЕННОЙ!",
       phrases:[ "* Тишина становится плотной.", "* Провал в пустоту.", "* Всё вокруг сжимается." ],
       mechanics:{ shrinkBoard:true, wobbleScreen:true },
       attackPool:[ { kind:"homing", count:4, speed:2.4, color:"#6b21a8" }, { kind:"magnet", count:4, speed:2.0, color:"#4c1d95" }, { kind:"crossBeam", count:2, speed:4.0, color:"#6b21a8" }, { kind:"saw", count:3, speed:2.8, color:"#6b21a8" }, { kind:"sniper", count:3, speed:5, color:"#6b21a8" }, { kind:"ring", count:14, speed:2.8, color:"#6b21a8" } ],
-      specialAttack:[ { kind:"magnet", count:8, speed:2.6, color:"#4c1d95" }, { kind:"homing", count:7, speed:3.0, color:"#6b21a8" }, { kind:"crossBeam", count:4, speed:5.0, color:"#6b21a8" } ] },
+      specialAttack:[ { kind:"magnet", count:8, speed:2.6, color:"#4c1d95" }, { kind:"homing", count:7, speed:3.0, color:"#6b21a8" }, { kind:"crossBeam", count:4, speed:5.0, color:"#6b21a8" } ],
+      finalAttack:[ { kind:"magnet", count:8, speed:2.6, color:"#4c1d95" }, { kind:"homing", count:7, speed:3.0, color:"#6b21a8" }, { kind:"crossBeam", count:4, speed:5.0, color:"#6b21a8" } ],
+      finalAttack: [ { kind:"magnet", count:8, speed:2.6, color:"#4c1d95" }, { kind:"homing", count:7, speed:3.0, color:"#6b21a8" }, { kind:"crossBeam", count:4, speed:5.0, color:"#6b21a8" } ] },
     abysseye: { name:"ОКО БЕЗДНЫ", emoji:"👁", hp:110, color:"#7c3aed", isBig:true,
       dialog:"* ОКО БЕЗДНЫ смотрит в тебя...", enrageAt:0.5, enrageDialog:"* ОКО БЕЗДНЫ открывается полностью!",
       specialDialog:"* ФИНАЛ: БЕЗДНА ПОГЛОЩАЕТ!",
       phrases:[ "* Бескрайняя глубина.", "* Взгляд сквозь тебя.", "* Что-то шевелится в темноте." ],
       mechanics:{ freezeSoul:true, spinScreen:true, spinOnlyDuringAttack:true },
       attackPool:[ { kind:"circle", count:14, speed:2.6, color:"#7c3aed" }, { kind:"spiral", count:12, speed:2.8, color:"#a78bfa", rotate:0.5 }, { kind:"magnet", count:5, speed:2.0, color:"#7c3aed" }, { kind:"orbit", count:8, speed:1.8, color:"#a78bfa" }, { kind:"sideRain", count:5, speed:2.6, color:"#7c3aed" }, { kind:"laserSweep", count:1, speed:3.6, color:"#a78bfa" } ],
-      specialAttack:[ { kind:"circle", count:20, speed:3.2, color:"#7c3aed" }, { kind:"spiral", count:16, speed:3.2, color:"#a78bfa", rotate:0.7 }, { kind:"magnet", count:8, speed:2.5, color:"#7c3aed" } ] },
+      specialAttack:[ { kind:"circle", count:20, speed:3.2, color:"#7c3aed" }, { kind:"spiral", count:16, speed:3.2, color:"#a78bfa", rotate:0.7 }, { kind:"magnet", count:8, speed:2.5, color:"#7c3aed" } ],
+      finalAttack:[ { kind:"circle", count:20, speed:3.2, color:"#7c3aed" }, { kind:"spiral", count:16, speed:3.2, color:"#a78bfa", rotate:0.7 }, { kind:"magnet", count:8, speed:2.5, color:"#7c3aed" } ],
+      finalAttack: [ { kind:"circle", count:20, speed:3.2, color:"#7c3aed" }, { kind:"spiral", count:16, speed:3.2, color:"#a78bfa", rotate:0.7 }, { kind:"magnet", count:8, speed:2.5, color:"#7c3aed" } ] },
     phoenix: { name:"ФЕНИКС", emoji:"🔥", hp:75, color:"#f97316", isBig:false,
       dialog:"* Феникс вспыхивает из пепла.", enrageAt:0.45, enrageDialog:"* Феникс возрождается в огне!",
       specialDialog:"* ФИНАЛ: ПЕПЕЛЬНОЕ ВОСКРЕШЕНИЕ!",
@@ -2027,7 +2077,9 @@ var BossBattle = (function(){
         { kind:"phoenixBurst", count:1, speed:2.8, color:"#fbbf24" },
         { kind:"diagonal", count:5, speed:2.8, color:"#f97316" }
       ],
-      specialAttack:[ { kind:"phoenixBurst", count:2, speed:3.2, color:"#fbbf24" }, { kind:"meteor", count:8, speed:3.4, color:"#f97316" }, { kind:"ring", count:14, speed:3.0, color:"#ef4444" } ]
+      specialAttack:[ { kind:"phoenixBurst", count:2, speed:3.2, color:"#fbbf24" }, { kind:"meteor", count:8, speed:3.4, color:"#f97316" }, { kind:"ring", count:14, speed:3.0, color:"#ef4444" } ],
+      finalAttack:[ { kind:"phoenixBurst", count:2, speed:3.2, color:"#fbbf24" }, { kind:"meteor", count:8, speed:3.4, color:"#f97316" }, { kind:"ring", count:14, speed:3.0, color:"#ef4444" } ],
+      finalAttack: [ { kind:"phoenixBurst", count:2, speed:3.2, color:"#fbbf24" }, { kind:"meteor", count:8, speed:3.4, color:"#f97316" }, { kind:"ring", count:14, speed:3.0, color:"#ef4444" } ]
     },
     frost: { name:"ЛЕДЯНОЙ КОРОЛЬ", emoji:"❄️", hp:85, color:"#38bdf8", isBig:true,
       dialog:"* Ледяной Король замораживает воздух...", enrageAt:0.4, enrageDialog:"* Зима наступает!",
@@ -2042,9 +2094,11 @@ var BossBattle = (function(){
         { kind:"icicleRain", count:8, speed:3.2, color:"#e0f2fe" },
         { kind:"sniper", count:3, speed:5.5, color:"#38bdf8" }
       ],
-      specialAttack:[ { kind:"blackhole", count:2, speed:2.0, color:"#0284c7" }, { kind:"icicleRain", count:14, speed:3.6, color:"#e0f2fe" }, { kind:"wallH", count:7, gap:1, speed:3.4, color:"#38bdf8" } ]
+      specialAttack:[ { kind:"blackhole", count:2, speed:2.0, color:"#0284c7" }, { kind:"icicleRain", count:14, speed:3.6, color:"#e0f2fe" }, { kind:"wallH", count:7, gap:1, speed:3.4, color:"#38bdf8" } ],
+      finalAttack:[ { kind:"blackhole", count:2, speed:2.0, color:"#0284c7" }, { kind:"icicleRain", count:14, speed:3.6, color:"#e0f2fe" }, { kind:"wallH", count:7, gap:1, speed:3.4, color:"#38bdf8" } ],
+      finalAttack: [ { kind:"blackhole", count:2, speed:2.0, color:"#0284c7" }, { kind:"icicleRain", count:14, speed:3.6, color:"#e0f2fe" }, { kind:"wallH", count:7, gap:1, speed:3.4, color:"#38bdf8" } ]
     },
-    lastbreath: { name:"LAST BREATH", emoji:"💀", hp:130, color:"#60a5fa", isBig:true,
+    lastbreath: { name:"LAST BREATH", emoji:"💀", hp:160, color:"#60a5fa", isBig:true,
       dialog:"* ...ты снова здесь.\n* в какой это раз? я уже сбился со счёта.",
       enrageAt:0.35, enrageDialog:"* хех... не думал, что зайдёшь так далеко.\n* ладно. больше без шуток.",
       specialDialog:"* это мой последний вдох.\n* и твой тоже.",
@@ -2060,6 +2114,19 @@ var BossBattle = (function(){
       ],
       mechanics:{ blueSoul:true, glitchScreen:true, codeVoidAt:66 },
       attackPool:[
+        { kind:"boneWave", count:6, speed:3.1, color:"#e5e7eb" },
+        { kind:"gasterHand", count:3, speed:3.3, color:"#ffffff" },
+        { kind:"boneRise", count:8, speed:3.1, color:"#e5e7eb" },
+        { kind:"blaster", count:3, speed:6.2, color:"#ffffff" },
+        { kind:"blueSlam", count:2, speed:2.9, color:"#3b82f6" },
+        { kind:"orangeBone", count:6, speed:3.3, color:"#fb923c" },
+        { kind:"boneWall", count:6, gap:1, speed:3.5, color:"#e5e7eb" },
+        { kind:"splitField", count:1, speed:3.1, color:"#ffffff" },
+        { kind:"uiCrack", count:1, speed:3.0, color:"#60a5fa" },
+        { kind:"codeRain", count:12, speed:3.3, color:"#4ade80" },
+        { kind:"ring", count:14, speed:3.1, color:"#93c5fd" },
+        { kind:"crossfire", count:8, speed:3.4, color:"#e5e7eb" },
+
         { kind:"boneRise", count:5, speed:2.6, color:"#e5e7eb" },
         { kind:"boneWall", count:5, gap:2, speed:3.0, color:"#e5e7eb" },
         { kind:"blaster", count:2, speed:5.5, color:"#ffffff" },
@@ -2074,21 +2141,56 @@ var BossBattle = (function(){
         { kind:"splitField", count:1, speed:3.4, color:"#ffffff" },
         { kind:"blaster", count:4, speed:6.0, color:"#ffffff" },
         { kind:"blueSlam", count:2, speed:2.8, color:"#3b82f6" }
+      ],
+      finalAttack:[
+        { kind:"codeRain", count:12, speed:3.2, color:"#4ade80" },
+        { kind:"splitField", count:1, speed:3.4, color:"#ffffff" },
+        { kind:"blaster", count:4, speed:6.0, color:"#ffffff" },
+        { kind:"blueSlam", count:2, speed:2.8, color:"#3b82f6" }
+      ],
+      finalAttack: [
+        { kind:"codeRain", count:12, speed:3.2, color:"#4ade80" },
+        { kind:"splitField", count:1, speed:3.4, color:"#ffffff" },
+        { kind:"blaster", count:4, speed:6.0, color:"#ffffff" },
+        { kind:"blueSlam", count:2, speed:2.8, color:"#3b82f6" }
       ]
     },
-    undyne: { name:"АНДАЙН", emoji:"⚔", hp:90, color:"#22c55e", isBig:true,
+    undyne: { name:"АНДАЙН", emoji:"⚔", hp:115, color:"#22c55e", isBig:true,
       dialog:"* Нггаааах! Покажи, на что способен!",
       enrageAt:0.4, enrageDialog:"* Ты ещё не видел мою истинную силу!",
       specialDialog:"* ФИНАЛ: ЗЕЛЁНАЯ РЕШИМОСТЬ!",
       phrases:[ "* Держи щит!", "* Копья летят!", "* Не отступай!", "* Нггаааах!" ],
       mechanics:{ greenSoul:true },
       attackPool:[
-        { kind:"spearStorm", count:3, speed:2.6, color:"#4ade80" },
-        { kind:"spearBarrage", count:3, speed:2.8, color:"#86efac" },
-        { kind:"spearStorm", count:2, speed:2.7, color:"#22c55e" },
-        { kind:"spearBarrage", count:4, speed:2.9, color:"#4ade80" }
+        { kind:"spearBarrage", count:4, speed:3.1, color:"#4ade80" },
+        { kind:"spearStorm", count:4, speed:3.2, color:"#86efac" },
+        { kind:"spearBend", count:5, speed:3.3, color:"#22c55e" },
+        { kind:"spearBarrage", count:5, speed:3.3, color:"#4ade80" },
+        { kind:"spearStorm", count:5, speed:3.4, color:"#86efac" },
+        { kind:"spearBend", count:6, speed:3.4, color:"#22c55e" },
+        { kind:"spearBarrage", count:5, speed:3.5, color:"#4ade80" },
+        { kind:"spearStorm", count:5, speed:3.5, color:"#86efac" },
+        { kind:"spearBend", count:5, speed:3.6, color:"#22c55e" },
+        { kind:"spearBarrage", count:6, speed:3.5, color:"#4ade80" },
+        { kind:"spearStorm", count:5, speed:3.6, color:"#86efac" },
+        { kind:"spearBend", count:7, speed:3.5, color:"#22c55e" }
       ],
       specialAttack:[
+        { kind:"spearBend", count:8, speed:3.7, color:"#4ade80" },
+        { kind:"spearBarrage", count:7, speed:3.8, color:"#86efac" },
+        { kind:"spearStorm", count:6, speed:3.7, color:"#22c55e" }
+      ],
+      finalAttack:[
+        { kind:"spearBend", count:8, speed:3.7, color:"#4ade80" },
+        { kind:"spearBarrage", count:7, speed:3.8, color:"#86efac" },
+        { kind:"spearStorm", count:6, speed:3.7, color:"#22c55e" }
+      ],
+      finalAttack:[
+        { kind:"spearBend", count:12, speed:4.0, color:"#fbbf24" },
+        { kind:"spearBarrage", count:10, speed:4.0, color:"#4ade80" },
+        { kind:"spearStorm", count:10, speed:3.9, color:"#86efac" }
+      ],
+      finalAttack: [
         { kind:"spearStorm", count:4, speed:3.0, color:"#4ade80" },
         { kind:"spearBarrage", count:4, speed:3.1, color:"#86efac" },
         { kind:"spearStorm", count:3, speed:2.9, color:"#22c55e" }
@@ -2109,6 +2211,14 @@ var BossBattle = (function(){
       specialAttack:[
         { kind:"spearStorm", count:4, speed:2.9, color:"#22c55e" },
         { kind:"spearBarrage", count:4, speed:3.0, color:"#4ade80" }
+      ],
+      finalAttack:[
+        { kind:"spearStorm", count:4, speed:2.9, color:"#22c55e" },
+        { kind:"spearBarrage", count:4, speed:3.0, color:"#4ade80" }
+      ],
+      finalAttack: [
+        { kind:"spearStorm", count:4, speed:2.9, color:"#22c55e" },
+        { kind:"spearBarrage", count:4, speed:3.0, color:"#4ade80" }
       ]
     },
     guardian: { name:"СТРАЖ РОЩИ", emoji:"🌿", hp:100, color:"#15803d", isBig:true,
@@ -2124,6 +2234,16 @@ var BossBattle = (function(){
         { kind:"spearBarrage", count:3, speed:2.8, color:"#4ade80" }
       ],
       specialAttack:[
+        { kind:"spearStorm", count:4, speed:2.9, color:"#4ade80" },
+        { kind:"spearBarrage", count:5, speed:3.0, color:"#22c55e" },
+        { kind:"spearStorm", count:4, speed:2.8, color:"#86efac" }
+      ],
+      finalAttack:[
+        { kind:"spearStorm", count:4, speed:2.9, color:"#4ade80" },
+        { kind:"spearBarrage", count:5, speed:3.0, color:"#22c55e" },
+        { kind:"spearStorm", count:4, speed:2.8, color:"#86efac" }
+      ],
+      finalAttack: [
         { kind:"spearStorm", count:4, speed:2.9, color:"#4ade80" },
         { kind:"spearBarrage", count:5, speed:3.0, color:"#22c55e" },
         { kind:"spearStorm", count:4, speed:2.8, color:"#86efac" }
@@ -2173,6 +2293,11 @@ var BossBattle = (function(){
     spearStorm:function(c){ return { type:"spearStorm", count:c.count||6, speed:c.speed||3.2, color:c.color||"#4ade80", radius:c.radius||6 }; },
     spearCircle:function(c){ return { type:"spearCircle", count:c.count||8, speed:c.speed||2.8, color:c.color||"#22c55e", radius:c.radius||6 }; },
     spearBarrage:function(c){ return { type:"spearBarrage", count:c.count||5, speed:c.speed||3.5, color:c.color||"#86efac", radius:c.radius||6 }; },
+    spearBend:function(c){ return { type:"spearBend", count:c.count||5, speed:c.speed||3.2, color:c.color||"#22c55e", radius:c.radius||6 }; },
+    boneWave:function(c){ return { type:"boneWave", count:c.count||6, speed:c.speed||3.0, color:c.color||"#e5e7eb", radius:c.radius||5 }; },
+    gasterHand:function(c){ return { type:"gasterHand", count:c.count||2, speed:c.speed||3.0, color:c.color||"#ffffff", radius:c.radius||10 }; },
+    voidRift:function(c){ return { type:"voidRift", count:c.count||3, speed:c.speed||2.6, color:c.color||"#7c3aed", radius:c.radius||8 }; },
+    mirrorShot:function(c){ return { type:"mirrorShot", count:c.count||4, speed:c.speed||3.0, color:c.color||"#a78bfa", radius:c.radius||6 }; },
     splitField:function(c){ return { type:"splitField", count:c.count||1, speed:c.speed||3.0, color:c.color||"#ffffff", radius:c.radius||6 }; },
     uiCrack:function(c){ return { type:"uiCrack", count:c.count||1, speed:c.speed||2.8, color:c.color||"#60a5fa", radius:c.radius||7 }; },
     codeRain:function(c){ return { type:"codeRain", count:c.count||10, speed:c.speed||3.0, color:c.color||"#4ade80", radius:c.radius||5 }; }
@@ -2338,8 +2463,8 @@ var BossBattle = (function(){
     }
 
     if(!gasterLocked){
-      if(bossKey==="lastbreath") AUDIO.playTrack("sans");
-      else AUDIO.playTrack("battle");
+      var themeMap={ lastbreath:"sans", undyne:"undyne", dragon:"dragon", death:"death", abysseye:"abyss", void:"abyss", distort:"abyss" };
+      AUDIO.playTrack(themeMap[bossKey] || "battle");
     }
     state.lastT=performance.now();
     if(state.rafId) cancelAnimationFrame(state.rafId);
@@ -2536,6 +2661,25 @@ var BossBattle = (function(){
       }
       if(pr.saw){ var angle=Math.atan2(pr.vy,pr.vx)+pr.sawRotate*dt; var spd2=Math.sqrt(pr.vx*pr.vx+pr.vy*pr.vy); pr.vx=Math.cos(angle)*spd2; pr.vy=Math.sin(angle)*spd2; }
       if(pr.wobble){ pr.wobblePhase=(pr.wobblePhase||0)+0.15*dt; pr.x+=Math.sin(pr.wobblePhase)*pr.wobble*dt; }
+      if(pr.bend && !pr.bent){
+        var ratio = pr.y / (bs.boardH||200);
+        if(ratio >= (pr.bendAt||0.45)){
+          pr.bent=true; var spd=pr.speed||Math.abs(pr.vy)||3;
+          pr.vx=(pr.bendSide||1)*spd; pr.vy=0; pr.spearDir=pr.vx>0?3:1;
+        }
+      }
+      if(pr.gasterHand){
+        var gdx=bs.soul.x-pr.x, gdy=bs.soul.y-pr.y, gd=Math.sqrt(gdx*gdx+gdy*gdy)||1;
+        pr.vx+=(gdx/gd)*0.12*dt; pr.vy+=(gdy/gd)*0.12*dt;
+        var gs=Math.sqrt(pr.vx*pr.vx+pr.vy*pr.vy);
+        if(gs>(pr.maxSpeed||3.5)){ pr.vx=pr.vx/gs*(pr.maxSpeed||3.5); pr.vy=pr.vy/gs*(pr.maxSpeed||3.5); }
+      }
+      if(pr.voidRift){
+        if(!pr.r0) pr.r0=pr.r;
+        pr.r=pr.r0*(1+0.3*Math.sin((pr.life||0)*0.2));
+        var vdx=bs.soul.x-pr.x, vdy=bs.soul.y-pr.y, vd=Math.sqrt(vdx*vdx+vdy*vdy)||1;
+        if(vd<80){ bs.soul.x+=(vdx/vd)*0.35*dt; bs.soul.y+=(vdy/vd)*0.35*dt; }
+      }
       if(pr.magnet){
         var dmx=bs.soul.x-pr.x, dmy=bs.soul.y-pr.y;
         var dm=Math.sqrt(dmx*dmx+dmy*dmy)||1;
@@ -2784,14 +2928,15 @@ var BossBattle = (function(){
       if(atkV){ applyDifficultyToAttack(atkV, prof); bs.pendingAttacks.push({ attack:atkV, delay:0 }); try{ AUDIO.shoot(); }catch(e){} return; }
     }
 
-    // Special finisher when boss HP is 1-10
-    if(bs.bossHp >= 1 && bs.bossHp <= 10 && bs.boss.specialAttack && bs.boss.specialAttack.length){
-      document.getElementById("utBossPhase").textContent="💀 SPECIAL";
+    // Special / FINAL finisher when boss HP is 1-10
+    if(bs.bossHp >= 1 && bs.bossHp <= 10 && ((bs.boss.finalAttack&&bs.boss.finalAttack.length) || (bs.boss.specialAttack&&bs.boss.specialAttack.length))){
+      document.getElementById("utBossPhase").textContent="💀 FINAL";
       showBossPhrase(bs.boss.specialDialog || "* ФИНАЛЬНАЯ АТАКА!");
       try{ AUDIO.superCombo(); }catch(e){}
+      var finList = (bs.boss.finalAttack && bs.boss.finalAttack.length) ? bs.boss.finalAttack : bs.boss.specialAttack;
       var cumS = 0;
-      for(var si=0; si<bs.boss.specialAttack.length; si++){
-        var cfgS = bs.boss.specialAttack[si];
+      for(var si=0; si<finList.length; si++){
+        var cfgS = finList[si];
         var atkS = buildAttack({ kind:cfgS.kind, count:cfgS.count, speed:cfgS.speed, color:cfgS.color||bs.boss.color, spreadAngle:cfgS.spreadAngle, gap:cfgS.gap, spacing:cfgS.spacing, wobble:cfgS.wobble, rotate:cfgS.rotate, width:cfgS.width, amplitude:cfgS.amplitude });
         if(!atkS) continue;
         applyDifficultyToAttack(atkS, prof);
@@ -3064,15 +3209,14 @@ var BossBattle = (function(){
       }
     }
     else if(type==="spearStorm"){
-      // sequential spears from random directions
       for(var i=0;i<atk.count;i++){
-        var dir = Math.floor(Math.random()*4); // 0 up 1 right 2 down 3 left
+        var dir = i % 4;
         var sx, sy, vx, vy;
-        if(dir===0){ sx=rand(20,Wb-20); sy=-20; vx=0; vy=atk.speed; }
-        else if(dir===1){ sx=Wb+20; sy=rand(20,Hb-20); vx=-atk.speed; vy=0; }
-        else if(dir===2){ sx=rand(20,Wb-20); sy=Hb+20; vx=0; vy=-atk.speed; }
-        else { sx=-20; sy=rand(20,Hb-20); vx=atk.speed; vy=0; }
-        addProjectile({ x:sx, y:sy, vx:vx, vy:vy, r:atk.radius, life:220+i*8, color:atk.color, spear:true, spearDir:dir, delay:i*10 });
+        if(dir===0){ sx=Wb/2; sy=-28; vx=0; vy=atk.speed; }
+        else if(dir===1){ sx=Wb+28; sy=Hb/2; vx=-atk.speed; vy=0; }
+        else if(dir===2){ sx=Wb/2; sy=Hb+28; vx=0; vy=-atk.speed; }
+        else { sx=-28; sy=Hb/2; vx=atk.speed; vy=0; }
+        addProjectile({ x:sx, y:sy, vx:vx, vy:vy, r:atk.radius, life:230+i*6, color:atk.color, spear:true, spearDir:dir, delay:i*11 });
       }
     }
     else if(type==="spearCircle"){
@@ -3097,6 +3241,34 @@ var BossBattle = (function(){
         else if(dir===2){ sx=Wb/2; sy=Hb+25; vx=0; vy=-atk.speed; }
         else { sx=-25; sy=Hb/2; vx=atk.speed; vy=0; }
         addProjectile({ x:sx, y:sy, vx:vx, vy:vy, r:atk.radius, life:230, color:atk.color, spear:true, spearDir:dir, delay:i*12 });
+      }
+    }
+    else if(type==="spearBend"){
+      for(var i=0;i<atk.count;i++){
+        var side = (i%2===0) ? 1 : -1;
+        addProjectile({ x:Wb/2+(i%3-1)*8, y:-30-i*6, vx:0, vy:atk.speed, r:atk.radius, life:280, color:atk.color, spear:true, spearDir:0, bend:true, bendAt:0.42+(i%3)*0.04, bendSide:side, speed:atk.speed, delay:i*14 });
+      }
+    }
+    else if(type==="boneWave"){
+      for(var i=0;i<atk.count;i++){
+        var fromLeft=i%2===0;
+        addProjectile({ x:fromLeft?-20:Wb+20, y:Hb*0.25+(i%4)*(Hb*0.15), vx:fromLeft?atk.speed:-atk.speed, vy:Math.sin(i)*0.4, r:atk.radius, life:240, color:atk.color, delay:i*8 });
+      }
+    }
+    else if(type==="gasterHand"){
+      for(var i=0;i<atk.count;i++){
+        addProjectile({ x:rand(Wb*0.2,Wb*0.8), y:-40, vx:0, vy:atk.speed*0.6, r:atk.radius, life:200, color:atk.color, gasterHand:true, delay:i*18, maxSpeed:atk.speed });
+      }
+    }
+    else if(type==="voidRift"){
+      for(var i=0;i<atk.count;i++){
+        addProjectile({ x:rand(30,Wb-30), y:rand(30,Hb-30), vx:0, vy:0, r:atk.radius, life:120, color:atk.color, voidRift:true, delay:i*15 });
+      }
+    }
+    else if(type==="mirrorShot"){
+      for(var i=0;i<atk.count;i++){
+        addProjectile({ x:10, y:Hb/2+(i-atk.count/2)*18, vx:atk.speed, vy:0, r:atk.radius, life:200, color:atk.color, delay:i*6 });
+        addProjectile({ x:Wb-10, y:Hb/2+(i-atk.count/2)*18, vx:-atk.speed, vy:0, r:atk.radius, life:200, color:atk.color, delay:i*6 });
       }
     }
 
@@ -3421,8 +3593,17 @@ var BossBattle = (function(){
   })();
 
   function pickBossKey(bossesKilled){
-    if(bossesKilled>0 && bossesKilled%3===2) return UT_BIG_BOSS_KEYS[Math.floor(bossesKilled/3)%UT_BIG_BOSS_KEYS.length];
-    return UT_BOSS_KEYS[bossesKilled%UT_BOSS_KEYS.length];
+    // Doodle progression: weakest → strongest by HP, then cycle
+    if(!pickBossKey._order){
+      var keys = UT_BOSS_KEYS.concat(UT_BIG_BOSS_KEYS);
+      keys.sort(function(a,b){
+        var ha=(UT_BOSSES[a]&&UT_BOSSES[a].hp)||0, hb=(UT_BOSSES[b]&&UT_BOSSES[b].hp)||0;
+        return ha-hb;
+      });
+      pickBossKey._order = keys;
+    }
+    var order = pickBossKey._order;
+    return order[bossesKilled % order.length];
   }
 
   document.getElementById("segBossCtrl").addEventListener("click", function(e){
@@ -3443,7 +3624,13 @@ var BossBattle = (function(){
     rushState.index = 0;
     rushState.wins = 0;
     rushState.onDone = onDone || null;
-    rushState.queue = UT_BOSS_KEYS.concat(UT_BIG_BOSS_KEYS);
+    // weakest → strongest by HP
+    var allKeys = UT_BOSS_KEYS.concat(UT_BIG_BOSS_KEYS);
+    allKeys.sort(function(a,b){
+      var ha=(UT_BOSSES[a]&&UT_BOSSES[a].hp)||0, hb=(UT_BOSSES[b]&&UT_BOSSES[b].hp)||0;
+      return ha-hb;
+    });
+    rushState.queue = allKeys;
     runNextRushBoss();
   }
 
@@ -3451,10 +3638,22 @@ var BossBattle = (function(){
     if(rushState.index >= rushState.queue.length){
       rushState.active = false;
       try{ AUDIO.bossDie(); }catch(e){}
+      try{ AUDIO.playTrack("rushwin"); }catch(e){}
       BEST.setIfBetter("bosses", rushState.wins);
-      FX.toast("🏆 Boss Rush пройден! Боссов: "+rushState.wins);
+      try{ COINS.add(150 + rushState.wins*10); }catch(e){}
+      try{ PLAYER.addEXP(50 + rushState.wins*5); }catch(e){}
+      FX.toast("🏆 BOSS RUSH CLEAR!");
+      setTimeout(function(){ FX.toast("💰 Награда +монеты · EXP · "+rushState.wins+" боссов"); }, 800);
+      // victory overlay
+      try{
+        var ov=document.createElement("div");
+        ov.id="rushVictoryFlash";
+        ov.style.cssText="position:fixed;inset:0;z-index:99950;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,0,0,.85);color:#f6e6a8;text-align:center;padding:24px;";
+        ov.innerHTML="<div style=\"font-size:3rem\">👑</div><div style=\"font-size:1.6rem;font-weight:900;letter-spacing:.12em;margin-top:10px\">BOSS RUSH</div><div style=\"font-size:1.1rem;margin-top:6px\">ПОБЕДА</div><div style=\"margin-top:14px;color:#bbf7d0\">Боссов: "+rushState.wins+"</div><button id=\"rushVicOk\" style=\"margin-top:22px;padding:12px 28px;border-radius:12px;border:2px solid #d4af37;background:rgba(212,175,55,.2);color:#f6e6a8;font-weight:900\">В меню</button>";
+        document.body.appendChild(ov);
+        document.getElementById("rushVicOk").onclick=function(){ try{ ov.remove(); }catch(e){} GameManager.goMenu(); };
+      }catch(e){ GameManager.goMenu(); }
       if(rushState.onDone) rushState.onDone(true, rushState.wins);
-      GameManager.goMenu();
       return;
     }
     var key = rushState.queue[rushState.index];
@@ -3525,16 +3724,16 @@ var DoodleGame = (function(){
   function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
   function css(v,fb){ try{ var s=getComputedStyle(document.body).getPropertyValue(v).trim(); return s||fb; }catch(e){ return fb; } }
 
-  var GRAVITY=0.42, JUMP_V=-13.0, SPRING_V=-22.0, MAX_FALL=16.5;
-  var MAX_HSPEED=8.2, MOVE_ACCEL=0.95, FRICTION=0.86;
+  var GRAVITY=0.40, JUMP_V=-13.6, SPRING_V=-23.5, MAX_FALL=17.2;
+  var MAX_HSPEED=8.8, MOVE_ACCEL=1.05, FRICTION=0.84;
   var PLAYER_W=42, PLAYER_H=46, PLATFORM_W=74, PLATFORM_H=14;
   var CAMERA_DEAD=0.40, COYOTE_MAX=8, JUMP_BUFFER=8;
   var MAX_JUMP_HEIGHT=(JUMP_V*JUMP_V)/(2*GRAVITY);
   var MAX_JUMP_AIRTIME_FRAMES=Math.abs(JUMP_V)/GRAVITY;
   var MAX_JUMP_HORIZ=MAX_HSPEED*MAX_JUMP_AIRTIME_FRAMES;
   var SAFE_HORIZ=MAX_JUMP_HORIZ*0.72;
-  var MAX_PARTICLES = 120;
-  var MAX_TRAIL = 60;
+  var MAX_PARTICLES = 180;
+  var MAX_TRAIL = 80;
 
   function makeGenerator(){
     var prof = DIFFICULTY.current();
@@ -3596,6 +3795,9 @@ var DoodleGame = (function(){
     game.controlInverted=false; game.soulFrozen=0;
     game.survivedComboThisBattle=false;
     game.nextBossAt=prof.bossTriggerM;
+    game.combo=0; game.comboTimer=0; game.maxCombo=0;
+    game.lastMilestone=0; game.perfectLanding=0;
+    game.bgHue=0;
     game.generator=makeGenerator();
     game.platforms=game.generator.init();
     game.coins=[];
@@ -3769,7 +3971,18 @@ var DoodleGame = (function(){
         else try{ AUDIO.jump(); }catch(e){}
         p.y=pl2.y-p.h; p.vy=jv; p.onPlatform=pl2; p.squash=1; p.coyote=0; p.jumpBuffer=0;
         if(pl2.type==="ghost"){ pl2.ghostTimer=120; try{ AUDIO.ghostPop(); }catch(e){} }
+        // combo: consecutive landings within window
+        game.comboTimer = 90;
+        game.combo = (game.combo||0) + 1;
+        if(game.combo > (game.maxCombo||0)) game.maxCombo = game.combo;
+        updateComboHUD();
+        if(game.combo >= 5 && game.combo % 5 === 0){
+          try{ AUDIO.record(); }catch(e){}
+          FX.toast("🔥 COMBO x"+game.combo);
+          if(SETTINGS.get("shake")){ game.shake.t=10; game.shake.x=rand(-4,4); game.shake.y=rand(-3,3); }
+        }
         spawnLandParticles(p.x+p.w/2,p.y+p.h); spawnJumpEffect(p.x+p.w/2,p.y+p.h);
+        if(game.combo >= 3) spawnComboBurst(p.x+p.w/2, p.y+p.h);
         Stats.add("jumps");
         if(SETTINGS.get("shake") && Math.abs(jv)>10){ game.shake.t=6; game.shake.x=rand(-2.5,2.5); game.shake.y=rand(-1.5,0); }
       }
@@ -3793,9 +4006,24 @@ var DoodleGame = (function(){
     }
   }
 
-  function spawnCoinParticles(c){ for(var i=0;i<8;i++){ if(game.particles.length>=MAX_PARTICLES) break; game.particles.push({ x:c.x, y:c.y, vx:rand(-2.4,2.4), vy:rand(-3.6,-0.8), life:1, decay:rand(0.02,0.04), r:rand(2,4), color:"#f6e6a8", glow:true }); } }
+  function spawnCoinParticles(c){ for(var i=0;i<14;i++){ if(game.particles.length>=MAX_PARTICLES) break; game.particles.push({ x:c.x, y:c.y, vx:rand(-3.2,3.2), vy:rand(-4.5,-0.6), life:1, decay:rand(0.018,0.035), r:rand(2,5), color:Math.random()<0.5?"#f6e6a8":"#fbbf24", glow:true }); } }
   function spawnBreakParticles(pl){ for(var i=0;i<12;i++){ if(game.particles.length>=MAX_PARTICLES) break; game.particles.push({ x:pl.x+rand(0,pl.w), y:pl.y+rand(0,pl.h), vx:rand(-4,4), vy:rand(-3,3), life:1, decay:rand(0.02,0.05), r:rand(2,6), color:Math.random()<0.5?"#8a8a8a":"#6a6a6a", glow:false }); } }
-  function spawnLandParticles(x,y){ for(var i=0;i<5;i++){ if(game.particles.length>=MAX_PARTICLES) break; game.particles.push({ x:x+rand(-12,12), y:y, vx:rand(-2,2), vy:rand(-2,0), life:1, decay:rand(0.03,0.06), r:rand(1.5,3), color:"#d4af37", glow:true }); } }
+  function spawnLandParticles(x,y){ for(var i=0;i<10;i++){ if(game.particles.length>=MAX_PARTICLES) break; game.particles.push({ x:x+rand(-16,16), y:y, vx:rand(-3,3), vy:rand(-3.5,-0.2), life:1, decay:rand(0.025,0.05), r:rand(1.5,4), color:Math.random()<0.4?"#f6e6a8":"#d4af37", glow:true }); } }
+  function spawnComboBurst(x,y){ for(var i=0;i<14;i++){ if(game.particles.length>=MAX_PARTICLES) break; var ang=Math.random()*Math.PI*2, spd=2+Math.random()*4; game.particles.push({ x:x, y:y, vx:Math.cos(ang)*spd, vy:Math.sin(ang)*spd-1, life:1, decay:0.03, r:rand(2,5), color:game.combo>=10?"#f87171":"#fbbf24", glow:true }); } }
+  function updateComboHUD(){
+    var el=document.getElementById("hudCombo"); if(!el) return;
+    if((game.combo||0)<2){ el.classList.remove("on","big"); return; }
+    el.textContent="COMBO x"+game.combo;
+    el.classList.add("on");
+    el.classList.toggle("big", game.combo>=10);
+  }
+  function showHeightMilestone(m){
+    var el=document.getElementById("heightToast"); if(!el) return;
+    el.textContent=m+"m";
+    el.classList.add("on");
+    try{ AUDIO.record(); }catch(e){}
+    setTimeout(function(){ try{ el.classList.remove("on"); }catch(e){} }, 1200);
+  }
   function spawnJumpEffect(x,y){ var fxItem=SHOP.getEquipped("jumpfx"); if(!fxItem||!fxItem.emoji) return; for(var i=0;i<4;i++){ if(game.particles.length>=MAX_PARTICLES) break; game.particles.push({ x:x+rand(-10,10), y:y+rand(-4,4), vx:rand(-2.5,2.5), vy:rand(-2.5,-0.5), life:1, decay:0.04, r:rand(3,5), emoji:fxItem.emoji }); } }
   function spawnTrailParticle(){
     var p=game.player; if(!p) return;
@@ -3865,7 +4093,23 @@ var DoodleGame = (function(){
     game.coins=game.coins.filter(function(co){ return co.y<bottomCut && !co.taken; });
     updateParticles(dt);
 
-    var newScore=game.heightMeters+game.coinsThisRun*2+game.bossesKilled*100;
+    // combo decay
+    if(game.comboTimer>0){ game.comboTimer-=dt; if(game.comboTimer<=0){ game.combo=0; updateComboHUD(); } }
+
+    // height milestones every 100m
+    var hm=Math.floor(game.heightMeters||0);
+    var milestone=Math.floor(hm/100)*100;
+    if(milestone>=100 && milestone>(game.lastMilestone||0)){
+      game.lastMilestone=milestone;
+      showHeightMilestone(milestone);
+      // reward coins at milestones
+      COINS.add(Math.min(25, 5+Math.floor(milestone/100)));
+      updateHUD();
+    }
+    game.bgHue = (game.heightMeters||0) * 0.15;
+
+    var comboBonus = Math.min(50, (game.combo||0)*2);
+    var newScore=game.heightMeters+game.coinsThisRun*2+game.bossesKilled*100+comboBonus;
     if(newScore!==game.score){ game.score=newScore; updateHUD(); }
     if(game.shake.t>0){ game.shake.t-=dt; if(game.shake.t<=0){ game.shake.x=0; game.shake.y=0; } }
     if(game.player.y>H+60){ showGameOver("fall"); return; }
@@ -3890,7 +4134,7 @@ var DoodleGame = (function(){
   }
 
   var starsCache=null;
-  function ensureStars(){ if(!starsCache||starsCache.w!==W||starsCache.h!==H){ starsCache={w:W,h:H,arr:[]}; var n=Math.floor(W*H/9000); for(var i=0;i<n;i++) starsCache.arr.push({ x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.6+0.4, a:Math.random()*0.5+0.1, tw:Math.random()*Math.PI*2 }); } }
+  function ensureStars(){ if(!starsCache||starsCache.w!==W||starsCache.h!==H){ starsCache={w:W,h:H,arr:[]}; var n=Math.floor(W*H/5500); for(var i=0;i<n;i++) starsCache.arr.push({ x:Math.random()*W, y:Math.random()*H, r:Math.random()*2.0+0.3, a:Math.random()*0.55+0.12, tw:Math.random()*Math.PI*2 }); } }
   function roundRect(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
   function getSkinColors(){ var s=SHOP.getEquipped("skins")||{colors:["#f6e6a8","#d4af37","#8f6f1a"]}; return s.colors||["#f6e6a8","#d4af37","#8f6f1a"]; }
   function getPlatformColors(){ var p=SHOP.getEquipped("platforms")||{colors:["#1a1a1a","#d4af37"]}; return p.colors||["#1a1a1a","#d4af37"]; }
@@ -3900,20 +4144,31 @@ var DoodleGame = (function(){
     ctx.save();
     var sx=game.shake.t>0?game.shake.x:0, sy=game.shake.t>0?game.shake.y:0;
     ctx.translate(sx,sy);
+    var hue = (game.bgHue||0) % 360;
     var bgGrad=ctx.createLinearGradient(0,0,0,H);
-    bgGrad.addColorStop(0,css("--bg-1","#050505"));
-    bgGrad.addColorStop(0.5,css("--bg-2","#0d0d0d"));
-    bgGrad.addColorStop(1,css("--bg-3","#141414"));
+    bgGrad.addColorStop(0,"hsl("+((220+hue*0.2)%360)+",35%,6%)");
+    bgGrad.addColorStop(0.45,"hsl("+((260+hue*0.15)%360)+",30%,8%)");
+    bgGrad.addColorStop(1,"hsl("+((30+hue*0.1)%360)+",25%,7%)");
     ctx.fillStyle=bgGrad; ctx.fillRect(-10,-10,W+20,H+20);
+    // nebula blobs
+    var camN=game.cameraY*0.05, now=performance.now();
+    for(var ni=0;ni<3;ni++){
+      var nx=(W*0.2+ni*W*0.3+Math.sin(now*0.0002+ni)*40)%W;
+      var ny=((H*0.3+ni*80+camN)%(H+100));
+      var ng=ctx.createRadialGradient(nx,ny,0,nx,ny,120+ni*30);
+      ng.addColorStop(0,"hsla("+((ni*50+hue)%360)+",70%,50%,0.08)");
+      ng.addColorStop(1,"transparent");
+      ctx.fillStyle=ng; ctx.fillRect(nx-150,ny-150,300,300);
+    }
     ensureStars();
-    var g2=css("--gold-2","#d4af37"), camOffset=game.cameraY*0.12, now=performance.now();
+    var g2=css("--gold-2","#d4af37"), camOffset=game.cameraY*0.12;
     for(var i=0;i<starsCache.arr.length;i++){
       var s=starsCache.arr[i];
-      var y=((s.y+camOffset)%(H+40)); if(y<0) y+=H+40;
-      var tw=0.6+0.4*Math.sin(now*0.002+s.tw);
+      var y=((s.y+camOffset*(0.08+s.r*0.04))%(H+40)); if(y<0) y+=H+40;
+      var tw=0.55+0.45*Math.sin(now*0.0025+s.tw);
       ctx.globalAlpha=s.a*tw;
-      ctx.fillStyle=(i%7===0)?g2:"#ffffff";
-      ctx.beginPath(); ctx.arc(s.x,y,s.r,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle=(i%5===0)?g2:(i%11===0)?"#93c5fd":"#ffffff";
+      ctx.beginPath(); ctx.arc(s.x,y,s.r*(i%9===0?1.6:1),0,Math.PI*2); ctx.fill();
     }
     ctx.globalAlpha=1;
     var trail=SHOP.getEquipped("trails");
@@ -3951,9 +4206,11 @@ var DoodleGame = (function(){
     else if(pl.type==="bouncy"){ fill="#10b981"; stroke="#34d399"; }
     else if(pl.type==="laser"){ fill="#7f1d1d"; stroke="#ef4444"; }
     ctx.globalAlpha=alpha;
+    ctx.shadowColor=stroke; ctx.shadowBlur=pl.type==="normal"?6:12;
     ctx.fillStyle=fill; ctx.strokeStyle=stroke;
-    roundRect(ctx,0,0,pl.w,pl.h,7); ctx.fill(); ctx.lineWidth=1.5; ctx.stroke();
-    if(alpha>0.3){ var grd=ctx.createLinearGradient(0,0,0,pl.h); grd.addColorStop(0,"rgba(255,255,255,.18)"); grd.addColorStop(1,"rgba(255,255,255,0)"); ctx.fillStyle=grd; roundRect(ctx,2,1,pl.w-4,pl.h/2,5); ctx.fill(); }
+    roundRect(ctx,0,0,pl.w,pl.h,8); ctx.fill(); ctx.lineWidth=2; ctx.stroke();
+    ctx.shadowBlur=0;
+    if(alpha>0.3){ var grd=ctx.createLinearGradient(0,0,0,pl.h); grd.addColorStop(0,"rgba(255,255,255,.28)"); grd.addColorStop(0.5,"rgba(255,255,255,.06)"); grd.addColorStop(1,"rgba(0,0,0,.15)"); ctx.fillStyle=grd; roundRect(ctx,2,1,pl.w-4,pl.h-2,6); ctx.fill(); }
     if(pl.type==="spring"){ var sx2=pl.w/2-6, sy2=-pl.springAnim*10; ctx.fillStyle="#f87171"; ctx.fillRect(sx2,-14+sy2,12,14+pl.springAnim*8); ctx.fillStyle="#f6e6a8"; ctx.fillRect(sx2-2,-18+sy2,16,6); }
     if(pl.type==="moving"){ ctx.fillStyle="rgba(96,165,250,.8)"; ctx.font="bold 12px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(pl.vx>0?"▶":"◀",pl.w/2,pl.h/2+0.5); }
     if(pl.type==="ghost"){ ctx.fillStyle="rgba(165,180,252,.9)"; ctx.font="bold 14px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("👻",pl.w/2,pl.h/2); }
@@ -4030,6 +4287,7 @@ var DoodleGame = (function(){
     document.getElementById("touchCtrl").classList.remove("on");
     document.getElementById("zoneOverlay").classList.remove("on");
 
+    if((game.maxCombo||0)>=10) FX.toast("Макс комбо: x"+game.maxCombo);
     var isRecord = BEST.setIfBetter("doodle", game.score);
     if(isRecord){ setTimeout(function(){ try{ AUDIO.record(); }catch(e){} },350); }
 
