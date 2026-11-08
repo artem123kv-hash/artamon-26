@@ -1,18 +1,15 @@
-name = "chka-api"
-main = "worker.js"
-compatibility_date = "2026-11-08"
+name = "artamon-api"
+main = "Artamon_2.9_worker_v29_ready.js"
+compatibility_date = "2024-01-01"
 
-[[d1_databases]]
-binding = "DB"
-database_name = "chka-db"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+[[kv_namespaces]]
+binding = "ARTAMON_USERS"
+id = "a067e41c69ac4a869be1e021d2b7c2df"
 
-# Set secret separately; never commit it:
-# npx wrangler secret put ADMIN_TOKEN
-#
-# Production TODO:
-# - bind verified Artamon account IDs to registrations/admin access
-# - add Durable Object match rooms and realtime broadcasts
-# - implement WebRTC signaling and spectator streams
-# - configure CORS to the exact deployed Control Room origin
-# - implement full tournament seeding and authoritative game results
+[[kv_namespaces]]
+binding = "ARTAMON_POSTS"
+id = "855a891057a9436196cd813b9d3166ac"
+
+[[kv_namespaces]]
+binding = "ARTAMON_SESSIONS"
+id = "ac6448224dc94808965aa04be787b736"
