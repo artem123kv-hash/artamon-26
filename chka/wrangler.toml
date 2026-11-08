@@ -1,0 +1,18 @@
+name = "chka-api"
+main = "worker.js"
+compatibility_date = "2026-11-08"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "chka-db"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+# Set secret separately; never commit it:
+# npx wrangler secret put ADMIN_TOKEN
+#
+# Production TODO:
+# - bind verified Artamon account IDs to registrations/admin access
+# - add Durable Object match rooms and realtime broadcasts
+# - implement WebRTC signaling and spectator streams
+# - configure CORS to the exact deployed Control Room origin
+# - implement full tournament seeding and authoritative game results

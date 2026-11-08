@@ -1,0 +1,12 @@
+PRAGMA foreign_keys=ON;
+CREATE TABLE IF NOT EXISTS tournaments(id TEXT PRIMARY KEY,name TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'scheduled',created_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS clans(id TEXT PRIMARY KEY,name TEXT NOT NULL UNIQUE,owner_account_id TEXT,created_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS clan_members(clan_id TEXT NOT NULL REFERENCES clans(id) ON DELETE CASCADE,account_id TEXT NOT NULL,role TEXT NOT NULL DEFAULT 'member',joined_at INTEGER NOT NULL,PRIMARY KEY(clan_id,account_id));
+CREATE TABLE IF NOT EXISTS clan_slot_purchases(id TEXT PRIMARY KEY,clan_id TEXT NOT NULL REFERENCES clans(id) ON DELETE CASCADE,slots_added INTEGER NOT NULL,xp_spent INTEGER NOT NULL,created_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS registrations(id TEXT PRIMARY KEY,tournament_id TEXT NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,clan_id TEXT NOT NULL REFERENCES clans(id),account_id TEXT NOT NULL,registered_at INTEGER NOT NULL,UNIQUE(tournament_id,account_id));
+CREATE TABLE IF NOT EXISTS matches(id TEXT PRIMARY KEY,tournament_id TEXT NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,round TEXT NOT NULL,clan_a TEXT NOT NULL,clan_b TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'waiting',winner_clan TEXT,created_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS player_battles(id TEXT PRIMARY KEY,match_id TEXT NOT NULL REFERENCES matches(id) ON DELETE CASCADE,account_id TEXT NOT NULL,clan_id TEXT NOT NULL,boss_key TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'waiting',player_hp INTEGER,boss_hp INTEGER,completed_at INTEGER,UNIQUE(match_id,account_id));
+CREATE TABLE IF NOT EXISTS match_events(id TEXT PRIMARY KEY,match_id TEXT NOT NULL REFERENCES matches(id) ON DELETE CASCADE,account_id TEXT,event_type TEXT NOT NULL,payload TEXT,created_at INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_matches_tournament ON matches(tournament_id);
+CREATE INDEX IF NOT EXISTS idx_registrations_tournament ON registrations(tournament_id);
+CREATE INDEX IF NOT EXISTS idx_player_battles_match ON player_battles(match_id);
