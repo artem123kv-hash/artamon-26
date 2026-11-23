@@ -151,15 +151,35 @@ const CORS = {
                                                                                                                                                                                                                                                     { id: "phoenix_1",icon: "🔥",  name: "Феникс",         price: 1000000, rarity: "legendary", bonus: 12, enabled: true },
                                                                                                                                                                                                                                                       { id: "skull_1",  icon: "☠️",  name: "Череп",          price: 2500000, rarity: "legendary", bonus: 13, enabled: true },
                                                                                                                                                                                                                                                         { id: "inf_1",    icon: "💠",  name: "Вечность",       price: 5000000, rarity: "legendary", bonus: 15, enabled: true }
-                                                                                                                                                                                                                                                        ];
+                                                                                                                                                                                                                                                        ,
+  {"id": "comet_1", "icon": "☄", "name": "Осколок кометы", "price": 18000, "rarity": "rare", "bonus": 5, "enabled": true},
+  {"id": "moon_1", "icon": "☾", "name": "Лунный осколок", "price": 32000, "rarity": "rare", "bonus": 6, "enabled": true},
+  {"id": "wing_1", "icon": "✦", "name": "Крыло феникса", "price": 85000, "rarity": "epic", "bonus": 8, "enabled": true},
+  {"id": "orb_1", "icon": "◉", "name": "Орбита времени", "price": 140000, "rarity": "epic", "bonus": 9, "enabled": true},
+  {"id": "rune_1", "icon": "ᛟ", "name": "Руна хранителя", "price": 220000, "rarity": "epic", "bonus": 10, "enabled": true},
+  {"id": "heart_1", "icon": "♥", "name": "Сердце звезды", "price": 420000, "rarity": "legendary", "bonus": 12, "enabled": true},
+  {"id": "prism_1", "icon": "◇", "name": "Призма света", "price": 750000, "rarity": "legendary", "bonus": 14, "enabled": true},
+  {"id": "nova_1", "icon": "✺", "name": "Сверхновая", "price": 1500000, "rarity": "legendary", "bonus": 16, "enabled": true},
+  {"id": "void_1", "icon": "◈", "name": "Ядро пустоты", "price": 3200000, "rarity": "mythic", "bonus": 18, "enabled": true},
+  {"id": "aether_1", "icon": "✧", "name": "Эфирный артефакт", "price": 6500000, "rarity": "mythic", "bonus": 20, "enabled": true},
+  {"id": "singularity_1", "icon": "●", "name": "Сингулярность", "price": 12000000, "rarity": "mythic", "bonus": 24, "enabled": true},
+  {"id": "artamon_heart_1", "icon": "✚", "name": "Сердце Артамона", "price": 25000000, "rarity": "mythic", "bonus": 30, "enabled": true}
+];
                                                                                                                                                                                                                                                         const UPGRADE_CONFIG_DEFAULT = { commission: 0.05, minMultiplier: 1.1, maxMultiplier: 100, sellPercent: 0.7, enabled: true };
 
                                                                                                                                                                                                                                                         async function getUpgradeItems(env) {
-                                                                                                                                                                                                                                                          const saved = await kvGet(env, "upgrade:items", null);
-                                                                                                                                                                                                                                                            if (saved && Array.isArray(saved) && saved.length) return saved;
-                                                                                                                                                                                                                                                              return UPGRADE_ITEMS_DEFAULT.slice();
-                                                                                                                                                                                                                                                              }
-                                                                                                                                                                                                                                                              async function saveUpgradeItems(env, items) { return await kvSet(env, "upgrade:items", items); }
+  const saved = await kvGet(env, "upgrade:items", null);
+  if (!Array.isArray(saved) || !saved.length) return UPGRADE_ITEMS_DEFAULT.slice();
+  const migrated = Number(await kvGet(env, "upgrade:catalog:v29", 0)) >= 1;
+  if (migrated) return saved;
+  const byId = new Map(saved.filter(x => x && x.id).map(x => [String(x.id), x]));
+  for (const item of UPGRADE_ITEMS_DEFAULT) if (!byId.has(item.id)) byId.set(item.id, item);
+  const merged = Array.from(byId.values());
+  await saveUpgradeItems(env, merged);
+  await kvSet(env, "upgrade:catalog:v29", 1);
+  return merged;
+}
+async function saveUpgradeItems(env, items) { return await kvSet(env, "upgrade:items", items); }
                                                                                                                                                                                                                                                               async function getUpgradeConfig(env) {
                                                                                                                                                                                                                                                                 const saved = await kvGet(env, "upgrade:config", null);
                                                                                                                                                                                                                                                                   if (saved && typeof saved === "object") return Object.assign({}, UPGRADE_CONFIG_DEFAULT, saved);
@@ -269,7 +289,142 @@ const CORS = {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                       // ============================================================
                                                                                                                                                                                                                                                                                                                                                                                                                                                                       // АККАУНТЫ
                                                                                                                                                                                                                                                                                                                                                                                                                                                                       // ============================================================
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                      async function handleRegister(req, env) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                      const ARTAMON_GOOGLE_CLIENT_ID="1091123747547-r3v16hr1mjs5qsp9sfoept9ua1gan2k0.apps.googleusercontent.com";
+function v29B64UrlBytes(value){
+  let s=String(value||"").replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";
+  const raw=atob(s),out=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)out[i]=raw.charCodeAt(i);return out;
+}
+async function v29VerifyGoogleCredential(token){
+  const parts=String(token||"").split(".");if(parts.length!==3)throw new Error("Некорректный Google credential");
+  const header=JSON.parse(new TextDecoder().decode(v29B64UrlBytes(parts[0]))),claims=JSON.parse(new TextDecoder().decode(v29B64UrlBytes(parts[1])));
+  if(header.alg!=="RS256"||!header.kid)throw new Error("Неподдерживаемая подпись Google");
+  const response=await fetch("https://www.googleapis.com/oauth2/v3/certs",{cf:{cacheTtl:300,cacheEverything:true}});
+  if(!response.ok)throw new Error("Не удалось проверить подпись Google");
+  const jwks=await response.json(),jwk=(jwks.keys||[]).find(k=>k.kid===header.kid&&k.kty==="RSA");
+  if(!jwk)throw new Error("Ключ подписи Google не найден");
+  const key=await crypto.subtle.importKey("jwk",jwk,{name:"RSASSA-PKCS1-v1_5",hash:"SHA-256"},false,["verify"]);
+  const valid=await crypto.subtle.verify("RSASSA-PKCS1-v1_5",key,v29B64UrlBytes(parts[2]),new TextEncoder().encode(parts[0]+"."+parts[1]));
+  if(!valid)throw new Error("Подпись Google недействительна");
+  const now=Math.floor(Date.now()/1000),aud=Array.isArray(claims.aud)?claims.aud:[claims.aud];
+  if(!aud.includes(ARTAMON_GOOGLE_CLIENT_ID))throw new Error("Google Client ID не совпадает");
+  if(!["accounts.google.com","https://accounts.google.com"].includes(claims.iss))throw new Error("Неверный издатель Google");
+  if(!claims.exp||Number(claims.exp)<=now)throw new Error("Срок Google credential истёк");
+  if(claims.email_verified!==true&&claims.email_verified!=="true")throw new Error("Google email не подтверждён");
+  if(!claims.sub||!claims.email)throw new Error("Google не вернул обязательные данные аккаунта");
+  return claims;
+}
+async function v29GoogleAuth(req,env){
+  const body=await readBody(req);let claims;
+  try{claims=await v29VerifyGoogleCredential(body.credential)}catch(e){return err(e.message||"Не удалось проверить Google аккаунт",401)}
+  const sub=String(claims.sub),email=String(claims.email).toLowerCase(),mapKey="google:"+sub;
+  const mapped=await env.ARTAMON_USERS.get(mapKey);
+  const authHeader=req.headers.get("Authorization")||"",hasSession=authHeader.startsWith("Bearer ");
+  if(hasSession){
+    const auth=await v29Require(req,env);if(auth.error)return auth.error;
+    const existing=String(auth.user.googleSub||"");
+    if(mapped&&mapped!==auth.user.nick)return err("Этот Google аккаунт уже привязан к другому профилю Artamon",409);
+    if(existing&&existing!==sub)return err("К профилю уже привязан другой Google аккаунт",409);
+    auth.user.googleSub=sub;auth.user.googleEmail=email;await saveUser(env,auth.user);
+    await env.ARTAMON_USERS.put(mapKey,auth.user.nick);
+    return json({ok:true,linked:true,user:publicUser(auth.user),token:authHeader.slice(7).trim()});
+  }
+  if(mapped){
+    const user=await getUser(env,mapped);if(!user)return err("Привязанный профиль Artamon не найден. Обратитесь в поддержку.",404);
+    if(user.googleSub&&user.googleSub!==sub)return err("Привязка Google не совпадает",409);
+    user.googleSub=sub;user.googleEmail=email;await saveUser(env,user);
+    const token=crypto.randomUUID();await env.ARTAMON_USERS.put("session:"+token,JSON.stringify({nick:user.nick,createdAt:Date.now()}),{expirationTtl:60*60*24*30});
+    return json({ok:true,user:publicUser(user),token});
+  }
+  const mode=String(body.mode||"login"),nick=String(body.nick||"").trim();
+  if(mode!=="register"||!nick)return err("Google аккаунт ещё не связан с Artamon. Для регистрации откройте вкладку «Регистрация» и укажите желаемый ник. Чтобы привязать существующий профиль, сначала войдите в него обычным способом.",409);
+  if(nick.length<3||nick.length>20)return err("Ник должен содержать 3–20 символов");
+  if(await getUser(env,nick))return err("Этот ник уже занят. Войдите в существующий профиль и привяжите Google из него.",409);
+  const listed=await kvListUsers(env);
+  for(const item of (listed.keys||[]).slice(0,1000)){
+    const raw=await env.ARTAMON_USERS.get(item.name);if(!raw)continue;
+    try{const u=JSON.parse(raw);if(String(u.googleEmail||u.email||"").toLowerCase()===email)return err("Этот Google email уже указан в другом профиле. Войдите в него и привяжите Google после авторизации.",409)}catch(e){}
+  }
+  const user=createUser(nick,crypto.randomUUID()+crypto.randomUUID());user.googleSub=sub;user.googleEmail=email;user.authProvider="google";
+  await saveUser(env,user);await env.ARTAMON_USERS.put(mapKey,user.nick);
+  const token=crypto.randomUUID();await env.ARTAMON_USERS.put("session:"+token,JSON.stringify({nick:user.nick,createdAt:Date.now()}),{expirationTtl:60*60*24*30});
+  return json({ok:true,user:publicUser(user),token});
+}
+
+
+async function handleDoodleScore(req, env) {
+  const body = await readBody(req);
+  const token = String(body.token || "").trim();
+  const mode = String(body.mode || "doodle").trim().slice(0, 40);
+  const score = Math.floor(Number(body.score) || 0);
+  if (!token || !mode || score < 1 || score > 1000000000) return err("Некорректный результат");
+  const sessionRaw = await env.ARTAMON_USERS.get("session:" + token);
+  if (!sessionRaw) return err("Сессия истекла, войдите снова", 401);
+  let session; try { session = JSON.parse(sessionRaw); } catch (e) { return err("Сессия повреждена", 401); }
+  const nick = String(session.nick || "").trim();
+  if (!nick) return err("Аккаунт не найден", 401);
+  const key = "v29:doodle:best:" + nick.toLowerCase();
+  const record = await v29Read(env, key, { modes:{} });
+  if (!record.modes || typeof record.modes !== "object") record.modes = {};
+  const previous = Number(record.modes[mode]) || 0;
+  const improved = score > previous;
+  if (improved) record.modes[mode] = score;
+  record.updatedAt = Date.now();
+  await v29Write(env, key, record);
+  return json({ ok:true, improved, best:record.modes[mode] || previous, allBest:record.modes });
+}
+
+
+async function handleDoodleTournamentScore(req, env) {
+  const body = await readBody(req), token = String(body.token || "").trim();
+  const sessionRaw = token ? await env.ARTAMON_USERS.get("session:" + token) : null;
+  if (!sessionRaw) return err("Сессия истекла, войдите снова", 401);
+  let session; try { session = JSON.parse(sessionRaw); } catch (e) { return err("Сессия повреждена", 401); }
+  const nick = String(session.nick || "").trim(), score = Math.floor(Number(body.score) || 0);
+  const mode = String(body.mode || "doodle").slice(0, 40), tournamentId = String(body.tournamentId || "").slice(0, 80);
+  if (!nick || !tournamentId || score < 1 || score > 1000000000) return err("Некорректный результат турнира");
+  const tournament = await kvGet(env, "hub:tournament:active", null);
+  if (!tournament || String(tournament.id || "") !== tournamentId || String(tournament.status || "active") === "ended") return err("Турнир завершён или не найден");
+  if (tournament.mode && mode && String(tournament.mode) !== mode) return err("Этот режим не участвует в турнире");
+  if (Number(tournament.endsAt) > 0 && Date.now() > Number(tournament.endsAt)) return err("Время турнира истекло");
+  const key = "v29:doodle:tournament:" + tournamentId + ":" + nick.toLowerCase();
+  const previous = await v29Read(env, key, { score:0, mode });
+  const improved = score > (Number(previous.score) || 0);
+  if (improved) await v29Write(env, key, { score, mode, nick, updatedAt:Date.now() });
+  return json({ ok:true, improved, best:Math.max(score, Number(previous.score)||0) });
+}
+
+async function handleDoodleTournamentMe(req, env) {
+  const auth = await v29Require(req, env); if (auth.error) return auth.error;
+  const tournament = await kvGet(env, "hub:tournament:active", null);
+  if (!tournament) return json({ ok:true, tournament:null, score:0 });
+  const key = "v29:doodle:tournament:" + String(tournament.id || "") + ":" + auth.user.nick.toLowerCase();
+  const record = await v29Read(env, key, { score:0 });
+  return json({ ok:true, tournament, score:Number(record.score)||0 });
+}
+
+async function handleDoodleTop(req, env) {
+  const url = new URL(req.url);
+  const mode = String(url.searchParams.get("mode") || "doodle").slice(0, 40);
+  const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit")) || 20));
+  const listed = await kvListUsers(env);
+  const rows = [];
+  for (const item of (listed.keys || []).slice(0, 500)) {
+    const raw = await env.ARTAMON_USERS.get(item.name);
+    if (!raw) continue;
+    try {
+      const user = JSON.parse(raw);
+      const nick = user.nick || item.name.replace(/^user:/, "");
+      const record = await v29Read(env, "v29:doodle:best:" + String(nick).toLowerCase(), { modes:{} });
+      const score = Number(record.modes && record.modes[mode]) || 0;
+      if (score > 0) rows.push({ username:nick, score });
+    } catch (e) {}
+  }
+  rows.sort((a,b) => b.score-a.score);
+  rows.forEach((row,index) => row.rank=index+1);
+  return json({ ok:true, top:rows.slice(0,limit) });
+}
+
+async function handleRegister(req, env) {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                         const body = await readBody(req);
                                                                                                                                                                                                                                                                                                                                                                                                                                                                           const nick = (body.nick || "").trim();
                                                                                                                                                                                                                                                                                                                                                                                                                                                                             const password = (body.password || "").trim();
@@ -281,7 +436,8 @@ const CORS = {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         await saveUser(env, user);
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           const token = crypto.randomUUID();
   await env.ARTAMON_USERS.put("session:" + token, JSON.stringify({ nick: user.nick, createdAt: Date.now() }), { expirationTtl: 60 * 60 * 24 * 30 });
-  return json({ ok: true, user: publicUser(user), token });
+  const doodleRecord = await v29Read(env, "v29:doodle:best:" + String(user.nick).toLowerCase(), { modes:{} });
+  return json({ ok: true, user: publicUser(user), token, best: doodleRecord.modes || {} });
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           async function handleLogin(req, env) {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             const body = await readBody(req);
@@ -296,7 +452,8 @@ const CORS = {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   const token = crypto.randomUUID();
   await env.ARTAMON_USERS.put("session:" + token, JSON.stringify({ nick: user.nick, createdAt: Date.now() }), { expirationTtl: 60 * 60 * 24 * 30 });
-  return json({ ok: true, user: publicUser(user), token });
+  const doodleRecord = await v29Read(env, "v29:doodle:best:" + String(user.nick).toLowerCase(), { modes:{} });
+  return json({ ok: true, user: publicUser(user), token, best: doodleRecord.modes || {} });
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   }
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   async function handleUserGet(req, env) {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     const body = await readBody(req);
@@ -1136,7 +1293,9 @@ async function v29State(req, env) {
   const player = await v29Read(env, "v29:player:" + nick.toLowerCase(), { clanTag: null, vip: null });
   const bp = await v29Read(env, "v29:bp:" + nick.toLowerCase(), { xp: 0, premium: false, claimed: [] });
   const settings = await v29Read(env, "v29:settings", { vip:{price:5000,days:7}, vip_plus:{price:12000,days:7}, features:{quests:true,achievements:true,leaderboards:true,mail:true,events:true} });
-  return json({ ok: true, clans, player, battlepass: bp, settings, coins: Number(auth.user.coins) || 0 });
+  const clan=clans.find(c=>c.tag===player.clanTag),clanPower=clan?await v29ClanPower(env,clan):0;
+  const clanMembers=clan?await Promise.all((clan.members||[]).map(async member=>{const mp=await v29Read(env,"v29:player:"+String(member).toLowerCase(),{});return {nick:member,power:v29EffectivePower(mp)};})):[];
+  return json({ ok: true, clans, player, battlePower: v29EffectivePower(player), battlepass: bp, settings, coins: Number(auth.user.coins) || 0, clanPower, clanMembers });
 }
 async function v29Clan(req, env, action) {
   const auth = await v29Require(req, env); if (auth.error) return auth.error;
@@ -1170,6 +1329,17 @@ async function v29Clan(req, env, action) {
         if (!clan.owner) clans = clans.filter(c => c.tag !== clan.tag);
       }
       player.clanTag = null;
+    } else if (action === "customize") {
+      if (!clan) return err("Вы не состоите в клане");
+      const isLeader=String(clan.owner||"").toLowerCase()===nick.toLowerCase();
+      const isOfficer=(clan.officers||[]).some(n=>String(n).toLowerCase()===nick.toLowerCase());
+      if(!isLeader&&!isOfficer)return err("Менять флаг могут только глава и офицеры клана",403);
+      const symbols=["✦","★","⚔","盾","☀","☾","♛","◆","☘","🐉","🦅","🔥","🌙","⚡","🌿","🛡️"];
+      const color=v=>/^#[0-9a-f]{6}$/i.test(String(v||""))?String(v).toLowerCase():null;
+      const primary=color(body.primary),secondary=color(body.secondary),symbol=String(body.symbol||"");
+      const patterns=["split","diagonal","stripes","solid"];
+      if(!primary||!secondary||!symbols.includes(symbol)||!patterns.includes(String(body.pattern||"")))return err("Проверьте символ, цвета и узор флага");
+      clan.flag={symbol,primary,secondary,pattern:String(body.pattern)};clan.flagUpdatedAt=Date.now();
     } else if (action === "chat") {
       if (!clan) return err("Вы не состоите в клане");
       const message = clean(body.message).slice(0, 240);
@@ -1318,7 +1488,8 @@ async function v29Extras(req, env) {
   const allMail = await v29Read(env,"v29:mail",[]);
   const mail = allMail.filter(m=>m.to==="all"||String(m.to).toLowerCase()===nick.toLowerCase()).map(m=>({...m,claimed:(activity.claims||[]).includes("mail:"+m.id)}));
   const events = await v29Read(env,"v29:events",[]);
-  return json({ok:true,quests,achievements,mail,events});
+  const settings=await v29Read(env,"v29:settings",{features:{quests:true,achievements:true,leaderboards:true,mail:true,events:true}}),features=settings.features||{};
+  return json({ok:true,quests:features.quests===false?[]:quests,achievements:features.achievements===false?[]:achievements,mail:features.mail===false?[]:mail,events:features.events===false?[]:events});
 }
 async function v29QuestClaim(req,env){
   const auth=await v29Require(req,env);if(auth.error)return auth.error;
@@ -1351,15 +1522,150 @@ async function v29MailClaim(req,env){
   const coins=Math.max(0,Math.min(1000000,Number(m.coins)||0));auth.user.coins=(Number(auth.user.coins)||0)+coins;await saveUser(env,auth.user);
   a.claims.push("mail:"+id);await v29Write(env,key,a);return json({ok:true,coins:auth.user.coins,received:coins});
 }
-async function v29Leaderboard(req,env){
-  const u=new URL(req.url),type=u.searchParams.get("type")==="clans"?"clans":"users";
-  if(type==="clans"){const clans=await v29Read(env,"v29:clans",[]);return json({ok:true,clans:clans.map(c=>({tag:c.tag,name:c.name,score:Number(c.xp)||0,members:(c.members||[]).length})).sort((a,b)=>b.score-a.score||b.members-a.members).slice(0,50)})}
-  const listed=await kvListUsers(env),users=[];
-  for(const item of (listed.keys||[]).slice(0,500)){
-    const raw=await env.ARTAMON_USERS.get(item.name);if(!raw)continue;
-    try{const u=JSON.parse(raw);users.push({nick:u.nick||item.name.replace(/^user:/,""),score:Number(u.coins)||0})}catch(e){}
+function v29RawPower(player){
+  if(!player||typeof player!=="object")return 0;
+  let base=Number(player.powerBase);
+  if(!Number.isFinite(base))base=typeof player.power==="number"?Number(player.power):(player.power&&typeof player.power==="object"?Number(player.power.total)||0:0);
+  const src=player.powerSources&&typeof player.powerSources==="object"?player.powerSources:{};
+  const boss=Number(src.boss_rush)||Number(player.bossRushPower)||0;
+  const jumper=Number(src.jumper)||Number(player.jumperPower)||0;
+  return Math.max(0,Math.min(1000000000,base+boss+jumper));
+}
+function v29EffectivePower(player){return Math.max(0,v29RawPower(player)-(Number(player&&player.powerPenalty)||0));}
+async function v29ClanPower(env,clan){
+  let total=0;
+  for(const nick of (clan&&clan.members)||[]){
+    const p=await v29Read(env,"v29:player:"+String(nick).toLowerCase(),{});
+    total+=v29EffectivePower(p);
   }
-  users.sort((a,b)=>b.score-a.score);return json({ok:true,users:users.slice(0,50)});
+  return total;
+}
+async function v29ProfileUpdate(req, env) {
+  const auth = await v29Require(req, env); if (auth.error) return auth.error;
+  const body = await readBody(req);
+  const displayNick = String(body.displayNick || "").trim().replace(/\s+/g, " ").slice(0, 24);
+  const nickColor = String(body.nickColor || "").toLowerCase();
+  const allowedAvatars = ["👤","🐱","🦊","🐼","🐸","🐺","🦉","🐙","🤖","👑","🦄","🐲","🦁","🐧","🐻","🐯"];
+  const avatar = allowedAvatars.includes(String(body.avatar || "")) ? String(body.avatar) : "👤";
+  if (!displayNick || !/^[\p{L}\p{N}_ .-]{2,24}$/u.test(displayNick)) return err("Ник: 2–24 символа, буквы, цифры, пробел, точка, дефис или подчёркивание");
+  if (!/^#[0-9a-f]{6}$/.test(nickColor)) return err("Некорректный цвет ника");
+  // Profile settings are stored under the authenticated account's own key, never globally.
+  const key = "v29:player:" + auth.user.nick.toLowerCase();
+  const player = await v29Read(env, key, { clanTag:null, vip:null });
+  player.displayNick = displayNick; player.nickColor = nickColor; player.avatar = avatar; player.profileUpdatedAt = Date.now();
+  await v29Write(env, key, player);
+  return json({ok:true, profile:{displayNick, nickColor, avatar}});
+}
+async function v29Leaderboard(req,env){
+  const settings=await v29Read(env,"v29:settings",{features:{leaderboards:true}});
+  if(settings.features&&settings.features.leaderboards===false)return json({ok:true,clans:[],users:[]});
+  const u=new URL(req.url),type=u.searchParams.get("type")||"power";
+  if(type==="clans"){
+    const clans=await v29Read(env,"v29:clans",[]),rows=[];
+    for(const c of clans){const memberRows=[];for(const member of(c.members||[])){const p=await v29Read(env,"v29:player:"+String(member).toLowerCase(),{});memberRows.push({nick:member,displayNick:p.displayNick||member,nickColor:/^#[0-9a-f]{6}$/i.test(p.nickColor||"")?p.nickColor:"#d4af37",avatar:p.avatar||"👤",power:v29EffectivePower(p),isLeader:String(member).toLowerCase()===String(c.owner||"").toLowerCase()});}
+      const power=memberRows.reduce((s,m)=>s+m.power,0),wins=Number(c.battleWins)||0;rows.push({tag:c.tag,name:c.name,owner:c.owner||"—",flag:c.flag||{symbol:"✦",primary:"#263c78",secondary:"#e1b84b",pattern:"split"},score:power+(Number(c.battleRating)||0),power,wins,members:memberRows.length,memberList:memberRows});}
+    rows.sort((a,b)=>b.score-a.score||b.power-a.power||b.members-a.members);rows.forEach((r,i)=>r.rank=i+1);return json({ok:true,clans:rows.slice(0,100)});
+  }
+  const listed=await kvListUsers(env),users=[];
+  for(const item of(listed.keys||[]).slice(0,1000)){const raw=await env.ARTAMON_USERS.get(item.name);if(!raw)continue;try{
+    const account=JSON.parse(raw),nick=account.nick||item.name.replace(/^user:/,""),p=await v29Read(env,"v29:player:"+String(nick).toLowerCase(),{});
+    const power=v29EffectivePower(p),bosses=Math.max(0,Number(p.bossWins)||Number(p.bossesDefeated)||Number(account.bossWins)||Number(account.bossesDefeated)||0),coins=Math.max(0,Number(account.coins)||0);
+    users.push({nick,displayNick:p.displayNick||nick,nickColor:/^#[0-9a-f]{6}$/i.test(p.nickColor||"")?p.nickColor:"#d4af37",avatar:p.avatar||"👤",power,coins,bosses,score:type==="wealth"?coins:(type==="bosses"?bosses:power)});
+  }catch(e){}}
+  users.sort((a,b)=>b.score-a.score||a.nick.localeCompare(b.nick));users.forEach((r,i)=>r.rank=i+1);return json({ok:true,users:users.slice(0,100),type});
+}
+
+async function v29ClanBattle(req,env,action){
+  const auth=await v29Require(req,env);if(auth.error)return auth.error;
+  const nick=auth.user.nick,clans=await v29Read(env,"v29:clans",[]),player=await v29Read(env,"v29:player:"+nick.toLowerCase(),{clanTag:null});
+  const clan=clans.find(c=>c.tag===player.clanTag);
+  if(!clan)return err("Сначала вступите в клан поддержки");
+  const battles=await v29Read(env,"v29:clan-battles",[]),now=Date.now();
+  if(action==="list"){
+    return json({ok:true,battles:battles.filter(b=>b.from===clan.tag||b.to===clan.tag).slice(-30).reverse(),power:await v29ClanPower(env,clan)});
+  }
+  const body=await readBody(req);
+  const isLeader=String(clan.owner||"").toLowerCase()===nick.toLowerCase();
+  if(action==="challenge"){
+    if(!isLeader)return err("Вызов может отправить только глава клана",403);
+    const targetTag=String(body.tag||"").trim().toUpperCase(),target=clans.find(c=>c.tag===targetTag);
+    if(!target||target.tag===clan.tag)return err("Укажите существующий другой клан");
+    const fromPower=await v29ClanPower(env,clan),toPower=await v29ClanPower(env,target);
+    if(fromPower<=0||toPower<=0)return err("Для битвы нужна мощь участников. Сначала подключите результаты Boss Rush и Jumper к аккаунтам.");
+    const active=battles.find(b=>b.status==="pending"&&b.expiresAt>now&&(b.from===clan.tag||b.to===clan.tag||b.from===target.tag||b.to===target.tag));
+    if(active)return err("Один из кланов уже ожидает другую битву");
+    const recent=battles.find(b=>b.status==="finished"&&now-(b.finishedAt||0)<86400000&&((b.from===clan.tag&&b.to===target.tag)||(b.from===target.tag&&b.to===clan.tag)));
+    if(recent)return err("Повторная битва с этим кланом доступна через 24 часа");
+    const battle={id:crypto.randomUUID(),from:clan.tag,to:target.tag,fromName:clan.name,toName:target.name,fromPower,toPower,status:"pending",createdAt:now,expiresAt:now+86400000};
+    battles.push(battle);await v29Write(env,"v29:clan-battles",battles.slice(-300));
+    return json({ok:true,battle});
+  }
+  if(action==="accept"){
+    const battle=battles.find(b=>b.id===String(body.id||"")&&b.status==="pending");
+    if(!battle)return err("Вызов не найден или уже закрыт",404);
+    if(battle.expiresAt<now)return err("Срок вызова истёк");
+    if(battle.to!==clan.tag||!isLeader)return err("Принять вызов может только глава клана, которому он адресован",403);
+    const a=clans.find(c=>c.tag===battle.from),b=clans.find(c=>c.tag===battle.to);
+    if(!a||!b)return err("Один из кланов больше не существует");
+    const ap=await v29ClanPower(env,a),bp=await v29ClanPower(env,b);
+    if(ap<=0||bp<=0)return err("У одного из кланов пока нет зарегистрированной мощи Boss Rush и Jumper");
+    const winner=ap>=bp?a:b,loser=ap>=bp?b:a,wp=Math.max(ap,bp),lp=Math.min(ap,bp),gap=(wp-lp)/Math.max(1,wp);
+    const lossRate=gap<0.05?0.03:gap<0.15?0.025:gap<0.30?0.02:0.01;
+    const totalLoss=lp*lossRate;
+    let distributed=0;
+    for(const member of loser.members||[]){
+      const pkey="v29:player:"+String(member).toLowerCase(),mp=await v29Read(env,pkey,{}),ep=v29EffectivePower(mp);
+      if(ep<=0)continue;
+      const loss=totalLoss*(ep/lp);mp.powerPenalty=(Number(mp.powerPenalty)||0)+loss;await v29Write(env,pkey,mp);distributed+=loss;
+    }
+    winner.battleWins=(Number(winner.battleWins)||0)+1;winner.battleRating=(Number(winner.battleRating)||0)+100;winner.xp=(Number(winner.xp)||0)+100;
+    loser.battleLosses=(Number(loser.battleLosses)||0)+1;loser.battleRating=Math.max(0,(Number(loser.battleRating)||0)-25);
+    const result={winner:winner.tag,winnerName:winner.name,loser:loser.tag,loserName:loser.name,winnerPower:wp,loserPower:lp,lossRate,lossPower:distributed,finishedAt:now};
+    battle.status="finished";battle.result=result;battle.finishedAt=now;
+    await v29Write(env,"v29:clans",clans);await v29Write(env,"v29:clan-battles",battles.slice(-300));
+    return json({ok:true,result});
+  }
+  return err("Неизвестное действие");
+}
+
+async function v29GamePowerReport(req,env){
+  const secret=String(env.GAME_SYNC_SECRET||"");
+  if(secret.length<24)return err("Серверная интеграция игровых режимов не настроена",503);
+  const body=await readBody(req),nick=String(body.nick||"").trim(),source=String(body.source||"");
+  const delta=Math.floor(Number(body.delta)||0),timestamp=Number(body.timestamp)||0,nonce=String(body.nonce||"");
+  if(!nick||!(["boss_rush","jumper"].includes(source))||delta<1||delta>1000000||!Number.isFinite(timestamp)||Math.abs(Date.now()-timestamp)>300000||!/^[A-Za-z0-9_-]{12,100}$/.test(nonce))return err("Некорректный результат игрового режима");
+  const signature=String(req.headers.get("X-Game-Signature")||"").toLowerCase();
+  if(!/^[a-f0-9]{64}$/.test(signature))return err("Подпись результата отсутствует",401);
+  const payload=[nick.toLowerCase(),source,String(delta),String(timestamp),nonce].join(":");
+  const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign"]);
+  const raw=await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(payload));
+  const expected=[...new Uint8Array(raw)].map(x=>x.toString(16).padStart(2,"0")).join("");
+  let mismatch=0;for(let i=0;i<64;i++)mismatch|=expected.charCodeAt(i)^signature.charCodeAt(i);
+  if(mismatch)return err("Подпись результата не прошла проверку",401);
+  const nonceKey="v29:game-nonce:"+nonce;
+  if(await env.ARTAMON_POSTS.get(nonceKey))return err("Этот результат уже был отправлен",409);
+  const user=await getUser(env,nick);if(!user)return err("Аккаунт игрока не найден",404);
+  const day=new Date().toISOString().slice(0,10),dailyKey="v29:game-power:daily:"+nick.toLowerCase()+":"+day;
+  const daily=await v29Read(env,dailyKey,{total:0});
+  if((Number(daily.total)||0)+delta>5000000)return err("Достигнут дневной лимит начисления мощности");
+  const pkey="v29:player:"+nick.toLowerCase(),player=await v29Read(env,pkey,{clanTag:null,vip:null,powerSources:{}});
+  player.powerSources=player.powerSources&&typeof player.powerSources==="object"?player.powerSources:{};
+  player.powerSources[source]=Math.max(0,Number(player.powerSources[source])||0)+delta;
+  player.lastPowerReport={source,delta,at:Date.now()};
+  daily.total=(Number(daily.total)||0)+delta;
+  await env.ARTAMON_POSTS.put(nonceKey,"1",{expirationTtl:86400});
+  await v29Write(env,dailyKey,daily);await v29Write(env,pkey,player);
+  return json({ok:true,nick:user.nick,source,delta,totalPower:v29EffectivePower(player)});
+}
+
+async function v29AdminPower(req,env){
+  const body=await readBody(req),expected=env.ADMIN_PASSWORD||env.ADMIN_PASS;
+  if(!expected||String(body.adminPassword||"")!==expected)return err("Нет прав администратора",403);
+  const nick=String(body.nick||"").trim(),amount=Math.max(0,Math.min(1000000000,Number(body.power)||0));
+  if(!nick||!await getUser(env,nick))return err("Игрок не найден",404);
+  const key="v29:player:"+nick.toLowerCase(),p=await v29Read(env,key,{clanTag:null,vip:null});
+  p.powerBase=amount;p.powerPenalty=0;p.powerSetAt=Date.now();await v29Write(env,key,p);
+  return json({ok:true,nick,power:amount});
 }
 async function v29AdminMail(req,env){
   const body=await readBody(req),expected=env.ADMIN_PASSWORD||env.ADMIN_PASS;
@@ -1454,8 +1760,13 @@ export default {
       if (path === "/api/admin/tournament" && method === "POST") return await handleHubTournamentSave(request, env);
 
                                                       // ==== АККАУНТЫ ====
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            if (path === "/api/register" && method === "POST") return await handleRegister(request, env);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            if (path === "/api/score" && method === "POST") return await handleDoodleScore(request, env);
+      if (path === "/api/top" && method === "GET") return await handleDoodleTop(request, env);
+      if (path === "/api/tournament/score" && method === "POST") return await handleDoodleTournamentScore(request, env);
+      if (path === "/api/tournament/me" && method === "GET") return await handleDoodleTournamentMe(request, env);
+      if (path === "/api/register" && method === "POST") return await handleRegister(request, env);
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   if (path === "/api/login" && method === "POST") return await handleLogin(request, env);
+      if (path === "/api/google/auth" && method === "POST") return await v29GoogleAuth(request, env);
 
       if (path === "/api/v29/extras" && method === "GET") return await v29Extras(request, env);
       if (path === "/api/v29/quest/claim" && method === "POST") return await v29QuestClaim(request, env);
@@ -1464,10 +1775,12 @@ export default {
       if (path === "/api/v29/admin/mail-send" && method === "POST") return await v29AdminMail(request, env);
       if (path === "/api/v29/admin/event-save" && method === "POST") return await v29AdminEvent(request, env);
       if (path === "/api/v29/state" && method === "GET") return await v29State(request, env);
+      if (path === "/api/v29/profile" && method === "POST") return await v29ProfileUpdate(request, env);
       if (path === "/api/v29/clan/create" && method === "POST") return await v29Clan(request, env, "create");
       if (path === "/api/v29/clan/join" && method === "POST") return await v29Clan(request, env, "join");
       if (path === "/api/v29/clan/leave" && method === "POST") return await v29Clan(request, env, "leave");
       if (path === "/api/v29/clan/chat" && method === "POST") return await v29Clan(request, env, "chat");
+      if (path === "/api/v29/clan/customize" && method === "POST") return await v29Clan(request, env, "customize");
       if (path === "/api/v29/battlepass" && method === "GET") return await v29Battlepass(request, env, "get");
       if (path === "/api/v29/battlepass/sync-xp" && method === "POST") return await v29Battlepass(request, env, "sync-xp");
       if (path === "/api/v29/battlepass/claim" && method === "POST") return await v29Battlepass(request, env, "claim");
@@ -1476,6 +1789,11 @@ export default {
       if (path === "/api/v29/admin/settings" && method === "POST") return await v29AdminSettings(request, env);
       if (path === "/api/v29/admin/reward" && method === "POST") return await v29AdminGrantReward(request, env);
       if (path === "/api/v29/admin/clan" && method === "POST") return await v29AdminClanAction(request, env);
+      if (path === "/api/v29/clan/battles" && method === "GET") return await v29ClanBattle(request, env, "list");
+      if (path === "/api/v29/clan/battle/challenge" && method === "POST") return await v29ClanBattle(request, env, "challenge");
+      if (path === "/api/v29/clan/battle/accept" && method === "POST") return await v29ClanBattle(request, env, "accept");
+      if (path === "/api/v29/admin/power" && method === "POST") return await v29AdminPower(request, env);
+      if (path === "/api/v29/power/report" && method === "POST") return await v29GamePowerReport(request, env);
 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         if (path === "/api/user/get" && method === "POST") return await handleUserGet(request, env);
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               if (path === "/api/user/save-coins" && method === "POST") return await handleUserSaveCoins(request, env);

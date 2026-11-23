@@ -1745,18 +1745,34 @@ var BEST = (function(){
   return { get:get, setIfBetter:setIfBetter, save:save };
 })();
 
-var API_BASE = "https://artamon.artem123kv.workers.dev";
+var API_BASE = "https://artamon-api.artem123kv.workers.dev";
 var ACCOUNT = (function(){
   var KEY = "artamon_account_v1";
-  var state = { token:null, username:null, best:{}, banned:false, banReason:null };
+  var state = { token:null, username:null, best:{}, battlePower:0, banned:false, banReason:null };
   function load(){
     try{
       var s = SAFE_STORE.get(KEY);
       if(s){ var p=JSON.parse(s); if(p) state=Object.assign(state,p); }
     }catch(e){}
+    // Doodle shares the authenticated Artamon Hub session.
+    try{
+      if(!state.token){
+        var hubToken=localStorage.getItem("artamon_session_v29")||"";
+        var hubNick=localStorage.getItem("artamon_nick")||"";
+        if(hubToken&&hubNick){state.token=hubToken;state.username=hubNick;state.banned=false;state.banReason=null;save();}
+      }
+    }catch(e){}
   }
   function save(){
     try{ SAFE_STORE.set(KEY, JSON.stringify({ token:state.token, username:state.username, best:state.best||{} })); }catch(e){}
+  }
+  async function loadBattlePower(){
+    if(!isLogged()) return 0;
+    try{
+      var data = await req("/api/v29/state", { headers:{ Authorization:"Bearer "+state.token } });
+      if(data && data.ok){ state.battlePower = Math.max(0, Number(data.battlePower)||0); refreshUI(); }
+    }catch(e){}
+    return state.battlePower||0;
   }
   function isLogged(){ return !!(state.token && state.username); }
   function getUsername(){ return state.username; }
@@ -1775,15 +1791,15 @@ var ACCOUNT = (function(){
     return data;
   }
   async function register(username, password){
-    var data = await req("/api/register", { method:"POST", body:{ username:username, password:password } });
+    var data = await req("/api/register", { method:"POST", body:{ nick:username, password:password } });
     if(data && data.ok){
-      state.token = data.token; state.username = data.username; state.best = data.best||{};
-      save(); refreshUI();
+      state.token = data.token; state.username = (data.user && data.user.nick) || data.username || username; state.best = data.best||{};
+      save(); refreshUI(); loadBattlePower();
     }
     return data;
   }
   async function login(username, password){
-    var data = await req("/api/login", { method:"POST", body:{ username:username, password:password } });
+    var data = await req("/api/login", { method:"POST", body:{ nick:username, password:password } });
     if(data && data.ok){
       if(data.banned){
         state.token = null; state.username = data.username; state.best = data.best||{};
@@ -1791,9 +1807,9 @@ var ACCOUNT = (function(){
         save(); refreshUI();
         return data;
       }
-      state.token = data.token; state.username = data.username; state.best = data.best||{};
+      state.token = data.token; state.username = (data.user && data.user.nick) || data.username || username; state.best = data.best||{};
       state.banned = false; state.banReason = null;
-      save(); refreshUI();
+      save(); refreshUI(); loadBattlePower();
     }
     return data;
   }
@@ -1890,7 +1906,7 @@ var ACCOUNT = (function(){
         if(box){
           var b=state.best||{};
           var labels={doodle:"Doodle",runner:"Runner",tetris:"Tetris",bosses:"Boss Rush",bossfight:"Boss Fight"};
-          box.innerHTML = Object.keys(labels).map(function(k){
+          box.innerHTML = '<div style="display:flex;justify-content:space-between;padding:7px 0;margin-bottom:5px;border-bottom:1px solid var(--border);"><span>Боевая мощь Artamon</span><b style="color:var(--gold-2)">'+(Number(state.battlePower)||0).toLocaleString("ru-RU")+'</b></div>' + Object.keys(labels).map(function(k){
             return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);"><span>'+labels[k]+'</span><b style="color:var(--gold-2)">'+(b[k]||0)+'</b></div>';
           }).join('');
         }
@@ -1901,6 +1917,7 @@ var ACCOUNT = (function(){
     }
   }
   load();
+  if(state.token && state.username) loadBattlePower();
   return { load:load, save:save, isLogged:isLogged, getUsername:getUsername, getToken:getToken, register:register, login:login, logout:logout, submitScore:submitScore, submitTournamentScore:submitTournamentScore, fetchTop:fetchTop, fetchActiveTournament:fetchActiveTournament, fetchAnnouncement:fetchAnnouncement, fetchTournamentMe:fetchTournamentMe, refreshUI:refreshUI, getState:function(){return state;} };
 })();
 
@@ -1957,7 +1974,17 @@ var GameManager = (function(){
     try{ ACCOUNT.refreshUI(); }catch(e){}
   try{ refreshHubOnline(); }catch(e){}
   var hb=document.getElementById("hubBackLink");
-  if(hb) hb.addEventListener("click", function(){ location.href="https://artem123kv-hash.github.io/artamon-26/index_v4.html?v=final1"; });
+  if(hb && !hb._artamonBackBound){
+    hb._artamonBackBound=true;
+    hb.addEventListener("click", function(){
+      var fallback="https://artem123kv-hash.github.io/artamon-26/index_v4.html?v=final1";
+      var saved="";
+      try{saved=sessionStorage.getItem("artamon_doodle_return")||"";}catch(e){}
+      try{if(document.referrer&&new URL(document.referrer).origin===location.origin&&history.length>1){history.back();return;}}catch(e){}
+      try{if(saved&&new URL(saved).origin===location.origin){location.replace(saved);return;}}catch(e){}
+      location.replace(fallback);
+    });
+  }
   }
   return { hideAllScreens:hideAllScreens, showScreen:showScreen, getCurrent:getCurrent, setCurrent:setCurrent, goMenu:goMenu, refreshMainMenuStats:refreshMainMenuStats };
 })();
@@ -4368,7 +4395,7 @@ async function loadTop(m){
       data = await ACCOUNT.req ? null : null;
       data = await (async function(){
         try{
-          var res = await fetch(API_BASE + "/api/tournament/top?limit=30");
+          var res = await fetch(API_BASE + "/api/top?mode=doodle&limit=30", { cache:"no-store" });
           return await res.json();
         }catch(e){ return {ok:false,error:String(e)}; }
       })();

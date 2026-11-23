@@ -595,6 +595,15 @@ body[data-event] .event-bonus-badge { display: inline-flex; align-items: center;
   .spin-btn { padding: 16px; font-size: .9rem; }
   #toasts { right: 10px; left: 10px; max-width: none; }
 }
+
+/* Artamon 2.9 item sprite treatment */
+.item-sprite{display:inline-flex;width:1.8em;height:1.8em;align-items:center;justify-content:center;border-radius:12px;background:linear-gradient(145deg,#292044,#11101d);box-shadow:inset 0 0 0 1px #ffffff24,0 4px 16px #0006;vertical-align:middle;animation:spriteFloat 3.4s ease-in-out infinite}
+.item-sprite svg{width:82%;height:82%;overflow:visible;fill:currentColor;color:#c6a4ff;filter:drop-shadow(0 0 5px currentColor)}
+.item-sprite.rarity-epic{color:#9d8cff;background:linear-gradient(145deg,#34255f,#151329)}
+.item-sprite.rarity-legendary{color:#ffc96b;background:linear-gradient(145deg,#62421c,#201526)}
+.item-sprite.rarity-mythic{color:#ff8fe3;background:linear-gradient(145deg,#642c75,#1c1637);box-shadow:inset 0 0 0 1px #ffb9f266,0 0 16px #d34cff55}
+@keyframes spriteFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-3px) rotate(2deg)}}
+@media(prefers-reduced-motion:reduce){.item-sprite{animation:none}}
 </style>
 </head>
 <body>
@@ -1002,7 +1011,7 @@ var UI = {
       slot.className = "slot filled rarity-" + it.rarity;
       slot.innerHTML =
         '<button class="slot-remove" type="button" onclick="event.stopPropagation();UI.removeBet()">×</button>' +
-        '<span class="slot-icon">' + it.icon + '</span>' +
+        '<span class="slot-icon">' + renderItemVisual(it) + '</span>' +
         '<span class="slot-name">' + esc(it.name) + '</span>' +
         '<span class="slot-rarity-tag r-' + it.rarity + '">' + it.rarity.toUpperCase() + '</span>' +
         '<span class="slot-price"><span class="coin">🪙</span> ' + fmt(it.price) + '</span>';
@@ -1020,7 +1029,7 @@ var UI = {
       slot.className = "slot filled rarity-" + it.rarity;
       slot.innerHTML =
         '<button class="slot-remove" type="button" onclick="event.stopPropagation();UI.removeTarget()">×</button>' +
-        '<span class="slot-icon">' + it.icon + '</span>' +
+        '<span class="slot-icon">' + renderItemVisual(it) + '</span>' +
         '<span class="slot-name">' + esc(it.name) + '</span>' +
         '<span class="slot-rarity-tag r-' + it.rarity + '">' + it.rarity.toUpperCase() + '</span>' +
         '<span class="slot-price"><span class="coin">🪙</span> ' + fmt(it.price) + '</span>';
@@ -1183,7 +1192,7 @@ var UI = {
       card.className = "item-card rarity-" + it.rarity;
       card.innerHTML =
         '<div class="item-count">' + e[1] + '</div>' +
-        '<div class="item-icon">' + it.icon + '</div>' +
+        '<div class="item-icon">' + renderItemVisual(it) + '</div>' +
         '<div class="item-name">' + esc(it.name) + '</div>' +
         '<div class="item-rarity r-' + it.rarity + '">' + it.rarity.toUpperCase() + '</div>' +
         '<div class="item-price"><span class="coin">🪙</span> ' + fmt(it.price) + '</div>' +
@@ -1224,7 +1233,7 @@ var UI = {
       card.className = "item-card rarity-" + it.rarity;
       if (!canBuy) card.style.opacity = "0.5";
       card.innerHTML =
-        '<div class="item-icon">' + it.icon + '</div>' +
+        '<div class="item-icon">' + renderItemVisual(it) + '</div>' +
         '<div class="item-name">' + esc(it.name) + '</div>' +
         '<div class="item-rarity r-' + it.rarity + '">' + it.rarity.toUpperCase() + '</div>' +
         '<div class="item-price"><span class="coin">🪙</span> ' + fmt(it.price) + '</div>';
@@ -1455,7 +1464,7 @@ var UI = {
       html +=
         '<div class="item-card rarity-' + it.rarity + '" data-id="' + id + '">' +
           '<div class="item-count">' + State.inventory[id] + '</div>' +
-          '<div class="item-icon">' + it.icon + '</div>' +
+          '<div class="item-icon">' + renderItemVisual(it) + '</div>' +
           '<div class="item-name">' + esc(it.name) + '</div>' +
           '<div class="item-rarity r-' + it.rarity + '">' + it.rarity.toUpperCase() + '</div>' +
           '<div class="item-price"><span class="coin">🪙</span> ' + fmt(it.price) + '</div>' +
@@ -1502,7 +1511,7 @@ var UI = {
       html +=
         '<div class="item-card rarity-' + it.rarity + '" data-id="' + it.id + '" ' +
         (disabled ? 'style="opacity:.35;pointer-events:none;"' : '') + '>' +
-          '<div class="item-icon">' + it.icon + '</div>' +
+          '<div class="item-icon">' + renderItemVisual(it) + '</div>' +
           '<div class="item-name">' + esc(it.name) + '</div>' +
           '<div class="item-rarity r-' + it.rarity + '">' + it.rarity.toUpperCase() + '</div>' +
           '<div class="item-price"><span class="coin">🪙</span> ' + fmt(it.price) + '</div>' +
@@ -1975,6 +1984,30 @@ function getDefaultItems() {
     { id: "dragon_1", icon: "🐉", name: "Дракон", price: 50000, rarity: "legendary" },
     { id: "trophy_1", icon: "🏆", name: "Кубок", price: 100000, rarity: "legendary" }
   ];
+}
+
+
+// Artamon 2.9: встроенные векторные спрайты новых предметов.
+function renderItemVisual(it) {
+  var id = String(it && it.id || "");
+  var art = {
+    comet_1:'<path d="M15 40 39 16 33 34 56 28 32 52 29 36Z"/><path d="m12 55 10-7M8 43l9-3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>',
+    moon_1:'<path d="M43 10a24 24 0 1 0 12 42A26 26 0 0 1 43 10Z"/><path d="m18 18 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z"/>',
+    wing_1:'<path d="M10 48Q19 12 53 10Q49 29 28 39Q40 39 51 32Q42 55 10 48Z"/><path d="m16 45 23-25M23 47l18-16" fill="none" stroke="#fff" stroke-width="2"/>',
+    orb_1:'<circle cx="32" cy="32" r="9"/><ellipse cx="32" cy="32" rx="27" ry="12" transform="rotate(-32 32 32)" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="52" cy="17" r="4"/>',
+    rune_1:'<path d="M17 12h30L22 52h26M23 24h23M32 12v40" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>',
+    heart_1:'<path d="M32 53 12 34C-2 17 18 5 32 21 46 5 66 17 52 34Z"/><path d="M32 24v22M21 34h22" stroke="#fff" stroke-width="3" fill="none"/>',
+    prism_1:'<path d="M32 7 55 25 45 55 19 55 9 25Z"/><path d="m32 7 0 48M9 25h46M32 7 19 55M32 7 45 55" fill="none" stroke="#fff" stroke-width="2"/>',
+    nova_1:'<path d="M32 4 38 23 56 10 45 28 63 32 45 38 56 56 38 45 32 63 26 45 8 56 19 38 1 32 19 26 8 8 26 19Z"/><circle cx="32" cy="32" r="8" fill="#fff"/>',
+    void_1:'<circle cx="32" cy="32" r="22" fill="none" stroke="currentColor" stroke-width="7"/><circle cx="32" cy="32" r="10"/><path d="M32 3v10M32 51v10M3 32h10M51 32h10" stroke="#fff" stroke-width="3"/>',
+    aether_1:'<path d="M32 5 56 32 32 59 8 32Z"/><path d="m32 5 0 54M8 32h48M8 32l24-27 24 27-24 27Z" fill="none" stroke="#fff" stroke-width="2"/>',
+    singularity_1:'<circle cx="32" cy="32" r="23"/><circle cx="32" cy="32" r="13" fill="#160d2d"/><path d="M9 32Q32 5 55 32Q32 59 9 32Z" fill="none" stroke="#fff" stroke-width="2"/>',
+    artamon_heart_1:'<path d="M32 7 38 25 57 19 43 33 57 46 38 40 32 58 26 40 7 46 21 33 7 19 26 25Z"/><circle cx="32" cy="33" r="7" fill="#fff"/>'
+  };
+  if (!art[id]) return String(it && it.icon || "?");
+  var rarity = String(it.rarity || "rare");
+  var cls = "item-sprite rarity-" + rarity;
+  return '<span class="'+cls+'" aria-label="'+String(it.name||"Предмет").replace(/[&<>\"]/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;"})[c];})+'"><svg viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">'+art[id]+'</svg></span>';
 }
 
 function loadProfile() {

@@ -1157,7 +1157,34 @@ input:focus,select:focus,textarea:focus{outline:2px solid rgba(227,184,79,.55);o
 
 
 </style>
-</head>
+
+<style id="arti-static-pose">
+/* Arti stays still: no floating, rotation, twinkle or decorative sparkles. */
+#arti-helper .arti-avatar {
+  animation: none !important;
+  transform: none !important;
+  transform-origin: center bottom !important;
+  cursor: pointer !important;
+}
+#arti-helper .arti-avatar:after {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+#arti-helper.dragging {
+  filter: none !important;
+  cursor: default !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  #arti-helper .arti-avatar,
+  #arti-helper .arti-avatar:after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+</style>
+
+<style id="artamon-profile-flag-editors">#v29ProfileCard{position:relative}#v29ProfileCard .v29-avatar-choices{padding:10px;background:#0e1524;border:1px solid #394866;border-radius:14px}#v29ProfileCard .v29-avatar-choice{width:50px;height:50px;font-size:27px}#v29ProfileCard #v29ProfileSave{margin-top:10px;padding:11px 18px;background:linear-gradient(120deg,#f2ca72,#a978ef);color:#171323;border:0;border-radius:10px;font-weight:800}#v29Panel .v29-clan-flag{width:124px;height:82px;display:grid;place-items:center;overflow:hidden;border-radius:10px;border:2px solid #ffffff55;background:linear-gradient(90deg,var(--flag-a,#263c78) 0 50%,var(--flag-b,#e1b84b) 50%);box-shadow:0 6px 18px #0006;margin:8px 0 12px;position:relative}#v29Panel .v29-clan-flag span{font-size:38px;color:#fff;text-shadow:0 2px 8px #000;filter:drop-shadow(0 1px 2px #000)}#v29Panel .v29-clan-flag-editor{margin:14px 0;padding:13px;border:1px solid #45516b;border-radius:13px;background:#101827}#v29Panel .v29-clan-flag-editor h4{margin:0 0 6px;color:#ffe0a0}#v29Panel .v29-clan-flag-editor label{display:block;font-size:13px;color:#dce5ff;margin:8px 0}#v29Panel .v29-clan-flag-editor select{width:100%;padding:9px;border-radius:9px;background:#0d1321;color:#fff;border:1px solid #45516b}#v29Panel .v29-clan-flag-editor input[type=color]{height:42px;padding:3px}#v29Panel .v29-flag-colors{display:grid;grid-template-columns:1fr 1fr;gap:10px}#v29Panel .v29-flag-colors label{min-width:0}#v29Panel #v29FlagSave{padding:10px 14px;border:1px solid #d4af37;border-radius:9px;background:#49391f;color:#ffe7aa;font-weight:700}#v29Panel .v29-clan-directory-flag{display:inline-grid;place-items:center;width:34px;height:24px;border-radius:5px;margin-right:8px;vertical-align:middle;border:1px solid #ffffff55;color:#fff;text-shadow:0 1px 3px #000}</style></head>
 <body class="intro-lock" data-theme="gold" data-bg="aurora">
     <div id="eventBanner" style="display:none;"></div>
     <div id="bgLayer"></div>
@@ -1274,7 +1301,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid rgba(227,184,79,.55);o
       <path d="M100 42 L104 54 L116 54 L106 62 L110 74 L100 66 L90 74 L94 62 L84 54 L96 54 Z" fill="url(#gLogo)"/>
     </svg>
   </div>
-  <div class="intro-brand" id="introBrand">ARTAMON</div>
+  <div class="intro-brand" id="introBrand">Artamon</div>
   <div class="intro-hand" id="introHand">👉</div>
   <div class="intro-word" id="introWord">WHEEL</div>
   <div class="intro-narrative" id="introNarrative"></div>
@@ -1457,7 +1484,11 @@ input:focus,select:focus,textarea:focus{outline:2px solid rgba(227,184,79,.55);o
       </div>
     </button>
 
-<button class="feature-launch" id="promoLaunch" type="button" style="background:linear-gradient(135deg,rgba(168,85,247,.12),rgba(168,85,247,.03));border-color:rgba(168,85,247,.5);">
+<button class="feature-launch" id="powerRatingLaunch" type="button">
+       <span class="rl-badge">ТОП</span><span class="rl-icon">🏆</span>
+       <div class="rl-body"><div class="rl-title">Рейтинг игроков и кланов</div><div class="rl-desc">Сравнивай личную мощь и силу кланов поддержки</div></div>
+     </button>
+     <button class="feature-launch" id="promoLaunch" type="button" style="background:linear-gradient(135deg,rgba(168,85,247,.12),rgba(168,85,247,.03));border-color:rgba(168,85,247,.5);">
   <span class="rl-badge">NEW</span>
   <span class="rl-icon">🎁</span>
   <div class="rl-body">
@@ -1467,6 +1498,19 @@ input:focus,select:focus,textarea:focus{outline:2px solid rgba(227,184,79,.55);o
 </button>
 
     <main id="viewMain">
+      <section class="card" id="homePowerRank" style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+          <div><h2 style="margin:0">🏆 Рейтинг Artamon</h2><div style="color:var(--txt-3);font-size:.82rem;margin-top:4px">Топ игроков и кланов поддержки</div></div>
+          <button class="btn ghost" type="button" id="homeRankRefresh">Обновить</button>
+        </div>
+        <div style="display:flex;gap:8px;margin:12px 0">
+          <button class="btn sm" type="button" data-home-rank="power" aria-pressed="true">По мощи</button>
+          <button class="btn sm ghost" type="button" data-home-rank="wealth" aria-pressed="false">Богачи</button>
+          <button class="btn sm ghost" type="button" data-home-rank="bosses" aria-pressed="false">Боссы</button>
+          <button class="btn sm ghost" type="button" data-home-rank="clans" aria-pressed="false">Кланы</button>
+        </div>
+        <div id="homeRankRows" style="display:grid;gap:7px"><div style="color:var(--txt-3);padding:12px">Загрузка рейтинга…</div></div>
+      </section>
       <section class="card" id="createCard">
         <h2 data-i18n="create.title">Новый опрос</h2>
         <div class="field">
@@ -1498,7 +1542,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid rgba(227,184,79,.55);o
           <div class="hint">Один голос, пока таймер идёт. Когда время выйдет — опрос закроется и покажет итог.</div>
         </div>
         <div class="btn-row">
-          <button class="btn" id="startPoll" type="button">Запустить опрос</button>
+          <button class="btn" id="startPoll" type="button">Запустить опрос</button><div class="hint" style="display:flex;align-items:center;gap:8px;margin-top:10px"><input id="pollBotsEnabled" type="checkbox" checked style="width:auto"><label for="pollBotsEnabled">30 ботов голосуют и комментируют опрос</label></div>
         </div>
       </section>
 
@@ -1649,15 +1693,18 @@ input:focus,select:focus,textarea:focus{outline:2px solid rgba(227,184,79,.55);o
   <h3>Меню</h3>
   <div class="sub">Навигация</div>
   <button class="menu-item" id="miSeason" type="button"><span>🔥</span><span>Сезон «Искра»</span></button>
+   <button class="menu-item" id="miBattlePass" type="button"><span>🎟️</span><span>Боевой пропуск</span></button>
   <button class="menu-item" id="miMain" type="button"><span>🏠</span><span>Опрос</span></button>
   <button class="menu-item" id="miDoodle" type="button"><span>🦘</span><span>Doodle Artamon</span></button>
   <button class="menu-item" id="miUpgrader" type="button"><span>🎰</span><span>Upgrader</span></button>
   <button class="menu-item" id="miQuests" type="button"><span>🎯</span><span>Квесты</span></button>
   <button class="menu-item" id="miFriends" type="button"><span>👥</span><span>Друзья</span></button>
   <button class="menu-item" id="miRating" type="button"><span>⭐</span><span>Лента рейтинга</span></button>
+   <button class="menu-item" id="miPowerRating" type="button"><span>🏆</span><span>Рейтинг игроков и кланов</span></button>
   <button class="menu-item" id="miShop" type="button"><span>🛒</span><span>Магазин</span><span class="badge-count" id="miShopCoins">0</span></button>
   <button class="menu-item" id="miPromo" type="button"><span>🎁</span><span>Промокод</span></button>
   <button class="menu-item" id="miWip" type="button"><span>💎</span><span>WIP-подписка</span></button>
+   <button class="menu-item" id="miVIP" type="button"><span>👑</span><span>VIP и VIP+</span></button>
   <button class="menu-item" id="miDaily" type="button"><span>🎁</span><span>Ежедневка</span></button>
   <button class="menu-item" id="miStats" type="button"><span>📊</span><span>Статистика</span></button>
   <button class="menu-item" id="miBook" type="button"><span>📖</span><span>Книга достижений</span><span class="badge-count" id="miBookCount">0/0</span></button>
@@ -1698,12 +1745,14 @@ input:focus,select:focus,textarea:focus{outline:2px solid rgba(227,184,79,.55);o
       <div class="auth-field"><label>Ник</label><input type="text" id="authLoginNick" maxlength="20" placeholder="Твой ник"></div>
       <div class="auth-field"><label>Пароль</label><input type="password" id="authLoginPass" maxlength="60" placeholder="••••••••"></div>
       <button class="auth-btn" type="button" id="authLoginBtn">Войти</button>
+      <div class="google-auth-wrap"><div id="googleSignInLogin"></div><small>Вход через привязанный Google аккаунт</small></div>
     </div>
     <div class="auth-pane" id="authPaneRegister">
       <div class="auth-field"><label>Ник</label><input type="text" id="authRegNick" maxlength="20" placeholder="3-20 символов"></div>
       <div class="auth-field"><label>Пароль</label><input type="password" id="authRegPass" maxlength="60" placeholder="Минимум 4 символа"></div>
       <div class="auth-field"><label>Повтори пароль</label><input type="password" id="authRegPass2" maxlength="60" placeholder="Ещё раз"></div>
       <button class="auth-btn" type="button" id="authRegBtn">Создать аккаунт</button>
+      <div class="google-auth-wrap"><div id="googleSignInRegister"></div><small>Google-регистрация: укажи ник выше, пароль не нужен</small></div>
     </div>
     <div class="auth-pane" id="authPaneGuest">
       <div class="auth-guest">Играй <b>без аккаунта</b>.<br>Прогресс сохранится локально.</div>
@@ -1714,7 +1763,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid rgba(227,184,79,.55);o
         <div style="width:70px;height:70px;border-radius:50%;margin:0 auto 10px;display:grid;place-items:center;font-size:34px;background:var(--bg-2);border:2px solid var(--gold-2);" id="authLoggedAv">👤</div>
         <div style="font-size:1.2rem;font-weight:900;color:var(--gold-2);" id="authLoggedNick">—</div>
       </div>
-      <button class="auth-btn ghost" type="button" id="authLogoutBtn" style="margin-top:10px;">🚪 Выйти</button>
+      <div class="google-auth-wrap"><div id="googleSignInLink"></div><small>Привязать Google к этому профилю</small></div>
+       <button class="auth-btn ghost" type="button" id="authLogoutBtn" style="margin-top:10px;">🚪 Выйти</button>
     </div>
   </div>
 </div>
@@ -2695,7 +2745,25 @@ var BOTS = [
   { nick:"Флауи", emoji:"🌸", color:"#fb7185", role:"Подозрительный цветок", bio:"Слишком дружелюбный." },
   { nick:"PixelCat", emoji:"🎨", color:"#f472b6", role:"Художница", bio:"Пиксель-арт." },
   { nick:"Rainbow", emoji:"🌈", color:"#a3e635", role:"Оптимист", bio:"Радужно." },
-  { nick:"Темми", emoji:"🐶", color:"#fcd34d", role:"Весёлая собачка", bio:"ВАУ!!!" }
+  { nick:"Темми", emoji:"🐶", color:"#fcd34d", role:"Весёлая собачка", bio:"ВАУ!!!" },
+  { nick:"Nova", emoji:"🌟", color:"#c4b5fd", role:"Наблюдатель", bio:"Любит новые идеи." },
+  { nick:"Кекс", emoji:"🧁", color:"#f9a8d4", role:"Сладкоежка", bio:"Всегда за вкусные варианты." },
+  { nick:"ByteFox", emoji:"🦊", color:"#fb923c", role:"Технарь", bio:"Смотрит на всё логично." },
+  { nick:"Луна", emoji:"🌙", color:"#93c5fd", role:"Мечтательница", bio:"Любит спокойные решения." },
+  { nick:"Шустрик", emoji:"⚡", color:"#fde047", role:"Быстрый голос", bio:"Решает моментально." },
+  { nick:"Mira", emoji:"🪷", color:"#f0abfc", role:"Эстет", bio:"Ценит красивые идеи." },
+  { nick:"Кварц", emoji:"💎", color:"#67e8f9", role:"Коллекционер", bio:"Собирает редкости." },
+  { nick:"Рыжик", emoji:"🐈", color:"#fdba74", role:"Любитель котов", bio:"Мяу за лучший вариант." },
+  { nick:"Echo", emoji:"🎧", color:"#a5b4fc", role:"Меломан", bio:"Слушает и выбирает." },
+  { nick:"Зефир", emoji:"☁️", color:"#e9d5ff", role:"Миротворец", bio:"За дружелюбные идеи." },
+  { nick:"Pixel", emoji:"🟪", color:"#c084fc", role:"Цифровой житель", bio:"Любит технологии." },
+  { nick:"Вольт", emoji:"🔋", color:"#86efac", role:"Энергичный", bio:"Всегда готов голосовать." },
+  { nick:"Кнопка", emoji:"🧸", color:"#fca5a5", role:"Добрый участник", bio:"Поддерживает обсуждение." },
+  { nick:"Orbit", emoji:"🪐", color:"#a5b4fc", role:"Космический странник", bio:"Смотрит шире горизонта." },
+  { nick:"Мята", emoji:"🌿", color:"#86efac", role:"Спокойная", bio:"Выбирает без спешки." },
+  { nick:"Drift", emoji:"🛹", color:"#7dd3fc", role:"Свободный стиль", bio:"За необычные варианты." },
+  { nick:"Искра", emoji:"✨", color:"#fcd34d", role:"Оптимист", bio:"Верит в хорошие идеи." },
+  { nick:"Комета", emoji:"☄️", color:"#fb7185", role:"Любитель скорости", bio:"Голосует без промедления." }
 ];
 
 // ============================================================
@@ -2802,24 +2870,16 @@ var BOTS_ENGINE = (function(){
   function scheduleTick() {
     if (!active) return;
     var id = setTimeout(function(){
-      if (!active || !stateRef || !stateRef.options.length) { scheduleTick(); return; }
-      var opt = rand(stateRef.options);
-      opt.votes = (opt.votes || 0) + 1;
-      if (saveFn) saveFn();
-      if (renderPollFn) renderPollFn();
-      if (renderStatsFn) renderStatsFn();
-if (Math.random() < 0.6) {
-  var bot = rand(BOTS);
-  var cat = null;
-  try { cat = detectCategory(stateRef.question); } catch (e) {}
-  var phrase = Math.random() < 0.5
-    ? getBotPhrase("category", cat)
-    : getBotPhrase("vote");
-  pushComment(bot, phrase);
-}
-      scheduleTick();
-    }, randInt(2500, 5000));
-    timers.push(id);
+      if (!active || !stateRef || !stateRef.options.length || (stateRef.endsAt && Date.now() >= stateRef.endsAt)) { stop(); return; }
+      if (!Array.isArray(stateRef.botVotedIds)) stateRef.botVotedIds = [];
+      var available = BOTS.filter(function(b){ return stateRef.botVotedIds.indexOf(b.nick) === -1; });
+      if (!available.length) { stop(); return; }
+      var bot = rand(available), opt = rand(stateRef.options); stateRef.botVotedIds.push(bot.nick);
+      opt.votes = (opt.votes || 0) + 1;if (saveFn) saveFn();if (renderPollFn) renderPollFn();if (renderStatsFn) renderStatsFn();
+      var cat = null;try { cat = detectCategory(stateRef.question); } catch (e) {}
+      pushComment(bot, Math.random() < 0.5 ? getBotPhrase("category", cat) : getBotPhrase("vote"));
+      if (stateRef.botVotedIds.length >= BOTS.length) { stop(); return; }scheduleTick();
+    }, randInt(900, 2200));timers.push(id);
   }
 
   function start(state, save, rc, rp, rs) {
@@ -2851,9 +2911,8 @@ return { start: start, stop: stop, react: react, isActive: function(){ return ac
 })();
 
 function tryStartBots() {
-  var mode = "solo";
-  try { mode = SAFE_STORE.get("artamon_mode_v1") || "solo"; } catch (e) {}
-  if (mode !== "bots") { DIAG.show("🤖 Режим: одиночный"); return; }
+  var enabled=true,toggle=$("pollBotsEnabled");if(toggle)enabled=!!toggle.checked;
+  if(!enabled){BOTS_ENGINE.stop();DIAG.show("🤖 Голосование ботов выключено");return;}
   if (!window._artamonState || !window._artamonState.options.length) return;
   if (BOTS_ENGINE.isActive()) return;
   try {
@@ -4763,6 +4822,7 @@ function initMain(mode) {
     }, 1000);
   }
 
+  var botsToggle=$("pollBotsEnabled");if(botsToggle&&!botsToggle._bound){botsToggle._bound=true;botsToggle.addEventListener("change",function(){if(!this.checked)BOTS_ENGINE.stop();else tryStartBots();});}
   var startPollBtn = $("startPoll");
   if (startPollBtn && !startPollBtn._bound) {
     startPollBtn._bound = true;
@@ -4779,6 +4839,7 @@ function initMain(mode) {
       state.questionImg = $("qImgInput").value.trim();
       state.options = texts.map(function(txt, i){ return { id: uid(), text: txt, votes: 0, img: imgs[i] || "" }; });
       state.votedId = null;
+      state.botVotedIds = [];
       state.comments = [];
       var mins = 0;
       var timerEl = $("qTimer");
@@ -4803,11 +4864,14 @@ function initMain(mode) {
     resetPollBtn._bound = true;
     resetPollBtn.addEventListener("click", function(){
       if (!state.options.length) return;
+      BOTS_ENGINE.stop();
       state.options.forEach(function(o){ o.votes = 0; });
       state.votedId = null;
+      state.botVotedIds = [];
       save();
       renderPoll();
       renderStats();
+      setTimeout(tryStartBots, 100);
       toast(I18N.t("toast.reset"));
     });
   }
@@ -5827,20 +5891,18 @@ function applyEventMusic(id) {
   var DOODLE_URL = "https://artem123kv-hash.github.io/artamon-26/Doodle_artamon-20.html";
   function openDoodle(){
     try {
-      var nick = "";
+      var nick = "", token = "";
       try {
         var acc = window.AUTH_UI && AUTH_UI.getAccount ? AUTH_UI.getAccount() : null;
         if (acc && acc.nick) nick = acc.nick;
+        token = localStorage.getItem("artamon_session_v29") || "";
+        if (!nick) nick = localStorage.getItem("artamon_nick") || "";
       } catch(e) {}
-      if (!nick) {
-        try { nick = localStorage.getItem("artamon_nick") || ""; } catch(e) {}
-      }
+      try { sessionStorage.setItem("artamon_doodle_return", window.location.href); } catch(e) {}
       var url = DOODLE_URL;
-      if (nick) url += (url.indexOf("?") >= 0 ? "&" : "?") + "nick=" + encodeURIComponent(nick);
-      window.location.href = url;
-    } catch(e) {
-      window.open(DOODLE_URL, "_blank");
-    }
+      if (nick) url += "?nick=" + encodeURIComponent(nick);
+      window.location.assign(url);
+    } catch(e) { window.open(DOODLE_URL, "_blank"); }
   }
   window.openDoodle = openDoodle;
   function bind(){
@@ -5871,7 +5933,7 @@ function applyEventMusic(id) {
 
 <script>
 (function(){
-  var HUB_API = "https://artamon.artem123kv.workers.dev";
+  var HUB_API = "https://artamon-api.artem123kv.workers.dev";
   var DOODLE_URL = "https://artem123kv-hash.github.io/artamon-26/Doodle_artamon-20.html";
 
   function questKey(){
@@ -6141,7 +6203,12 @@ function applyEventMusic(id) {
   var c=list.find(function(x){return x.tag===m.tag});if(c){c.members=c.members.filter(function(n){return n!==nick()});if(c.owner===nick()){c.owner=c.members[0]||"";if(!c.members.length)list=list.filter(function(x){return x.tag!==c.tag})}}
   saveClans(list);localStorage.removeItem(MEKEY);renderClans();toast("Ты покинул клан");
  }
- function openClans(){renderClans();$("clansModal").classList.add("on")}
+ function openClans(){
+  // Route the main-menu Clans button to the server-backed clan directory and battle panel.
+  var serverPanelButton=document.getElementById("v29Open");
+  if(serverPanelButton){serverPanelButton.click();return;}
+  renderClans();$("clansModal").classList.add("on");
+ }
  function init(){
   bp=Object.assign(bp,read(BPKEY,{}));if(!Array.isArray(bp.freeClaimed))bp.freeClaimed=[];if(!Array.isArray(bp.premiumClaimed))bp.premiumClaimed=[];
   // Capture click before the legacy season handler: this replaces the old season-only screen.
@@ -6162,6 +6229,13 @@ function applyEventMusic(id) {
 
 
 <style>
+.v29-clan-directory-card{border:1px solid #394152;border-radius:12px;margin:9px 0;background:#101622;overflow:hidden}
+.v29-clan-directory-card summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;cursor:pointer}
+.v29-clan-directory-card summary::-webkit-details-marker{display:none}
+.v29-clan-directory-main{display:grid;gap:4px;min-width:0}.v29-clan-directory-main small,.v29-clan-directory-power small{display:block;color:#aab2c2;font-size:11px;font-weight:500}
+.v29-clan-directory-power{color:#f0ca70;font-weight:900;text-align:right;white-space:nowrap}
+.v29-clan-directory-details{padding:0 12px 12px;border-top:1px solid #303849}.v29-clan-directory-total{padding:10px 0;color:#e9d29a}
+.v29-clan-directory-member{display:flex;justify-content:space-between;gap:10px;padding:7px 9px;border-radius:7px;background:#1a2230;margin:5px 0;font-size:13px}.v29-clan-directory-member b{color:#f0ca70}.v29-clan-join-from-list{margin-top:9px;padding:8px 12px;background:#6f5124;color:#fff;border:1px solid #b88c3d;border-radius:8px;cursor:pointer}
 #v29Open{position:fixed;right:14px;bottom:86px;z-index:9998;border:1px solid #d8ae55;background:linear-gradient(135deg,#3b2a12,#9a6b1e);color:#fff5d6;border-radius:14px;padding:12px 15px;font-weight:900;box-shadow:0 8px 28px #0008}
 #v29Panel{position:fixed;inset:0;z-index:99999;background:#090b12ee;display:none;overflow:auto;padding:18px;color:#f4f1e8;font-family:inherit}
 #v29Panel .v29wrap{max-width:850px;margin:24px auto;background:#151925;border:1px solid #8c6b35;border-radius:18px;padding:18px}
@@ -6183,6 +6257,7 @@ function applyEventMusic(id) {
 .v29-extra-tabs button{margin:0;color:inherit;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.13)}
 .v29-extra-tabs button.active{background:rgba(212,175,55,.16);border-color:#c7a84d;color:#f2d99b}
 .v29-extra-rank{display:flex;align-items:center;gap:10px;padding:9px 11px;border-bottom:1px solid rgba(255,255,255,.07)}
+.v29-avatar-choices{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}.v29-avatar-choice{width:44px;height:44px;border-radius:12px;border:1px solid #ffffff24;background:#1a2230;color:#fff;font-size:24px;cursor:pointer}.v29-avatar-choice[aria-pressed="true"]{border:2px solid #d4af37;background:#49391f;box-shadow:0 0 0 2px #d4af3733}
 .v29-extra-rank:last-child{border:0}.v29-extra-rank .n{width:25px;color:#c7a84d;font-weight:800}
 .v29-extra-rank .score{margin-left:auto;color:#e5d2a1;font-variant-numeric:tabular-nums}
 #v29PromoCode{width:100%;padding:11px;border-radius:9px;border:1px solid rgba(255,255,255,.16);background:#11151d;color:#fff;margin:6px 0}
@@ -6192,26 +6267,33 @@ function applyEventMusic(id) {
   <button class="v29close" id="v29Close">Закрыть ✕</button>
   <h2>✨ Artamon 2.9</h2><div class="v29muted" id="v29Status">Загрузка данных…</div>
   <div class="v29hero"><div><h2>Новая эра Artamon</h2><p>Кланы · VIP · боевой пропуск · события</p><span class="v29stat">⚔️ Общая прогрессия</span><span class="v29stat">🛡️ Серверные данные</span></div></div>
-  <nav class="v29nav" aria-label="Разделы 2.9"><button class="active" data-v29tab="all">Обзор</button><button data-v29tab="clans">Кланы</button><button data-v29tab="vip">VIP</button><button data-v29tab="bp">Пропуск</button><button data-v29tab="extras">Активности</button></nav>
-  <div class="v29grid">
+  <nav class="v29nav" aria-label="Разделы 2.9"><button class="active" data-v29tab="all">Обзор</button><button data-v29tab="profile">Профиль</button><button data-v29tab="clans">Кланы</button><button data-v29tab="vip">VIP</button><button data-v29tab="bp">Пропуск</button><button data-v29tab="extras">Активности</button></nav>
+  <section class="v29card" id="v29ProfileCard"><h3>Профиль аккаунта</h3><p class="v29muted">Настройки находятся здесь: выберите аватар, настройте цвет и отображаемый ник, затем нажмите «Сохранить профиль». Изменения применяются только к вашему аккаунту.</p><input id="v29DisplayNick" maxlength="24" placeholder="Отображаемый ник"><div style="display:flex;gap:10px;align-items:center;margin:8px 0"><label for="v29NickColor">Цвет ника</label><input id="v29NickColor" type="color" value="#d4af37" style="width:56px;height:40px;padding:3px"></div><div style="margin:12px 0"><b>Аватар профиля</b><div id="v29AvatarChoices" class="v29-avatar-choices" role="group" aria-label="Выбор аватара"></div></div><div id="v29ProfilePreview" style="font-weight:800;margin:8px 0">Предпросмотр ника</div><button id="v29ProfileSave" type="button">Сохранить профиль</button><p id="v29ProfileMsg" class="v29muted"></p></section><div class="v29grid">
    <section class="v29card"><h3><img class="v29sprite" alt="" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgyPSIwIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmZjBiNSIvPjxzdG9wIG9mZnNldD0iLjQ4IiBzdG9wLWNvbG9yPSIjZThiOTRmIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOWI2ODIwIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHBhdGggZD0iTTY0IDEwIDEwNSAyNXYzMWMwIDI4LTE2IDQ4LTQxIDYyQzM5IDEwNCAyMyA4NCAyMyA1NlYyNXoiIGZpbGw9IiMxNzFiMjkiIHN0cm9rZT0idXJsKCNnKSIgc3Ryb2tlLXdpZHRoPSI2Ii8+PHBhdGggZD0ibTY0IDI5IDggMTkgMjAgMi0xNSAxMyA1IDIwLTE4LTExLTE4IDExIDUtMjAtMTUtMTMgMjAtMnoiIGZpbGw9InVybCgjZykiIHN0cm9rZT0iI2ZmZjBiNSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTQyIDkxIDg2IDQ3IiBzdHJva2U9IiNmZmYwYjUiIHN0cm9rZS13aWR0aD0iMyIgb3BhY2l0eT0iLjUiLz48L3N2Zz4=" loading="eager" decoding="async" />Кланы</h3><div id="v29ClanInfo">Загрузка…</div>
     <p><input id="v29ClanName" maxlength="24" placeholder="Название клана"></p><p><input id="v29ClanTag" maxlength="5" placeholder="Тег 2–5 символов"></p>
     <button id="v29ClanCreate">Создать клан</button>
     <p><input id="v29ClanJoinTag" maxlength="5" placeholder="Тег клана"></p><button id="v29ClanJoin">Вступить</button>
     <div id="v29ClanList"></div>
+    <div class="v29-extra-item" style="margin-top:12px">
+     <h4 style="margin:0 0 6px">⚔️ Битвы кланов</h4>
+     <p class="v29muted" id="v29ClanBattleInfo">После подключения результатов Boss Rush и боссов Jumper мощь будет считаться автоматически. Boss Fight не учитывается.</p>
+     <input id="v29BattleTag" maxlength="5" placeholder="Тег клана-соперника">
+     <button id="v29BattleChallenge" type="button">Вызвать на битву</button>
+     <div id="v29BattleList" class="v29-extra-list" style="margin-top:10px">Загрузка битв…</div>
+    </div>
    </section>
    <section class="v29card"><h3><img class="v29sprite" alt="" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgyPSIwIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmZjJiZiIvPjxzdG9wIG9mZnNldD0iLjUiIHN0b3AtY29sb3I9IiNlZmJkNTUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNhMzZhMWYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSJtMTggOTEgOC00OSAyNSAxOSAxMy0zNyAxMyAzNyAyNS0xOSA4IDQ5eiIgZmlsbD0idXJsKCNnKSIgc3Ryb2tlPSIjZmZmMGI1IiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjQgOTloODB2MTJIMjR6IiByeD0iNCIgZmlsbD0iI2Q2OWMzNSIgc3Ryb2tlPSIjZmZmMGI1IiBzdHJva2Utd2lkdGg9IjMiLz48Y2lyY2xlIGN4PSIyNiIgY3k9IjM1IiByPSI3IiBmaWxsPSIjZmZmMGI1Ii8+PGNpcmNsZSBjeD0iNjQiIGN5PSIxNyIgcj0iNyIgZmlsbD0iI2ZmZjBiNSIvPjxjaXJjbGUgY3g9IjEwMiIgY3k9IjM1IiByPSI3IiBmaWxsPSIjZmZmMGI1Ii8+PC9zdmc+" loading="eager" decoding="async" />VIP и VIP+</h3><p class="v29muted">Подписки оплачиваются внутриигровыми монетами. Срок продлевается при повторной покупке.</p>
     <div id="v29VipInfo">Статус не загружен</div>
     <button data-v29vip="vip">Купить VIP · 5 000 🪙 / 7 дней</button>
     <button data-v29vip="vip_plus">Купить VIP+ · 12 000 🪙 / 7 дней</button>
    </section>
-   <section class="v29card"><h3><img class="v29sprite" alt="" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgyPSIxIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmZjBiNSIvPjxzdG9wIG9mZnNldD0iLjU1IiBzdG9wLWNvbG9yPSIjZTdiNjRkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOTg2MDFkIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHBhdGggZD0iTTMwIDE4aDUzbDE2IDE2djc2SDMweiIgZmlsbD0iIzE3MWIyOSIgc3Ryb2tlPSJ1cmwoI2cpIiBzdHJva2Utd2lkdGg9IjUiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNODMgMTh2MTloMTYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZjBiNSIgc3Ryb2tlLXdpZHRoPSI0Ii8+PHBhdGggZD0iTTQzIDUzaDQyTTQzIDY4aDQyTTQzIDgzaDMwIiBzdHJva2U9InVybCgjZykiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHBhdGggZD0ibTIwIDMxIDEwLTl2ODRsLTEwLTh6IiBmaWxsPSIjZDY5YzM1IiBvcGFjaXR5PSIuOCIvPjwvc3ZnPg==" loading="eager" decoding="async" />Боевой пропуск</h3><div id="v29BpInfo">Загрузка…</div><p class="v29muted">Награды и прогресс синхронизируются с сервером. Premium пока активируется администратором.</p><button id="v29SyncPass">Синхронизировать прогресс</button></section>
+   <section class="v29card"><h3><img class="v29sprite" alt="" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgyPSIxIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmZjBiNSIvPjxzdG9wIG9mZnNldD0iLjU1IiBzdG9wLWNvbG9yPSIjZTdiNjRkIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOTg2MDFkIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHBhdGggZD0iTTMwIDE4aDUzbDE2IDE2djc2SDMweiIgZmlsbD0iIzE3MWIyOSIgc3Ryb2tlPSJ1cmwoI2cpIiBzdHJva2Utd2lkdGg9IjUiIHN0cm9rZT0idXJsKCNnKSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik04MyAxOHYxOWgxNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmMGI1IiBzdHJva2Utd2lkdGg9IjQiLz48cGF0aCBkPSJNNDMgNTNoNDJNNDMgNjhoNDJNNDMgODNoMzAiIHN0cm9rZT0idXJsKCNnKSIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJtMjAgMzEgMTAtOXY4NGwtMTAtOHoiIGZpbGw9IiNkNjljMzUiIG9wYWNpdHk9Ii44Ii8+PC9zdmc+" loading="eager" decoding="async" />Боевой пропуск</h3><div id="v29BpInfo">Загрузка…</div><p class="v29muted">Один пропуск, две линии наград. Premium расположен выше бесплатной линии; прогресс и получение наград сохраняются на сервере.</p><button id="v29SyncPass">Синхронизировать прогресс</button><div id="v29BpTracks" class="v29-extra-list" style="margin-top:12px"></div></section>
    <section class="v29card"><h3><img class="v29sprite" alt="" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgyPSIwIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmZjRjOSIvPjxzdG9wIG9mZnNldD0iLjUiIHN0b3AtY29sb3I9IiNmMGMxNWQiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNhNjZkMjAiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSJtNjQgMTAgMTUgMzEgMzQgNS0yNSAyNCA2IDM1LTMwLTE3LTMwIDE3IDYtMzUtMjUtMjQgMzQtNXoiIGZpbGw9InVybCgjZykiIHN0cm9rZT0iI2ZmZjBiNSIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0ibTY0IDI3IDkgMjAgMjIgMy0xNiAxNSA0IDIyLTE5LTExLTE5IDExIDQtMjItMTYtMTUgMjItM3oiIGZpbGw9IiNmZmYwYjUiIG9wYWNpdHk9Ii4xOCIvPjwvc3ZnPg==" loading="eager" decoding="async" />Достижения и задания</h3><div class="v29muted">Ежедневные цели, достижения и награды с серверной проверкой условий.</div>
       <div id="v29TasksList" class="v29-extra-list"><p class="v29muted">Загрузка заданий…</p></div>
       <div id="v29AchievementsList" class="v29-extra-list"></div>
     </section>
    <section class="v29card"><h3><img class="v29sprite" alt="" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgyPSIwIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmZjBiNSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2I3N2IyOCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjE5IiB5PSIyOCIgd2lkdGg9IjkwIiBoZWlnaHQ9IjgyIiByeD0iMTIiIGZpbGw9IiMxNzFiMjkiIHN0cm9rZT0idXJsKCNnKSIgc3Ryb2tlLXdpZHRoPSI1Ii8+PHBhdGggZD0iTTE5IDQ3aDkwIiBzdHJva2U9IiNmNGNmN2IiIHN0cm9rZS13aWR0aD0iOCIvPjxwYXRoIGQ9Ik0zOSAxOHYyMU04OSAxOHYyMSIgc3Ryb2tlPSIjZmZmMGI1IiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxnIGZpbGw9InVybCgjZykiPjxyZWN0IHg9IjM1IiB5PSI2MSIgd2lkdGg9IjEzIiBoZWlnaHQ9IjEyIiByeD0iMyIvPjxyZWN0IHg9IjU4IiB5PSI2MSIgd2lkdGg9IjEzIiBoZWlnaHQ9IjEyIiByeD0iMyIvPjxyZWN0IHg9IjgxIiB5PSI2MSIgd2lkdGg9IjEzIiBoZWlnaHQ9IjEyIiByeD0iMyIvPjxyZWN0IHg9IjM1IiB5PSI4NCIgd2lkdGg9IjEzIiBoZWlnaHQ9IjEyIiByeD0iMyIvPjxyZWN0IHg9IjU4IiB5PSI4NCIgd2lkdGg9IjEzIiBoZWlnaHQ9IjEyIiByeD0iMyIvPjwvZz48L3N2Zz4=" loading="eager" decoding="async" />Рейтинги</h3><div class="v29muted">Текущие таблицы лидеров пользователей и кланов.</div>
-      <div class="v29-extra-tabs"><button type="button" data-v29rank="users" class="active">Пользователи</button><button type="button" data-v29rank="clans">Кланы</button></div>
+      <div class="v29-extra-tabs"><button type="button" data-v29rank="power" class="active">Топ мощи</button><button type="button" data-v29rank="wealth">Топ богачей</button><button type="button" data-v29rank="bosses">Топ боссов</button><button type="button" data-v29rank="clans">Кланы</button></div>
       <div id="v29Leaderboard" class="v29-extra-list"><p class="v29muted">Загрузка рейтинга…</p></div>
     </section>
    <section class="v29card"><h3><img class="v29sprite" alt="" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgyPSIwIiB5Mj0iMSI+PHN0b3Agc3RvcC1jb2xvcj0iI2ZmZjBiNSIvPjxzdG9wIG9mZnNldD0iLjUiIHN0b3AtY29sb3I9IiNlOWI4NGUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM5ZDY1MWUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSJNMTIgMjRoMTVsMTIgNTloNTlsMTQtNDNIMzUiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNnKSIgc3Ryb2tlLXdpZHRoPSI4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNNDMgNTJoNjBNNDggNjZoNTAiIHN0cm9rZT0iI2ZmZjBiNSIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIuNSIvPjxjaXJjbGUgY3g9IjUxIiBjeT0iMTAxIiByPSI5IiBmaWxsPSJ1cmwoI2cpIiBzdHJva2U9IiNmZmYwYjUiIHN0cm9rZS13aWR0aD0iMyIvPjxjaXJjbGUgY3g9IjkxIiBjeT0iMTAxIiByPSI5IiBmaWxsPSJ1cmwoI2cpIiBzdHJva2U9IiNmZmYwYjUiIHN0cm9rZS13aWR0aD0iMyIvPjwvc3ZnPg==" loading="eager" decoding="async" />Почта и события</h3><div class="v29muted">Системные подарки, компенсации, промокоды и временные события.</div>
@@ -6233,6 +6315,44 @@ function applyEventMusic(id) {
        <input id="v29AdminEventText" maxlength="500" placeholder="Описание события">
        <input id="v29AdminEventEnd" type="datetime-local">
        <button id="v29AdminSaveEvent" type="button">Опубликовать событие</button>
+       <div class="rule"></div>
+       <b>Настройки подписок и модулей</b>
+       <div class="v29-admin-grid">
+        <input id="v29SetVipPrice" type="number" min="0" placeholder="VIP: цена">
+        <input id="v29SetVipDays" type="number" min="1" max="365" placeholder="VIP: дней">
+        <input id="v29SetVipPlusPrice" type="number" min="0" placeholder="VIP+: цена">
+        <input id="v29SetVipPlusDays" type="number" min="1" max="365" placeholder="VIP+: дней">
+       </div>
+       <div class="v29-admin-toggles">
+        <label><input id="v29FeatureQuests" type="checkbox"> Задания</label>
+        <label><input id="v29FeatureAchievements" type="checkbox"> Достижения</label>
+        <label><input id="v29FeatureLeaderboards" type="checkbox"> Рейтинг</label>
+        <label><input id="v29FeatureMail" type="checkbox"> Почта</label>
+        <label><input id="v29FeatureEvents" type="checkbox"> События</label>
+       </div>
+       <button id="v29AdminSaveSettings" type="button">Сохранить настройки</button>
+       <div class="rule"></div>
+       <b>Выдать подписку или Premium-пропуск</b>
+       <input id="v29AdminGrantNick" maxlength="32" placeholder="Ник игрока">
+       <select id="v29AdminGrantPlan"><option value="vip">VIP</option><option value="vip_plus">VIP+</option><option value="bp_premium">Premium-пропуск</option></select>
+       <input id="v29AdminGrantDays" type="number" min="1" max="3650" value="30" placeholder="Дней">
+       <button id="v29AdminGrantBtn" type="button">Выдать</button>
+       <div class="rule"></div>
+       <b>Управление кланом</b>
+       <input id="v29AdminClanTag" maxlength="5" placeholder="Тег клана">
+       <select id="v29AdminClanAction"><option value="rename">Переименовать</option><option value="xp">Изменить XP клана</option><option value="delete">Удалить клан</option></select>
+       <input id="v29AdminClanValue" maxlength="24" placeholder="Новое название или XP">
+       <button id="v29AdminClanApply" type="button">Применить</button>
+       <div class="rule"></div>
+       <b>Изменить баланс игрока</b>
+       <input id="v29AdminRewardNick" maxlength="32" placeholder="Ник игрока">
+       <input id="v29AdminRewardCoins" type="number" min="-100000000" max="100000000" placeholder="Монеты: + или -">
+       <button id="v29AdminRewardApply" type="button">Изменить баланс</button>
+       <div class="rule"></div>
+       <b>Корректировка мощности игрока</b>
+       <input id="v29AdminPowerNick" maxlength="32" placeholder="Ник игрока">
+       <input id="v29AdminPowerValue" type="number" min="0" max="1000000000" placeholder="Базовая мощь / корректировка">
+       <button id="v29AdminPowerSet" type="button">Сохранить мощь</button>
        <p id="v29AdminResult" class="v29muted"></p>
       </details>
 
@@ -6253,6 +6373,14 @@ function applyEventMusic(id) {
  }
  function msg(s){$("v29Status").textContent=s}
  function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+ function renderBattlepass(bp){
+  const box=$("v29BpTracks");if(!box||!bp)return;
+  const xp=Math.max(0,Number(bp.xp)||0),claimed=Array.isArray(bp.claimed)?bp.claimed:[],premium=!!bp.premium&&(!bp.premiumUntil||bp.premiumUntil>Date.now());
+  const tiers=[{xp:40,free:40,premium:80},{xp:90,free:0,premium:120},{xp:160,free:80,premium:0},{xp:250,free:0,premium:180},{xp:360,free:160,premium:0},{xp:500,free:0,premium:250},{xp:680,free:260,premium:0},{xp:900,free:0,premium:500}];
+  function track(name,key,isPremium){return `<div class="v29-extra-item"><h4 style="margin:0 0 8px">${name}</h4>${tiers.map((t,i)=>{const id=(isPremium?"premium:":"free:")+(i+1),done=claimed.includes(id),ready=xp>=t.xp,amount=t[key];const disabled=done||!ready||(isPremium&&!premium);return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid #ffffff12"><b style="width:28px">${i+1}</b><span style="flex:1">${amount?amount+" 🪙":"Бонусный уровень"}<small class="v29muted" style="display:block">${t.xp} XP</small></span><button type="button" data-v29bpclaim="${i+1}" data-v29bptrack="${isPremium?"premium":"free"}" ${disabled?"disabled":""}>${done?"Получено":!ready?"Закрыто":isPremium&&!premium?"Premium": "Забрать"}</button></div>`}).join("")}</div>`}
+  box.innerHTML=track("💎 Premium-линия","premium",true)+track("🆓 Бесплатная линия","free",false);
+  box.querySelectorAll("[data-v29bpclaim]").forEach(btn=>btn.onclick=async()=>{btn.disabled=true;try{await api("/api/v29/battlepass/claim",{tier:Number(btn.dataset.v29bpclaim),track:btn.dataset.v29bptrack});await refresh()}catch(e){msg(e.message);btn.disabled=false}});
+ }
  async function refresh(){
   if(!token()){msg("Войдите в аккаунт заново, чтобы получить защищённую сессию.");return}
   try{
@@ -6260,11 +6388,49 @@ function applyEventMusic(id) {
    if(legacyXp)await api("/api/v29/battlepass/sync-xp",{xp:legacyXp});
    const d=await api("/api/v29/state");
    msg("Игрок: "+nick()+" · Баланс: "+d.coins+" 🪙 · Данные синхронизированы");
+   if($("v29DisplayNick"))$("v29DisplayNick").value=d.player.displayNick||nick();if($("v29NickColor"))$("v29NickColor").value=d.player.nickColor||"#d4af37";if(typeof setProfileAvatar==="function")setProfileAvatar(d.player.avatar||"👤");if(typeof paintProfile==="function")paintProfile();
    const c=d.player.clanTag&&d.clans.find(x=>x.tag===d.player.clanTag);
-   $("v29ClanInfo").innerHTML=c?`<b>[${esc(c.tag)}] ${esc(c.name)}</b><p class="v29muted">Уровень ${c.level||1} · Участников ${c.members.length}/30 · Лидер: ${esc(c.owner)}</p><button id="v29ClanLeave">Покинуть клан</button><h4>Чат клана</h4><div>${(c.chat||[]).slice(-8).map(m=>`<p class="v29muted"><b>${esc(m.nick)}:</b> ${esc(m.message)}</p>`).join("")}</div><input id="v29ChatText" maxlength="240" placeholder="Сообщение"><button id="v29ChatSend">Отправить</button>`:"Вы пока не состоите в клане.";
-   $("v29ClanList").innerHTML="<h4>Кланы</h4>"+d.clans.slice(0,20).map(x=>`<div class="v29muted">[${esc(x.tag)}] ${esc(x.name)} · ${x.members.length}/30</div>`).join("");
+   $("v29ClanInfo").innerHTML=c?`<div class="v29-clan-flag" style="--flag-a:${/^#[0-9a-f]{6}$/i.test(c.flag&&c.flag.primary||"")?c.flag.primary:"#263c78"};--flag-b:${/^#[0-9a-f]{6}$/i.test(c.flag&&c.flag.secondary||"")?c.flag.secondary:"#e1b84b"}"><span>${esc(c.flag&&c.flag.symbol||"✦")}</span></div><b>[${esc(c.tag)}] ${esc(c.name)}</b><p class="v29muted">Уровень ${c.level||1} · Участников ${c.members.length}/30 · Лидер: ${esc(c.owner)} · Общая мощь: ${Number(d.clanPower||0).toLocaleString("ru-RU")}</p><div class="v29-clan-flag-editor"><h4>Флаг клана</h4><p class="v29muted">Глава и офицеры могут менять оформление флага для всего клана.</p><label>Символ</label><select id="v29FlagSymbol"><option>✦</option><option>★</option><option>⚔</option><option>盾</option><option>☀</option><option>☾</option><option>♛</option><option>◆</option><option>☘</option><option>🐉</option><option>🦅</option><option>🔥</option><option>🌙</option><option>⚡</option><option>🌿</option><option>🛡️</option></select><div class="v29-flag-colors"><label>Основной цвет<input id="v29FlagPrimary" type="color" value="${/^#[0-9a-f]{6}$/i.test(c.flag&&c.flag.primary||"")?c.flag.primary:"#263c78"}"></label><label>Второй цвет<input id="v29FlagSecondary" type="color" value="${/^#[0-9a-f]{6}$/i.test(c.flag&&c.flag.secondary||"")?c.flag.secondary:"#e1b84b"}"></label></div><label>Узор<select id="v29FlagPattern"><option value="split">Две половины</option><option value="diagonal">Диагональ</option><option value="stripes">Полосы</option><option value="solid">Однотонный</option></select></label><div id="v29FlagPreview" class="v29-clan-flag"><span>✦</span></div><button id="v29FlagSave" type="button">Сохранить флаг</button><span id="v29FlagMsg" class="v29muted" aria-live="polite"></span></div><button id="v29ClanLeave">Покинуть клан</button><h4>Мощь участников</h4><div>${(d.clanMembers||[]).map(m=>`<p class="v29muted">${esc(m.nick)} <b style="float:right">${Number(m.power||0).toLocaleString("ru-RU")}</b></p>`).join("")||'<p class="v29muted">Пока нет данных о мощности.</p>'}</div><h4>Чат клана</h4><div>${(c.chat||[]).slice(-8).map(m=>`<p class="v29muted"><b>${esc(m.nick)}:</b> ${esc(m.message)}</p>`).join("")}</div><input id="v29ChatText" maxlength="240" placeholder="Сообщение"><button id="v29ChatSend">Отправить</button>`:"Вы пока не состоите в клане.";
+   if(c){
+    const canEditClanFlag=String(c.owner||"").toLowerCase()===String(nick()).toLowerCase()||(c.officers||[]).some(n=>String(n).toLowerCase()===String(nick()).toLowerCase());const flagEditor=$("v29ClanInfo")&&$("v29ClanInfo").querySelector(".v29-clan-flag-editor");if(flagEditor&&!canEditClanFlag)flagEditor.hidden=true;
+    const fsym=$("v29FlagSymbol"),fpri=$("v29FlagPrimary"),fsec=$("v29FlagSecondary"),fpat=$("v29FlagPattern"),fprev=$("v29FlagPreview"),fsave=$("v29FlagSave");
+    const savedFlag=c.flag||{};if(fsym)fsym.value=savedFlag.symbol||"✦";if(fpri)fpri.value=savedFlag.primary||"#263c78";if(fsec)fsec.value=savedFlag.secondary||"#e1b84b";if(fpat)fpat.value=savedFlag.pattern||"split";
+    const drawFlag=()=>{if(!fprev)return;const a=fpri?fpri.value:"#263c78",b=fsec?fsec.value:"#e1b84b",p=fpat?fpat.value:"split";fprev.style.background=p==="solid"?a:p==="diagonal"?`linear-gradient(135deg,${a} 0 50%,${b} 50%)`:p==="stripes"?`repeating-linear-gradient(0deg,${a} 0 13px,${b} 13px 26px)`:`linear-gradient(90deg,${a} 0 50%,${b} 50%)`;const sp=fprev.querySelector("span");if(sp)sp.textContent=fsym?fsym.value:"✦";};
+    [fsym,fpri,fsec,fpat].forEach(el=>el&&el.addEventListener("input",drawFlag));[fsym,fpri,fsec,fpat].forEach(el=>el&&el.addEventListener("change",drawFlag));drawFlag();
+    if(fsave)fsave.onclick=async()=>{try{fsave.disabled=true;await api("/api/v29/clan/customize",{symbol:fsym.value,primary:fpri.value,secondary:fsec.value,pattern:fpat.value});const m=$("v29FlagMsg");if(m)m.textContent="Флаг клана сохранён.";await refresh();}catch(e){const m=$("v29FlagMsg");if(m)m.textContent=e.message;}finally{fsave.disabled=false;}};
+   }
+   const directory=$("v29ClanList");
+   if(directory){
+    directory.innerHTML='<h4>Все кланы</h4><p class="v29muted">Загружаем список кланов и их мощь…</p>';
+    try{
+     const directoryData=await api("/api/v29/leaderboard?type=clans");
+     const rows=directoryData.clans||[];
+     directory.innerHTML='<h4>Все кланы · '+rows.length+'</h4>'+ (rows.length?rows.map(x=>{
+      const memberRows=(x.memberList||[]).map(m=>`<div class="v29-clan-directory-member"><span><i style="font-style:normal;margin-right:6px">${esc(m.avatar||"👤")}</i><b style="color:${esc(m.nickColor||"#d4af37")}">${esc(m.displayNick||m.nick)}</b>${m.isLeader?' · глава':''}</span><b>${Number(m.power||0).toLocaleString("ru-RU")}</b></div>`).join("");
+      return `<details class="v29-clan-directory-card"><summary><span class="v29-clan-directory-main"><b><i class="v29-clan-directory-flag" style="background:linear-gradient(90deg,${/^#[0-9a-f]{6}$/i.test(x.flag&&x.flag.primary||"")?x.flag.primary:"#263c78"} 0 50%,${/^#[0-9a-f]{6}$/i.test(x.flag&&x.flag.secondary||"")?x.flag.secondary:"#e1b84b"} 50%)">${esc(x.flag&&x.flag.symbol||"✦")}</i>#${x.rank||0} [${esc(x.tag)}] ${esc(x.name)}</b><small>Глава: ${esc(x.owner||'—')} · ${Number(x.members||0)} участников · Побед: ${Number(x.wins||0)}</small></span><span class="v29-clan-directory-power">${Number(x.power||0).toLocaleString("ru-RU")} <small>мощи</small></span></summary><div class="v29-clan-directory-details"><div class="v29-clan-directory-total">Общая мощь: <b>${Number(x.power||0).toLocaleString("ru-RU")}</b></div><div class="v29-clan-directory-members">${memberRows||'<span class="v29muted">Нет участников</span>'}</div><button type="button" class="v29-clan-join-from-list" data-v29join-clan="${esc(x.tag)}">Вступить в клан</button></div></details>`;
+     }).join(''):'<p class="v29muted">Пока нет созданных кланов.</p>');
+     directory.querySelectorAll('[data-v29join-clan]').forEach(button=>button.onclick=()=>{const field=$("v29ClanJoinTag");if(field)field.value=button.dataset.v29joinClan;$("v29ClanJoin").click()});
+    }catch(directoryError){directory.innerHTML='<h4>Все кланы</h4><p class="v29muted">Не удалось загрузить список: '+esc(directoryError.message)+'</p>'}
+   }
+   const battleInfo=$("v29ClanBattleInfo"),battleList=$("v29BattleList");
+   if(c){
+    try{
+     const bd=await api("/api/v29/clan/battles");
+     if(battleInfo)battleInfo.textContent="Мощь клана: "+Number(bd.power||0).toLocaleString("ru-RU")+" · источник мощности: Boss Rush и боссы Jumper; Boss Fight исключён.";
+     if(battleList)battleList.innerHTML=(bd.battles||[]).map(b=>{
+      const pending=b.status==="pending",incoming=pending&&b.to===c.tag;
+      const title="["+esc(b.from)+"] "+esc(b.fromName||"")+" → ["+esc(b.to)+"] "+esc(b.toName||"");
+      const status=pending?"Ожидает ответа":("Победитель: "+esc(b.result&&b.result.winner||"—")+" · Потеря проигравшего: "+(b.result?Math.round((b.result.lossRate||0)*1000)/10+"%":"—"));
+      return `<div class="v29-extra-item"><b>${title}</b><p class="v29muted">${status}</p>${incoming?`<button type="button" data-v29accept="${esc(b.id)}">Принять вызов</button>`:""}</div>`;
+     }).join("")||'<p class="v29muted">Активных и завершённых битв пока нет.</p>';
+     if(battleList)battleList.querySelectorAll("[data-v29accept]").forEach(btn=>btn.onclick=()=>act("/api/v29/clan/battle/accept",{id:btn.dataset.v29accept}).then(refresh));
+    }catch(e){if(battleList)battleList.textContent=e.message}
+   }else{if(battleInfo)battleInfo.textContent="Вступите в клан поддержки, чтобы участвовать в битвах.";if(battleList)battleList.textContent="Битвы доступны участникам кланов."}
    $("v29VipInfo").textContent=d.player.vip?`${d.player.vip.plan==="vip_plus"?"VIP+":"VIP"} · до ${new Date(d.player.vip.until).toLocaleString()}`:"Нет активной подписки";
+   const st=d.settings||{};if($("v29SetVipPrice"))$("v29SetVipPrice").value=st.vip&&st.vip.price!=null?st.vip.price:5000;if($("v29SetVipDays"))$("v29SetVipDays").value=st.vip&&st.vip.days||7;if($("v29SetVipPlusPrice"))$("v29SetVipPlusPrice").value=st.vip_plus&&st.vip_plus.price!=null?st.vip_plus.price:12000;if($("v29SetVipPlusDays"))$("v29SetVipPlusDays").value=st.vip_plus&&st.vip_plus.days||7;
+   const ft=st.features||{};["Quests","Achievements","Leaderboards","Mail","Events"].forEach(k=>{const el=$("v29Feature"+k);if(el)el.checked=ft[k.toLowerCase()]!==false});
    $("v29BpInfo").textContent=`Опыт: ${d.battlepass.xp||0} XP · Premium: ${d.battlepass.premium?"активен":"не активен"} · Получено наград: ${(d.battlepass.claimed||[]).length}`;
+   renderBattlepass(d.battlepass);
    const leave=$("v29ClanLeave");if(leave)leave.onclick=()=>act("/api/v29/clan/leave",{}).then(refresh);
    const chat=$("v29ChatSend");if(chat)chat.onclick=()=>act("/api/v29/clan/chat",{message:$("v29ChatText").value}).then(refresh);
   }catch(e){msg(e.message)}
@@ -6274,9 +6440,15 @@ function applyEventMusic(id) {
  $("v29Close").onclick=()=>panel.style.display="none";
  $("v29ClanCreate").onclick=()=>act("/api/v29/clan/create",{name:$("v29ClanName").value,tag:$("v29ClanTag").value}).then(refresh).catch(()=>{});
  $("v29ClanJoin").onclick=()=>act("/api/v29/clan/join",{tag:$("v29ClanJoinTag").value}).then(refresh).catch(()=>{});
+ const battleChallenge=$("v29BattleChallenge");if(battleChallenge)battleChallenge.onclick=()=>act("/api/v29/clan/battle/challenge",{tag:$("v29BattleTag").value}).then(refresh).catch(()=>{});
+ const adminPowerSet=$("v29AdminPowerSet");if(adminPowerSet)adminPowerSet.onclick=async()=>{try{await api("/api/v29/admin/power",{adminPassword:$("v29AdminPassword").value,nick:$("v29AdminPowerNick").value,power:Number($("v29AdminPowerValue").value)||0});$("v29AdminResult").textContent="Мощь сохранена.";await refresh()}catch(e){$("v29AdminResult").textContent=e.message}};
+ const adminSettings=$("v29AdminSaveSettings");if(adminSettings)adminSettings.onclick=async()=>{try{const settings={vip:{price:Number($("v29SetVipPrice").value)||0,days:Number($("v29SetVipDays").value)||7},vip_plus:{price:Number($("v29SetVipPlusPrice").value)||0,days:Number($("v29SetVipPlusDays").value)||7},features:{quests:$("v29FeatureQuests").checked,achievements:$("v29FeatureAchievements").checked,leaderboards:$("v29FeatureLeaderboards").checked,mail:$("v29FeatureMail").checked,events:$("v29FeatureEvents").checked}};await api("/api/v29/admin/settings",{adminPassword:$("v29AdminPassword").value,settings});$("v29AdminResult").textContent="Настройки сохранены.";await refresh()}catch(e){$("v29AdminResult").textContent=e.message}};
+ const grantBtn=$("v29AdminGrantBtn");if(grantBtn)grantBtn.onclick=async()=>{try{await api("/api/v29/admin/vip-grant",{adminPassword:$("v29AdminPassword").value,nick:$("v29AdminGrantNick").value,plan:$("v29AdminGrantPlan").value,days:Number($("v29AdminGrantDays").value)||30});$("v29AdminResult").textContent="Подписка или Premium выданы.";await refresh()}catch(e){$("v29AdminResult").textContent=e.message}};
+ const clanApply=$("v29AdminClanApply");if(clanApply)clanApply.onclick=async()=>{try{const action=$("v29AdminClanAction").value,value=$("v29AdminClanValue").value;await api("/api/v29/admin/clan",{adminPassword:$("v29AdminPassword").value,tag:$("v29AdminClanTag").value,action,name:action==="rename"?value:undefined,xp:action==="xp"?Number(value)||0:undefined});$("v29AdminResult").textContent="Действие с кланом выполнено.";await refresh()}catch(e){$("v29AdminResult").textContent=e.message}};
+ const rewardApply=$("v29AdminRewardApply");if(rewardApply)rewardApply.onclick=async()=>{try{await api("/api/v29/admin/reward",{adminPassword:$("v29AdminPassword").value,nick:$("v29AdminRewardNick").value,coins:Number($("v29AdminRewardCoins").value)||0});$("v29AdminResult").textContent="Баланс обновлён.";await refresh()}catch(e){$("v29AdminResult").textContent=e.message}};
  document.querySelectorAll("[data-v29vip]").forEach(b=>b.onclick=()=>{if(confirm("Подтвердить покупку подписки за внутриигровые монеты?"))act("/api/v29/vip/buy",{plan:b.dataset.v29vip}).then(refresh).catch(()=>{})});
  const syncPass=$("v29SyncPass");if(syncPass)syncPass.onclick=()=>refresh();
- document.querySelectorAll("[data-v29tab]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-v29tab]").forEach(x=>x.classList.toggle("active",x===b));const tab=b.dataset.v29tab;document.querySelectorAll("#v29Panel .v29card").forEach(card=>{const text=card.innerText.toLowerCase();let show=tab==="all"||(tab==="clans"&&text.includes("клан"))||(tab==="vip"&&(text.includes("vip")||text.includes("подпис")))||(tab==="bp"&&(text.includes("пропуск")||text.includes("premium")))||(tab==="extras"&&/(задани|достижен|рейтинг|почта|событи)/.test(text));card.style.display=show?"block":"none";});});
+ document.querySelectorAll("[data-v29tab]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-v29tab]").forEach(x=>x.classList.toggle("active",x===b));const tab=b.dataset.v29tab;document.querySelectorAll("#v29Panel .v29card").forEach(card=>{const text=card.innerText.toLowerCase();let show=tab==="all"||(tab==="profile"&&card.id==="v29ProfileCard")||(tab==="clans"&&text.includes("клан"))||(tab==="vip"&&(text.includes("vip")||text.includes("подпис")))||(tab==="bp"&&(text.includes("пропуск")||text.includes("premium")))||(tab==="extras"&&/(задани|достижен|рейтинг|почта|событи)/.test(text));card.style.display=show?"block":"none";});});
 })();
 </script>
 
@@ -6294,17 +6466,24 @@ function applyEventMusic(id) {
   const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||"Не удалось загрузить данные");return d;
  }
  const say=(id,s)=>{const e=$(id);if(e)e.textContent=s};
+ const profileNick=$("v29DisplayNick"),profileColor=$("v29NickColor"),profilePreview=$("v29ProfilePreview");const avatarOptions=["👤","🐱","🦊","🐼","🐸","🐺","🦉","🐙","🤖","👑","🦄","🐲","🦁","🐧","🐻","🐯"];let selectedProfileAvatar="👤";function setProfileAvatar(value){selectedProfileAvatar=avatarOptions.includes(value)?value:"👤";const box=$("v29AvatarChoices");if(box){box.innerHTML=avatarOptions.map(a=>`<button type="button" class="v29-avatar-choice" data-profile-avatar="${a}" aria-label="Аватар ${a}" aria-pressed="${a===selectedProfileAvatar}">${a}</button>`).join("");box.querySelectorAll("[data-profile-avatar]").forEach(b=>b.onclick=()=>setProfileAvatar(b.dataset.profileAvatar));}paintProfile();}function paintProfile(){if(profilePreview){profilePreview.textContent=selectedProfileAvatar+"  "+((profileNick&&profileNick.value.trim())||"Предпросмотр ника");profilePreview.style.color=profileColor?profileColor.value:"#d4af37";}}if(profileNick)profileNick.addEventListener("input",paintProfile);if(profileColor)profileColor.addEventListener("input",paintProfile);setProfileAvatar("👤");const profileSave=$("v29ProfileSave");if(profileSave)profileSave.onclick=async()=>{try{profileSave.disabled=true;await call("/api/v29/profile",{displayNick:profileNick.value,nickColor:profileColor.value,avatar:selectedProfileAvatar});say("v29ProfileMsg","Профиль сохранён.");paintProfile();}catch(e){say("v29ProfileMsg",e.message)}finally{profileSave.disabled=false}};
  function renderTasks(d){
   const root=$("v29TasksList"),ach=$("v29AchievementsList");if(!root)return;
   root.innerHTML=(d.quests||[]).map(q=>`<div class="v29-extra-item"><b>${esc(q.title)}</b><p>${esc(q.description)}</p><p>Награда: ${q.reward} 🪙 · ${esc(q.progress||"")}</p>${q.claimed?'<span class="v29muted">Получено</span>':`<button type="button" data-v29claim="${esc(q.id)}">Забрать награду</button>`}</div>`).join("")||'<p class="v29muted">Пока нет доступных заданий.</p>';
   ach.innerHTML='<h4>Достижения</h4>'+(d.achievements||[]).map(a=>`<div class="v29-extra-item"><b>${esc(a.title)}</b><p>${esc(a.description)}</p><p>${a.unlocked?"✓ Открыто":"Ещё не открыто"}</p></div>`).join("");
   root.querySelectorAll("[data-v29claim]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{await call("/api/v29/quest/claim",{id:b.dataset.v29claim});await loadExtras()}catch(e){alert(e.message);b.disabled=false}});
  }
- let rankType="users",mailType="mail";
+ let rankType="power",mailType="mail";
  async function loadRank(){
   const d=await call("/api/v29/leaderboard?type="+rankType),root=$("v29Leaderboard");if(!root)return;
-  const rows=rankType==="clans"?d.clans:d.users;
-  root.innerHTML=(rows||[]).map((x,i)=>`<div class="v29-extra-rank"><span class="n">${i+1}</span><b>${esc(rankType==="clans"?"["+x.tag+"] "+x.name:x.nick)}</b><span class="score">${Number(x.score||0).toLocaleString("ru-RU")}</span></div>`).join("")||'<p class="v29muted">Пока недостаточно статистики для рейтинга.</p>';
+  const clans=rankType==="clans",rows=clans?d.clans:d.users,metric=clans?"очков":rankType==="wealth"?"монет":rankType==="bosses"?"боссов":"мощи";
+  root.innerHTML=(rows||[]).slice(0,100).map((x,i)=>{
+   const name=clans?("["+(x.tag||"?")+"] "+(x.name||"Без названия")):(x.displayNick||x.nick||"Игрок");
+   const avatar=clans?`<span class="v29-rank-flag" style="--flag-a:${/^#[0-9a-f]{6}$/i.test(x.flag&&x.flag.primary||"")?x.flag.primary:"#263c78"};--flag-b:${/^#[0-9a-f]{6}$/i.test(x.flag&&x.flag.secondary||"")?x.flag.secondary:"#e1b84b"}">${esc(x.flag&&x.flag.symbol||"✦")}</span>`:`<span class="v29-rank-avatar">${esc(x.avatar||"👤")}</span>`;
+   const color=!clans&&/^#[0-9a-f]{6}$/i.test(x.nickColor||"")?x.nickColor:"inherit";
+   const score=Number(x.score)||0;
+   return `<div class="v29-extra-rank"><span class="n">${i+1}</span>${avatar}<span class="v29-rank-label" style="color:${color}"><b>${esc(name)}</b>${clans?`<small>${Number(x.members||0)} участников · ${Number(x.wins||0)} побед</small>`:`<small>${esc(x.nick||"")}</small>`}</span><span class="score">${score.toLocaleString("ru-RU")}<small>${metric}</small></span></div>`;
+  }).join("")||'<p class="v29muted">Пока недостаточно статистики для рейтинга.</p>';
  }
  async function loadMail(){
   const d=await call("/api/v29/extras"),box=$("v29Mailbox"),events=$("v29Events");
@@ -6570,7 +6749,7 @@ body.intro-lock { position:relative!important; width:auto!important; overflow-y:
       <button class="arti-min" type="button" id="artiMin">Свернуть</button>
       <button class="arti-close" type="button" id="artiClose" aria-label="Закрыть">×</button>
     </div>
-    <div class="arti-drag-note">⠿ Перетаскивай за маскота · позиция запоминается</div>
+    <div class="arti-drag-note">Нажми, чтобы открыть помощника. Перетаскивай Арти по экрану.</div>
   </div>
   <span class="arti-hint">Твой помощник</span>
   <button class="arti-avatar" type="button" id="artiToggle" aria-label="Открыть помощника Арти" aria-expanded="false">
@@ -6590,7 +6769,7 @@ body.intro-lock { position:relative!important; width:auto!important; overflow-y:
  avatar.addEventListener('click',()=>{if(root.dataset.justDragged==='1'){root.dataset.justDragged='0';return;}root.classList.remove('minimized');setOpen(!root.classList.contains('open'));});
  close.addEventListener('click',()=>setOpen(false));
  min.addEventListener('click',()=>{root.classList.toggle('minimized');setOpen(false);});
- welcome.addEventListener('click',()=>say('Я могу быстро открыть основные разделы, подсказать, где искать опросы и задания, объяснить баллы, кланы, магазин и боевой пропуск. Перетащи меня за персонажа в удобное место.','Вот чем я полезен 👑'));
+ welcome.addEventListener('click',()=>say('Я могу быстро открыть основные разделы, подсказать, где искать опросы и задания, объяснить баллы, кланы, магазин и боевой пропуск. Нажми на меня, чтобы открыть нужный раздел.','Вот чем я полезен 👑'));
  // Navigate through the site's existing controls; no routes or backend endpoints are invented.
  function goTo(label){
    const norm=t=>(t||'').toLowerCase().replace(/ё/g,'е').replace(/\s+/g,' ').trim();
@@ -6617,30 +6796,175 @@ body.intro-lock { position:relative!important; width:auto!important; overflow-y:
  }
  function submitQuestion(){const q=question.value.trim();if(!q)return;question.value='';answer(q);}
  ask.addEventListener('click',submitQuestion);question.addEventListener('keydown',e=>{if(e.key==='Enter')submitQuestion();});
- // Drag with Pointer Events (mouse, touch and pen); clamp to viewport and persist position.
- let drag=null;
- function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
- function applyPosition(x,y,save){
-   const r=root.getBoundingClientRect(),w=r.width,h=r.height;
-   x=clamp(x,4,Math.max(4,innerWidth-w-4));y=clamp(y,4,Math.max(4,innerHeight-h-4));
-   root.style.left=x+'px';root.style.top=y+'px';root.style.right='auto';root.style.bottom='auto';
-   if(save){try{localStorage.setItem('artamon_arti_pos',JSON.stringify({x,y}));}catch(e){}}
- }
- try{const pos=JSON.parse(localStorage.getItem('artamon_arti_pos')||'null');if(pos&&Number.isFinite(pos.x)&&Number.isFinite(pos.y)){root.style.left=pos.x+'px';root.style.top=pos.y+'px';root.style.right='auto';root.style.bottom='auto';requestAnimationFrame(()=>applyPosition(pos.x,pos.y,false));}}catch(e){}
- avatar.addEventListener('pointerdown',e=>{
-   if(e.button!==undefined&&e.button!==0)return;
-   const r=root.getBoundingClientRect();drag={id:e.pointerId,startX:e.clientX,startY:e.clientY,left:r.left,top:r.top,moved:false};
-   try{avatar.setPointerCapture(e.pointerId);}catch(err){}
- });
- avatar.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;const dx=e.clientX-drag.startX,dy=e.clientY-drag.startY;if(Math.abs(dx)+Math.abs(dy)>7)drag.moved=true;if(drag.moved){root.classList.add('dragging');applyPosition(drag.left+dx,drag.top+dy,false);}});
- function stopDrag(e){if(!drag|| (e&&drag.id!==e.pointerId))return;if(drag.moved){root.dataset.justDragged='1';const r=root.getBoundingClientRect();applyPosition(r.left,r.top,true);setTimeout(()=>root.dataset.justDragged='0',180); }drag=null;root.classList.remove('dragging');}
- avatar.addEventListener('pointerup',stopDrag);avatar.addEventListener('pointercancel',stopDrag);window.addEventListener('resize',()=>{if(root.style.left){const r=root.getBoundingClientRect();applyPosition(r.left,r.top,true);}});
  // First visit greeting.
  try{if(!localStorage.getItem('artamon_arti_seen'))setTimeout(()=>{if(!document.hidden){setOpen(true);localStorage.setItem('artamon_arti_seen','1');}},6500);}catch(e){}
  // Update the hint according to the currently visible section.
  document.addEventListener('click',e=>{const t=(e.target.closest('a,button,[role="button"]')?.innerText||'').toLowerCase();if(/опрос|клан|магазин|пропуск|профил|рейтинг|событи/.test(t)){status.textContent='Могу подсказать по этому разделу — спроси меня.';}},true);
 })();
 </script>
+
+
+<style id="artamon29-visual-update">
+/* Calm, modern platform background: subtle light movement, no game-launcher styling. */
+body{background-image:radial-gradient(ellipse at 12% 12%,rgba(91,77,143,.18),transparent 42%),radial-gradient(ellipse at 88% 78%,rgba(212,175,55,.09),transparent 38%),radial-gradient(ellipse at 50% 110%,rgba(38,67,82,.15),transparent 48%),linear-gradient(145deg,var(--bg-1) 0%,var(--bg-2) 55%,var(--bg-3) 100%);background-size:140% 140%,140% 140%,140% 140%,100% 100%;background-attachment:fixed;animation:artamonAmbient 34s ease-in-out infinite alternate}
+@keyframes artamonAmbient{0%{background-position:0% 0%,100% 100%,45% 100%,0 0}100%{background-position:35% 25%,65% 70%,60% 80%,0 0}}
+/* The intro contains only the Artamon title. Canvas remains as an abstract animated backdrop. */
+#intro .intro-logo,#intro .intro-hand,#intro .intro-word,#intro .intro-narrative,#intro .intro-final,#intro .intro-collapse-flash,#introMute,#introBar{display:none!important}
+#intro .intro-brand{display:block!important;opacity:1!important;visibility:visible!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%)!important;font-size:clamp(3rem,11vw,6.5rem)!important;letter-spacing:.09em!important;animation:artamonTitleIn 1.2s cubic-bezier(.2,.8,.2,1) both!important}
+@keyframes artamonTitleIn{0%{opacity:0;filter:blur(12px);transform:translate(-50%,-46%) scale(.94)!important}100%{opacity:1;filter:blur(0);transform:translate(-50%,-50%) scale(1)!important}}
+#introSkip{display:block!important}
+#preloader .pre-sub,#preloader .pre-phrase,#preloader .pre-bw,#preloader .pre-pct{display:none!important}
+#preloader .pre-g{font-size:clamp(2.4rem,8vw,4rem)!important;letter-spacing:.12em}
+@media(prefers-reduced-motion:reduce){body{animation:none!important}#intro .intro-brand{animation:none!important}}
+</style>
+<style id="artamon29-admin-layout">
+#v29Panel .v29-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:8px 0}
+#v29Panel .v29-admin-toggles{display:flex;flex-wrap:wrap;gap:8px 14px;margin:10px 0}
+#v29Panel .v29-admin-toggles label{display:flex;align-items:center;gap:6px;color:#d8d2c5;font-size:13px}
+#v29Panel .v29-admin-toggles input{width:auto}
+#v29Panel details input,#v29Panel details select{width:100%;margin:5px 0}
+@media(max-width:480px){#v29Panel .v29-admin-grid{grid-template-columns:1fr}}
+</style>
+<style id="artamon29-drag-and-home-rank">
+#arti-helper{touch-action:none}
+#arti-helper .arti-avatar{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+#arti-helper.dragging .arti-avatar{cursor:grabbing}
+#arti-helper.dragging{transition:none!important}
+#homePowerRank [data-home-rank]{min-width:92px}
+#homePowerRank .home-rank-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--card-2,rgba(255,255,255,.025));min-width:0}
+#homePowerRank .home-rank-num{font-weight:900;color:var(--gold-2);width:24px;flex:0 0 24px}
+#homePowerRank .home-rank-name{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+#homePowerRank .home-rank-score{font-variant-numeric:tabular-nums;color:var(--txt-2);font-weight:800;white-space:nowrap}
+@media(max-width:520px){#homePowerRank .home-rank-row{padding:9px 10px}}
+</style>
+<style id="artamon29-google-auth-style">
+.google-auth-wrap{margin-top:13px;padding-top:12px;border-top:1px solid var(--border);display:grid;justify-items:center;gap:6px}.google-auth-wrap small{color:var(--txt-3);font-size:11px;text-align:center}
+</style>
+<script src="https://accounts.google.com/gsi/client" async defer id="artamon-google-gsi"></script>
+<script id="artamon29-google-auth">
+(function(){
+ 'use strict';
+ const API='https://artamon-api.artem123kv.workers.dev';
+ const $=id=>document.getElementById(id);
+ let initialized=false;
+ function showMessage(message){if(window.toast)window.toast(message);else alert(message)}
+ async function credentialResponse(response){
+  const logged=$('authPaneLogged')&&$('authPaneLogged').classList.contains('on');
+  const registering=$('authPaneRegister')&&$('authPaneRegister').classList.contains('on');
+  const token=localStorage.getItem('artamon_session_v29')||'';
+  const nick=registering?($('authRegNick')&&$('authRegNick').value.trim()):'';
+  try{
+   const r=await fetch(API+'/api/google/auth',{method:'POST',headers:Object.assign({'Content-Type':'application/json'},token?{'Authorization':'Bearer '+token}:{}),body:JSON.stringify({credential:response.credential,mode:logged?'link':registering?'register':'login',nick})});
+   const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось войти через Google');
+   if(d.user){localStorage.setItem('artamon_nick',d.user.nick);localStorage.setItem('artamon_coins_v1',String(d.user.coins||0));if(d.token)localStorage.setItem('artamon_session_v29',d.token);if(window.SAFE_STORE&&window.ACC_KEY)try{SAFE_STORE.set(ACC_KEY,JSON.stringify(d.user))}catch(e){}}
+   showMessage(d.linked?'Google привязан к аккаунту.':'Вход через Google выполнен.');
+   setTimeout(()=>location.reload(),350);
+  }catch(e){showMessage('Google: '+e.message)}
+ }
+ function init(){
+  if(!window.google||!google.accounts||!google.accounts.id)return;
+  if(!initialized){
+   google.accounts.id.initialize({client_id:'1091123747547-r3v16hr1mjs5qsp9sfoep9ua1gan2k0.apps.googleusercontent.com',callback:credentialResponse,auto_select:false,cancel_on_tap_outside:true});
+   initialized=true;
+  }
+  ['googleSignInLogin','googleSignInRegister','googleSignInLink'].forEach(id=>{
+   const el=$(id);if(!el)return;
+   if(!el.querySelector('iframe')){el.innerHTML='';google.accounts.id.renderButton(el,{type:'standard',theme:'outline',size:'large',shape:'rectangular',text:'continue_with',locale:'ru',width:260});}
+  });
+ }
+ const script=$('artamon-google-gsi');if(script){script.addEventListener('load',init);if(window.google)init()}
+ window.addEventListener('load',init);
+ window.addEventListener('pageshow',()=>setTimeout(init,80));
+ setTimeout(init,500);setTimeout(init,1500);
+})();
+</script>
+<script id="artamon29-drag-and-ranking">
+(function(){
+ 'use strict';
+ const $=id=>document.getElementById(id);
+ const API='https://artamon-api.artem123kv.workers.dev';
+ const root=$('arti-helper'),avatar=$('artiToggle');
+ if(root&&avatar){
+   let active=false,moved=false,startX=0,startY=0,originX=0,originY=0,pointerId=null;
+   const key='artamon_arti_position_v2';
+   function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+   function applyPosition(x,y,save){
+     const maxX=Math.max(0,window.innerWidth-root.offsetWidth),maxY=Math.max(0,window.innerHeight-root.offsetHeight);
+     x=clamp(x,0,maxX);y=clamp(y,0,maxY);
+     root.style.left=x+'px';root.style.top=y+'px';root.style.right='auto';root.style.bottom='auto';
+     if(save){try{localStorage.setItem(key,JSON.stringify({x:x/Math.max(1,window.innerWidth),y:y/Math.max(1,window.innerHeight)}))}catch(e){}}
+   }
+   try{const pos=JSON.parse(localStorage.getItem(key)||'null');if(pos&&Number.isFinite(pos.x)&&Number.isFinite(pos.y)){requestAnimationFrame(()=>applyPosition(pos.x*window.innerWidth,pos.y*window.innerHeight,false))}}catch(e){}
+   avatar.addEventListener('pointerdown',e=>{
+     if(e.button!==undefined&&e.button!==0)return;
+     active=true;moved=false;pointerId=e.pointerId;
+     const r=root.getBoundingClientRect();startX=e.clientX;startY=e.clientY;originX=r.left;originY=r.top;
+     root.classList.add('dragging');
+     try{avatar.setPointerCapture(pointerId)}catch(err){}
+     e.preventDefault();
+   });
+   avatar.addEventListener('pointermove',e=>{
+     if(!active||e.pointerId!==pointerId)return;
+     const dx=e.clientX-startX,dy=e.clientY-startY;
+     if(Math.abs(dx)+Math.abs(dy)>5)moved=true;
+     if(moved){applyPosition(originX+dx,originY+dy,false);e.preventDefault()}
+   });
+   function endDrag(e){
+     if(!active|| (e&&pointerId!==null&&e.pointerId!==pointerId))return;
+     active=false;root.classList.remove('dragging');
+     if(moved){const r=root.getBoundingClientRect();applyPosition(r.left,r.top,true);root.dataset.dragSuppress='1';setTimeout(()=>delete root.dataset.dragSuppress,250)}
+     pointerId=null;
+   }
+   avatar.addEventListener('pointerup',endDrag);avatar.addEventListener('pointercancel',endDrag);
+   avatar.addEventListener('click',e=>{if(root.dataset.dragSuppress==='1'){e.preventDefault();e.stopImmediatePropagation();delete root.dataset.dragSuppress}},true);
+   window.addEventListener('resize',()=>{if(root.style.left){const r=root.getBoundingClientRect();applyPosition(r.left,r.top,true)}});
+ }
+ let rankType='power';
+ const rows=$('homeRankRows');
+ function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+ async function loadHomeRank(){
+   if(!rows)return;rows.innerHTML='<div style="color:var(--txt-3);padding:12px">Загружаем рейтинг…</div>';
+   try{const r=await fetch(API+'/api/v29/leaderboard?type='+rankType,{cache:'no-store'});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Ошибка загрузки');
+     const list=rankType==='clans'?(d.clans||[]):(d.users||[]);
+     const unit=rankType==='wealth'?'монет':rankType==='bosses'?'боссов':rankType==='clans'?'очков':'мощи';
+     rows.innerHTML=list.slice(0,10).map((x,i)=>{
+       const isClan=rankType==='clans';
+       const avatar=isClan?'<span class="home-rank-flag" style="--flag-a:'+escapeHtml(/^#[0-9a-f]{6}$/i.test(x.flag&&x.flag.primary||'')?x.flag.primary:'#263c78')+';--flag-b:'+escapeHtml(/^#[0-9a-f]{6}$/i.test(x.flag&&x.flag.secondary||'')?x.flag.secondary:'#e1b84b')+'">'+escapeHtml(x.flag&&x.flag.symbol||'✦')+'</span>':'<span class="home-rank-avatar">'+escapeHtml(x.avatar||'👤')+'</span>';
+       const name=isClan?'['+(x.tag||'?')+'] '+(x.name||'Клан'):(x.displayNick||x.nick||'Игрок');
+       const color=!isClan&&/^#[0-9a-f]{6}$/i.test(x.nickColor||'')?x.nickColor:'inherit';
+       return '<div class="home-rank-row"><span class="home-rank-num">'+(i+1)+'</span>'+avatar+'<span class="home-rank-name" style="color:'+escapeHtml(color)+'">'+escapeHtml(name)+(isClan?'<small>'+Number(x.members||0)+' участников</small>':'')+'</span><span class="home-rank-score">'+Number(x.score||0).toLocaleString('ru-RU')+'<small>'+unit+'</small></span></div>';
+     }).join('')||'<div style="color:var(--txt-3);padding:12px">Пока нет данных для рейтинга.</div>';
+   }catch(e){rows.innerHTML='<div style="color:var(--txt-3);padding:12px">'+escapeHtml(e.message)+'</div>'}
+ }
+ document.querySelectorAll('[data-home-rank]').forEach(b=>b.addEventListener('click',()=>{rankType=b.dataset.homeRank;document.querySelectorAll('[data-home-rank]').forEach(x=>{const on=x===b;x.classList.toggle('ghost',!on);x.setAttribute('aria-pressed',String(on))});loadHomeRank()}));
+ const refresh=$('homeRankRefresh');if(refresh)refresh.addEventListener('click',loadHomeRank);
+ const panel=$('v29Panel');function openV29(tab){if(!panel)return;const launcher=$('v29Open');if(launcher)launcher.click();else panel.style.display='block';const t=tab||'all';document.querySelectorAll('[data-v29tab]').forEach(b=>{b.classList.toggle('active',b.dataset.v29tab===t);if(b.dataset.v29tab===t)b.click()});}
+ function bindOpen(id,tab){const el=$(id);if(el)el.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();openV29(tab)},true)}
+ bindOpen('clansLaunch','clans');bindOpen('seasonLaunch','bp');bindOpen('miBattlePass','bp');bindOpen('miVIP','vip');bindOpen('questsLaunch','extras');bindOpen('miQuests','extras');bindOpen('miPowerRating','extras');bindOpen('powerRatingLaunch','extras');
+ const v29=$('v29Open');if(v29){v29.style.display='none'}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loadHomeRank);else loadHomeRank();
+})();
+</script>
+
+
+<style id="artamon-rank-ui-fix">
+/* Compact responsive leaderboard layout */
+#homePowerRank>div:nth-of-type(2){display:flex!important;flex-wrap:wrap!important;gap:7px!important}
+#homePowerRank [data-home-rank]{flex:1 1 125px;min-width:0!important;white-space:normal;line-height:1.25;padding:9px 10px}
+#homePowerRank .home-rank-row{gap:9px;min-height:58px;overflow:hidden}
+#homePowerRank .home-rank-avatar,#homePowerRank .home-rank-flag,.v29-rank-avatar,.v29-rank-flag{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:11px;background:#202838;border:1px solid #ffffff20;font-size:22px;overflow:hidden}
+#homePowerRank .home-rank-flag,.v29-rank-flag{background:linear-gradient(135deg,var(--flag-a) 0 50%,var(--flag-b) 50%);color:#fff;text-shadow:0 1px 3px #000;font-weight:900}
+#homePowerRank .home-rank-name,.v29-rank-label{display:flex;flex-direction:column;gap:3px;white-space:normal;overflow:hidden;overflow-wrap:anywhere;line-height:1.25}
+#homePowerRank .home-rank-name small,.v29-rank-label small,.v29-extra-rank .score small{font-size:11px;color:var(--txt-3,#9da5b4);font-weight:500}
+#homePowerRank .home-rank-score{display:flex;flex-direction:column;align-items:flex-end;gap:3px;white-space:nowrap;font-size:.9rem}
+#v29Panel .v29-extra-rank{display:flex;align-items:center;gap:9px;min-width:0;padding:11px 9px}
+#v29Panel .v29-extra-rank .n{flex:0 0 22px;width:22px}
+#v29Panel .v29-rank-label{flex:1;min-width:0}
+#v29Panel .v29-rank-label b{display:block;overflow-wrap:anywhere}
+#v29Panel .v29-extra-rank .score{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:2px;white-space:nowrap;font-size:.9rem}
+#v29Panel .v29-rank-avatar,#v29Panel .v29-rank-flag{width:36px;height:36px;flex-basis:36px}
+@media(max-width:520px){#homePowerRank [data-home-rank]{flex:1 1 calc(50% - 7px)}#homePowerRank .home-rank-row{gap:7px;padding:8px}#homePowerRank .home-rank-avatar,#homePowerRank .home-rank-flag{width:32px;height:32px;flex-basis:32px;font-size:19px}#homePowerRank .home-rank-score{font-size:.78rem}#v29Panel{padding:8px}#v29Panel .v29wrap{padding:12px;margin:8px auto}#v29Panel .v29-extra-rank{gap:6px;padding:9px 5px}#v29Panel .v29-rank-avatar,#v29Panel .v29-rank-flag{width:31px;height:31px;flex-basis:31px;font-size:18px}#v29Panel .v29-extra-rank .score{font-size:.78rem}}
+</style>
 
 </body>
 </html>
